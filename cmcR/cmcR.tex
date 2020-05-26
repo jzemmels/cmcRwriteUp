@@ -21,7 +21,7 @@ of forensic science.
 }
 
 \hypertarget{intro}{%
-\subsection{Introduction}\label{intro}}
+\section{Introduction}\label{intro}}
 
 A \dfn{cartridge case} is a type of firearm ammunition that contains a
 projectile (e.g., bullet, shots, or slug). When a firearm is discharged,
@@ -88,7 +88,7 @@ extension known as the ``High CMC'' method proposed by
 \citet{tong_improved_2015}.
 
 \hypertarget{data}{%
-\subsection{Cartridge case data}\label{data}}
+\section{Cartridge case surface data}\label{data}}
 
 Cartridge case data commonly come in two forms: 2D grayscale images and
 3D topographical scans. It is common in the CMC literature to use the 3D
@@ -145,15 +145,15 @@ firing process and clusters of observed values in the corners of the
 scan that are artifacts of the staging area in which the scan was
 captured. The task in pre-processing is to automatically remove these
 unwanted regions from the scan to accentuate unique markings left by the
-breech face. This is discussed in greater detail in section (LINK).
+breech face. This is discussed in greater detail in section
+\protect\hyperlink{preProcessing}{3.1}.
 
 \hypertarget{cell-based-surface-matrix-comparisons}{%
-\subsection{Cell-based surface matrix
+\section{Cell-based surface matrix
 comparisons}\label{cell-based-surface-matrix-comparisons}}
 
 \hypertarget{comparisonProcedure}{%
-\subsubsection{Cell-based comparison
-procedure}\label{comparisonProcedure}}
+\subsection{Cell-based comparison procedure}\label{comparisonProcedure}}
 
 The Congruent Matching Cells method was developed at the National
 Institute of Standards and Technology to quantify the similarity between
@@ -217,14 +217,13 @@ containing missing values, so these need to be replaced. The convention
 adopted in the \pkg{cmcR} package is to replace missing values with 0
 after standardizing a matrix by subtracting away its average height
 value and dividing by its standard deviation. Such standardization is
-commonly performed by authors at NIST {[}for example,
-\citep{ott_applying_2017}{]}. While replacing missing values is
-essential for using the FFT-based method of calculating the CCF, doing
-so causes the CCF values to be ``deflated" relative to the
-pairwise-complete cross-correlation in which only pairs of pixels in
-which neither element is missing are considered. However, the
-translation estimates obtained from this method are often good estimates
-for true translation values by which the two matrices align.
+commonly performed by authors at NIST \citep{ott_applying_2017}. While
+replacing missing values is essential for using the FFT-based method of
+calculating the CCF, doing so causes the CCF values to be ``deflated"
+relative to the pairwise-complete cross-correlation in which only pairs
+of pixels in which neither element is missing are considered. However,
+the translation estimates obtained from this method are often good
+estimates for true translation values by which the two matrices align.
 
 Figure \ref{fig:ccfMap_example} provides an example of the output from
 the FFT-based CCF calculation method. In the top-left we see a
@@ -274,10 +273,10 @@ on the fact that a pair of matching cartridge case scans are not
 necessarily aligned properly in their raw format. In particular, one
 cartridge case scan needs to be rotated and translated to align
 correctly the other. Let CCF\(_{\max}, dx, dy, \theta\) denote the
-``true'' but unknown CCF, translation, and rotation values by which a
-particular pair aligns the best. These unknown alignment parameters can
-be estimated for each cell/region pair using the cell-based comparison
-procedure discussed in section
+``true'' but unknown CCF, translation, and rotation values,
+respectively, by which a particular pair aligns. These unknown alignment
+parameters can be estimated for each cell/region pair using the
+cell-based comparison procedure discussed in section
 \protect\hyperlink{comparisonProcedure}{3.1}. Let
 CCF\(_{\max,i}, dx_i, dy_i, \theta_i\) denote the estimated alignment
 parameter values for cell/region pair \(i\), \(i = 1,...,n\). For a
@@ -305,7 +304,7 @@ of cartridge cases. Song proposes using the median of the
 certainly plausible. Let
 \(\overline{dx}, \overline{dy}, \overline{\theta}\) denote the
 consensual alignment parameter values. To declare a particular
-cell/region pair as ``conruent matching,'' Song requires that (1) the
+cell/region pair as ``congruent matching,'' Song requires that (1) the
 pair's estimated alignment parameter values be within some threshold
 distance of the consensual values and (2) the CCF\(_{\max}\) value is
 greater than some threshold. That is, for thresholds
@@ -419,7 +418,7 @@ small in scope, leaving such details ambiguous can quickly compound how
 difficult it is to effectively reproduce results.
 
 \hypertarget{the-package}{%
-\subsection{\texorpdfstring{The \pkg{cmcR}
+\section{\texorpdfstring{The \pkg{cmcR}
 package}{The  package}}\label{the-package}}
 
 This section will highlight the \pkg{cmcR} package's functionality by
@@ -428,21 +427,18 @@ package provide the user with a variety of processing options with which
 they can experiment. This is due to the fact that processing techniques
 differ considerably among authors or are not discussed in great detail.
 
-\hypertarget{pre-processing-procedures}{%
-\subsubsection{Pre-processing
-procedures}\label{pre-processing-procedures}}
+\hypertarget{preProcessing}{%
+\subsection{Pre-processing procedures}\label{preProcessing}}
 
 Studies in which cartridge cases are matched by forensic examiners often
 involve giving examiners a set of known matches and asking them to
 classify additional matches from a collection of unknown source scans.
-For brevity, we will consider a comparison between two cartridge cases.
-This particular pair of scans, as well as many other cartridge case
-scans, are openly available from the NIST Ballistics and Toolmarks
-Research Database. Figure \ref{fig:processedScans} shows the pair of
-scans after performing the necessary pre-processing procedures. Note
-that the color scheme has been scaled by quantiles to visually highlight
-regions of the cartridge case scan containing strong breech face
-impression ``signal.''
+For brevity, we will consider a comparison between two cartridge cases
+from \citep{fadul_empirical_nodate}. Figure \ref{fig:processedScans}
+shows the pair of scans after performing the necessary pre-processing
+procedures. Note that the color scheme has been scaled by quantiles to
+visually highlight regions of the cartridge case scan containing strong
+breech face impression ``signal.''
 
 \begin{Schunk}
 \begin{figure}[htbp]
@@ -489,8 +485,8 @@ row/column of a surface matrix. The
 pre-processing procedures in a single call. The code to produce the
 first surface matrix shown in Figure \ref{fig:processedScans} is given
 by the following example. Note that the RANSAC method relies on randomly
-selecting points within the surface matrix, so a seed needs to be set
-for reproducibility.
+selecting points within the surface matrix, so a seed is set for
+reproducibility.
 
 \begin{Schunk}
 \begin{Sinput}
@@ -543,14 +539,12 @@ into a grid of cells and \code{fadul1.2} was rotated by 3 degrees is
 given below. Although a grid of \(8 \times 8\) cells were used, there
 were only 43 cell/region pairs that contained a sufficient proportion of
 non-missing values (10\% in this example). Recall that the features used
-in the CMC method are the CCF\(_{\max}\) values (\code{ccf} column) and
-estimated alignment parameter values (\code{dx}, \code{dy}, and
-\code{theta} columns).
+in the CMC method are the CCF\(_{\max}\) values (ccf column) and
+estimated alignment parameter values (dx, dy, and theta columns).
 
 \begin{Schunk}
 \begin{Sinput}
-kmComparison$comparison_1to2$ccfResults$`3` %>%
-  head()
+head(kmComparison$comparison_1to2$ccfResults$`3`)
 \end{Sinput}
 \end{Schunk}
 
@@ -584,13 +578,32 @@ cellNum & cellID & ccf & fft.ccf & dx & dy & theta\\
 \subsection{Congruent Matching Cells
 logic}\label{congruent-matching-cells-logic}}
 
+The \code{cmcFilter\_improved} function determines both the initial and
+high CMCs for a particular comparison. The example below shows how to
+use the function with thresholds defined similar to those in
+\citet{song_estimating_2018}.
+
 \begin{Schunk}
 \begin{Sinput}
 kmCMC <- cmcR::cmcFilter_improved(kmComparison,
                                   ccf_thresh = .5,
                                   dx_thresh = 20,
+                                  dy_thresh = 20,
                                   theta_thresh = 6)
+\end{Sinput}
+\end{Schunk}
 
+The \code{cmcPlot} function will construct a plot to visualize cells
+have been declared a CMC and those that have not. The initial 21 CMCs
+and 22 non-CMCs for the current use case example are shown in black and
+red, respectively, on the left-hand side of Figure
+\ref{fig:initialCMCPlot}. Black cells on the right-hand side of Figure
+\ref{fig:initialCMCPlot} show how each CMC aligns in the other surface
+matrix. The red cells show how the non-CMCs align to attain their
+CCF\(_{\max}\) value.
+
+\begin{Schunk}
+\begin{Sinput}
 cmcPlots <- cmcR::cmcPlot(fadul1.1$x3p,
                           fadul1.2$x3p,
                           cellCCF_bothDirections_output = kmComparison,
@@ -604,16 +617,16 @@ cmcPlots$initialCMC
 \begin{Schunk}
 \begin{figure}[htbp]
 
-{\centering \includegraphics[width=1.2\textwidth,trim={0 2.5cm 0 2cm}]{cmcR_files/figure-latex/unnamed-chunk-12-1} 
+{\centering \includegraphics[width=1.2\textwidth,trim={0 2.5cm 0 2cm}]{cmcR_files/figure-latex/unnamed-chunk-13-1} 
 
 }
 
-\caption{\label{fig:initialCMCPlot} CMC results from a known match comparison under the initially proposed method}\label{fig:unnamed-chunk-12}
+\caption{\label{fig:initialCMCPlot} CMC results from a known match comparison under the initially proposed method}\label{fig:unnamed-chunk-13}
 \end{figure}
 \end{Schunk}
 
-The CMCs determined under the High CMC method (i.e., the ``high'' CMCs)
-are show below. We can see that 40 out of the
+Similarly, 40 CMCs and 3 non-CMCs determined under the High CMC method
+are shown in Figure \ref{fig:highCMCPlot}.
 
 \begin{Schunk}
 \begin{Sinput}
@@ -624,13 +637,46 @@ cmcPlots$highCMC
 \begin{Schunk}
 \begin{figure}[htbp]
 
-{\centering \includegraphics[width=1.2\textwidth,trim={0 2.5cm 0 2cm}]{cmcR_files/figure-latex/unnamed-chunk-14-1} 
+{\centering \includegraphics[width=1.2\textwidth,trim={0 2.5cm 0 2cm}]{cmcR_files/figure-latex/unnamed-chunk-15-1} 
 
 }
 
-\caption{\label{fig:highCMCPlot} CMC results from a known match comparison under the High CMC method}\label{fig:unnamed-chunk-14}
+\caption{\label{fig:highCMCPlot} CMC results from a known match comparison under the High CMC method}\label{fig:unnamed-chunk-15}
 \end{figure}
 \end{Schunk}
+
+In contrast, Figure \ref{fig:knmCMCPlot} shows the CMC results for a
+comparison between Fadul 1-1 and a known non-match scan, Fadul 2-1,
+under the same pre, inter, and post-processing conditions used for the
+known match comparison. We can see that 6 initial CMCs were determined
+while there were 0 CMCs under the High CMC method.
+
+\begin{Schunk}
+\begin{figure}[htbp]
+
+{\centering \includegraphics[width=1.2\textwidth,trim={0 2cm 0 1cm}]{cmcR_files/figure-latex/unnamed-chunk-16-1} 
+
+}
+
+\caption{\label{fig:knmCMCPlot} CMC results from a known non-match comparison under the initially proposed method}\label{fig:unnamed-chunk-16}
+\end{figure}
+\end{Schunk}
+
+\hypertarget{results}{%
+\section{Results}\label{results}}
+
+As described in section \protect\hyperlink{data}{2}, the set of
+cartridge case scans from \citet{fadul_empirical_nodate} is commonly
+used to compare the performance of various methods in the CMC
+literature. This set consists of 40 cartridge cases. There are 63 known
+match pairs and 717 known non-match pairs. While the exact procedures by
+which these scans are processed are ambiguous in the CMC literature, the
+surface data are openly available in their raw, unprocessed format NIST
+Ballistics Toolmark Research Database. Thus, some level of comparison
+between the implementation provided in the \pkg{cmcR} package and
+published results is possible. However, justification for any
+differences will ultimately involve educated hypothesization due to the
+closed-source nature of the original implementations.
 
 \bibliography{RJreferences}
 

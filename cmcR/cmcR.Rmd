@@ -39,7 +39,7 @@ library(rgl)
 set.seed(4132020)
 ```
 
-## Introduction {#intro}
+# Introduction {#intro}
 
 A \dfn{cartridge case} is a type of firearm ammunition that contains a projectile (e.g., bullet, shots, or slug). When a firearm is discharged, the projectile stored in the cartridge case is propelled down the barrel of the firearm. In response, the rest of the cartridge case that remains inside of the firearm is forced towards the back of the barrel. The force with which the cartridge case is propelled backwards causes it to strike the back wall, known as the \dfn{breech face}, of the barrel. Markings due to, e.g., manufacturing imperfections are ingrained on the breech face. When the cartridge case slams against the breech face, these markings can be ``stamped" into either the primer of the cartridge case or the cartridge case itself. The markings left on a cartridge case from the firearm's breech face are called \dfn{breech face impressions}.
 
@@ -53,7 +53,7 @@ These breech face impressions are considered to be analogous to a firearm's "fin
 
 One such method is the Congruent Matching Cells (CMC) method developed at NIST that involves partitioning a cartridge case image or scan into a grid of ``correlation cells" to isolate areas containing identifying breech face impression markings \citep{song_proposed_2013}. Since its invention in 2012, researchers at NIST have developed a number of extensions and improvements of the CMC method. However, to date there does not exist an openly available implementation of any of these techniques. Rather, many methods described in the CMC literature include a qualitative description of a proposed technique followed by results from the authors' implementation. The description of these methods do not delve into the intricacies of the implementation, which makes it especially difficult to validate or assess. Additionally, some procedures related to pre-processing the cartridge case data are seemingly done by-hand at NIST rather than with an automated method. This compounds the difficulty to accurately reproduce results. The \pkg{cmcR} package provides an open-source, fully-automatic implementation of the CMC method as originally described as well an extension known as the "High CMC" method proposed by \citet{tong_improved_2015}.
 
-## Cartridge case data {#data}
+# Cartridge case surface data {#data}
 
 Cartridge case data commonly come in two forms: 2D grayscale images and 3D topographical scans. It is common in the CMC literature to use the 3D topographical scans to demonstrate the efficacy of a proposed method [\citep{tong_improved_2015}, \citep{chen_convergence_2017}]. A variety of scans are openly available for download through the NIST Ballistics Toolmark Research Database \citep{nbtrd}. The \pkg{cmcR} package was designed specifically for use with the 3D topographies.
 
@@ -136,11 +136,11 @@ rgl.close()
 knitr::include_graphics(c("../images/fadul1-1.png","../images/fadul1-2.png"))
 ```
 
-Only certain regions of a cartridge case contain identifying breech face impression markings. \citet{song_proposed_2013} refers to these as ``valid correlation regions" that are to be used to determine whether two cartridge cases match. The cell-based comparison procedure described in section [3.1](#comparisonProcedure) is designed to emphasize such regions. However, prior to applying this procedure cartridge scans must undergo some pre-processing to remove sections of the cartridge case surface that do not come into contact with the breech face of the barrel. These include a circular plateaued region in the center of the scan that is pushed aside by the firing pin during the firing process and clusters of observed values in the corners of the scan that are artifacts of the staging area in which the scan was captured. The task in pre-processing is to automatically remove these unwanted regions from the scan to accentuate unique markings left by the breech face. This is discussed in greater detail in section (LINK).
+Only certain regions of a cartridge case contain identifying breech face impression markings. \citet{song_proposed_2013} refers to these as ``valid correlation regions" that are to be used to determine whether two cartridge cases match. The cell-based comparison procedure described in section [3.1](#comparisonProcedure) is designed to emphasize such regions. However, prior to applying this procedure cartridge scans must undergo some pre-processing to remove sections of the cartridge case surface that do not come into contact with the breech face of the barrel. These include a circular plateaued region in the center of the scan that is pushed aside by the firing pin during the firing process and clusters of observed values in the corners of the scan that are artifacts of the staging area in which the scan was captured. The task in pre-processing is to automatically remove these unwanted regions from the scan to accentuate unique markings left by the breech face. This is discussed in greater detail in section [3.1](#preProcessing).
 
-## Cell-based surface matrix comparisons
+# Cell-based surface matrix comparisons
 
-### Cell-based comparison procedure {#comparisonProcedure}
+## Cell-based comparison procedure {#comparisonProcedure}
 
 The Congruent Matching Cells method was developed at the National Institute of Standards and Technology to quantify the similarity between two spent cartridge cases based on their breech face impressions. The CMC method involves dividing a breech face impression scan into a grid of cells and comparing each cell in one scan to a corresponding region in the other scan. This method is motivated by the fact that breech face markings are not uniformly impressed upon the cartridge case during the firing process. As such, only certain sections of the cartridge case have identifiable markings that make it possible to match to a firearm. Calculating a similarity score between the entirety of two cartridge case surfaces might not highlight these identifying regions. Instead, the number of highly similar cell pairs between the two scans can be used as a more granular similarity metric.
 
@@ -157,7 +157,7 @@ Note that this finite, discretized CCF is a matrix of elements representing the 
 $$
 (A \star B )[m,n]= \mathcal{F}^{-1}\left(\overline{\mathcal{F}(A)} \cdot \mathcal{F}(B)\right)[m,n]
 $$
-where $\mathcal{F}$ and $\mathcal{F}^{-1}$ denote the discrete Fourier and inverse discrete Fourier transforms, respectively \citep{fft_brigham}. Note that the multiplication on the right-hand side is pointwise (Hadamard) multiplication. This result allows us to trade the moving sum computations from the definition of the CCF for two forward Fourier transformation, a pointwise product, and an inverse Fourier transformation. The Fast Fourier Transform (FFT) algorithm is used to reduce the computational load considerably. However, a practical consideration for applying this method with cartridge case data is the large number of non-random missing values in a surface matrix. Recall that missing values are represented in Figures \ref{fig:cartridgeCasePair} and \ref{fig:cmc_illustration} as white pixels. The discrete Fourier transform is not defined for matrices containing missing values, so these need to be replaced. The convention adopted in the \pkg{cmcR} package is to replace missing values with 0 after standardizing a matrix by subtracting away its average height value and dividing by its standard deviation. Such standardization is commonly performed by authors at NIST [for example, \citep{ott_applying_2017}]. While replacing missing values is essential for using the FFT-based method of calculating the CCF, doing so causes the CCF values to be ``deflated" relative to the pairwise-complete cross-correlation in which only pairs of pixels in which neither element is missing are considered. However, the translation estimates obtained from this method are often good estimates for true translation values by which the two matrices align.
+where $\mathcal{F}$ and $\mathcal{F}^{-1}$ denote the discrete Fourier and inverse discrete Fourier transforms, respectively \citep{fft_brigham}. Note that the multiplication on the right-hand side is pointwise (Hadamard) multiplication. This result allows us to trade the moving sum computations from the definition of the CCF for two forward Fourier transformation, a pointwise product, and an inverse Fourier transformation. The Fast Fourier Transform (FFT) algorithm is used to reduce the computational load considerably. However, a practical consideration for applying this method with cartridge case data is the large number of non-random missing values in a surface matrix. Recall that missing values are represented in Figures \ref{fig:cartridgeCasePair} and \ref{fig:cmc_illustration} as white pixels. The discrete Fourier transform is not defined for matrices containing missing values, so these need to be replaced. The convention adopted in the \pkg{cmcR} package is to replace missing values with 0 after standardizing a matrix by subtracting away its average height value and dividing by its standard deviation. Such standardization is commonly performed by authors at NIST \citep{ott_applying_2017}. While replacing missing values is essential for using the FFT-based method of calculating the CCF, doing so causes the CCF values to be ``deflated" relative to the pairwise-complete cross-correlation in which only pairs of pixels in which neither element is missing are considered. However, the translation estimates obtained from this method are often good estimates for true translation values by which the two matrices align.
 
 Figure \ref{fig:ccfMap_example} provides an example of the output from the FFT-based CCF calculation method. In the top-left we see a $72 \times 72$ pixel cell from one surface matrix. In the top-right we see this cell's associated region in the other surface matrix of dimension $216 \times 216$ (triple the cell's side lengths). The bottom-left shows the CCF "map" calculated using this FFT-based method. Although the CCF need not be bounded between $-1$ and $1$ based on the definition, it is common to normalize the CCF for interpetability purposes and is done so in the \pkg{cmcR} package. A summary of the alignment parameters at which the CCF$_{\max}$ occurs is shown in the bottom-right. We can see that the two matrices are best-aligned when the cell is shifted "east" 20 pixels and ``north" 9 pixels starting from the center of the region. The $\theta = -18$ indicates that the overall cartridge case scan from which the region (shown in the top-right) was extracted was rotated by $-18$ degrees for this comparion. The orange square in the top-right plot shows where the cell would be located if the translation were performed.
 
@@ -196,11 +196,11 @@ Using the estimated translation values at which the CCF$_{\max}$ occurs, we can 
 
 ## The Congruent Matching Cells method
 
-A particular cell/region pair is deemed "highly similar" if it passes a collection of user-defined similarity criteria. The criteria are based on the fact that a pair of matching cartridge case scans are not necessarily aligned properly in their raw format. In particular, one cartridge case scan needs to be rotated and translated to align correctly the other. Let CCF$_{\max}, dx, dy, \theta$ denote the "true" but unknown CCF, translation, and rotation values by which a particular pair aligns the best. These unknown alignment parameters can be estimated for each cell/region pair using the cell-based comparison procedure discussed in section [3.1](#comparisonProcedure). Let CCF$_{\max,i}, dx_i, dy_i, \theta_i$ denote the estimated alignment parameter values for cell/region pair $i$, $i = 1,...,n$. For a truly matching pair of cartridge cases, we would expect these alignment parameter estimates to agree with each other across cell/region pairs; at least up to some threshold. Conversely, we would expect the estimates to vary randomly for a truly \emph{non}-matching pair. As such, the CMC method details how to determine whether a consensus exists among the estimated alignment parameter values across the cell/region pairs. The initially proposed method by \citet{song_proposed_2013} as well as an extension by \citet{tong_improved_2015} known as the High CMC method are implemented in the \pkg{cmcR} package.
+A particular cell/region pair is deemed "highly similar" if it passes a collection of user-defined similarity criteria. The criteria are based on the fact that a pair of matching cartridge case scans are not necessarily aligned properly in their raw format. In particular, one cartridge case scan needs to be rotated and translated to align correctly the other. Let CCF$_{\max}, dx, dy, \theta$ denote the "true" but unknown CCF, translation, and rotation values, respectively, by which a particular pair aligns. These unknown alignment parameters can be estimated for each cell/region pair using the cell-based comparison procedure discussed in section [3.1](#comparisonProcedure). Let CCF$_{\max,i}, dx_i, dy_i, \theta_i$ denote the estimated alignment parameter values for cell/region pair $i$, $i = 1,...,n$. For a truly matching pair of cartridge cases, we would expect these alignment parameter estimates to agree with each other across cell/region pairs; at least up to some threshold. Conversely, we would expect the estimates to vary randomly for a truly \emph{non}-matching pair. As such, the CMC method details how to determine whether a consensus exists among the estimated alignment parameter values across the cell/region pairs. The initially proposed method by \citet{song_proposed_2013} as well as an extension by \citet{tong_improved_2015} known as the High CMC method are implemented in the \pkg{cmcR} package.
 
 ### The initially proposed method {#initialMethod}
 
-The method as originally proposed by \citet{song_proposed_2013} considers only the alignment parameter estimates by which each cell/region pair attains its CCF$_{\max,i}$. Intuitively, this can be thought of as only allowing each cell/region pair to "vote" for a single set of alignment parameter values. It's reasonable to assume that a consensus would exist amongst these values for a truly matching pair of cartridge cases. Song proposes using the median of the $dx_i, dy_i, \theta_i$ values as a consensus, although others are certainly plausible. Let $\overline{dx}, \overline{dy}, \overline{\theta}$ denote the consensual alignment parameter values. To declare a particular cell/region pair as "conruent matching," Song requires that (1) the pair's estimated alignment parameter values be within some threshold distance of the consensual values and (2) the CCF$_{\max}$ value is greater than some threshold. That is, for thresholds $T_{dx}, T_{dy}, T_{\theta},T_{\text{CCF}}$, cell/region pair $i$ is declared a match if all of the following conditions hold:
+The method as originally proposed by \citet{song_proposed_2013} considers only the alignment parameter estimates by which each cell/region pair attains its CCF$_{\max,i}$. Intuitively, this can be thought of as only allowing each cell/region pair to "vote" for a single set of alignment parameter values. It's reasonable to assume that a consensus would exist amongst these values for a truly matching pair of cartridge cases. Song proposes using the median of the $dx_i, dy_i, \theta_i$ values as a consensus, although others are certainly plausible. Let $\overline{dx}, \overline{dy}, \overline{\theta}$ denote the consensual alignment parameter values. To declare a particular cell/region pair as "congruent matching," Song requires that (1) the pair's estimated alignment parameter values be within some threshold distance of the consensual values and (2) the CCF$_{\max}$ value is greater than some threshold. That is, for thresholds $T_{dx}, T_{dy}, T_{\theta},T_{\text{CCF}}$, cell/region pair $i$ is declared a match if all of the following conditions hold:
 \begin{enumerate}
 \item $|dx_i - \overline{dx}| \leq T_{dx}$ \\
 \item $|dy_i - \overline{dy}| \leq T_{dy}$ \\
@@ -267,13 +267,13 @@ Cartridge case pairs that do not pass the high CMC criterion are assigned the CM
 
 <!-- These additional ``high CMC count" criteria provide more enhanced discriminatory ability between known matching and known non-matching scans. If this criterion is satisfied by a particular pair of scans and a $\theta$ mode is identified, then the method considers CCF values for each cell pair at and around this mode. Again, this is in contrast to the initially proposed method that only considers the CCF$_{\max}$ value and resulting $(dx,dy,\theta)$ votes for each cell pair. -->
 
-## The \pkg{cmcR} package
+# The \pkg{cmcR} package
 
 This section will highlight the \pkg{cmcR} package's functionality by walking through a possible use case. Many of the functions in this package provide the user with a variety of processing options with which they can experiment. This is due to the fact that processing techniques differ considerably among authors or are not discussed in great detail.
 
-### Pre-processing procedures
+## Pre-processing procedures {#preProcessing}
 
-Studies in which cartridge cases are matched by forensic examiners often involve giving examiners a set of known matches and asking them to classify additional matches from a collection of unknown source scans. For brevity, we will consider a comparison between two cartridge cases. This particular pair of scans, as well as many other cartridge case scans, are openly available from the NIST Ballistics and Toolmarks Research Database. Figure \ref{fig:processedScans} shows the pair of scans after performing the necessary pre-processing procedures. Note that the color scheme has been scaled by quantiles to visually highlight regions of the cartridge case scan containing strong breech face impression "signal."
+Studies in which cartridge cases are matched by forensic examiners often involve giving examiners a set of known matches and asking them to classify additional matches from a collection of unknown source scans. For brevity, we will consider a comparison between two cartridge cases from \citep{fadul_empirical_nodate}. Figure \ref{fig:processedScans} shows the pair of scans after performing the necessary pre-processing procedures. Note that the color scheme has been scaled by quantiles to visually highlight regions of the cartridge case scan containing strong breech face impression "signal."
 
 ```{r,echo=FALSE,cache=TRUE,fig.cap='\\label{fig:processedScans} A known match pair of processed cartridge case scans',fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth',out.extra="trim={0 2.5cm 0 2cm}"}
 
@@ -302,7 +302,7 @@ The family of functions in the \pkg{cmcR} package beginning with \code{preProces
 \end{enumerate}
 See the \pkg{cmcR} package documentation for more information about these functions.
 
-For computational purposes it is common the CMC literature to down-sample a surface matrix prior to performing the cell-based comparison procedure. The \code{sample\_x3p} function from the \pkg{x3ptools} package can be used used to sample every $m$th row/column of a surface matrix. The \code{selectBFImpression\_sample\_x3p} performs all of these pre-processing procedures in a single call. The code to produce the first surface matrix shown in Figure \ref{fig:processedScans} is given by the following example. Note that the RANSAC method relies on randomly selecting points within the surface matrix, so a seed needs to be set for reproducibility.
+For computational purposes it is common the CMC literature to down-sample a surface matrix prior to performing the cell-based comparison procedure. The \code{sample\_x3p} function from the \pkg{x3ptools} package can be used used to sample every $m$th row/column of a surface matrix. The \code{selectBFImpression\_sample\_x3p} performs all of these pre-processing procedures in a single call. The code to produce the first surface matrix shown in Figure \ref{fig:processedScans} is given by the following example. Note that the RANSAC method relies on randomly selecting points within the surface matrix, so a seed is set for reproducibility.
 
 ```{r echo=TRUE,eval=FALSE}
 library(cmcR)
@@ -337,10 +337,9 @@ kmComparison <- cellCCF_bothDirections(x3p1 = fadul1.1,
                                        minObservedProp = .1)
 ```
 
-The first few rows of results from the comparison between \code{fadul1.1} and \code{fadul1.2} in which \code{fadul1.1} was divided into a grid of cells and \code{fadul1.2} was rotated by 3 degrees is given below. Although a grid of $8 \times 8$ cells were used, there were only 43 cell/region pairs that contained a sufficient proportion of non-missing values (10% in this example). Recall that the features used in the CMC method are the CCF$_{\max}$ values (\code{ccf} column) and estimated alignment parameter values (\code{dx}, \code{dy}, and \code{theta} columns).
+The first few rows of results from the comparison between \code{fadul1.1} and \code{fadul1.2} in which \code{fadul1.1} was divided into a grid of cells and \code{fadul1.2} was rotated by 3 degrees is given below. Although a grid of $8 \times 8$ cells were used, there were only 43 cell/region pairs that contained a sufficient proportion of non-missing values (10% in this example). Recall that the features used in the CMC method are the CCF$_{\max}$ values (ccf column) and estimated alignment parameter values (dx, dy, and theta columns).
 ```{r echo=TRUE,eval=FALSE}
-kmComparison$comparison_1to2$ccfResults$`3` %>%
-  head()
+head(kmComparison$comparison_1to2$ccfResults$`3`)
 ```
 ```{r echo=FALSE,eval=TRUE,cache=TRUE}
 kmComparison$comparison_1to2$ccfResults$`3` %>%
@@ -352,6 +351,8 @@ kmComparison$comparison_1to2$ccfResults$`3` %>%
 
 
 ## Congruent Matching Cells logic
+
+The \code{cmcFilter\_improved} function determines both the initial and high CMCs for a particular comparison. The example below shows how to use the function with thresholds defined similar to those in \citet{song_estimating_2018}.
 
 <!-- [Pretty much full re-write of this section] -->
 
@@ -376,8 +377,12 @@ kmComparison$comparison_1to2$ccfResults$`3` %>%
 kmCMC <- cmcR::cmcFilter_improved(kmComparison,
                                   ccf_thresh = .5,
                                   dx_thresh = 20,
+                                  dy_thresh = 20,
                                   theta_thresh = 6)
+```
 
+The \code{cmcPlot} function will construct a plot to visualize cells have been declared a CMC and those that have not. The initial 21 CMCs and 22 non-CMCs for the current use case example are shown in black and red, respectively, on the left-hand side of Figure \ref{fig:initialCMCPlot}. Black cells on the right-hand side of Figure \ref{fig:initialCMCPlot} show how each CMC aligns in the other surface matrix. The red cells show how the non-CMCs align to attain their CCF$_{\max}$ value.
+```{r echo=TRUE,eval=FALSE}
 cmcPlots <- cmcR::cmcPlot(fadul1.1$x3p,
                           fadul1.2$x3p,
                           cellCCF_bothDirections_output = kmComparison,
@@ -422,7 +427,7 @@ cmcPlots$initialCMC +
 <!--                          consensus_function_theta = cmcR::getMode) -->
 <!-- ``` -->
 
-The CMCs determined under the High CMC method (i.e., the "high" CMCs) are show below. We can see that 40 out of the 
+Similarly, 40 CMCs and 3 non-CMCs determined under the High CMC method are shown in Figure \ref{fig:highCMCPlot}.
 ```{r echo=TRUE,eval=FALSE}
 cmcPlots$highCMC
 ```
@@ -436,5 +441,27 @@ cmcPlots$highCMC +
                                 ticks.colour = "black")) +
   theme(legend.position = c(1.11,.552),plot.margin = ggplot2::margin(c(0,3,.2,0),unit = "cm"))
 ```
+
+In contrast, Figure \ref{fig:knmCMCPlot} shows the CMC results for a comparison between Fadul 1-1 and a known non-match scan, Fadul 2-1, under the same pre, inter, and post-processing conditions used for the known match comparison. We can see that 6 initial CMCs were determined while there were 0 CMCs under the High CMC method.
+```{r,echo=FALSE,cache=FALSE,fig.cap='\\label{fig:knmCMCPlot} CMC results from a known non-match comparison under the initially proposed method',fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth',out.extra="trim={0 2cm 0 1cm}"}
+cmcPlot(x3p1 = fadul1.1$x3p,
+        x3p2 = fadul2.1$x3p,
+        cellCCF_bothDirections_output = knmComparison,
+        cmcFilter_improved_output = knmCMC,
+        type = "faceted",
+        x3pNames = c("Fadul 1-1","Fadul 2-1")) %>%
+  .$initialCMC +
+  guides(fill = guide_colourbar(barheight = grid::unit(2.4,"in"),
+                                label.theme = element_text(size = 8),
+                                title.theme = ggplot2::element_text(size = 10),
+                                frame.colour = "black",
+                                ticks.colour = "black")) +
+  theme(legend.position = c(1.11,.51),plot.margin = ggplot2::margin(c(0,3,.2,0),unit = "cm"))
+```
+
+
+# Results
+
+As described in section [2](#data), the set of cartridge case scans from \citet{fadul_empirical_nodate} is commonly used to compare the performance of various methods in the CMC literature. This set consists of 40 cartridge cases. There are 63 known match pairs and 717 known non-match pairs. While the exact procedures by which these scans are processed are ambiguous in the CMC literature, the surface data are openly available in their raw, unprocessed format NIST Ballistics Toolmark Research Database. Thus, some level of comparison between the implementation provided in the \pkg{cmcR} package and published results is possible. However, justification for any differences will ultimately involve educated hypothesization due to the closed-source nature of the original implementations.
 
 \bibliography{RJreferences}
