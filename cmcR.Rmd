@@ -2,23 +2,23 @@
 title: "cmcR: Congruent Matching Cells Method in R for Cartridge Case Identification"
 author:
   - name: Joseph Zemmels
-    affiliation: Iowa State University Department of Statistics
+    affiliation: Iowa State University
     address:
     - 2438 Osborn Dr
     - Ames, IA 50011
     email:  jzemmels@iastate.edu
   - name: Heike Hofmann
-    affiliation: Iowa State University Department of Statistics
+    affiliation: Iowa State University
     address:
     - 2438 Osborn Dr
     - Ames, IA 50011
     email: hofmann@iastate.edu
   - name: Susan VanderPlas
-    affiliation: University of Nebraska - Lincoln Department of Statistics
+    affiliation: University of Nebraska - Lincoln
     address:
     - 340 Hardin Hall North Wing
     - Lincoln, NE 68583
-    email: susan.vanderplas@iastate.edu
+    email: susan.vanderplas@unl.edu
 abstract: > 
   Firearm evidence identification is the process of analyzing bullets or cartridge cases left at a crime scene to determine if they originated from a particular firearm. Statistical methods have long been developed and used to aid in such analyses. The Congruent Matching Cells (CMC) method is one such method developed at the National Institute of Standards and Technology (NIST) to quantify the similarity between two spent cartridge cases based on the markings left by the firearm barrel during the firing process. We introduce the first open-source implementation of the CMC method in the R package \pkg{cmcR}. The package will bolster forensic researchers' abilities to investigate, validate, and improve upon current statistical methodology in the field of forensic science.
 preamble: | 
@@ -43,6 +43,10 @@ if(!file.exists("data/fadul1-2.x3p")){
   x3ptools::read_x3p("https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement/DownloadMeasurement/cb296c98-39f5-46eb-abff-320a2f5568e8") %>%
     x3ptools::write_x3p(file = "data/fadul1-2.x3p")
 }
+if(!file.exists("data/fadul2-1.x3p")){
+  x3ptools::read_x3p("https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement/DownloadMeasurement/8ae0b86d-210a-41fd-ad75-8212f9522f96") %>%
+    x3ptools::write_x3p(file = "data/fadul2-1.x3p")
+}
 ```
 
 ```{r, derivativeImagesDir,include=FALSE}
@@ -57,22 +61,29 @@ library(tidyverse)
 library(x3ptools)
 library(rgl)
 set.seed(4132020)
-knitr::opts_chunk$set(cache.path = "derivatives/")
+# knitr::opts_chunk$set(cache.path = "derivatives/")
 ```
 
 # Introduction {#intro}
 
 A \dfn{cartridge case} is a type of firearm ammunition that contains a projectile (e.g., bullet, shots, or slug). When a firearm is discharged, the projectile stored in the cartridge case is propelled down the barrel of the firearm. In response, the rest of the cartridge case that remains inside of the firearm is forced towards the back of the barrel. The force with which the cartridge case is propelled backwards causes it to strike the back wall, known as the \dfn{breech face}, of the barrel. Markings due to, e.g., manufacturing imperfections are ingrained on the breech face. When the cartridge case slams against the breech face, these markings can be ``stamped" into either the primer of the cartridge case or the cartridge case itself. The markings left on a cartridge case from the firearm's breech face are called \dfn{breech face impressions}.
 
-An example of the breech face from a 12 GAUGE, single-shot shotgun is shown in Figure \ref{figure:barrelBF}. The hole in the center of the breech face houses the firing pin that shoots out to strike a region on the base of the cartridge case known as the \dfn{primer}. This in turn ignites the propellant within the cartridge case causing a deflagration of gases that propels the bullet forward down the barrel. Figure \ref{figure:impressionsBF} shows a cartridge case fired from the shotgun shown in Figure \ref{figure:barrelBF}. This cartridge case displays both a circular impression left by the firing pin in the middle of the primer as well as breech face impressions left on the outer region of the primer not impressed into by the firing pin.
+An example of two cartridge cases under a comparison microscope is shown in Figure \ref{fig:comparisonMicroscope_example} \citep{comparisonMicroscope_example}. This type of comparison microscopy involves placing two cartridge cases under separate lenses. The staging areas are combined via a series of lenses, prisms, and mirrors such that both cartridge cases can be seen side by side through a single field of view. A thin, black line can be seen down the center of Figure \ref{fig:comparisonMicroscope_example} dividing the view of the two cartridge cases. Similar breech face impression striae are seen on both cartridge cases providing evidence that the pair is a match. Such \dfn{individual characteristics} are used by forensic practitioners to declare a cartridge case pair a match \citep{firearm_id_thompson}.
 
-```{r, impressionBF,echo=FALSE,fig.cap='Breech face of a barrel and breech face impression on a cartridge case \\citep{doyle}',fig.subcap=c('\\label{figure:barrelBF} Breech face of a shotgun barrel','\\label{figure:impressionsBF} Breech face impressions on a cartridge case primer'),fig.align='center',fig.pos='htbp',out.width='.49\\linewidth',out.height='2.5in'}
-knitr::include_graphics(c("images/breechFace.png","images/breechFaceImpression.png"))
+```{r ,echo=FALSE,fig.cap='\\label{fig:comparisonMicroscope_example} View of two cartridge cases under a comparison microscope',fig.align='center',fig.pos='htbp'}
+knitr::include_graphics("images/MSP_cartridgecaseid_60012_7.png",dpi = 100)
 ```
+
+
+<!-- An example of the breech face from a 12 GAUGE, single-shot shotgun is shown in Figure \ref{figure:barrelBF}. The hole in the center of the breech face houses the firing pin that shoots out to strike a region on the base of the cartridge case known as the \dfn{primer}. This in turn ignites the propellant within the cartridge case causing a deflagration of gases that propels the bullet forward down the barrel. Figure \ref{figure:impressionsBF} shows a cartridge case fired from the shotgun shown in Figure \ref{figure:barrelBF}. This cartridge case displays both a circular impression left by the firing pin in the middle of the primer as well as breech face impressions left on the outer region of the primer not impressed into by the firing pin. -->
+
+<!-- ```{r, impressionBF,echo=FALSE,fig.cap='Breech face of a barrel and breech face impression on a cartridge case \\citep{doyle}',fig.subcap=c('\\label{figure:barrelBF} Breech face of a shotgun barrel','\\label{figure:impressionsBF} Breech face impressions on a cartridge case primer'),fig.align='center',fig.pos='htbp',out.width='.49\\linewidth',out.height='2.5in'} -->
+<!-- knitr::include_graphics(c("images/breechFace.png","images/breechFaceImpression.png")) -->
+<!-- ``` -->
 
 These breech face impressions are considered to be analogous to a firearm's "fingerprint" left on a cartridge case. Matching an expended cartridge case of unknown source to one of known source based on breech face impressions has been performed for over 100 years by forensic practitioners \citep{firearm_id_thompson}. The development of computational and statistical methods to perform such identification has recently grown in interest \citep{council_strengthening_2009}.
 
-One such method is the Congruent Matching Cells (CMC) method developed at NIST that involves partitioning a cartridge case image or scan into a grid of ``correlation cells" to isolate areas containing identifying breech face impression markings \citep{song_proposed_2013}. Since its invention in 2012, researchers at NIST have developed a number of extensions and improvements of the CMC method. However, to date there does not exist an openly available implementation of any of these techniques. Rather, many methods described in the CMC literature include a qualitative description of a proposed technique followed by results from the authors' implementation. The description of these methods do not delve into the intricacies of the implementation, which makes it especially difficult to validate or assess. Additionally, some procedures related to pre-processing the cartridge case data are seemingly done by-hand at NIST rather than with an automated method. This compounds the difficulty to accurately reproduce results. The \pkg{cmcR} package provides an open-source, fully-automatic implementation of the CMC method as originally described as well an extension known as the "High CMC" method proposed by \citet{tong_improved_2015}.
+One such method is the Congruent Matching Cells (CMC) method developed at NIST that involves partitioning a cartridge case image or scan into a grid of ``correlation cells" to isolate areas containing identifying breech face impression markings \citep{song_proposed_2013}. Since its invention in 2012, researchers at NIST have developed a number of extensions and improvements of the CMC method. However, to date there does not exist an openly available implementation of any of these techniques. Many methods proposed in the CMC literature include a qualitative description of a proposed technique that do not delve into the intricacies of the implementation. Given that the implementations are not openly available, this makes it especially difficult to validate or assess results. Additionally, some procedures related to pre-processing the cartridge case data are seemingly done by hand at NIST rather than with an automated method. This compounds the difficulty to accurately reproduce results. The \pkg{cmcR} package provides an open-source, fully-automatic implementation of the CMC method as originally described as well an extension known as the High CMC \citep{chen_convergence_2017} method proposed by \citet{tong_improved_2015}.
 
 # Cartridge case surface data {#data}
 
@@ -202,7 +213,8 @@ kmComparison <- cmcR::cellCCF_bothDirections(x3p1 = fadul1.1$x3p,
 kmCMC <- cmcR::cmcFilter_improved(kmComparison,
                                   ccf_thresh = .5,
                                   dx_thresh = 20,
-                                  theta_thresh = 6)
+                                  theta_thresh = 6,
+                                  missingTheta_decision = "dismiss")
 
 kmCellRegionPairs <- cmcR::getCellRegionPairs(fadul1.1$x3p,fadul1.2$x3p,
                                               ccfDF = kmCMC$highCMCs,
@@ -213,7 +225,7 @@ invisible(
     map2(.x = .,
          .y = names(.), 
          function(set,theta){
-           map(set[6], ~ ccfMapPlot(mat1 = .[[1]],
+           map(set[5], ~ ccfMapPlot(mat1 = .[[1]],
                                     mat2 = .[[2]],
                                     theta = theta,
                                     type = "raster"))
@@ -269,7 +281,7 @@ cmcR::cmcPerThetaBarPlot(kmComparison,
 ```
 
 ```{r,echo=FALSE,cache=TRUE}
-fadul2.1 <- cmcR::selectBFImpression_sample_x3p("https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement/DownloadMeasurement/8ae0b86d-210a-41fd-ad75-8212f9522f96")
+fadul2.1 <- cmcR::selectBFImpression_sample_x3p("data/fadul2-1.x3p")
 
 knmComparison <- cmcR::cellCCF_bothDirections(x3p1 = fadul1.1$x3p,
                                               x3p2 = fadul2.1$x3p,
@@ -456,7 +468,7 @@ cmcPlots$initialCMC +
 <!--                          consensus_function_theta = cmcR::getMode) -->
 <!-- ``` -->
 
-Similarly, 40 CMCs and 3 non-CMCs determined under the High CMC method are shown in Figure \ref{fig:highCMCPlot}.
+Similarly, 41 CMCs and 2 non-CMCs determined under the High CMC method are shown in Figure \ref{fig:highCMCPlot}.
 ```{r echo=TRUE,eval=FALSE}
 cmcPlots$highCMC
 ```
@@ -491,6 +503,68 @@ cmcPlot(x3p1 = fadul1.1$x3p,
 
 # Results
 
-As described in section [2](#data), the set of cartridge case scans from \citet{fadul_empirical_nodate} is commonly used to compare the performance of various methods in the CMC literature. This set consists of 40 cartridge cases. There are 63 known match pairs and 717 known non-match pairs. While the exact procedures by which these scans are processed are ambiguous in the CMC literature, the surface data are openly available in their raw, unprocessed format NIST Ballistics Toolmark Research Database. Thus, some level of comparison between the implementation provided in the \pkg{cmcR} package and published results is possible. However, justification for any differences will ultimately involve educated hypothesization due to the closed-source nature of the original implementations.
+As described in section [2](#data), the set of cartridge case scans from \citet{fadul_empirical_nodate} is commonly used to compare the performance of various methods in the CMC literature. This set consists of 40 cartridge cases. There are 63 known match pairs and 717 known non-match pairs. While the exact procedures by which these scans are processed are unavailable, the surface data are openly available in their raw, unprocessed format NIST Ballistics Toolmark Research Database. Thus, some level of comparison between the implementation provided in the \pkg{cmcR} package and published results is possible. However, justification for any differences will ultimately involve educated hypothesization due to the closed-source nature of the original implementations.
+
+```{r echo=FALSE}
+load("data/cmcCountData.RData")
+
+allCMC_counts %>%
+  pivot_wider(id_cols = c("pair","ccfThresh","translateThresh","thetaThresh","comparisonType"),names_from = c("cmcType"),values_from = c("cmcCount")) %>%
+  mutate(high = ifelse(high == 0,initial,high)) %>%
+  pivot_longer(cols = c("initial","high"),
+               names_to = "cmcType",
+               values_to = "cmcCount") %>%
+  filter(thetaThresh == 6 & cmcType == "initial") %>%
+  filter(ccfThresh >= .6 & ccfThresh <= .7 & translateThresh %in% c(10,20,30)) %>%
+  mutate(comparisonType = factor(comparisonType,levels = c("known non-match","known match"))) %>%
+  ggplot(aes(x = cmcCount,y = ..density..)) +
+  geom_histogram(aes(fill = comparisonType),colour = "black",binwidth = 1) +
+  geom_histogram(alpha = 0,binwidth = 1) +
+  scale_fill_manual(values = c("orange","#b19cd9")) +
+  guides(fill = guide_legend(override.aes = list(alpha = 1))) +
+  facet_wrap(ccfThresh ~ translateThresh,ncol = 3,scales = "free_y",labeller = label_both) +
+  theme_bw() + 
+  theme(legend.position = "bottom") +
+  ggtitle("CMC distribution, Residuals, BP Filter - Cutoffs: 16, 250 microns") +
+  xlab("CMC Count") +
+  ylab("Frequency")
+```
+
+```{r echo=FALSE}
+allCMC_counts %>%
+  pivot_wider(id_cols = c("pair","ccfThresh","translateThresh","thetaThresh","comparisonType"),names_from = c("cmcType"),values_from = c("cmcCount")) %>%
+  mutate(high = ifelse(high == 0,initial,high)) %>%
+  pivot_longer(cols = c("initial","high"),
+               names_to = "cmcType",
+               values_to = "cmcCount") %>%
+  filter(thetaThresh == 6 & cmcType == "high") %>%
+  # filter(ccfThresh >= .5 & ccfThresh <= .8) %>%
+  # filter(ccfThresh >= .6 & ccfThresh <= .7) %>%
+  filter(ccfThresh >= .6 & ccfThresh <= .7 & translateThresh %in% c(10,20,30)) %>%
+  mutate(comparisonType = factor(comparisonType,levels = c("known non-match","known match"))) %>%
+  ggplot(aes(x = cmcCount,y = ..density..)) +
+  geom_histogram(aes(fill = comparisonType),colour = "black",binwidth = 1) +
+  geom_histogram(alpha = 0,binwidth = 1) +
+  scale_fill_manual(values = c("orange","#b19cd9")) +
+  guides(fill = guide_legend(override.aes = list(alpha = 1))) +
+  facet_wrap(ccfThresh ~ translateThresh,ncol = 3,scales = "free_y",labeller = label_both) +
+  theme_bw() + 
+  theme(legend.position = "bottom") +
+  ggtitle("CMC distribution, Residuals, BP Filter - Cutoffs: 16, 250 microns") +
+  xlab("CMC Count") +
+  ylab("Frequency")
+```
+
+<!-- ```{r} -->
+<!-- debugonce(cmcR::cmcFilter_improved) -->
+
+<!-- knmCorrs_64Cells_residuals_downSampled_bandpass16_250_setSeed4132020$`firearm1_Fadul1-1, firearm2_Fadul2-1` %>% -->
+<!--   cmcR::cmcFilter_improved(ccf_thresh = .4,dx_thresh = 25,theta_thresh = 6,missingTheta_decision = "dismiss") -->
+<!-- ``` -->
+
+
+# Conclusion
+
+The results shared in this manuscript indicate that the implementation of the CMC method in the \pkg{cmcR} package is at least qualitatively similar to those in the CMC literature. As such methods could potentially be used in the future as evidence to support legal conclusions, it is imperative that specific implementations be openly available for assessment and validation. Furthermore, reproducibility of results hinges on automating as much of the process by which these comparisons are made as possible. For example, selecting the region of a scan containing breech face impressions by hand, as is seemingly done in the CMC literature, will yield different results depending on who is performing the selection. The procedure implemented in the \pkg{cmcR} package using the RANSAC and Hough transform methods, while reliant on randomly sampling the surface matrix, at least yields reproducibility across applications by setting a seed. Lastly, it is simply best academic practice to be transparent about how certain results were obtained and how sensitive these results are to different processing conditions. The \pkg{cmcR} package is intended to allow researchers to further explore the potential of the CMC method and develop novel techniques to perform firearm evidence identification. 
 
 \bibliography{RJreferences}
