@@ -61,7 +61,6 @@ library(tidyverse)
 library(x3ptools)
 library(rgl)
 set.seed(4132020)
-# knitr::opts_chunk$set(cache.path = "derivatives/")
 ```
 
 # Introduction {#intro}
@@ -83,13 +82,13 @@ knitr::include_graphics("images/MSP_cartridgecaseid_60012_7.png",dpi = 100)
 
 These breech face impressions are considered to be analogous to a firearm's "fingerprint" left on a cartridge case. Matching an expended cartridge case of unknown source to one of known source based on breech face impressions has been performed for over 100 years by forensic practitioners \citep{firearm_id_thompson}. The development of computational and statistical methods to perform such identification has recently grown in interest \citep{council_strengthening_2009}.
 
-One such method is the Congruent Matching Cells (CMC) method developed at NIST that involves partitioning a cartridge case image or scan into a grid of ``correlation cells" to isolate areas containing identifying breech face impression markings \citep{song_proposed_2013}. Since its invention in 2012, researchers at NIST have developed a number of extensions and improvements of the CMC method. However, to date there does not exist an openly available implementation of any of these techniques. Many methods proposed in the CMC literature include a qualitative description of a proposed technique that do not delve into the intricacies of the implementation. Given that the implementations are not openly available, this makes it especially difficult to validate or assess results. Additionally, some procedures related to pre-processing the cartridge case data are seemingly done by hand at NIST rather than with an automated method. This compounds the difficulty to accurately reproduce results. The \pkg{cmcR} package provides an open-source, fully-automatic implementation of the CMC method as originally described as well an extension known as the High CMC \citep{chen_convergence_2017} method proposed by \citet{tong_improved_2015}.
+One such method is the Congruent Matching Cells (CMC) method developed at NIST that involves partitioning a cartridge case image or scan into a grid of ``correlation cells" to isolate areas containing identifying breech face impression markings \citep{song_proposed_2013}. Since its invention in 2012, researchers at NIST have developed a number of extensions and improvements of the CMC method. However, to date there does not exist an openly available implementation of any of these techniques. Many methods proposed in the CMC literature include a description of a proposed technique that do not delve into the intricacies of the implementation. Given that the implementations are not openly available, this makes it especially difficult to validate or assess results. Additionally, some procedures related to pre-processing the cartridge case data are done manually at NIST rather than with an automated method \citep{song_estimating_2018}. This compounds the difficulty to accurately reproduce results. The \pkg{cmcR} package provides an open-source, fully-automatic implementation of the CMC method as originally described as well an extension proposed by \citet{tong_improved_2015}. This extension was later referred to as the "High CMC" method by \citet{chen_convergence_2017} and is referred to as such in the \pkg{cmcR} package.
 
 # Cartridge case surface data {#data}
 
 Cartridge case data commonly come in two forms: 2D grayscale images and 3D topographical scans. It is common in the CMC literature to use the 3D topographical scans to demonstrate the efficacy of a proposed method [\citep{tong_improved_2015}, \citep{chen_convergence_2017}]. A variety of scans are openly available for download through the NIST Ballistics Toolmark Research Database \citep{nbtrd}. The \pkg{cmcR} package was designed specifically for use with the 3D topographies.
 
-The 3D topographies are commonly stored in an .x3p (XML 3D Surface Profile) file format that includes metainformation such as who took the scan and the parameters under which the scan was taken (e.g., the lateral resolution in microns). The \pkg{x3ptools} package in R provides an interface to manipulate and visualize these .x3p files \citep{x3ptools}. The physical surface is represented using a \dfn{surface matrix}: a matrix of spatially-ordered elements or ``pixels" whose values correspond to the height of the cartridge case surface at a particular location. Figure \ref{fig:cartridgeCasePair} shows the surface matrices of a known match (KM) pair of cartridge cases, meaning there were fired from the same firearm. Note that white regions in the images below represent unobserved or missing values. When read into R using the \pkg{x3ptools} package, these elements are encoded as \code{NA}. The size of a surface matrix depends on the lateral resolution with which the scans were taken. For example, a popular set of scans in the CMC literature were taken by \citet{fadul_empirical_nodate}; two of which are shown is the scan shown in Figure \ref{fig:cartridgeCasePair}. These scans were taken with a lateral resolution of 6.25 microns per pixel. The actual surface matrices from this study vary around $1200 \times 1200$ pixels in size.
+The 3D topographies are commonly stored in an .x3p (XML 3D Surface Profile) file format that includes metainformation such as who took the scan and the parameters under which the scan was taken (e.g., the lateral resolution in microns). The \pkg{x3ptools} package in R provides an interface to manipulate and visualize these .x3p files \citep{x3ptools}. The physical surface is represented using a \dfn{surface matrix}: a matrix of spatially-ordered elements or "pixels" whose values correspond to the height of the cartridge case surface at a particular location. Figure \ref{fig:cartridgeCasePair} shows the surface matrices of a known match (KM) pair of cartridge cases, meaning there were fired from the same firearm. Note that white regions in the images below represent unobserved or missing values. When read into R using the \pkg{x3ptools} package, these elements are encoded as \code{NA}. The size of a surface matrix depends on the lateral resolution with which the scans were taken. For example, a popular set of scans in the CMC literature were taken by \citet{fadul_empirical_nodate}; two of which are shown is the scan shown in Figure \ref{fig:cartridgeCasePair}. These scans were taken with a lateral resolution of 6.25 microns (micrometers) per pixel. The surface matrices from this study vary around $1200 \times 1200$ pixels in size.
 
 ```{r, fadul1-1Screenshot,include=FALSE}
 fadul1.1 <- x3ptools::read_x3p("data/fadul1-1.x3p")
@@ -174,13 +173,13 @@ rgl.close()
 knitr::include_graphics(c("derivatives/fadul1-1.png","derivatives/fadul1-2.png"))
 ```
 
-Only certain regions of a cartridge case contain identifying breech face impression markings. \citet{song_proposed_2013} refers to these as ``valid correlation regions" that are to be used to determine whether two cartridge cases match. The cell-based comparison procedure described in section [3.1](#comparisonProcedure) is designed to emphasize such regions. However, prior to applying this procedure cartridge scans must undergo some pre-processing to remove sections of the cartridge case surface that do not come into contact with the breech face of the barrel. These include a circular plateaued region in the center of the scan that is pushed aside by the firing pin during the firing process and clusters of observed values in the corners of the scan that are artifacts of the staging area in which the scan was captured. The task in pre-processing is to automatically remove these unwanted regions from the scan to accentuate unique markings left by the breech face. This is discussed in greater detail in section [3.1](#preProcessing).
+Only certain regions of a cartridge case contain identifying breech face impression markings. \citet{song_proposed_2013} refers to these as "valid correlation regions" that are to be used to determine whether two cartridge cases match. The cell-based comparison procedure described in section [3.1](#comparisonProcedure) is designed to emphasize such regions. However, prior to applying this procedure cartridge scans must undergo some pre-processing to remove sections of the cartridge case surface that do not come into contact with the breech face of the barrel. These include a circular plateaued region in the center of the scan that is pushed aside by the firing pin during the firing process and clusters of observed values in the corners of the scan that are artifacts of the staging area in which the scan was captured. The task in pre-processing is to automatically remove these unwanted regions from the scan to accentuate unique markings left by the breech face. This is discussed in greater detail in section [3.1](#preProcessing).
 
 # Cell-based surface matrix comparisons
 
 ## Cell-based comparison procedure {#comparisonProcedure}
 
-The Congruent Matching Cells method was developed at the National Institute of Standards and Technology to quantify the similarity between two spent cartridge cases based on their breech face impressions. The CMC method involves dividing a breech face impression scan into a grid of cells and comparing each cell in one scan to a corresponding region in the other scan. This method is motivated by the fact that breech face markings are not uniformly impressed upon the cartridge case during the firing process. As such, only certain sections of the cartridge case have identifiable markings that make it possible to match to a firearm. Calculating a similarity score between the entirety of two cartridge case surfaces might not highlight these identifying regions. Instead, the number of highly similar cell pairs between the two scans can be used as a more granular similarity metric.
+The Congruent Matching Cells method was developed at the National Institute of Standards and Technology to quantify the similarity between two spent cartridge cases based on their breech face impressions. The CMC method involves dividing a breech face impression scan into a grid of cells and comparing each cell in one scan to a counterpart region in the other scan. This method is motivated by the fact that breech face markings are not uniformly impressed upon the cartridge case during the firing process. As such, only certain sections of the cartridge case have identifiable markings that make it possible to match to a firearm. Calculating a similarity score between the entirety of two cartridge case surfaces might not highlight these identifying regions. Instead, the number of highly similar cell/region pairs between the two scans can be used as a more granular similarity metric.
 
 ```{r, echo=FALSE,fig.cap='\\label{fig:cmc_illustration} Illustration of comparing a "cell" in one cartridge case scan to a region in another',fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
 
@@ -191,11 +190,11 @@ Figure \ref{fig:cmc_illustration} illustrates the cell-based comparison procedur
 $$
 (A \star B)[m,n] = \sum_{i=0}^M \sum_{j=0}^N A[i,j] B[(i + m)_{\text{mod}\ M}, (j + n)_{\text{mod}\ N}].
 $$
-Note that this finite, discretized CCF is a matrix of elements representing the similarity between matrices $A$ and $B$ for various translations of matrix $B$. The index at which the CCF attains a maximum represents the translations needed to align $B$ with $A$. In practice, calculating the CCF from the definition is often computationally intractable. The \emph{Cross-Correlation Theorem} provides a feasible alternative to calculating the CCF. For two matrices $A$ and $B$, the Cross-Correlation Theorem implies that
+Note that this finite, discretized CCF is a matrix of elements representing the similarity between matrices $A$ and $B$ for various translations of matrix $B$. The index at which the CCF attains a maximum represents the translations needed to align $B$ with $A$. When working with cell/region pairs, calculating the CCF from the definition is computationally intractable. The \emph{Cross-Correlation Theorem} provides a feasible alternative to calculating the CCF. For two matrices $A$ and $B$, the Cross-Correlation Theorem implies that
 $$
 (A \star B )[m,n]= \mathcal{F}^{-1}\left(\overline{\mathcal{F}(A)} \cdot \mathcal{F}(B)\right)[m,n]
 $$
-where $\mathcal{F}$ and $\mathcal{F}^{-1}$ denote the discrete Fourier and inverse discrete Fourier transforms, respectively \citep{fft_brigham}. Note that the multiplication on the right-hand side is pointwise (Hadamard) multiplication. This result allows us to trade the moving sum computations from the definition of the CCF for two forward Fourier transformation, a pointwise product, and an inverse Fourier transformation. The Fast Fourier Transform (FFT) algorithm is used to reduce the computational load considerably. However, a practical consideration for applying this method with cartridge case data is the large number of non-random missing values in a surface matrix. Recall that missing values are represented in Figures \ref{fig:cartridgeCasePair} and \ref{fig:cmc_illustration} as white pixels. The discrete Fourier transform is not defined for matrices containing missing values, so these need to be replaced. The convention adopted in the \pkg{cmcR} package is to replace missing values with 0 after standardizing a matrix by subtracting away its average height value and dividing by its standard deviation. Such standardization is commonly performed by authors at NIST \citep{ott_applying_2017}. While replacing missing values is essential for using the FFT-based method of calculating the CCF, doing so causes the CCF values to be ``deflated" relative to the pairwise-complete cross-correlation in which only pairs of pixels in which neither element is missing are considered. However, the translation estimates obtained from this method are often good estimates for true translation values by which the two matrices align.
+where $\mathcal{F}$ and $\mathcal{F}^{-1}$ denote the discrete Fourier and inverse discrete Fourier transforms, respectively \citep{fft_brigham}. Note that the multiplication on the right-hand side is pointwise (Hadamard) multiplication. This result allows us to trade the moving sum computations from the definition of the CCF for two forward Fourier transformation, a pointwise product, and an inverse Fourier transformation. The Fast Fourier Transform (FFT) algorithm is used to reduce the computational load considerably. However, a practical consideration for applying this method with cartridge case data is the large number of non-random missing values in a surface matrix. Recall that missing values are represented in Figures \ref{fig:cartridgeCasePair} and \ref{fig:cmc_illustration} as white pixels. The discrete Fourier transform is not defined for matrices containing missing values, so these need to be replaced. The convention adopted in the \pkg{cmcR} package is to replace missing values with 0 after standardizing a matrix by subtracting away its average height value and dividing by its standard deviation. Such standardization is commonly performed by authors at NIST \citep{ott_applying_2017}. While replacing missing values is essential for using the FFT-based method of calculating the CCF, doing so causes the CCF values to be ``deflated" relative to the \dfn{pairwise-complete correlation} in which only pairs of pixels in which neither element is missing are considered. However, the translation estimates obtained from this method are often good estimates for the true translation values by which the two matrices align.
 
 Figure \ref{fig:ccfMap_example} provides an example of the output from the FFT-based CCF calculation method. In the top-left we see a $72 \times 72$ pixel cell from one surface matrix. In the top-right we see this cell's associated region in the other surface matrix of dimension $216 \times 216$ (triple the cell's side lengths). The bottom-left shows the CCF "map" calculated using this FFT-based method. Although the CCF need not be bounded between $-1$ and $1$ based on the definition, it is common to normalize the CCF for interpetability purposes and is done so in the \pkg{cmcR} package. A summary of the alignment parameters at which the CCF$_{\max}$ occurs is shown in the bottom-right. We can see that the two matrices are best-aligned when the cell is shifted "east" 20 pixels and ``north" 9 pixels starting from the center of the region. The $\theta = -18$ indicates that the overall cartridge case scan from which the region (shown in the top-right) was extracted was rotated by $-18$ degrees for this comparion. The orange square in the top-right plot shows where the cell would be located if the translation were performed.
 
@@ -304,7 +303,7 @@ cmcR::cmcPerThetaBarPlot(knmComparison,
 ```
 
 
-Cartridge case pairs that do not pass the high CMC criterion are assigned the CMC count under the initially proposed method. Pairs that do pass the criterion are assigned all CMCs in and within $T_\theta$ of the identified CMC count mode in both directions (excluding replicates). Among other considerations, \citet{tong_improved_2015} do not indicate how to deal with adjacent CMC count ties (as is the case in the Fadul 1-2 vs. Fadul 1-1 direction in Figure \ref{fig:kmCMCPerTheta}) nor situtations in which a CMC count mode is identified in one direction but not the other. This, again, illustates how a qualitative description of a method often fails to cover critical details. While individually small in scope, leaving such details ambiguous can quickly compound how difficult it is to effectively reproduce results.
+Cartridge case pairs that do not pass the high CMC criterion are assigned the CMC count under the initially proposed method. Pairs that pass the criterion are assigned all CMCs in and within $T_\theta$ of the identified CMC count mode in both directions (excluding replicate cell/region pairs). Among other considerations, \citet{tong_improved_2015} do not indicate how to deal with adjacent CMC count ties (as is the case in the Fadul 1-2 vs. Fadul 1-1 direction in Figure \ref{fig:kmCMCPerTheta}) nor situtations in which a CMC count mode is identified in one direction but not the other. This, again, illustates how a qualitative description of a method often fails to cover critical details. While individually small in scope, leaving such details ambiguous can quickly compound how difficult it is to effectively reproduce results.
 
 <!-- These additional ``high CMC count" criteria provide more enhanced discriminatory ability between known matching and known non-matching scans. If this criterion is satisfied by a particular pair of scans and a $\theta$ mode is identified, then the method considers CCF values for each cell pair at and around this mode. Again, this is in contrast to the initially proposed method that only considers the CCF$_{\max}$ value and resulting $(dx,dy,\theta)$ votes for each cell pair. -->
 
@@ -501,28 +500,266 @@ cmcPlot(x3p1 = fadul1.1$x3p,
 ```
 
 
+
 # Results
 
 As described in section [2](#data), the set of cartridge case scans from \citet{fadul_empirical_nodate} is commonly used to compare the performance of various methods in the CMC literature. This set consists of 40 cartridge cases. There are 63 known match pairs and 717 known non-match pairs. While the exact procedures by which these scans are processed are unavailable, the surface data are openly available in their raw, unprocessed format NIST Ballistics Toolmark Research Database. Thus, some level of comparison between the implementation provided in the \pkg{cmcR} package and published results is possible. However, justification for any differences will ultimately involve educated hypothesization due to the closed-source nature of the original implementations.
 
-```{r echo=FALSE}
+For any cartridge case pair, the number of CMCs can be determined under the initially proposed method described in section [3.2.1](#initialMethod) and the high CMC method described in section [3.2.2](#highCMCMethod). These CMC counts can be determined for all 780 cartridge case pairs available in the \citet{fadul_empirical_nodate} dataset. Perfect identification of all matching and non-matching pairs corresponds choosing a CMC count threshold that separates the distributions of the matching and non-matching CMC counts. Many authors have found success in choosing a CMC count threshold of 6 CMCs (\citet{tong_improved_2015}, \citet{song_estimating_2018}) as initially proposed by \citet{song_proposed_2013}, although this threshold has been shown to not generalize well to all proposed methods or cartridge case datasets \citep{chen_convergence_2017}. Further, little consensus exists among authors on the most effective alignment parameter thresholds ($T_{dx}, T_{dy}, T_{\theta}, T_{\text{CCF}}$ defined in section [3.2.1](#initialMethod)) for distinguishing matches from non-matches. Figure \ref{fig:initialCMC_perfectIdentification} shows an example of a particular set of thresholds that yields separation between the known match and known non-match CMC count distributions. An appropriate CMC count threshold would be, say, 15.5. Separation is also achieved using the initially proposed method by \citet{tong_improved_2015} and \citet{chen_convergence_2017}, among others. It should be noted that these authors report CMC count distributions with fewer "false positive" CMCs for non-match pairs. However, the behavior of these distributions changes considerably depending on the thresholds specified.
+
+```{r echo=FALSE,fig.cap='\\label{fig:initialCMC_perfectIdentification} Initial CMC count distributions for 63 known match and 717 known non-match cartridge case pairs',fig.align='center',fig.pos='htbp',out.width='.8\\textwidth'}
+
 load("data/cmcCountData.RData")
 
-allCMC_counts %>%
+cmcCountData_setSeed4132020 %>%
+  filter(cmcType == "initial") %>%
+  filter(thetaThresh == 6) %>%
+  filter(ccfThresh == .5 & translateThresh == 30) %>%
+  mutate(comparisonType = factor(comparisonType,levels = c("known non-match","known match"))) %>%
+  rename(`CCF Threshold` = ccfThresh,
+         `Trans. Threshold` = translateThresh) %>%
+  ggplot() +
+  geom_histogram(aes(x = cmcCount,y = ..density..,fill = comparisonType),colour = "black",binwidth = 1) +
+  geom_histogram(aes(x = cmcCount,y = ..density..),alpha = 0,binwidth = 1) +
+  geom_text(data = cmcCountData_setSeed4132020 %>%
+              pivot_wider(id_cols = c("pair","ccfThresh","translateThresh","thetaThresh","comparisonType"),
+                          names_from = c("cmcType"),
+                          values_from = c("cmcCount")) %>%
+              mutate(high = ifelse(high == 0,initial,high)) %>%
+              pivot_longer(cols = c("initial","high"),
+                           names_to = "cmcType",
+                           values_to = "cmcCount") %>%
+              filter(cmcType == "initial") %>%
+              filter(thetaThresh == 6) %>%
+              filter(ccfThresh == .5 & translateThresh == 30) %>%
+              mutate(comparisonType = factor(comparisonType,levels = c("known non-match","known match"))) %>%
+              rename(`CCF Threshold` = ccfThresh,
+                     `Trans. Threshold` = translateThresh) %>%
+              group_by(comparisonType,cmcCount) %>%
+              tally() %>%
+              ungroup() %>%
+              group_by(comparisonType) %>%
+              mutate(prop = n/sum(n)),
+            aes(x = cmcCount,y = prop,label = n),
+            nudge_y = .005,size = 3) +
+  geom_vline(xintercept = 15.5,linetype = "dashed") +
+  scale_fill_manual(values = c("orange","#b19cd9"),aesthetics = c("colour","fill")) +
+  guides(fill = guide_legend(title = "Comparison Type",override.aes = list(alpha = 1)),
+         colour = FALSE) +
+  theme_bw() + 
+  theme(legend.position = "bottom") +
+  ggtitle(expression("Initial CMC counts, T"[CCF]*" = .5, T"[dx]*" = T"[dy]*" = 30, T"[theta]*" = 6"^{o})) +
+  xlab("CMC Count") +
+  ylab("Relative Frequency")
+```
+
+Figure \ref{fig:initialCMC_sensitivity} shows the CMC count distributions determined using the initially proposed method for various CCF and translation thresholds. The rotation threshold was fixed at $T_\theta = 3$ degrees. The most restrictive threshold combination is in the bottom left corner while the least restrictive, which is also shown in Figure \ref{fig:initialCMC_perfectIdentification}, is in the top right corner. As expected, fewer CMCs are assigned to all pairs as the thresholds become more restrictive. Additionally, many threshold combinations yield overlapping matching and non-matching CMC count distributions, making perfect identification based on a minimum CMC count threshold impossible.
+
+```{r echo=FALSE,fig.cap='\\label{fig:initialCMC_sensitivity} Initial CMC count distributions under various $T_{dx}, T_{dy}$, and $T_{\\text{CCF}}$ values.',fig.align='left',fig.pos='htbp',out.width='1.2\\linewidth',out.extra="trim={2cm 0 0 0}"}
+
+cmcCountData_setSeed4132020 %>%
+  filter(cmcType == "initial") %>%
+  filter(thetaThresh == 6) %>%
+  filter(ccfThresh %in% c(.5,.7,.9) & translateThresh %in% c(10,20,30)) %>%
+  mutate(comparisonType = factor(comparisonType,levels = c("known non-match","known match"))) %>%
+  rename(`CCF Threshold` = ccfThresh,
+         `Trans. Threshold` = translateThresh) %>%
+  ggplot(aes(x = cmcCount,y = ..density..)) +
+  geom_histogram(aes(fill = comparisonType),colour = "black",binwidth = 1) +
+  geom_histogram(alpha = 0,binwidth = 1) +
+  scale_fill_manual(values = c("orange","#b19cd9")) +
+  guides(fill = guide_legend(title = "Comparison Type",override.aes = list(alpha = 1))) +
+  facet_wrap(`CCF Threshold` ~ `Trans. Threshold`,ncol = 3,scales = "free_y",labeller = label_both) +
+  theme_bw() + 
+  theme(legend.position = "bottom") +
+  ggtitle(expression("Initial CMC counts for various CCF & translation thresholds, T"[theta]*" = 6"^{o})) +
+  xlab("CMC Count") +
+  ylab("Relative Frequency")
+```
+
+```{r include=FALSE, eval=FALSE}
+initialCMC_roc <- cmcCountData_setSeed4132020 %>%
+  filter(cmcType == "initial")  %>%
+  group_by(ccfThresh,translateThresh,thetaThresh) %>%
+  dplyr::group_split() %>%
+  map_dfr(function(paramSpecificResults = .x){
+         
+         rocOut <- paramSpecificResults %>%
+           pROC::roc(response = comparisonType,
+                     predictor = cmcCount,
+                     levels = c("known non-match","known match"),
+                     quiet = TRUE)
+         
+         data.frame(False.Positives = 1 - rocOut$specificities,
+                    True.Positives = rocOut$sensitivities) %>%
+           mutate(auc = rep(rocOut$auc,times = nrow(.)),
+                  ccfThresh = rep(unique(paramSpecificResults$ccfThresh),times = nrow(.)),
+                  translateThresh = rep(unique(paramSpecificResults$translateThresh),times = nrow(.)),
+                  thetaThresh = rep(unique(paramSpecificResults$thetaThresh),times = nrow(.))) %>%
+           return()
+         
+       })
+
+initialCMC_roc %>%
+  filter(thetaThresh == 6) %>%
+  filter(ccfThresh %in% c(.5,.65,.8) & translateThresh %in% c(10,20,30)) %>%
+  arrange(True.Positives) %>%
+  ggplot() +
+  geom_line(aes(x = False.Positives,y = True.Positives)) +
+  geom_label(aes(x = .7,y = .2,label = paste0("AUC = ",round(auc,6))),size = 4) +
+  theme_bw() +
+  facet_wrap(ccfThresh ~ translateThresh,ncol = 3,labeller = label_both) +
+  xlab("False Positive Rate") +
+  ylab("True Positive Rate") +
+  ggtitle("Initial CMC ROC Curves, Residuals, BP Filter - Cutoffs: 16, 250 microns")
+```
+
+
+
+```{r echo=FALSE,fig.cap='\\label{fig:initialCMC_perfectIdentification} High CMC count distributions for 63 known match and 717 known non-match cartridge case pairs',fig.align='center',fig.pos='htbp',out.width='.8\\textwidth'}
+cmcCountData_setSeed4132020 %>%
+  filter(cmcType == "high") %>%
+  filter(thetaThresh == 6) %>%
+  filter(ccfThresh == .5 & translateThresh == 20) %>%
+  mutate(comparisonType = factor(comparisonType,levels = c("known non-match","known match"))) %>%
+  rename(`CCF Threshold` = ccfThresh,
+         `Trans. Threshold` = translateThresh) %>%
+  ggplot() +
+  geom_histogram(aes(x = cmcCount,y = ..density..,fill = comparisonType),colour = "black",binwidth = 1) +
+  geom_histogram(aes(x = cmcCount,y = ..density..),alpha = 0,binwidth = 1) +
+  geom_text(data = cmcCountData_setSeed4132020 %>%
+              pivot_wider(id_cols = c("pair","ccfThresh","translateThresh","thetaThresh","comparisonType"),
+                          names_from = c("cmcType"),
+                          values_from = c("cmcCount")) %>%
+              mutate(high = ifelse(high == 0,initial,high)) %>%
+              pivot_longer(cols = c("initial","high"),
+                           names_to = "cmcType",
+                           values_to = "cmcCount") %>%
+              filter(cmcType == "high") %>%
+              filter(thetaThresh == 6) %>%
+              filter(ccfThresh == .5 & translateThresh == 20) %>%
+              mutate(comparisonType = factor(comparisonType,levels = c("known non-match","known match"))) %>%
+              rename(`CCF Threshold` = ccfThresh,
+                     `Trans. Threshold` = translateThresh) %>%
+              group_by(comparisonType,cmcCount) %>%
+              tally() %>%
+              ungroup() %>%
+              group_by(comparisonType) %>%
+              mutate(prop = n/sum(n)),
+            aes(x = cmcCount,y = prop,label = n),
+            nudge_y = .005,size = 2.5) +
+  geom_vline(xintercept = 35.5,linetype = "dashed") +
+  scale_fill_manual(values = c("orange","#b19cd9"),aesthetics = c("colour","fill")) +
+  guides(fill = guide_legend(title = "Comparison Type",override.aes = list(alpha = 1)),
+         colour = FALSE) +
+  theme_bw() + 
+  theme(legend.position = "bottom") +
+  ggtitle(expression("High CMC counts, T"[CCF]*" = .5, T"[dx]*" = T"[dy]*" = 20, T"[theta]*" = 6"^{o})) +
+  xlab("CMC Count") +
+  ylab("Relative Frequency")
+```
+
+
+Figure \ref{fig:highCMC_sensitivity} shows CMC count distributions determined using the High CMC method for various CCF and translation thresholds. Note that while known match pairs tend to be assigned higher CMC counts than under the initially proposed method, so too do certain known non-match pairs. The second CMC count mode seen in many of the non-match distributions of Figure \ref{fig:highCMC_sensitivity} can be attributed to non-match pairs that pass the High CMC criterion given the particular combination of alignment parameter thresholds. Similar non-match bimodal behavior can be seen in Figure 8 of \citet{chen_convergence_2017} where the High CMC method was applied to cartridge case data from \citet{laPorte_validation_2011}. Conversely, matching pairs assigned relatively small CMC counts are those that do not pass High CMC criterion and thus are assigned whatever count they would be under the initially proposed method. This demonstrates that if any cartridge case pair, matching or non-matching, passes the High CMC criterion, then it tends to be assigned a large High CMC count. Tuning the thresholding parameters such that few non-match pairs pass the High CMC criterion is critical to this method's success. An issue related to this is that there does not exist an agreed-upon set of alignment parameter thresholds nor a method, other than pure experimentation, by which these thresholds can be determined in the CMC literature.
+
+```{r echo=FALSE,fig.cap='\\label{fig:highCMC_sensitivity} High CMC count distributions under various $T_{dx}, T_{dy}$, and $T_{\\text{CCF}}$ values.',fig.align='left',fig.pos='htbp',out.width='1.2\\linewidth',out.extra="trim={2cm 0 0 0}"}
+cmcCountData_setSeed4132020 %>%
   pivot_wider(id_cols = c("pair","ccfThresh","translateThresh","thetaThresh","comparisonType"),names_from = c("cmcType"),values_from = c("cmcCount")) %>%
   mutate(high = ifelse(high == 0,initial,high)) %>%
   pivot_longer(cols = c("initial","high"),
                names_to = "cmcType",
                values_to = "cmcCount") %>%
-  filter(thetaThresh == 6 & cmcType == "initial") %>%
-  filter(ccfThresh >= .6 & ccfThresh <= .7 & translateThresh %in% c(10,20,30)) %>%
+  filter(cmcType == "high") %>%
+  filter(thetaThresh == 6) %>%
+  filter(ccfThresh %in% c(.5,.7,.9) & translateThresh %in% c(10,20,30)) %>%
+  mutate(comparisonType = factor(comparisonType,levels = c("known non-match","known match"))) %>%
+  rename(`CCF Threshold` = ccfThresh,
+         `Trans. Threshold` = translateThresh) %>%
+  ggplot(aes(x = cmcCount,y = ..density..)) +
+  geom_histogram(aes(fill = comparisonType),colour = "black",binwidth = 1) +
+  geom_histogram(alpha = 0,binwidth = 1) +
+  scale_fill_manual(values = c("orange","#b19cd9")) +
+  guides(fill = guide_legend(override.aes = list(alpha = 1))) +
+  facet_wrap(`CCF Threshold` ~ `Trans. Threshold`,
+             ncol = 3,
+             scales = "free_y",
+             labeller = label_both) +
+  theme_bw() + 
+  theme(legend.position = "bottom") +
+  ggtitle(expression("High CMC counts for various CCF & translation thresholds, T"[theta]*" = 6"^{o})) +
+  xlab("CMC Count") +
+  ylab("Relative Frequency")
+```
+
+
+```{r include=FALSE,eval=FALSE}
+highCMC_roc <- cmcCountData_setSeed4132020 %>%
+  filter(cmcType == "high")  %>%
+  group_by(ccfThresh,translateThresh,thetaThresh) %>%
+  dplyr::group_split() %>%
+  map_dfr(function(paramSpecificResults = .x){
+         
+         rocOut <- paramSpecificResults %>%
+           pROC::roc(response = comparisonType,
+                     predictor = cmcCount,
+                     levels = c("known non-match","known match"),
+                     quiet = TRUE)
+         
+         data.frame(False.Positives = 1 - rocOut$specificities,
+                    True.Positives = rocOut$sensitivities) %>%
+           mutate(auc = rep(rocOut$auc,times = nrow(.)),
+                  ccfThresh = rep(unique(paramSpecificResults$ccfThresh),times = nrow(.)),
+                  translateThresh = rep(unique(paramSpecificResults$translateThresh),times = nrow(.)),
+                  thetaThresh = rep(unique(paramSpecificResults$thetaThresh),times = nrow(.))) %>%
+           return()
+         
+       })
+
+highCMC_roc %>%
+  filter(thetaThresh == 6) %>%
+  filter(ccfThresh %in% c(.5,7,.9) & translateThresh %in% c(10,20,30)) %>%
+  arrange(True.Positives) %>%
+  ggplot() +
+  geom_line(aes(x = False.Positives,y = True.Positives)) +
+  geom_label(aes(x = .7,y = .2,label = paste0("AUC = ",round(auc,6))),size = 4) +
+  theme_bw() +
+  facet_wrap(ccfThresh ~ translateThresh,ncol = 3,labeller = label_both) +
+  xlab("False Positive Rate") +
+  ylab("True Positive Rate") +
+  ggtitle("High CMC ROC Curves, Residuals, BP Filter - Cutoffs: 16, 250 microns")
+
+# dat %>%
+#   filter(thetaThresh == 3) %>%
+#   arrange(True.Positives) %>%
+#   ggplot() +
+#   geom_line(aes(x = False.Positives,y = True.Positives)) +
+#   geom_label(aes(x = .7,y = .2,label = paste0("AUC = ",round(auc,6))),size = 4) +
+#   theme_bw() +
+#   facet_wrap(ccfThresh ~ translateThresh,ncol = 6,labeller = label_both) +
+#   xlab("False Positive Rate") +
+#   ylab("True Positive Rate") +
+#   ggtitle("ROC Curves, Residuals, BP Filter - Cutoffs: 16, 250 microns")
+```
+
+
+```{r echo=FALSE,eval=FALSE}
+cmcCountData_setSeed4132020 %>%
+  pivot_wider(id_cols = c("pair","ccfThresh","translateThresh","thetaThresh","comparisonType"),names_from = c("cmcType"),values_from = c("cmcCount")) %>%
+  mutate(high = ifelse(high == 0,initial,high)) %>%
+  pivot_longer(cols = c("initial","high"),
+               names_to = "cmcType",
+               values_to = "cmcCount") %>%
+  filter(thetaThresh == 3 & cmcType == "high") %>%
+  filter(ccfThresh >= .5 & ccfThresh <= .8) %>%
+  # filter(ccfThresh >= .6 & ccfThresh <= .7) %>%
+  # filter(ccfThresh >= .6 & ccfThresh <= .7 & translateThresh %in% c(10,15,20,30)) %>%
   mutate(comparisonType = factor(comparisonType,levels = c("known non-match","known match"))) %>%
   ggplot(aes(x = cmcCount,y = ..density..)) +
   geom_histogram(aes(fill = comparisonType),colour = "black",binwidth = 1) +
   geom_histogram(alpha = 0,binwidth = 1) +
   scale_fill_manual(values = c("orange","#b19cd9")) +
   guides(fill = guide_legend(override.aes = list(alpha = 1))) +
-  facet_wrap(ccfThresh ~ translateThresh,ncol = 3,scales = "free_y",labeller = label_both) +
+  facet_wrap(ccfThresh ~ translateThresh,ncol = 6,scales = "free_y",labeller = label_both) +
   theme_bw() + 
   theme(legend.position = "bottom") +
   ggtitle("CMC distribution, Residuals, BP Filter - Cutoffs: 16, 250 microns") +
@@ -530,30 +767,39 @@ allCMC_counts %>%
   ylab("Frequency")
 ```
 
-```{r echo=FALSE}
-allCMC_counts %>%
+```{r eval=FALSE,include=FALSE}
+cmcCountData_setSeed4132020 %>%
   pivot_wider(id_cols = c("pair","ccfThresh","translateThresh","thetaThresh","comparisonType"),names_from = c("cmcType"),values_from = c("cmcCount")) %>%
   mutate(high = ifelse(high == 0,initial,high)) %>%
   pivot_longer(cols = c("initial","high"),
                names_to = "cmcType",
                values_to = "cmcCount") %>%
-  filter(thetaThresh == 6 & cmcType == "high") %>%
-  # filter(ccfThresh >= .5 & ccfThresh <= .8) %>%
-  # filter(ccfThresh >= .6 & ccfThresh <= .7) %>%
-  filter(ccfThresh >= .6 & ccfThresh <= .7 & translateThresh %in% c(10,20,30)) %>%
-  mutate(comparisonType = factor(comparisonType,levels = c("known non-match","known match"))) %>%
-  ggplot(aes(x = cmcCount,y = ..density..)) +
-  geom_histogram(aes(fill = comparisonType),colour = "black",binwidth = 1) +
-  geom_histogram(alpha = 0,binwidth = 1) +
-  scale_fill_manual(values = c("orange","#b19cd9")) +
-  guides(fill = guide_legend(override.aes = list(alpha = 1))) +
-  facet_wrap(ccfThresh ~ translateThresh,ncol = 3,scales = "free_y",labeller = label_both) +
-  theme_bw() + 
-  theme(legend.position = "bottom") +
-  ggtitle("CMC distribution, Residuals, BP Filter - Cutoffs: 16, 250 microns") +
-  xlab("CMC Count") +
-  ylab("Frequency")
+  filter(thetaThresh == 3 & cmcType == "high") %>%
+  filter(ccfThresh == .5 & translateThresh == 20 & comparisonType == "known non-match") %>%
+  arrange(desc(cmcCount))
+
+cmcCountData_setSeed4132020 %>%
+  pivot_wider(id_cols = c("pair","ccfThresh","translateThresh","thetaThresh","comparisonType"),names_from = c("cmcType"),values_from = c("cmcCount")) %>%
+  mutate(high = ifelse(high == 0,initial,high)) %>%
+  pivot_longer(cols = c("initial","high"),
+               names_to = "cmcType",
+               values_to = "cmcCount") %>%
+  filter(thetaThresh == 3 & cmcType == "high") %>%
+  filter(ccfThresh == .5 & translateThresh == 20 & comparisonType == "known match") %>%
+  arrange(cmcCount)
 ```
+
+
+```{r eval=FALSE,include=FALSE}
+debugonce(cmcR::cmcFilter_improved)
+
+kmCorrs_64Cells_residuals_downSampled_bandpass16_250_setSeed4132020$`Fadul3-2_FadulZ` %>%
+  cmcR::cmcFilter_improved(ccf_thresh = .5,dx_thresh = 20,theta_thresh = 3,compareInitialAndHighThetas = TRUE)
+
+knmCorrs_64Cells_residuals_downSampled_bandpass16_250_setSeed4132020$`firearm2_Fadul2-1, firearm5_FadulN` %>%
+  cmcR::cmcFilter_improved(ccf_thresh = .5,dx_thresh = 20,theta_thresh = 3,compareInitialAndHighThetas = TRUE)
+```
+
 
 <!-- ```{r} -->
 <!-- debugonce(cmcR::cmcFilter_improved) -->
@@ -565,6 +811,6 @@ allCMC_counts %>%
 
 # Conclusion
 
-The results shared in this manuscript indicate that the implementation of the CMC method in the \pkg{cmcR} package is at least qualitatively similar to those in the CMC literature. As such methods could potentially be used in the future as evidence to support legal conclusions, it is imperative that specific implementations be openly available for assessment and validation. Furthermore, reproducibility of results hinges on automating as much of the process by which these comparisons are made as possible. For example, selecting the region of a scan containing breech face impressions by hand, as is seemingly done in the CMC literature, will yield different results depending on who is performing the selection. The procedure implemented in the \pkg{cmcR} package using the RANSAC and Hough transform methods, while reliant on randomly sampling the surface matrix, at least yields reproducibility across applications by setting a seed. Lastly, it is simply best academic practice to be transparent about how certain results were obtained and how sensitive these results are to different processing conditions. The \pkg{cmcR} package is intended to allow researchers to further explore the potential of the CMC method and develop novel techniques to perform firearm evidence identification. 
+The results shared in this manuscript indicate that the implementation of the CMC method in the \pkg{cmcR} package is at least qualitatively similar to those in the CMC literature. As such methods could potentially be used in the future as evidence to support legal conclusions, it is imperative that specific implementations be openly available for assessment and validation. Furthermore, reproducibility of results hinges on automating as much of the process by which these comparisons are made as possible. For example, selecting the region of a scan containing breech face impressions by hand, as is seemingly done in the CMC literature, will yield different results depending on who is performing the selection. The procedure implemented in the \pkg{cmcR} package using the RANSAC and Hough transform methods, while reliant on randomly sampling the surface matrix, at least yields reproducibility across applications by setting a seed. Lastly, it is simply best academic practice to be transparent about how certain results were obtained and how sensitive these results are to different processing conditions. The \pkg{cmcR} package is intended to allow researchers to further explore the potential of the CMC method and develop novel techniques to perform firearm evidence identification.
 
 \bibliography{RJreferences}
