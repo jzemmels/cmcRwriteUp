@@ -322,7 +322,7 @@ Studies in which cartridge cases are matched by forensic examiners often involve
 cmcR::x3pListPlot(x3pList = list("Fadul 1-1" = fadul1.1$x3p,
                                  "Fadul 1-2" = fadul1.2$x3p),
                   type = "faceted",rotate = 90) +
-  guides(fill = guide_colourbar(barheight = grid::unit(2.6,"in"),
+  guides(fill = guide_colourbar(barheight = grid::unit(2.6,"inches"),
                                 label.theme = element_text(size = 8),
                                 title.theme = ggplot2::element_text(size = 10),
                                 frame.colour = "black",
@@ -442,7 +442,7 @@ cmcPlots <- cmcR::cmcPlot(fadul1.1$x3p,
                           x3pNames = c("Fadul 1-1","Fadul 1-2")) 
 
 cmcPlots$initialCMC +
-  guides(fill = guide_colourbar(barheight = grid::unit(2.1,"in"),
+  guides(fill = guide_colourbar(barheight = grid::unit(2.1,"inches"),
                                 label.theme = element_text(size = 8),
                                 title.theme = ggplot2::element_text(size = 10),
                                 frame.colour = "black",
@@ -476,7 +476,7 @@ cmcPlots$highCMC
 ```{r,echo=FALSE,cache=FALSE,fig.cap='\\label{fig:highCMCPlot} CMC results from a known match comparison under the High CMC method',fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth',out.extra="trim={0 2.5cm 0 2cm}"}
 #Actual code executed to tweak the size/position of the colorbar legend:
 cmcPlots$highCMC +
-  guides(fill = guide_colourbar(barheight = grid::unit(2.47,"in"),
+  guides(fill = guide_colourbar(barheight = grid::unit(2.47,"inches"),
                                 label.theme = element_text(size = 8),
                                 title.theme = ggplot2::element_text(size = 10),
                                 frame.colour = "black",
@@ -493,7 +493,7 @@ cmcPlot(x3p1 = fadul1.1$x3p,
         type = "faceted",
         x3pNames = c("Fadul 1-1","Fadul 2-1")) %>%
   .$initialCMC +
-  guides(fill = guide_colourbar(barheight = grid::unit(2.4,"in"),
+  guides(fill = guide_colourbar(barheight = grid::unit(2.4,"inches"),
                                 label.theme = element_text(size = 8),
                                 title.theme = ggplot2::element_text(size = 10),
                                 frame.colour = "black",
@@ -615,9 +615,9 @@ initialCMC_roc %>%
   ggtitle("Initial CMC ROC Curves, Residuals, BP Filter - Cutoffs: 16, 250 microns")
 ```
 
-Figure \ref{fig:initialCMC_perfectIdentification} shows an example of threshold combinations that yield separation between the matching and non-matching CMC count distributions. The dashed, vertical line is drawn at 35.5 CMCs. Note that while known match pairs tend to be assigned higher CMC counts than under the initially proposed method, so too do certain known non-match pairs. The cluster of non-match pairs that are assigned a large High CMC count all pass the High CMC criterion. Similar non-match bimodal behavior can be seen in Figure 8 of \citet{chen_convergence_2017} where the High CMC method was applied to cartridge case data from \citet{laPorte_validation_2011}. 
+Figure \ref{fig:highCMC_perfectIdentification} shows an example of a threshold combination that yields separation between the matching and non-matching CMC count distributions. The dashed, vertical line is drawn at 35.5 CMCs. Note that while known match pairs tend to be assigned higher CMC counts than under the initially proposed method, so too do certain known non-match pairs. The cluster of non-match pairs that are assigned a large High CMC count all pass the High CMC criterion. Similar non-match bimodal behavior can be seen in Figure 8 of \citet{chen_convergence_2017} where the High CMC method was applied to cartridge case data from \citet{laPorte_validation_2011}. 
 
-```{r echo=FALSE,fig.cap='\\label{fig:initialCMC_perfectIdentification} High CMC count distribution with $T_{\\text{CCF}} = .5$, $T_{dx} = T_{dy} = 20$, and $T_{\\theta} = 6$ degrees',fig.align='center',fig.pos='htbp',out.width='\\textwidth',out.height='.55\\textwidth'}
+```{r echo=FALSE,fig.cap='\\label{fig:highCMC_perfectIdentification} High CMC count distribution with $T_{\\text{CCF}} = .5$, $T_{dx} = T_{dy} = 20$, and $T_{\\theta} = 6$ degrees',fig.align='center',fig.pos='htbp',out.width='\\textwidth',out.height='.55\\textwidth'}
 cmcCountData_setSeed4132020 %>%
   filter(cmcType == "high") %>%
   filter(thetaThresh == 6) %>%
