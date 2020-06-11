@@ -7,18 +7,18 @@ author:
     - 2438 Osborn Dr
     - Ames, IA 50011
     email:  jzemmels@iastate.edu
-  - name: Heike Hofmann
-    affiliation: Iowa State University
-    address:
-    - 2438 Osborn Dr
-    - Ames, IA 50011
-    email: hofmann@iastate.edu
   - name: Susan VanderPlas
     affiliation: University of Nebraska - Lincoln
     address:
     - 340 Hardin Hall North Wing
     - Lincoln, NE 68583
     email: susan.vanderplas@unl.edu
+  - name: Heike Hofmann
+    affiliation: Iowa State University
+    address:
+    - 2438 Osborn Dr
+    - Ames, IA 50011
+    email: hofmann@iastate.edu
 abstract: > 
   Firearm evidence identification is the process of analyzing bullets or cartridge cases left at a crime scene to determine if they originated from a particular firearm. Statistical methods have long been developed and used to aid in such analyses. The Congruent Matching Cells (CMC) method is one such method developed at the National Institute of Standards and Technology (NIST) to quantify the similarity between two spent cartridge cases based on the markings left by the firearm barrel during the firing process. We introduce the first open-source implementation of the CMC method in the R package \pkg{cmcR}. The package will bolster forensic researchers' abilities to investigate, validate, and improve upon current statistical methodology in the field of forensic science.
 preamble: | 
@@ -28,14 +28,20 @@ preamble: |
   \usepackage{amsmath,amssymb,array}
   \usepackage{booktabs}
   \usepackage{subcaption}
+  \usepackage{xcolor}
 output: rticles::rjournal_article
 ---
+
+\newcommand{\hh}[1]{{\textcolor{orange}{#1}}}
+\newcommand{\svp}[1]{{\textcolor{teal}{#1}}}
+\newcommand{\jz}[1]{{\textcolor{purple}{#1}}}
 
 ```{r ,localDataDir, include=FALSE}
 if(!dir.exists("data")){
   dir.create("data")
 }
 if(!file.exists("data/fadul1-1.x3p")){
+  library(dplyr) # pipe not defined yet
   x3ptools::read_x3p("https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement/DownloadMeasurement/2d9cc51f-6f66-40a0-973a-a9292dbee36d") %>%
     x3ptools::write_x3p(file = "data/fadul1-1.x3p")
 }
@@ -63,7 +69,11 @@ library(rgl)
 set.seed(4132020)
 ```
 
-# Introduction {#intro}
+# Pre-Introduction
+
+\hh{XXX We need to be *very* careful to not claim that the suggested approach is ours, but that this is only an open source implementation of an existing method in the literature. We can't take the credit for inventing the approach, but we have to point out that an open source approach is necessary for scientific progress. }
+
+# Introduction  {#intro}
 
 A \dfn{cartridge case} is a type of firearm ammunition that contains a projectile (e.g., bullet, shots, or slug). When a firearm is discharged, the projectile stored in the cartridge case is propelled down the barrel of the firearm. In response, the rest of the cartridge case that remains inside of the firearm is forced towards the back of the barrel. The force with which the cartridge case is propelled backwards causes it to strike the back wall, known as the \dfn{breech face}, of the barrel. Markings due to, e.g., manufacturing imperfections are ingrained on the breech face. When the cartridge case slams against the breech face, these markings can be "stamped" into either the primer of the cartridge case or the cartridge case itself. The markings left on a cartridge case from the firearm's breech face are called \dfn{breech face impressions}.
 
@@ -84,7 +94,7 @@ knitr::include_graphics("images/cartridgeCasePair_comparison.PNG")
 <!-- knitr::include_graphics(c("images/breechFace.png","images/breechFaceImpression.png")) -->
 <!-- ``` -->
 
-These breech face impressions are considered to be analogous to a firearm's "fingerprint" left on a cartridge case. Matching an expended cartridge case of unknown source to one of known source based on breech face impressions has been performed for over 100 years by forensic practitioners \citep{firearm_id_thompson}. The development of computational and statistical methods to perform such identification has recently grown in interest \citep{council_strengthening_2009}. One such method is the Congruent Matching Cells (CMC) method developed at NIST that involves partitioning a cartridge case image or scan into a grid of ``correlation cells" to isolate areas containing identifying breech face impression markings \citep{song_proposed_2013}. Since its invention in 2012, researchers at NIST have developed a number of extensions and improvements of the CMC method. However, to date there does not exist an openly available implementation of any of these techniques. Many methods proposed in the CMC literature include a description of a proposed technique that do not delve into the intricacies of the implementation. Given that the implementations are not openly available, this makes it especially difficult to validate or assess results. Additionally, some procedures related to pre-processing the cartridge case data are done manually at NIST rather than with an automated method \citep{song_estimating_2018}. This compounds the difficulty to accurately reproduce results. The \pkg{cmcR} package provides an open-source, fully-automatic implementation of the CMC method as originally described as well an extension proposed by \citet{tong_improved_2015}. This extension was later referred to as the "High CMC" method by \citet{chen_convergence_2017} and is referred to as such in the \pkg{cmcR} package.
+These breech face impressions are considered to be analogous to a firearm's "fingerprint" left on a cartridge case. Matching an expended cartridge case of unknown source to one of known source based on breech face impressions has been performed for over 100 years by forensic practitioners \citep{firearm_id_thompson}. The development of computational and statistical methods to perform such identification has recently grown in interest \citep{council_strengthening_2009}. One such method is the Congruent Matching Cells (CMC) method developed at NIST that involves partitioning a cartridge case image or scan into a grid of ``correlation cells" to isolate areas containing identifying breech face impression markings \citep{song_proposed_2013}. Since its invention in 2012, researchers at NIST have developed a number of extensions and improvements of the CMC method. However, to date there does not exist an openly available implementation of any of these techniques. Many methods proposed in the CMC literature include a description of a proposed technique that does not delve into the intricacies of the implementation. Given that the implementations are not openly available, this makes it especially difficult to validate or assess results. Additionally, some procedures related to pre-processing the cartridge case data are done manually at NIST rather than with an automated method \citep{song_estimating_2018}. This compounds the difficulty to accurately reproduce results. The \pkg{cmcR} package provides an open-source, fully-automatic implementation of the CMC method as originally described as well an extension proposed by \citet{tong_improved_2015}. This extension was later referred to as the "High CMC" method by \citet{chen_convergence_2017} and is referred to as such in the \pkg{cmcR} package.
 
 # Cartridge case surface data {#data}
 
