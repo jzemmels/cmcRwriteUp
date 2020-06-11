@@ -65,12 +65,16 @@ set.seed(4132020)
 
 # Introduction {#intro}
 
-A \dfn{cartridge case} is a type of firearm ammunition that contains a projectile (e.g., bullet, shots, or slug). When a firearm is discharged, the projectile stored in the cartridge case is propelled down the barrel of the firearm. In response, the rest of the cartridge case that remains inside of the firearm is forced towards the back of the barrel. The force with which the cartridge case is propelled backwards causes it to strike the back wall, known as the \dfn{breech face}, of the barrel. Markings due to, e.g., manufacturing imperfections are ingrained on the breech face. When the cartridge case slams against the breech face, these markings can be ``stamped" into either the primer of the cartridge case or the cartridge case itself. The markings left on a cartridge case from the firearm's breech face are called \dfn{breech face impressions}.
+A \dfn{cartridge case} is a type of firearm ammunition that contains a projectile (e.g., bullet, shots, or slug). When a firearm is discharged, the projectile stored in the cartridge case is propelled down the barrel of the firearm. In response, the rest of the cartridge case that remains inside of the firearm is forced towards the back of the barrel. The force with which the cartridge case is propelled backwards causes it to strike the back wall, known as the \dfn{breech face}, of the barrel. Markings due to, e.g., manufacturing imperfections are ingrained on the breech face. When the cartridge case slams against the breech face, these markings can be "stamped" into either the primer of the cartridge case or the cartridge case itself. The markings left on a cartridge case from the firearm's breech face are called \dfn{breech face impressions}.
 
-An example of two cartridge cases under a comparison microscope is shown in Figure \ref{fig:comparisonMicroscope_example} \citep{comparisonMicroscope_example}. This type of comparison microscopy involves placing two cartridge cases under separate lenses. The staging areas are combined via a series of lenses, prisms, and mirrors such that both cartridge cases can be seen side by side through a single field of view. A thin, black line can be seen down the center of Figure \ref{fig:comparisonMicroscope_example} dividing the view of the two cartridge cases. Similar breech face impression striae are seen on both cartridge cases providing evidence that the pair is a match. Such \dfn{individual characteristics} are used by forensic practitioners to declare a cartridge case pair a match \citep{firearm_id_thompson}.
+An example of two cartridge cases under a \dfn{comparison microscope}, a tool commonly used by forensic practitioners to perform firearm evidence identification, is shown in Figures \ref{fig:ccPair_separated} and \ref{fig:ccPair_combined}. Such comparison microscopy involves placing two cartridge cases under separate lenses. The staging areas are combined via a series of lenses, prisms, and mirrors such that both cartridge cases can be seen side by side through a single field of view. Striated markings can be seen on each cartridge case in Figure \ref{fig:ccPair_separated}. Figure \ref{fig:ccPair_combined} shows the two cartridge cases under a comparison microscope where a thin vertical line indicates the separation of the two views. The degree to which these markings align can be used to determine whether the two cartridge cases match; i.e., were fired from the same firearm \citep{firearm_id_thompson}.
 
-```{r ,echo=FALSE,fig.cap='\\label{fig:comparisonMicroscope_example} View of two cartridge cases under a comparison microscope',fig.align='center',fig.pos='htbp'}
-knitr::include_graphics("images/MSP_cartridgecaseid_60012_7.png",dpi = 100)
+```{r ,echo=FALSE,fig.cap='\\label{fig:ccPair_separated} Cartridge case pair under a microscrope',fig.align='center',fig.pos='htbp',out.width="\\textwidth"}
+knitr::include_graphics("images/cartridgeCasePair_separated.PNG")
+```
+
+```{r ,echo=FALSE,fig.cap='\\label{fig:ccPair_combined} View of same cartridge case pair under a comparison microscope.',fig.pos='htbp',out.width="\\textwidth"}
+knitr::include_graphics("images/cartridgeCasePair_comparison.PNG")
 ```
 
 
@@ -88,7 +92,7 @@ One such method is the Congruent Matching Cells (CMC) method developed at NIST t
 
 Cartridge case data commonly come in two forms: 2D grayscale images and 3D topographical scans. It is common in the CMC literature to use the 3D topographical scans to demonstrate the efficacy of a proposed method [\citep{tong_improved_2015}, \citep{chen_convergence_2017}]. A variety of scans are openly available for download through the NIST Ballistics Toolmark Research Database \citep{nbtrd}. The \pkg{cmcR} package was designed specifically for use with the 3D topographies.
 
-The 3D topographies are commonly stored in an .x3p (XML 3D Surface Profile) file format that includes metainformation such as who took the scan and the parameters under which the scan was taken (e.g., the lateral resolution in microns). The \pkg{x3ptools} package in R provides an interface to manipulate and visualize these .x3p files \citep{x3ptools}. The physical surface is represented using a \dfn{surface matrix}: a matrix of spatially-ordered elements or "pixels" whose values correspond to the height of the cartridge case surface at a particular location. Figure \ref{fig:cartridgeCasePair} shows the surface matrices of a known match (KM) pair of cartridge cases, meaning there were fired from the same firearm. Note that white regions in the images below represent unobserved or missing values. When read into R using the \pkg{x3ptools} package, these elements are encoded as \code{NA}. The size of a surface matrix depends on the lateral resolution with which the scans were taken. For example, a popular set of scans in the CMC literature were taken by \citet{fadul_empirical_nodate}; two of which are shown is the scan shown in Figure \ref{fig:cartridgeCasePair}. These scans were taken with a lateral resolution of 6.25 microns (micrometers) per pixel. The surface matrices from this study vary around $1200 \times 1200$ pixels in size.
+The 3D topographies are commonly stored in an .x3p (XML 3D Surface Profile) file format that includes metainformation the author of the scan and information about the conditions under which the scan was taken (e.g., the lateral resolution in microns). The \pkg{x3ptools} package in R provides an interface to manipulate and visualize these .x3p files \citep{x3ptools}. The physical surface is represented using a \dfn{surface matrix}: a matrix of spatially-ordered elements or "pixels" whose values correspond to the height of the cartridge case surface at a particular location. Figure \ref{fig:cartridgeCasePair} shows the surface matrices of a known match (KM) pair of cartridge cases, meaning there were fired from the same firearm. Note that white regions in the images below represent unobserved or missing values. When read into R using the \pkg{x3ptools} package, these elements are encoded as \code{NA}. The size of a surface matrix depends on the lateral resolution with which the scans were taken. For example, a popular set of scans in the CMC literature were taken by \citet{fadul_empirical_nodate}; two of which are shown is the scan shown in Figure \ref{fig:cartridgeCasePair}. These scans were taken with a lateral resolution of 6.25 microns (micrometers) per pixel. The surface matrices from this study vary around $1200 \times 1200$ pixels in size.
 
 ```{r, fadul1-1Screenshot,include=FALSE}
 fadul1.1 <- x3ptools::read_x3p("data/fadul1-1.x3p")
@@ -198,7 +202,7 @@ where $\mathcal{F}$ and $\mathcal{F}^{-1}$ denote the discrete Fourier and inver
 
 Figure \ref{fig:ccfMap_example} provides an example of the output from the FFT-based CCF calculation method. In the top-left we see a $72 \times 72$ pixel cell from one surface matrix. In the top-right we see this cell's associated region in the other surface matrix of dimension $216 \times 216$ (triple the cell's side lengths). The bottom-left shows the CCF "map" calculated using this FFT-based method. Although the CCF need not be bounded between $-1$ and $1$ based on the definition, it is common to normalize the CCF for interpetability purposes and is done so in the \pkg{cmcR} package. A summary of the alignment parameters at which the CCF$_{\max}$ occurs is shown in the bottom-right. We can see that the two matrices are best-aligned when the cell is shifted "east" 20 pixels and ``north" 9 pixels starting from the center of the region. The $\theta = -18$ indicates that the overall cartridge case scan from which the region (shown in the top-right) was extracted was rotated by $-18$ degrees for this comparion. The orange square in the top-right plot shows where the cell would be located if the translation were performed.
 
-```{r,echo=FALSE,cache=TRUE,fig.cap='\\label{fig:ccfMap_example} Example of a cross-correlation function "map" for a particular cell/region comparison',fig.align='center',fig.pos='htbp',out.width='\\linewidth'}
+```{r,echo=FALSE,cache=TRUE,fig.cap='\\label{fig:ccfMap_example} Example of a cross-correlation function "map" for a particular cell/region comparison',fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
 
 fadul1.1 <- cmcR::selectBFImpression_sample_x3p("data/fadul1-1.x3p")
 fadul1.2 <- cmcR::selectBFImpression_sample_x3p("data/fadul1-2.x3p")
@@ -332,7 +336,7 @@ The family of functions in the \pkg{cmcR} package beginning with \code{preProces
 \begin{enumerate}
 \item \code{preProcess\_ransac}: estimates the height value of the breech face impressions in a scan using the Random Sample Consensus (RANSAC) robust, iterative plane-fitting algorithm \citep{ransac}.
 
-\item \code{preProcess\_levelBF}: extracts the observations containing breech face impressions from the scan using the estimated height value obtained from \code{preProcess\_levelBF}.
+\item \code{preProcess\_levelBF}: extracts the observations containing breech face impressions from the scan using the estimated height value obtained from \code{preProcess\_ransac}.
 
 \item \code{preProcess\_cropWS}: removes rows/columns containing mostly if not all \code{NA} values from the surface matrix on the exterior of breech face impressions.
 
@@ -432,7 +436,7 @@ cmcPlots <- cmcR::cmcPlot(fadul1.1$x3p,
 cmcPlots$initialCMC
 ```
 ```{r,echo=FALSE,cache=TRUE,fig.cap='\\label{fig:initialCMCPlot} CMC results from a known match comparison under the initially proposed method',fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth',out.extra="trim={0 2.5cm 0 2cm}"}
-# debug(cmcR:::arrangeCMCPlot)
+#Actual code executed to tweak the size/position of the colorbar legend:
 cmcPlots <- cmcR::cmcPlot(fadul1.1$x3p,
                           fadul1.2$x3p,
                           cellCCF_bothDirections_output = kmComparison,
@@ -472,7 +476,7 @@ Similarly, 41 CMCs and 2 non-CMCs determined under the High CMC method are shown
 cmcPlots$highCMC
 ```
 ```{r,echo=FALSE,cache=FALSE,fig.cap='\\label{fig:highCMCPlot} CMC results from a known match comparison under the High CMC method',fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth',out.extra="trim={0 2.5cm 0 2cm}"}
-
+#Actual code executed to tweak the size/position of the colorbar legend:
 cmcPlots$highCMC +
   guides(fill = guide_colourbar(barheight = grid::unit(2.47,"in"),
                                 label.theme = element_text(size = 8),
@@ -507,7 +511,7 @@ As described in section [2](#data), the set of cartridge case scans from \citet{
 
 For any cartridge case pair, the number of CMCs can be determined under the initially proposed method described in section [3.2.1](#initialMethod) and the high CMC method described in section [3.2.2](#highCMCMethod). These CMC counts can be determined for all 780 cartridge case pairs available in the \citet{fadul_empirical_nodate} dataset. Perfect identification of all matching and non-matching pairs corresponds choosing a CMC count threshold that separates the distributions of the matching and non-matching CMC counts. Many authors have found success in choosing a CMC count threshold of 6 CMCs (\citet{tong_improved_2015}, \citet{song_estimating_2018}) as initially proposed by \citet{song_proposed_2013}, although this threshold has been shown to not generalize well to all proposed methods or cartridge case datasets \citep{chen_convergence_2017}. Further, little consensus exists among authors on the most effective alignment parameter thresholds ($T_{dx}, T_{dy}, T_{\theta}, T_{\text{CCF}}$ defined in section [3.2.1](#initialMethod)) for distinguishing matches from non-matches. Figure \ref{fig:initialCMC_perfectIdentification} shows an example of a particular set of thresholds that yields separation between the known match and known non-match CMC count distributions. An appropriate CMC count threshold would be where the dashed, vertical line is drawn at 15.5 CMCs. Separation is also achieved using the initially proposed method by \citet{tong_improved_2015} and \citet{chen_convergence_2017}, among others. It should be noted that these authors report CMC count distributions with fewer "false positive" CMCs for non-match pairs. However, the behavior of these distributions changes considerably depending on the thresholds specified.
 
-```{r echo=FALSE,fig.cap='\\label{fig:initialCMC_perfectIdentification} Initial CMC count distribution with $T_{\\text{CCF}} = .5$, $T_{dx} = T_{dy} = 30$, and $T_{\\theta} = 6$ degrees.',fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
+```{r echo=FALSE,fig.cap='\\label{fig:initialCMC_perfectIdentification} Initial CMC count distribution with $T_{\\text{CCF}} = .5$, $T_{dx} = T_{dy} = 30$, and $T_{\\theta} = 6$ degrees.',fig.align='center',fig.pos='htbp',out.width='\\textwidth',out.height=".55\\textwidth"}
 
 load("data/cmcCountData.RData")
 
@@ -540,7 +544,7 @@ cmcCountData_setSeed4132020 %>%
               group_by(comparisonType) %>%
               mutate(prop = n/sum(n)),
             aes(x = cmcCount,y = prop,label = n),
-            nudge_y = .005,size = 3) +
+            nudge_y = .005,size = 2.5) +
   geom_vline(xintercept = 15.5,linetype = "dashed") +
   scale_fill_manual(values = c("orange","#b19cd9"),aesthetics = c("colour","fill")) +
   guides(fill = guide_legend(title = "Comparison Type",override.aes = list(alpha = 1)),
@@ -615,7 +619,7 @@ initialCMC_roc %>%
 
 Figure \ref{fig:initialCMC_perfectIdentification} shows an example of threshold combinations that yield separation between the matching and non-matching CMC count distributions. The dashed, vertical line is drawn at 35.5 CMCs. Note that while known match pairs tend to be assigned higher CMC counts than under the initially proposed method, so too do certain known non-match pairs. The cluster of non-match pairs that are assigned a large High CMC count all pass the High CMC criterion. Similar non-match bimodal behavior can be seen in Figure 8 of \citet{chen_convergence_2017} where the High CMC method was applied to cartridge case data from \citet{laPorte_validation_2011}. 
 
-```{r echo=FALSE,fig.cap='\\label{fig:initialCMC_perfectIdentification} High CMC count distribution with $T_{\\text{CCF}} = .5$, $T_{dx} = T_{dy} = 20$, and $T_{\\theta} = 6$ degrees',fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
+```{r echo=FALSE,fig.cap='\\label{fig:initialCMC_perfectIdentification} High CMC count distribution with $T_{\\text{CCF}} = .5$, $T_{dx} = T_{dy} = 20$, and $T_{\\theta} = 6$ degrees',fig.align='center',fig.pos='htbp',out.width='\\textwidth',out.height='.55\\textwidth'}
 cmcCountData_setSeed4132020 %>%
   filter(cmcType == "high") %>%
   filter(thetaThresh == 6) %>%
@@ -646,7 +650,7 @@ cmcCountData_setSeed4132020 %>%
               group_by(comparisonType) %>%
               mutate(prop = n/sum(n)),
             aes(x = cmcCount,y = prop,label = n),
-            nudge_y = .005,size = 2.5) +
+            nudge_y = .005,size = 2) +
   geom_vline(xintercept = 35.5,linetype = "dashed") +
   scale_fill_manual(values = c("orange","#b19cd9"),aesthetics = c("colour","fill")) +
   guides(fill = guide_legend(title = "Comparison Type",override.aes = list(alpha = 1)),
@@ -726,63 +730,6 @@ highCMC_roc %>%
   xlab("False Positive Rate") +
   ylab("True Positive Rate") +
   ggtitle("High CMC ROC Curves, Residuals, BP Filter - Cutoffs: 16, 250 microns")
-```
-
-
-```{r echo=FALSE,eval=FALSE}
-cmcCountData_setSeed4132020 %>%
-  pivot_wider(id_cols = c("pair","ccfThresh","translateThresh","thetaThresh","comparisonType"),names_from = c("cmcType"),values_from = c("cmcCount")) %>%
-  mutate(high = ifelse(high == 0,initial,high)) %>%
-  pivot_longer(cols = c("initial","high"),
-               names_to = "cmcType",
-               values_to = "cmcCount") %>%
-  filter(thetaThresh == 3 & cmcType == "high") %>%
-  filter(ccfThresh >= .5 & ccfThresh <= .8) %>%
-  mutate(comparisonType = factor(comparisonType,levels = c("known non-match","known match"))) %>%
-  ggplot(aes(x = cmcCount,y = ..density..)) +
-  geom_histogram(aes(fill = comparisonType),colour = "black",binwidth = 1) +
-  geom_histogram(alpha = 0,binwidth = 1) +
-  scale_fill_manual(values = c("orange","#b19cd9")) +
-  guides(fill = guide_legend(override.aes = list(alpha = 1))) +
-  facet_wrap(ccfThresh ~ translateThresh,ncol = 6,scales = "free_y",labeller = label_both) +
-  theme_bw() + 
-  theme(legend.position = "bottom") +
-  ggtitle("CMC distribution, Residuals, BP Filter - Cutoffs: 16, 250 microns") +
-  xlab("CMC Count") +
-  ylab("Frequency")
-```
-
-```{r eval=FALSE,include=FALSE}
-cmcCountData_setSeed4132020 %>%
-  pivot_wider(id_cols = c("pair","ccfThresh","translateThresh","thetaThresh","comparisonType"),names_from = c("cmcType"),values_from = c("cmcCount")) %>%
-  mutate(high = ifelse(high == 0,initial,high)) %>%
-  pivot_longer(cols = c("initial","high"),
-               names_to = "cmcType",
-               values_to = "cmcCount") %>%
-  filter(thetaThresh == 3 & cmcType == "high") %>%
-  filter(ccfThresh == .5 & translateThresh == 20 & comparisonType == "known non-match") %>%
-  arrange(desc(cmcCount))
-
-cmcCountData_setSeed4132020 %>%
-  pivot_wider(id_cols = c("pair","ccfThresh","translateThresh","thetaThresh","comparisonType"),names_from = c("cmcType"),values_from = c("cmcCount")) %>%
-  mutate(high = ifelse(high == 0,initial,high)) %>%
-  pivot_longer(cols = c("initial","high"),
-               names_to = "cmcType",
-               values_to = "cmcCount") %>%
-  filter(thetaThresh == 3 & cmcType == "high") %>%
-  filter(ccfThresh == .5 & translateThresh == 20 & comparisonType == "known match") %>%
-  arrange(cmcCount)
-```
-
-
-```{r eval=FALSE,include=FALSE}
-debugonce(cmcR::cmcFilter_improved)
-
-kmCorrs_64Cells_residuals_downSampled_bandpass16_250_setSeed4132020$`Fadul3-2_FadulZ` %>%
-  cmcR::cmcFilter_improved(ccf_thresh = .5,dx_thresh = 20,theta_thresh = 3,compareInitialAndHighThetas = TRUE)
-
-knmCorrs_64Cells_residuals_downSampled_bandpass16_250_setSeed4132020$`firearm2_Fadul2-1, firearm5_FadulN` %>%
-  cmcR::cmcFilter_improved(ccf_thresh = .5,dx_thresh = 20,theta_thresh = 3,compareInitialAndHighThetas = TRUE)
 ```
 
 # Conclusion
