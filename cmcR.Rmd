@@ -42,16 +42,13 @@ if(!dir.exists("data")){
 }
 if(!file.exists("data/fadul1-1.x3p")){
   library(dplyr) # pipe not defined yet
-  x3ptools::read_x3p("https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement/DownloadMeasurement/2d9cc51f-6f66-40a0-973a-a9292dbee36d") %>%
-    x3ptools::write_x3p(file = "data/fadul1-1.x3p")
+  download.file("https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement/DownloadMeasurement/2d9cc51f-6f66-40a0-973a-a9292dbee36d", destfile = "data/fadul1-1.x3p", mode = "wb")
 }
 if(!file.exists("data/fadul1-2.x3p")){
-  x3ptools::read_x3p("https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement/DownloadMeasurement/cb296c98-39f5-46eb-abff-320a2f5568e8") %>%
-    x3ptools::write_x3p(file = "data/fadul1-2.x3p")
+  download.file("https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement/DownloadMeasurement/cb296c98-39f5-46eb-abff-320a2f5568e8", destfile = "data/fadul1-2.x3p", mode = "wb")
 }
 if(!file.exists("data/fadul2-1.x3p")){
-  x3ptools::read_x3p("https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement/DownloadMeasurement/8ae0b86d-210a-41fd-ad75-8212f9522f96") %>%
-    x3ptools::write_x3p(file = "data/fadul2-1.x3p")
+  download.file("https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement/DownloadMeasurement/8ae0b86d-210a-41fd-ad75-8212f9522f96", destfile = "data/fadul2-1.x3p", mode = "wb")
 }
 ```
 
