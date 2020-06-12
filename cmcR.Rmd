@@ -28,7 +28,8 @@ preamble: |
   \usepackage{amsmath,amssymb,array}
   \usepackage{booktabs}
   \usepackage{subcaption}
-  \usepackage{xcolor}
+  \usepackage{nameref}
+  \usepackage{color}
 output: rticles::rjournal_article
 ---
 
