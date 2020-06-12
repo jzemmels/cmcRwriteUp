@@ -227,27 +227,37 @@ where $\mathcal{F}$ and $\mathcal{F}^{-1}$ denote the discrete Fourier and inver
 
 Figure \ref{fig:ccfMap_example} provides an example of the output from the FFT-based CCF calculation method. In the top-left we see a $72 \times 72$ pixel cell from one surface matrix. In the top-right we see this cell's associated region in the other surface matrix of dimension $216 \times 216$ (triple the cell's side lengths). The bottom-left shows the CCF "map" calculated using this FFT-based method. Although the CCF need not be bounded between $-1$ and $1$ based on the definition, it is common to normalize the CCF for interpetability purposes and is done so in the \pkg{cmcR} package. A summary of the alignment parameters at which the CCF$_{\max}$ occurs is shown in the bottom-right. We can see that the two matrices are best-aligned when the cell is shifted "east" 20 pixels and ``north" 9 pixels starting from the center of the region. The $\theta = -18$ indicates that the overall cartridge case scan from which the region (shown in the top-right) was extracted was rotated by $-18$ degrees for this comparion. The orange square in the top-right plot shows where the cell would be located if the translation were performed.
 
-```{r,echo=FALSE,cache=TRUE,fig.cap='\\label{fig:ccfMap_example} Example of a cross-correlation function "map" for a particular cell/region comparison',fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
-
+```{r load-data, include = F, cache = T}
 fadul1.1 <- cmcR::selectBFImpression_sample_x3p("data/fadul1-1.x3p")
 fadul1.2 <- cmcR::selectBFImpression_sample_x3p("data/fadul1-2.x3p")
-
+```
+```{r cmc-ccf, include = F, cache = T}
 kmComparison <- cmcR::cellCCF_bothDirections(x3p1 = fadul1.1$x3p,
                                              x3p2 = fadul1.2$x3p,
                                              cellNumHoriz = 8,
                                              minObservedProp = .1,
                                              regionToCellProp = 9)
-
-kmCMC <- cmcR::cmcFilter_improved(kmComparison,
+```
+```{r cmc-filter, include = F, cache = T}
+if (!file.exists("data/kmcmc.Rdata")) {
+  kmCMC <- cmcR::cmcFilter_improved(kmComparison,
                                   ccf_thresh = .5,
                                   dx_thresh = 20,
                                   theta_thresh = 6,
                                   missingTheta_decision = "dismiss")
+  save(kmCMC, file = "data/kmcmc.Rdata")
+} else {
+  load("data/kmcmc.Rdata")
+}
 
+```
+```{r region-pairs, include = F, cache = T}
 kmCellRegionPairs <- cmcR::getCellRegionPairs(fadul1.1$x3p,fadul1.2$x3p,
                                               ccfDF = kmCMC$highCMCs,
                                               cellCCF_params = kmComparison$comparison_1to2$params)
+```
 
+```{r,echo=FALSE,cache=TRUE,fig.cap='\\label{fig:ccfMap_example} Example of a cross-correlation function "map" for a particular cell/region comparison',fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
 invisible(
   kmCellRegionPairs[3] %>%
     map2(.x = .,
