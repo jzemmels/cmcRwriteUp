@@ -86,6 +86,22 @@ set.seed(4132020)
 
 \hh{XXX outline the steps: identify algorithms, compare implementations of algorithms between programming languages, identify implicit parameters, idnetify parameter settings}
 
+\svp{I agree with Heike's assessment. Proposed structure:}
+
+- Reproducibility introduction - types, why, how
+  - Cite old published algorithms
+  - highlight the importance of reproducibility and transparency for legal applications in particular - innocence project paper on algorithms
+- Introduce case study - cartridge cases
+  - background info
+- Step through the algorithm quoting NIST paper and then describing the different pieces of the necessary information which were missing from the paper, with pseudocode documented in section XX of the appendix referenced for each step
+- Describe the differences between the results in the NIST paper and what we can replicate
+- Discussion
+  - Sources of ambiguity
+    - descriptions of algorithms
+    - unspecified parameters
+    - unpublished manually cleaned data
+- Conclusion: Open source is vital for reproducibility, and absolutely essential for applications that depend on algorithms being correct - justice, medicine, aerospace...
+
 
 # Introduction  {#intro}
 
