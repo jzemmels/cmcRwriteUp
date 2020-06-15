@@ -125,20 +125,23 @@ knitr::include_graphics("images/cartridgeCasePair_comparison.PNG")
 <!-- knitr::include_graphics(c("images/breechFace.png","images/breechFaceImpression.png")) -->
 <!-- ``` -->
 
-These breech face impressions are considered to be analogous to a firearm's "fingerprint" left on a cartridge case. Matching an expended cartridge case of unknown source to one of known source based on breech face impressions has been performed for over 100 years by forensic practitioners \citep{firearm_id_thompson}. The development of computational and statistical methods to perform such identification has recently grown in interest \citep{council_strengthening_2009}. One such method is the Congruent Matching Cells (CMC) method invented at NIST that involves partitioning a cartridge case image or scan into a grid of ``correlation cells" to isolate areas containing identifying breech face impression markings \citep{song_proposed_2013}. Since its invention in 2012, researchers at NIST have developed a number of extensions and improvements of the CMC method. However, to date there does not exist an openly available implementation of any of these techniques. 
+These breech face impressions are considered to be analogous to a firearm's "fingerprint" left on a cartridge case. Matching an expended cartridge case of unknown source to one of known source based on breech face impressions has been performed for over 100 years by forensic practitioners \citep{firearm_id_thompson}. The development of computational and statistical methods to perform such identification has recently grown in interest \citep{council_strengthening_2009}. One such method is the Congruent Matching Cells (CMC) method invented at NIST that involves partitioning a cartridge case image or scan into a grid of "correlation cells" to isolate areas containing identifying breech face impression markings \citep{song_proposed_2013}. Since its invention in 2012, researchers at NIST have developed a number of extensions and improvements of the CMC method. However, to date there does not exist an openly available implementation of any of these techniques. 
 Many methods proposed in the CMC literature include a description of a proposed technique that does not delve into the intricacies of the implementation. Given that the implementations are not openly available, this makes it especially difficult to validate or assess results. Additionally, some procedures related to pre-processing the cartridge case data are done manually at NIST rather than with an automated method \citep{song_estimating_2018}. This compounds the difficulty to accurately reproduce results. 
 
-While issues related to reproducibility have been identified and explored in many academic fields [\citet{baker_1500_2016}, \citet{osc_estimating_2015}, \citet{goecks_galaxy_2010}], computational reproducibility poses its own challenges. Published results may be sensitive to the particular implementation of a computational method including such considerations as data processing decisions, parameter settings, and even the chosen programming language [\citep{peng_reproducible_2011},\citet{Stodden2013SettingTD}]. Especially in applications like forensic science where results from computational methods may affect legal decisions \citep{angwin_machine_2016}, transparency in how a method or algorithm is implemented is necessary.
+While issues related to reproducibility have been identified and explored in many academic fields [\citet{baker_1500_2016}, \citet{osc_estimating_2015}, \citet{goecks_galaxy_2010}], computational reproducibility poses its own challenges. Published results may be sensitive to the particular implementation of a computational method including such considerations as data processing decisions, parameter settings, and even the chosen programming language [\citep{peng_reproducible_2011},\citet{Stodden2013SettingTD}]. Especially in applications like forensic science where results from computational methods may affect legal decisions \citep{angwin_machine_2016}, transparency in how a method or algorithm is implemented is necessary. 
 
-The \pkg{cmcR} package provides an open-source, fully-automatic implementation of the CMC method as originally described in \citet{song_proposed_2013} as well an extension proposed by \citet{tong_improved_2015}. This extension was later referred to as the "High CMC" method by \citet{chen_convergence_2017} and is referred to as such in the \pkg{cmcR} package.
+The \pkg{cmcR} package provides an open-source, fully-automatic implementation of the CMC method as described in \citet{song_3d_2014} as well an extension proposed by \citet{tong_improved_2015}. This extension was later referred to as the "High CMC" method by \citet{chen_convergence_2017} and is referred to as such in the \pkg{cmcR} package.
 
 \svp{Transition to NIST algorithm quotes section?}
 \svp{The next section may need to be abbreviated and moved into the description if at all possible - provide just the important background information.}
-# Cartridge case surface data {#data}
 
-Cartridge case data commonly come in two forms: 2D grayscale images and 3D topographical scans. It is common in the CMC literature to use the 3D topographical scans to demonstrate the efficacy of a proposed method [\citep{tong_improved_2015}, \citep{chen_convergence_2017}]. A variety of scans are openly available for download through the NIST Ballistics Toolmark Research Database \citep{nbtrd}. The \pkg{cmcR} package was designed specifically for use with the 3D topographies.
+# Methods
 
-The 3D topographies are commonly stored in an .x3p (XML 3D Surface Profile) file format that includes metainformation the author of the scan and information about the conditions under which the scan was taken (e.g., the lateral resolution in microns). The \pkg{x3ptools} package in R provides an interface to manipulate and visualize these .x3p files \citep{x3ptools}. The physical surface is represented using a \dfn{surface matrix}: a matrix of spatially-ordered elements or "pixels" whose values correspond to the height of the cartridge case surface at a particular location. Figure \ref{fig:cartridgeCasePair} shows the surface matrices of a known match (KM) pair of cartridge cases, meaning there were fired from the same firearm. Note that white regions in the images below represent unobserved or missing values. When read into R using the \pkg{x3ptools} package, these elements are encoded as \code{NA}. The size of a surface matrix depends on the lateral resolution with which the scans were taken. For example, a popular set of scans in the CMC literature were taken by \citet{fadul_empirical_nodate}; two of which are shown is the scan shown in Figure \ref{fig:cartridgeCasePair}. These scans were taken with a lateral resolution of 6.25 microns (micrometers) per pixel. The surface matrices from this study vary around $1200 \times 1200$ pixels in size.
+An initial implementation of the CMC method applied to 3D topographical scans of cartridge case surfaces is described in \citet{song_3d_2014}. To acknowledge the original work, excerpts from the article will be provided. A discussion about ambiguity in how the method was originally described and how it is actually implemented in the \pkg{cmcR} package will accompany these excerpts. The Appendix (LINK) contains pseudocode detailing the procedures more precisely.
+
+## Pre-processing procedures
+
+First, 3D topographical cartridge case surface data in their raw format need to be processed before the CMC method can be effectively applied. Cartridge case surface data are commonly represented via a \dfn{surface matrix}: a matrix of spatially-ordered elements or "pixels" whose values correspond to the height of the cartridge case surface at a particular location. Figure \ref{fig:cartridgeCasePair} shows the surface matrices of a known match (KM) pair of cartridge cases from a study by \citet{fadul_empirical_nodate}. A total of 63 cartridge cases were scanned for this study with a lateral resolution of 6.25 microns (micrometers) per pixel. The surface matrices vary around $1200 \times 1200$ pixels in size.
 
 ```{r, fadul1-1Screenshot,include=FALSE}
 fadul1.1 <- x3ptools::read_x3p("data/fadul1-1.x3p")
@@ -223,11 +226,196 @@ rgl.close()
 knitr::include_graphics(c("derivatives/fadul1-1.png","derivatives/fadul1-2.png"))
 ```
 
-Only certain regions of a cartridge case contain identifying breech face impression markings. \citet{song_proposed_2013} refers to these as "valid correlation regions" that are to be used to determine whether two cartridge cases match. The cell-based comparison procedure described in section [3.1](#comparisonProcedure) is designed to allow such regions to stand out against invalid correlation regions. However, prior to applying this procedure cartridge scans must undergo some pre-processing to remove sections of the cartridge case surface that do not come into contact with the breech face of the barrel. These include a circular plateaued region in the center of the scan that is pushed aside by the firing pin during the firing process and clusters of observed values in the corners of the scan that are artifacts of the staging area in which the scan was captured. The task in pre-processing is to automatically remove these unwanted regions from the scan to accentuate unique markings left by the breech face. This is discussed in greater detail in section [3.1](#preProcessing).
+Only certain regions of a cartridge case contain identifying breech face impression markings. \citet{song_proposed_2013} refers to these as "valid correlation regions" that are to be used to determine whether two cartridge cases match. Prior to applying the CMC comparison procedure, cartridge scans must undergo some pre-processing to remove sections of the cartridge case surface that do not come into contact with the breech face of the barrel. These include a circular plateaued region in the center of the scan that is pushed aside by the firing pin during the firing process as well as clusters of observed values in the corners of the scan that are artifacts of the staging area in which the scan was captured. The procedures used to process the surface matrices differ in the CMC literature. \citet{song_3d_2014} outline the following pre-processing procedure:
+
+\begin{enumerate}
+\item "Trim off the inside firing pin surface and other areas outside the breed face mark, so that only breech face impression data remain for correlation." While not said explicitly in this paper, \citet{song_estimating_2018} indicates that this trimming is performed manually.
+
+\item "Identify and remove dropouts or outliers." This refers to pixels in the surface matrix post-trimming that are either missing or incorrectly recorded during the scanning process. It is unclear how these pixels, especially the dropouts, are "removed" from the scan or how outlier pixels are defined.
+
+\item "Apply a band-pass Gaussian regression filter with 40 $\mu$m short cutoff length and 400 $\mu$m long cutoff length to remove low frequency components, including surface curvature, form error, waviness and high frequency components which mainly arise from the instrument noise." To our knowledge, there does not exist an open-source implementation of the multivariate bandpass Gaussian regression filter used in surface metrology \citep{ISO16610-71}. Further, there are various parameters requiring specification to implement a Gaussian regression filter and it is not clear how these parameters were chosen.
+\end{enumerate}
+
+In the \pkg{cmcR} package, breech face impression data are isolated using a combination of the Random Sample Consensus (RANSAC) robust, iterative plane-fitting \citep{ransac}, the Hough Transform shape detection algorithm \citep{hough}, and cropping rows/columns of the surface matrix containing only \code{NA} values on the exterior of the breech face impression region. This was inspired largely by \citet{tai_fully_2018} who detail a fully-automatic procedure for processing 2D cartridge case images. The \pkg{cmcR} package does not yet use a Gaussian regression filter. A simpler Gaussian filter, a technique used by \citet{tong_fired_2014} and \citet{song_estimating_2018}, is currently implemented instead. It is necessary to replace dropouts and other \code{NA}-valued pixels with a non-\code{NA} value to perform the comparison procedure. The convention adopted in the \pkg{cmcR} package is to use the average pixel value as a replacement.
+
+To illustrate the usage of the \pkg{cmcR} package, we will consider a comparison between the KM cartridge case pair shown in Figure \ref{fig:cartridgeCasePair}. For computational purposes it is common the CMC literature to down-sample a surface matrix prior to performing the cell-based comparison procedure. The sample_x3p function from the x3ptools package can be used used to sample every m th row/column of a surface matrix. The selectBFImpression_sample_x3p performs all of these pre-processing procedures in a single call. The code to produce the first surface matrix shown in Figure \ref{fig:processedScans} is given below while the code for the second surface matrix is skipped for redundancy. Note that the RANSAC method relies on randomly selecting points within the surface matrix, so a seed is set for reproducibility.
+
+```{r echo=TRUE,eval=FALSE}
+library(cmcR)
+set.seed(4132020)
+
+nrbtd_url <- "https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement/"
+
+fadul1.1_id <- "DownloadMeasurement/2d9cc51f-6f66-40a0-973a-a9292dbee36d"
+fadul1.2_id <- "DownloadMeasurement/cb296c98-39f5-46eb-abff-320a2f5568e8"
+
+fadul1.1 <- selectBFImpression_sample_x3p(x3p_path = paste0(nrbtd_url,fadul1.1_id),
+                                          ransacInlierThresh = 1e-5, #1 micron
+                                          ransacIters = 150,
+                                          m = 2, #sample_x3p down-sample rate
+                                          gaussFilterWavelength = c(16,250),
+                                          gaussFilterType = "bp") #bandpass filter
+```
+
+```{r load-data, include = F, cache = T}
+fadul1.1 <- cmcR::selectBFImpression_sample_x3p("data/fadul1-1.x3p")
+fadul1.2 <- cmcR::selectBFImpression_sample_x3p("data/fadul1-2.x3p")
+```
+
+```{r,echo=FALSE,cache=TRUE,fig.cap='\\label{fig:processedScans} A known match pair of processed cartridge case scans',fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth',out.extra="trim={0 2.5cm 0 2cm}"}
+
+cmcR::x3pListPlot(x3pList = list("Fadul 1-1" = fadul1.1$x3p,
+                                 "Fadul 1-2" = fadul1.2$x3p),
+                  type = "faceted",rotate = 90) +
+  guides(fill = guide_colourbar(barheight = grid::unit(2.6,"inches"),
+                                label.theme = element_text(size = 8),
+                                title.theme = ggplot2::element_text(size = 10),
+                                frame.colour = "black",
+                                ticks.colour = "black")) +
+  theme(legend.position = c(1.11,.551),plot.margin = ggplot2::margin(c(0,3,.2,0),unit = "cm"))
+```
+
+## "Correlation cell" comparison procedure
+
+As described in \citet{song_proposed_2013}, breech face markings are not uniformly impressed upon a cartridge case during the firing process. As such, only certain sections of the cartridge case have identifiable markings that make it possible to match to a firearm. Calculating a similarity score between the entirety of two cartridge case surfaces might not highlight these valid correlation regions. Instead, \citet{song_proposed_2013} proposes partitioning one surface matrix into a grid of "correlation cells," some of which will enclose the valid correlation regions of interest. If a large number of these correlation cells are deemed highly similar to regions in the other surface matrix, then there is evidence that the two cartridges cases match. Thus, the number of highly similar cells can be used as a more granular similarity metric.
+
+```{r, echo=FALSE,fig.cap='\\label{fig:cmc_illustration} Illustration of comparing a "cell" in one cartridge case scan to a region in another',fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
+
+knitr::include_graphics("images/cmc_illustration.PNG")
+```
+
+Figure \ref{fig:cmc_illustration} illustrates the cell-based comparison procedure between two cartridge case scans. The scan on the left is divided into a grid of $8 \times 8$ cells. Each cell is paired with an associated larger region in the other scan. The absolute location of each cell and region in their respective surface matrices remain constant. However, the scan on the right is rotated to determine the rotation at which the two scans are the most "similar," which is quantified using the \dfn{cross-correlation function} (CCF). For two real-valued, $M \times N$ matrices $A$ and $B$, the cross-correlation function, denoted $(A \star B)$ can be defined as
+$$
+(A \star B)[m,n] = \sum_{i=0}^M \sum_{j=0}^N A[i,j] B[(i + m)_{\text{mod}\ M}, (j + n)_{\text{mod}\ N}].
+$$
+Note that this finite, discretized CCF definition yields a matrix of elements representing the similarity between matrices $A$ and $B$ for various translations of matrix $B$. The index at which the CCF attains a maximum represents the translations needed to align $B$ with $A$.
+
+\jz{Discuss ambiguity in how the CCF is to be calculated. Calculation based on the definition is computationally infeasible, but there isn't a clear indication in any of the main articles from which we've based the package how the CCF is calculated. \citet{ott_applying_2017} and \citet{tong_valid_2018} are the only papers I have found that define the "Areal Cross Correlation Function" using actual, clear notation.}
+
+\jz{There is no clear indication that the FFT-based method is used in any of the main papers other than the CCF maps in \citet{tong_improved_2015} (which I guess *could* have been created based on calculating the CCF from the definition). I think this section will need to be less quote-heavy since there's such ambiguity in how the CCF is actuall computed.}
+
+\jz{In the cmcR package implementation description, discuss how/why the CCF is calculated using the FFT-based method followed by the pairwise complete correlation.}
+
+## The initially proposed CMC method
+
+"The qualiﬁcations of CMCs require not only high correlation values CCF$_{\max} \geq T_{\text{CCF}}$, but also similar registration angles $\theta$ (within the threshold $T_{\theta}$) and similar $x–y$ registration pattern (within the thresholds $T_x$, $T_y$)."
+
+"a virtual reference with three reference registration parameters $\theta_{\text{ref}}$, $x_{\text{ref}}$ and $y_{\text{ref}}$ generated by the median values of the collective $\theta$, and $x$-, $y$-translation values of all cell pairs in each correlation sequence."
+
+"Before using the CMC method for ballistics identiﬁcations, it is necessary to specify the values of the thresholds $T_{\text{CCF}}$, $T_\theta$ and $T_x$, $T_y$. These threshold values are experimentally determined."
+
+## The High CMC method
+
+\jz{\citet{tong_improved_2015} provide no discussion on how the data were processed prior to applying the proposed method.}
+
+"If two images are truly matching, the CMC-$\theta$ distribution of matching image pairs should have a prominent peak located near the initial phase angle $\Theta_0$, while non-matching image pairs may have a relatively flat and random CMC-$\theta$ distribution pattern." This observation appears to be true for the majority KM and KNM pairs. However, we've observed that the behavior of the CMC-$\theta$ distributions depend heavily on the pre-processing procedures used and thresholds set. In particular, the CMC-$\theta$ distributions for some KNM pairs exhibit the "prominent peak" behavior for a wide range of threshold values making them difficult to distinguish from KM pairs.
+
+"the second proposed step is to combine the forward and backward correlations [...] and utilize the different features of CMC-$\theta$ distributions in KM and KNM images to detect and exclude random CMC peaks for non-matching correlations from the CMC-$\theta$ distributions."
+
+"Conduct both forward and backward correlations at each rotation and record the registrationbased on CCF$_{\max}$, $x$, and $y$ for each cell at each rotation. These data will be used in the next two steps separately."
+
+"At every rotation angle, each cell in the reference image finds a registration position in the compared image with a maximum CCF value. By selecting the registration with the maximum CCF value for each cell, the two CMC numbers determined by the four thresholds can be obtained based on the original algorithm [\citet{tong_fired_2014}]. The lower CMC number is used as the initial result."
+
+"Build CMC-$\theta$ distributions using the data generated in step 1, by counting the number of cells that have congruent positions at each individual rotation angle. Calculate the angular range of “high CMCs” using both the forward and backward CMC-$\theta$ distributions, as illustrated in Figs. 2 and 3."
+
+"If the angular range of the “high CMCs” is within the range $T_\theta$, identify the CMCs for each rotation angle in this range and combine them to give the number of CMCs for this comparison in place of the original CMC number. In this step, if the range is narrower than $T_\theta$, the nearby angles are included to make the range equal to $T_\theta$; CMCs with same index in each rotation are only counted once."
+
+<!-- # Cartridge case surface data {#data} -->
+
+<!-- Cartridge case data commonly come in two forms: 2D grayscale images and 3D topographical scans. It is common in the CMC literature to use the 3D topographical scans to demonstrate the efficacy of a proposed method [\citep{tong_improved_2015}, \citep{chen_convergence_2017}]. A variety of scans are openly available for download through the NIST Ballistics Toolmark Research Database \citep{nbtrd}. The \pkg{cmcR} package was designed specifically for use with the 3D topographies. -->
+
+<!-- The 3D topographies are commonly stored in an .x3p (XML 3D Surface Profile) file format that includes metainformation the author of the scan and information about the conditions under which the scan was taken (e.g., the lateral resolution in microns). The \pkg{x3ptools} package in R provides an interface to manipulate and visualize these .x3p files \citep{x3ptools}. The physical surface is represented using a \dfn{surface matrix}: a matrix of spatially-ordered elements or "pixels" whose values correspond to the height of the cartridge case surface at a particular location. Figure \ref{fig:cartridgeCasePair} shows the surface matrices of a known match (KM) pair of cartridge cases, meaning there were fired from the same firearm. Note that white regions in the images below represent unobserved or missing values. When read into R using the \pkg{x3ptools} package, these elements are encoded as \code{NA}. The size of a surface matrix depends on the lateral resolution with which the scans were taken. For example, a popular set of scans in the CMC literature were taken by \citet{fadul_empirical_nodate}; two of which are shown is the scan shown in Figure \ref{fig:cartridgeCasePair}. These scans were taken with a lateral resolution of 6.25 microns (micrometers) per pixel. The surface matrices from this study vary around $1200 \times 1200$ pixels in size. -->
+
+<!-- ```{r, fadul1-1Screenshot,include=FALSE} -->
+<!-- fadul1.1 <- x3ptools::read_x3p("data/fadul1-1.x3p") -->
+
+<!-- #apply lowpass filter to reduce noise in scan: -->
+<!-- surface1 <- fadul1.1$surface.matrix %>% -->
+<!--   cmcR::preProcess_gaussFilter(res = 3.125e-06,wavelength = 16,filtertype = "lp") -->
+
+<!-- params <- rgl::r3dDefaults -->
+
+<!-- zoom <- .7 -->
+<!-- size <- c(300,300) -->
+
+<!-- params$windowRect <- c(40, 125, 40 + size[1], 125 + size[2]) -->
+<!-- params$userMatrix <- diag(c(1, 1, 1, 1)) -->
+<!-- params$zoom <- zoom -->
+
+<!-- #for some reason the first rgl device opened doesn't plot anything, but -->
+<!-- #subsequent devices do... -->
+<!-- open3d(params = params) -->
+<!-- rgl.close() -->
+
+<!-- #opens blank "canvas" upon which we can add lights, surfaces, etc. -->
+<!-- open3d(params = params) -->
+
+<!-- #removes any previously declared lights in scene -->
+<!-- rgl.pop("lights") -->
+
+<!-- #set-up two lights for scene -- a lot of experimentation possible here -->
+<!-- light3d(x = -1,y = 1,z = 2,viewpoint.rel = TRUE,ambient = "white",diffuse = "white",specular = "white") -->
+<!-- light3d(x = 0,y = 0,z = 10,ambient = "grey60",diffuse = "grey50",specular = "grey60",viewpoint.rel = TRUE) -->
+
+<!-- #setup surface visualization -->
+<!-- multiply <- 1 #x3ptools::image_x3p default to exaggerate relief -->
+<!-- z <- multiply * surface1 # Exaggerate the relief -->
+<!-- yidx <- ncol(z):1 -->
+<!-- y <- fadul1.1$header.info$incrementY * yidx -->
+<!-- x <- fadul1.1$header.info$incrementX * (1:nrow(z)) -->
+
+<!-- # emission, specular, ambient affect how the surface interacts with lights -- -->
+<!-- # again, a lot of possible experimentation -->
+<!-- surface3d(x, y, z, back = "filled",emission = "grey30",specular = "grey50",ambient = "grey10") -->
+
+<!-- x3ptools::x3p_snapshot(file = "derivatives/fadul1-1.png") -->
+
+<!-- rgl.close() -->
+<!-- ``` -->
+
+
+<!-- ```{r ,fadul1-2Screenshot,include=FALSE} -->
+<!-- fadul1.2 <- x3ptools::read_x3p("data/fadul1-2.x3p") -->
+
+<!-- surface2 <- fadul1.2$surface.matrix %>% -->
+<!--   cmcR::preProcess_gaussFilter(res = 3.125e-06,wavelength = 16,filtertype = "lp") -->
+<!-- #opens blank "canvas" upon which we can add lights, surfaces, etc. -->
+<!-- open3d(params = params) -->
+
+<!-- #removes any previously declared lights in scene -->
+<!-- rgl.pop("lights") -->
+
+<!-- #set-up two lights for scene -- a lot of experimentation possible here -->
+<!-- light3d(x = -1,y = 1,z = 2,viewpoint.rel = TRUE,ambient = "white",diffuse = "white",specular = "white") -->
+<!-- light3d(x = 0,y = 0,z = 10,ambient = "grey60",diffuse = "grey50",specular = "grey60",viewpoint.rel = TRUE) -->
+
+<!-- #setup surface visualization -->
+<!-- multiply <- 1 #x3ptools::image_x3p default to exaggerate relief -->
+<!-- z <- multiply * surface2 # Exaggerate the relief -->
+<!-- yidx <- ncol(z):1 -->
+<!-- y <- fadul1.2$header.info$incrementY * yidx -->
+<!-- x <- fadul1.2$header.info$incrementX * (1:nrow(z)) -->
+
+<!-- # emission, specular, ambient affect how the surface interacts with lights -- -->
+<!-- # again, a lot of possible experimentation -->
+<!-- surface3d(x, y, z, back = "filled",emission = "grey30",specular = "grey50",ambient = "grey10") -->
+
+<!-- x3ptools::x3p_snapshot(file = "derivatives/fadul1-2.png") -->
+
+<!-- rgl.close() -->
+<!-- ``` -->
+
+<!-- ```{r, rawBFs,echo=FALSE,fig.cap='\\label{fig:cartridgeCasePair} Two known match cartridge case scans from \\citet{fadul_empirical_nodate}',fig.subcap=c('',''),fig.align='center',fig.pos='htbp',out.width='.49\\linewidth',out.height='.49\\linewidth'} -->
+<!-- knitr::include_graphics(c("derivatives/fadul1-1.png","derivatives/fadul1-2.png")) -->
+<!-- ``` -->
+
+<!-- Only certain regions of a cartridge case contain identifying breech face impression markings. \citet{song_proposed_2013} refers to these as "valid correlation regions" that are to be used to determine whether two cartridge cases match. The cell-based comparison procedure described in section [3.1](#comparisonProcedure) is designed to allow such regions to stand out against invalid correlation regions. However, prior to applying this procedure cartridge scans must undergo some pre-processing to remove sections of the cartridge case surface that do not come into contact with the breech face of the barrel. These include a circular plateaued region in the center of the scan that is pushed aside by the firing pin during the firing process and clusters of observed values in the corners of the scan that are artifacts of the staging area in which the scan was captured. The task in pre-processing is to automatically remove these unwanted regions from the scan to accentuate unique markings left by the breech face. This is discussed in greater detail in section [3.1](#preProcessing). -->
 
 # Cell-based surface matrix comparisons
 
 ## Cell-based comparison procedure {#comparisonProcedure}
+
+\jz{This section is currently (6/14/2020) being re-worked above.}
 
 The Congruent Matching Cells method was developed at the National Institute of Standards and Technology to quantify the similarity between two spent cartridge cases based on their breech face impressions. The CMC method involves dividing a breech face impression scan into a grid of cells and comparing each cell in one scan to a counterpart region in the other scan. This method is motivated by the fact that breech face markings are not uniformly impressed upon the cartridge case during the firing process. As such, only certain sections of the cartridge case have identifiable markings that make it possible to match to a firearm. Calculating a similarity score between the entirety of two cartridge case surfaces might not highlight these identifying regions. Instead, the number of highly similar cell/region pairs between the two scans can be used as a more granular similarity metric.
 
@@ -248,10 +436,11 @@ where $\mathcal{F}$ and $\mathcal{F}^{-1}$ denote the discrete Fourier and inver
 
 Figure \ref{fig:ccfMap_example} provides an example of the output from the FFT-based CCF calculation method. In the top-left we see a $72 \times 72$ pixel cell from one surface matrix. In the top-right we see this cell's associated region in the other surface matrix of dimension $216 \times 216$ (triple the cell's side lengths). The bottom-left shows the CCF "map" calculated using this FFT-based method. Although the CCF need not be bounded between $-1$ and $1$ based on the definition, it is common to normalize the CCF for interpetability purposes and is done so in the \pkg{cmcR} package. A summary of the alignment parameters at which the CCF$_{\max}$ occurs is shown in the bottom-right. We can see that the two matrices are best-aligned when the cell is shifted "east" 20 pixels and ``north" 9 pixels starting from the center of the region. The $\theta = -18$ indicates that the overall cartridge case scan from which the region (shown in the top-right) was extracted was rotated by $-18$ degrees for this comparion. The orange square in the top-right plot shows where the cell would be located if the translation were performed.
 
-```{r load-data, include = F, cache = T}
-fadul1.1 <- cmcR::selectBFImpression_sample_x3p("data/fadul1-1.x3p")
-fadul1.2 <- cmcR::selectBFImpression_sample_x3p("data/fadul1-2.x3p")
-```
+<!-- ```{r load-data, include = F, cache = T} -->
+<!-- fadul1.1 <- cmcR::selectBFImpression_sample_x3p("data/fadul1-1.x3p") -->
+<!-- fadul1.2 <- cmcR::selectBFImpression_sample_x3p("data/fadul1-2.x3p") -->
+<!-- ``` -->
+
 ```{r cmc-ccf, include = F, cache = T}
 kmComparison <- cmcR::cellCCF_bothDirections(x3p1 = fadul1.1$x3p,
                                              x3p2 = fadul1.2$x3p,
@@ -367,62 +556,62 @@ Cartridge case pairs that do not pass the high CMC criterion are assigned the CM
 
 <!-- These additional ``high CMC count" criteria provide more enhanced discriminatory ability between known matching and known non-matching scans. If this criterion is satisfied by a particular pair of scans and a $\theta$ mode is identified, then the method considers CCF values for each cell pair at and around this mode. Again, this is in contrast to the initially proposed method that only considers the CCF$_{\max}$ value and resulting $(dx,dy,\theta)$ votes for each cell pair. -->
 
-# The \pkg{cmcR} package
+<!-- # The \pkg{cmcR} package -->
 
-This section will highlight the \pkg{cmcR} package's functionality by walking through a possible use case. Many of the functions in this package provide the user with a variety of processing options with which they can experiment. This is due to the fact that processing techniques differ considerably among authors or are not discussed in great detail.
+<!-- This section will highlight the \pkg{cmcR} package's functionality by walking through a possible use case. Many of the functions in this package provide the user with a variety of processing options with which they can experiment. This is due to the fact that processing techniques differ considerably among authors or are not discussed in great detail. -->
 
-## Pre-processing procedures {#preProcessing}
+<!-- ## Pre-processing procedures {#preProcessing} -->
 
-Studies in which cartridge cases are matched by forensic examiners often involve giving examiners a set of known matches and asking them to classify additional matches from a collection of unknown source scans. For brevity, we will consider a comparison between two cartridge cases from \citep{fadul_empirical_nodate}. Figure \ref{fig:processedScans} shows the pair of scans after performing the necessary pre-processing procedures. Note that the color scheme has been scaled by quantiles to visually highlight regions of the cartridge case scan containing strong breech face impression "signal."
+<!-- Studies in which cartridge cases are matched by forensic examiners often involve giving examiners a set of known matches and asking them to classify additional matches from a collection of unknown source scans. For brevity, we will consider a comparison between two cartridge cases from \citep{fadul_empirical_nodate}. Figure \ref{fig:processedScans} shows the pair of scans after performing the necessary pre-processing procedures. Note that the color scheme has been scaled by quantiles to visually highlight regions of the cartridge case scan containing strong breech face impression "signal." -->
 
-```{r,echo=FALSE,cache=TRUE,fig.cap='\\label{fig:processedScans} A known match pair of processed cartridge case scans',fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth',out.extra="trim={0 2.5cm 0 2cm}"}
+<!-- ```{r,echo=FALSE,cache=TRUE,fig.cap='\\label{fig:processedScans} A known match pair of processed cartridge case scans',fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth',out.extra="trim={0 2.5cm 0 2cm}"} -->
 
-cmcR::x3pListPlot(x3pList = list("Fadul 1-1" = fadul1.1$x3p,
-                                 "Fadul 1-2" = fadul1.2$x3p),
-                  type = "faceted",rotate = 90) +
-  guides(fill = guide_colourbar(barheight = grid::unit(2.6,"inches"),
-                                label.theme = element_text(size = 8),
-                                title.theme = ggplot2::element_text(size = 10),
-                                frame.colour = "black",
-                                ticks.colour = "black")) +
-  theme(legend.position = c(1.11,.551),plot.margin = ggplot2::margin(c(0,3,.2,0),unit = "cm"))
-```
+<!-- cmcR::x3pListPlot(x3pList = list("Fadul 1-1" = fadul1.1$x3p, -->
+<!--                                  "Fadul 1-2" = fadul1.2$x3p), -->
+<!--                   type = "faceted",rotate = 90) + -->
+<!--   guides(fill = guide_colourbar(barheight = grid::unit(2.6,"inches"), -->
+<!--                                 label.theme = element_text(size = 8), -->
+<!--                                 title.theme = ggplot2::element_text(size = 10), -->
+<!--                                 frame.colour = "black", -->
+<!--                                 ticks.colour = "black")) + -->
+<!--   theme(legend.position = c(1.11,.551),plot.margin = ggplot2::margin(c(0,3,.2,0),unit = "cm")) -->
+<!-- ``` -->
 
-The family of functions in the \pkg{cmcR} package beginning with \code{preProcess\_} can be used to perform the necessary pre-processing steps for a pair of cartridge case scans to be comparable using the cell-based comparison procedure outlined in section [3.1](#comparisonProcedure). The implementation of many of these pre-processing procedures is inspired largely by \citet{tai_fully_2018} who detail a fully-automatic procedure for processing cartridge case 2D images as opposed to 3D scans. The functions available include:
-\begin{enumerate}
-\item \code{preProcess\_ransac}: estimates the height value of the breech face impressions in a scan using the Random Sample Consensus (RANSAC) robust, iterative plane-fitting algorithm \citep{ransac}.
+<!-- The family of functions in the \pkg{cmcR} package beginning with \code{preProcess\_} can be used to perform the necessary pre-processing steps for a pair of cartridge case scans to be comparable using the cell-based comparison procedure outlined in section [3.1](#comparisonProcedure). The implementation of many of these pre-processing procedures is inspired largely by \citet{tai_fully_2018} who detail a fully-automatic procedure for processing cartridge case 2D images as opposed to 3D scans. The functions available include: -->
+<!-- \begin{enumerate} -->
+<!-- \item \code{preProcess\_ransac}: estimates the height value of the breech face impressions in a scan using the Random Sample Consensus (RANSAC) robust, iterative plane-fitting algorithm \citep{ransac}. -->
 
-\item \code{preProcess\_levelBF}: extracts the observations containing breech face impressions from the scan using the estimated height value obtained from \code{preProcess\_ransac}.
+<!-- \item \code{preProcess\_levelBF}: extracts the observations containing breech face impressions from the scan using the estimated height value obtained from \code{preProcess\_ransac}. -->
 
-\item \code{preProcess\_cropWS}: removes rows/columns containing mostly if not all \code{NA} values from the surface matrix on the exterior of breech face impressions.
+<!-- \item \code{preProcess\_cropWS}: removes rows/columns containing mostly if not all \code{NA} values from the surface matrix on the exterior of breech face impressions. -->
 
-\item \code{preProcess\_removeFPCircle}: detects and removes observations within the firing pin impression circle using the Hough Transform circle detection algorithm \citep{hough}.
+<!-- \item \code{preProcess\_removeFPCircle}: detects and removes observations within the firing pin impression circle using the Hough Transform circle detection algorithm \citep{hough}. -->
 
-\item \code{preProcess\_gaussFilter}: applies a low-pass, high-pass, or band-pass Gaussian filter to the breech face impressions to reduce the effects of high frequency noise, low frequency global structure, or both, respectively.
-\end{enumerate}
-See the \pkg{cmcR} package documentation for more information about these functions.
+<!-- \item \code{preProcess\_gaussFilter}: applies a low-pass, high-pass, or band-pass Gaussian filter to the breech face impressions to reduce the effects of high frequency noise, low frequency global structure, or both, respectively. -->
+<!-- \end{enumerate} -->
+<!-- See the \pkg{cmcR} package documentation for more information about these functions. -->
 
-For computational purposes it is common the CMC literature to down-sample a surface matrix prior to performing the cell-based comparison procedure. The \code{sample\_x3p} function from the \pkg{x3ptools} package can be used used to sample every $m$th row/column of a surface matrix. The \code{selectBFImpression\_sample\_x3p} performs all of these pre-processing procedures in a single call. The code to produce the first surface matrix shown in Figure \ref{fig:processedScans} is given by the following example. Note that the RANSAC method relies on randomly selecting points within the surface matrix, so a seed is set for reproducibility.
+<!-- For computational purposes it is common the CMC literature to down-sample a surface matrix prior to performing the cell-based comparison procedure. The \code{sample\_x3p} function from the \pkg{x3ptools} package can be used used to sample every $m$th row/column of a surface matrix. The \code{selectBFImpression\_sample\_x3p} performs all of these pre-processing procedures in a single call. The code to produce the first surface matrix shown in Figure \ref{fig:processedScans} is given by the following example. Note that the RANSAC method relies on randomly selecting points within the surface matrix, so a seed is set for reproducibility. -->
 
-```{r echo=TRUE,eval=FALSE}
-library(cmcR)
-library(x3ptools)
-library(magrittr)
-set.seed(4132020)
+<!-- ```{r echo=TRUE,eval=FALSE} -->
+<!-- library(cmcR) -->
+<!-- library(x3ptools) -->
+<!-- library(magrittr) -->
+<!-- set.seed(4132020) -->
 
-nrbtd_url <- "https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement/"
+<!-- nrbtd_url <- "https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement/" -->
 
-fadul1.1_id <- "DownloadMeasurement/2d9cc51f-6f66-40a0-973a-a9292dbee36d"
-fadul1.2_id <- "DownloadMeasurement/cb296c98-39f5-46eb-abff-320a2f5568e8"
+<!-- fadul1.1_id <- "DownloadMeasurement/2d9cc51f-6f66-40a0-973a-a9292dbee36d" -->
+<!-- fadul1.2_id <- "DownloadMeasurement/cb296c98-39f5-46eb-abff-320a2f5568e8" -->
 
-fadul1.1 <- selectBFImpression_sample_x3p(x3p_path = paste0(nrbtd_url,fadul1.1_id),
-                                          ransacInlierThresh = 1e-5, #1 micron
-                                          ransacIters = 150,
-                                          croppingThresh = 1,
-                                          m = 2, #sample_x3p down-sample rate
-                                          gaussFilterWavelength = c(16,250),
-                                          gaussFilterType = "bp") #band-pass filter
-```
+<!-- fadul1.1 <- selectBFImpression_sample_x3p(x3p_path = paste0(nrbtd_url,fadul1.1_id), -->
+<!--                                           ransacInlierThresh = 1e-5, #1 micron -->
+<!--                                           ransacIters = 150, -->
+<!--                                           croppingThresh = 1, -->
+<!--                                           m = 2, #sample_x3p down-sample rate -->
+<!--                                           gaussFilterWavelength = c(16,250), -->
+<!--                                           gaussFilterType = "bp") #band-pass filter -->
+<!-- ``` -->
 
 \subsection{Implementation of cell-based comparison procedure}
 
