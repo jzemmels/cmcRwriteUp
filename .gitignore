@@ -12,3 +12,5 @@ data/workspace6-9_setSeed4132020.RData
 derivatives/
 .RData
 .gitignore
+data/kmcmc.Rdata
+RJwrapper.pdf
