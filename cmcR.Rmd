@@ -236,7 +236,7 @@ Only certain regions of a cartridge case contain identifying breech face impress
 \item "Apply a band-pass Gaussian regression filter with 40 $\mu$m short cutoff length and 400 $\mu$m long cutoff length to remove low frequency components, including surface curvature, form error, waviness and high frequency components which mainly arise from the instrument noise." To our knowledge, there does not exist an open-source implementation of the multivariate bandpass Gaussian regression filter used in surface metrology \citep{ISO16610-71}. Further, there are various parameters requiring specification to implement a Gaussian regression filter and it is not clear how these parameters were chosen.
 \end{enumerate}
 
-In the \pkg{cmcR} package, breech face impression data are isolated using a combination of the Random Sample Consensus (RANSAC) robust, iterative plane-fitting \citep{ransac}, the Hough Transform shape detection algorithm \citep{hough}, and cropping rows/columns of the surface matrix containing only \code{NA} values on the exterior of the breech face impression region. This was inspired largely by \citet{tai_fully_2018} who detail a fully-automatic procedure for processing 2D cartridge case images. The \pkg{cmcR} package does not yet use a Gaussian regression filter. A simpler Gaussian filter, a technique used by \citet{tong_fired_2014} and \citet{song_estimating_2018}, is currently implemented instead. It is necessary to replace dropouts and other \code{NA}-valued pixels with a non-\code{NA} value to perform the comparison procedure. The convention adopted in the \pkg{cmcR} package is to use the average pixel value as a replacement.
+In the \pkg{cmcR} package, breech face impression data are isolated using a combination of the Random Sample Consensus (RANSAC) robust iterative plane-fitting \citep{ransac} algorithm, the Hough Transform shape detection algorithm \citep{hough}, and cropping rows/columns of the surface matrix containing only \code{NA} values on the exterior of the breech face impression region. This was inspired largely by \citet{tai_fully_2018} who detail a fully-automatic procedure for processing 2D cartridge case images. The \pkg{cmcR} package does not yet use a Gaussian regression filter. A simpler Gaussian filter, a technique used by \citet{tong_fired_2014} and \citet{song_estimating_2018}, is currently implemented instead. It is necessary to replace dropouts and other \code{NA}-valued pixels with a non-\code{NA} value to perform the comparison procedure. The convention adopted in the \pkg{cmcR} package is to use the average pixel value as a replacement.
 
 To illustrate the usage of the \pkg{cmcR} package, we will consider a comparison between the KM cartridge case pair shown in Figure \ref{fig:cartridgeCasePair}. For computational purposes it is common the CMC literature to down-sample a surface matrix prior to performing the cell-based comparison procedure. The sample_x3p function from the x3ptools package can be used used to sample every m th row/column of a surface matrix. The selectBFImpression_sample_x3p performs all of these pre-processing procedures in a single call. The code to produce the first surface matrix shown in Figure \ref{fig:processedScans} is given below while the code for the second surface matrix is skipped for redundancy. Note that the RANSAC method relies on randomly selecting points within the surface matrix, so a seed is set for reproducibility.
 
@@ -288,21 +288,73 @@ Figure \ref{fig:cmc_illustration} illustrates the cell-based comparison procedur
 $$
 (A \star B)[m,n] = \sum_{i=0}^M \sum_{j=0}^N A[i,j] B[(i + m)_{\text{mod}\ M}, (j + n)_{\text{mod}\ N}].
 $$
-Note that this finite, discretized CCF definition yields a matrix of elements representing the similarity between matrices $A$ and $B$ for various translations of matrix $B$. The index at which the CCF attains a maximum represents the translations needed to align $B$ with $A$.
+Note that this finite, discretized CCF definition yields a matrix whose $[m,n]$th element quantifies the similarity between matrices $A$ and $B$ for a translation of matrix $B$ by $m$ pixels horizontally and $n$ pixel vertically. The index at which the CCF attains a maximum represents the translations needed to align $B$ with $A$.
 
-\jz{Discuss ambiguity in how the CCF is to be calculated. Calculation based on the definition is computationally infeasible, but there isn't a clear indication in any of the main articles from which we've based the package how the CCF is calculated. \citet{ott_applying_2017} and \citet{tong_valid_2018} are the only papers I have found that define the "Areal Cross Correlation Function" using actual, clear notation.}
+It is unclear in the CMC literature whether the CCF between a cell/region pair is calculated from the definition or, as is more commonly done in image processing \citep{Brown92asurvey}, using a result known as the Cross-Correlation Theorem. For two matrices $A$ and $B$, The Cross-Correlation Theorem implies that
+$$
+(A \star B )[m,n]= \mathcal{F}^{-1}\left(\overline{\mathcal{F}(A)} \cdot \mathcal{F}(B)\right)[m,n]
+$$
+where $\mathcal{F}$ and $\mathcal{F}^{-1}$ denote the discrete Fourier and inverse discrete Fourier transforms, respectively, and the overline denotes the complex conjugate \citep{fft_brigham}. Note that the multiplication on the right-hand side is pointwise (Hadamard) multiplication. This result allows us to trade the moving sum computations from the definition of the CCF for two forward Fourier transformation, a pointwise product, and an inverse Fourier transformation. The Fast Fourier Transform (FFT) algorithm can be used to reduce the computational load considerably.
 
-\jz{There is no clear indication that the FFT-based method is used in any of the main papers other than the CCF maps in \citet{tong_improved_2015} (which I guess *could* have been created based on calculating the CCF from the definition). I think this section will need to be less quote-heavy since there's such ambiguity in how the CCF is actuall computed.}
+The \pkg{cmcR} package uses this FFT-based method to determine the translation values at which the maximum CCF value, denoted CCF$_{\max}$ in \citet{song_proposed_2013}, occurs. A practical consideration in calculating the CCF in this way is that the discrete Fourier transform is not defined for matrices containing missing values. As can be seen by the gray pixels in Figure \ref{fig:processedScans}, processed surface matrices contain many missing (\code{NA}-valued) elements. In replacing these elements with the average pixel value in the matrix, the CCF values obtained tend to be "deflated" relative to the \dfn{pairwise-complete correlation} values that are calculated using only pairs of non-missing pixels. However, the translation estimates obtained from this method are often good estimates of the true translation values by which a cell/region pair align. Using the estimated translation values at which the CCF$_{\max}$ occurs, the pairwise-complete correlation can be calculated between the cell and a matrix of the same dimensions extracted from the larger region where \code{NA} values are not replaced.
 
-\jz{In the cmcR package implementation description, discuss how/why the CCF is calculated using the FFT-based method followed by the pairwise complete correlation.}
+The correlation cell comparison procedure is implemented in the \code{cellCCF\_bothDirections} function. In particular, the procedure is performed twice so that both cartridge case scans take on the role of the scan that is partitioned into a grid of cells. This is necessary to implement the High CMC method described below. Continuing with the current use case example, the code to perform this procedure on \code{fadul1.1} and \code{fadul1.2} is given by the following example. 
+
+```{r cmc-ccf, include = F, cache = T}
+kmComparison <- cmcR::cellCCF_bothDirections(x3p1 = fadul1.1$x3p,
+                                             x3p2 = fadul1.2$x3p,
+                                             cellNumHoriz = 8,
+                                             minObservedProp = .1,
+                                             regionToCellProp = 9)
+```
+```{r echo=TRUE,eval=FALSE}
+kmComparison <- cellCCF_bothDirections(x3p1 = fadul1.1,
+                                       x3p2 = fadul1.2,
+                                       thetas = seq(-30,30,by = 3),
+                                       cellNumHoriz = 8,
+                                       cellNumVert = cellNumHoriz,
+                                       minObservedProp = .1)
+```
+
+The first few rows of results from the comparison between \code{fadul1.1} and \code{fadul1.2} in which \code{fadul1.1} was divided into a grid of cells and \code{fadul1.2} was rotated by 3 degrees is given below. Although a grid of $8 \times 8$ cells were used, there were only 43 cell/region pairs that contained a sufficient proportion of non-missing values (10% in this example). The features used in the CMC method are the CCF$_{\max}$ values (ccf column) and estimated alignment parameter values (dx, dy, and theta columns).
+```{r echo=TRUE,eval=FALSE}
+head(kmComparison$comparison_1to2$ccfResults$`3`)
+```
+```{r echo=FALSE,eval=TRUE,cache=TRUE}
+kmComparison$comparison_1to2$ccfResults$`3` %>%
+  head() %>%
+  knitr::kable(caption = "\\label{tab:cellCCF} Example of output from \\code{cellCCF} function",
+               format = "latex") %>%
+  kableExtra::kable_styling(latex_options = "hold_position")
+```
 
 ## The initially proposed CMC method
 
-"The qualiﬁcations of CMCs require not only high correlation values CCF$_{\max} \geq T_{\text{CCF}}$, but also similar registration angles $\theta$ (within the threshold $T_{\theta}$) and similar $x–y$ registration pattern (within the thresholds $T_x$, $T_y$)."
+A number of features are extracted in a cartridge case comparison using the correlation cell comparison procedure. Accompanying the CCF$_{\max}$ similarity metric are the rotation and translation values at which the CCF$_{\max}$ was attained for each cell/region pair. As stated in \citet{song_3d_2014}, "[t]he qualiﬁcations of CMCs require not only high correlation values CCF$_{\max} \geq T_{\text{CCF}}$, but also similar registration angles $\theta$ (within the threshold $T_{\theta}$) and similar $x - y$ registration pattern (within the thresholds $T_x$, $T_y$)." For a truly matching pair of cartridge cases, one might expect a "consensus" to exist amongst the various $\theta, x$, and $y$ values at which the CCF$_{\max}$ occurs (referred to as the \dfn{registration phase} of the cell/region pairs in \citet{song_proposed_2013}). The CMC method introduces criteria to determine whether a consensus exists amongst these values and quantifies the strength of the consensus by the number of cell/region pairs with similar registration phases.
 
-"a virtual reference with three reference registration parameters $\theta_{\text{ref}}$, $x_{\text{ref}}$ and $y_{\text{ref}}$ generated by the median values of the collective $\theta$, and $x$-, $y$-translation values of all cell pairs in each correlation sequence."
+\citet{song_3d_2014} proposes using "a virtual reference with three reference registration parameters $\theta_{\text{ref}}$, $x_{\text{ref}}$ and $y_{\text{ref}}$ generated by the median values of the collective $\theta$, and $x$-, $y$-translation values of all cell pairs." That is, a consensus is determined by finding the median registration phase values across the cell/region pairs for a particular cartridge case pair comparison. The distances between the registration phases for each cell/region pair their respective consensus values are determined. Let $x_i, y_i, \theta_i$ denote the registration phase values for cell/region pair $i$, $i = 1,...,n$. To declare a particular cell/region pair as "congruent matching," \citet{song_3d_2014} requires that (1) the pair's estimated alignment parameter values be within some threshold distance of the consensual values and (2) the CCF$_{\max}$ value is greater than some threshold. That is, for thresholds $T_{dx}, T_{dy}, T_{\theta},T_{\text{CCF}}$, cell/region pair $i$ is declared a match if all of the following conditions hold:
+\begin{enumerate}
+\item $|x_i - x_{\text{ref}}| \leq T_{dx}$ \\
+\item $|y_i - y_{\text{ref}}| \leq T_{dy}$ \\
+\item $|\theta_i - \theta_{\text{ref}}| \leq T_{\theta}$ \\
+\item CCF$_{\max,i} \geq T_{\text{CCF}}$.
+\end{enumerate}
 
 "Before using the CMC method for ballistics identiﬁcations, it is necessary to specify the values of the thresholds $T_{\text{CCF}}$, $T_\theta$ and $T_x$, $T_y$. These threshold values are experimentally determined."
+
+```{r cmc-filter, include = F, cache = T}
+if (!file.exists("data/kmcmc.Rdata")) {
+  kmCMC <- cmcR::cmcFilter_improved(kmComparison,
+                                  ccf_thresh = .5,
+                                  dx_thresh = 20,
+                                  theta_thresh = 6,
+                                  missingTheta_decision = "dismiss")
+  save(kmCMC, file = "data/kmcmc.Rdata")
+} else {
+  load("data/kmcmc.Rdata")
+}
+
+```
 
 ## The High CMC method
 
@@ -319,6 +371,7 @@ Note that this finite, discretized CCF definition yields a matrix of elements re
 "Build CMC-$\theta$ distributions using the data generated in step 1, by counting the number of cells that have congruent positions at each individual rotation angle. Calculate the angular range of “high CMCs” using both the forward and backward CMC-$\theta$ distributions, as illustrated in Figs. 2 and 3."
 
 "If the angular range of the “high CMCs” is within the range $T_\theta$, identify the CMCs for each rotation angle in this range and combine them to give the number of CMCs for this comparison in place of the original CMC number. In this step, if the range is narrower than $T_\theta$, the nearby angles are included to make the range equal to $T_\theta$; CMCs with same index in each rotation are only counted once."
+
 
 <!-- # Cartridge case surface data {#data} -->
 
@@ -411,81 +464,79 @@ Note that this finite, discretized CCF definition yields a matrix of elements re
 
 <!-- Only certain regions of a cartridge case contain identifying breech face impression markings. \citet{song_proposed_2013} refers to these as "valid correlation regions" that are to be used to determine whether two cartridge cases match. The cell-based comparison procedure described in section [3.1](#comparisonProcedure) is designed to allow such regions to stand out against invalid correlation regions. However, prior to applying this procedure cartridge scans must undergo some pre-processing to remove sections of the cartridge case surface that do not come into contact with the breech face of the barrel. These include a circular plateaued region in the center of the scan that is pushed aside by the firing pin during the firing process and clusters of observed values in the corners of the scan that are artifacts of the staging area in which the scan was captured. The task in pre-processing is to automatically remove these unwanted regions from the scan to accentuate unique markings left by the breech face. This is discussed in greater detail in section [3.1](#preProcessing). -->
 
-# Cell-based surface matrix comparisons
+<!-- # Cell-based surface matrix comparisons -->
 
-## Cell-based comparison procedure {#comparisonProcedure}
+<!-- ## Cell-based comparison procedure {#comparisonProcedure} -->
 
-\jz{This section is currently (6/14/2020) being re-worked above.}
+<!-- The Congruent Matching Cells method was developed at the National Institute of Standards and Technology to quantify the similarity between two spent cartridge cases based on their breech face impressions. The CMC method involves dividing a breech face impression scan into a grid of cells and comparing each cell in one scan to a counterpart region in the other scan. This method is motivated by the fact that breech face markings are not uniformly impressed upon the cartridge case during the firing process. As such, only certain sections of the cartridge case have identifiable markings that make it possible to match to a firearm. Calculating a similarity score between the entirety of two cartridge case surfaces might not highlight these identifying regions. Instead, the number of highly similar cell/region pairs between the two scans can be used as a more granular similarity metric. -->
 
-The Congruent Matching Cells method was developed at the National Institute of Standards and Technology to quantify the similarity between two spent cartridge cases based on their breech face impressions. The CMC method involves dividing a breech face impression scan into a grid of cells and comparing each cell in one scan to a counterpart region in the other scan. This method is motivated by the fact that breech face markings are not uniformly impressed upon the cartridge case during the firing process. As such, only certain sections of the cartridge case have identifiable markings that make it possible to match to a firearm. Calculating a similarity score between the entirety of two cartridge case surfaces might not highlight these identifying regions. Instead, the number of highly similar cell/region pairs between the two scans can be used as a more granular similarity metric.
+<!-- <!-- ```{r, echo=FALSE,fig.cap='\\label{fig:cmc_illustration} Illustration of comparing a "cell" in one cartridge case scan to a region in another',fig.align='center',fig.pos='htbp',out.width='\\textwidth'} --> -->
 
-```{r, echo=FALSE,fig.cap='\\label{fig:cmc_illustration} Illustration of comparing a "cell" in one cartridge case scan to a region in another',fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
+<!-- <!-- knitr::include_graphics("images/cmc_illustration.PNG") --> -->
+<!-- <!-- ``` --> -->
 
-knitr::include_graphics("images/cmc_illustration.PNG")
-```
+<!-- Figure \ref{fig:cmc_illustration} illustrates the cell-based comparison procedure between two cartridge case scans. The scan on the left is divided into a grid of $8 \times 8$ cells. Each cell is paired with an associated larger region in the other scan. The absolute location of each cell and region in their respective surface matrices remain constant. However, the scan on the right is rotated to determine the rotation at which the two scans are the most "similar," which is quantified using the \dfn{cross-correlation function} (CCF). For two real-valued, $M \times N$ matrices $A$ and $B$, the cross-correlation function, denoted $(A \star B)$ can be defined as -->
+<!-- $$ -->
+<!-- (A \star B)[m,n] = \sum_{i=0}^M \sum_{j=0}^N A[i,j] B[(i + m)_{\text{mod}\ M}, (j + n)_{\text{mod}\ N}]. -->
+<!-- $$ -->
+<!-- Note that this finite, discretized CCF is a matrix of elements representing the similarity between matrices $A$ and $B$ for various translations of matrix $B$. The index at which the CCF attains a maximum represents the translations needed to align $B$ with $A$. When working with cell/region pairs, calculating the CCF from the definition is computationally intractable. The \emph{Cross-Correlation Theorem} provides a feasible alternative to calculating the CCF. For two matrices $A$ and $B$, the Cross-Correlation Theorem implies that -->
+<!-- $$ -->
+<!-- (A \star B )[m,n]= \mathcal{F}^{-1}\left(\overline{\mathcal{F}(A)} \cdot \mathcal{F}(B)\right)[m,n] -->
+<!-- $$ -->
+<!-- where $\mathcal{F}$ and $\mathcal{F}^{-1}$ denote the discrete Fourier and inverse discrete Fourier transforms, respectively \citep{fft_brigham}. Note that the multiplication on the right-hand side is pointwise (Hadamard) multiplication. This result allows us to trade the moving sum computations from the definition of the CCF for two forward Fourier transformation, a pointwise product, and an inverse Fourier transformation. The Fast Fourier Transform (FFT) algorithm is used to reduce the computational load considerably. However, a practical consideration for applying this method with cartridge case data is the large number of non-random missing values in a surface matrix. Recall that missing values are represented in Figures \ref{fig:cartridgeCasePair} and \ref{fig:cmc_illustration} as white pixels. The discrete Fourier transform is not defined for matrices containing missing values, so these need to be replaced. The convention adopted in the \pkg{cmcR} package is to replace missing values with 0 after standardizing a matrix by subtracting away its average height value and dividing by its standard deviation. Such standardization is commonly performed by authors at NIST \citep{ott_applying_2017}. While replacing missing values is essential for using the FFT-based method of calculating the CCF, doing so causes the CCF values to be ``deflated" relative to the \dfn{pairwise-complete correlation} in which only pairs of pixels in which neither element is missing are considered. However, the translation estimates obtained from this method are often good estimates for the true translation values by which the two matrices align. -->
 
-Figure \ref{fig:cmc_illustration} illustrates the cell-based comparison procedure between two cartridge case scans. The scan on the left is divided into a grid of $8 \times 8$ cells. Each cell is paired with an associated larger region in the other scan. The absolute location of each cell and region in their respective surface matrices remain constant. However, the scan on the right is rotated to determine the rotation at which the two scans are the most "similar," which is quantified using the \dfn{cross-correlation function} (CCF). For two real-valued, $M \times N$ matrices $A$ and $B$, the cross-correlation function, denoted $(A \star B)$ can be defined as
-$$
-(A \star B)[m,n] = \sum_{i=0}^M \sum_{j=0}^N A[i,j] B[(i + m)_{\text{mod}\ M}, (j + n)_{\text{mod}\ N}].
-$$
-Note that this finite, discretized CCF is a matrix of elements representing the similarity between matrices $A$ and $B$ for various translations of matrix $B$. The index at which the CCF attains a maximum represents the translations needed to align $B$ with $A$. When working with cell/region pairs, calculating the CCF from the definition is computationally intractable. The \emph{Cross-Correlation Theorem} provides a feasible alternative to calculating the CCF. For two matrices $A$ and $B$, the Cross-Correlation Theorem implies that
-$$
-(A \star B )[m,n]= \mathcal{F}^{-1}\left(\overline{\mathcal{F}(A)} \cdot \mathcal{F}(B)\right)[m,n]
-$$
-where $\mathcal{F}$ and $\mathcal{F}^{-1}$ denote the discrete Fourier and inverse discrete Fourier transforms, respectively \citep{fft_brigham}. Note that the multiplication on the right-hand side is pointwise (Hadamard) multiplication. This result allows us to trade the moving sum computations from the definition of the CCF for two forward Fourier transformation, a pointwise product, and an inverse Fourier transformation. The Fast Fourier Transform (FFT) algorithm is used to reduce the computational load considerably. However, a practical consideration for applying this method with cartridge case data is the large number of non-random missing values in a surface matrix. Recall that missing values are represented in Figures \ref{fig:cartridgeCasePair} and \ref{fig:cmc_illustration} as white pixels. The discrete Fourier transform is not defined for matrices containing missing values, so these need to be replaced. The convention adopted in the \pkg{cmcR} package is to replace missing values with 0 after standardizing a matrix by subtracting away its average height value and dividing by its standard deviation. Such standardization is commonly performed by authors at NIST \citep{ott_applying_2017}. While replacing missing values is essential for using the FFT-based method of calculating the CCF, doing so causes the CCF values to be ``deflated" relative to the \dfn{pairwise-complete correlation} in which only pairs of pixels in which neither element is missing are considered. However, the translation estimates obtained from this method are often good estimates for the true translation values by which the two matrices align.
+<!-- Figure \ref{fig:ccfMap_example} provides an example of the output from the FFT-based CCF calculation method. In the top-left we see a $72 \times 72$ pixel cell from one surface matrix. In the top-right we see this cell's associated region in the other surface matrix of dimension $216 \times 216$ (triple the cell's side lengths). The bottom-left shows the CCF "map" calculated using this FFT-based method. Although the CCF need not be bounded between $-1$ and $1$ based on the definition, it is common to normalize the CCF for interpetability purposes and is done so in the \pkg{cmcR} package. A summary of the alignment parameters at which the CCF$_{\max}$ occurs is shown in the bottom-right. We can see that the two matrices are best-aligned when the cell is shifted "east" 20 pixels and ``north" 9 pixels starting from the center of the region. The $\theta = -18$ indicates that the overall cartridge case scan from which the region (shown in the top-right) was extracted was rotated by $-18$ degrees for this comparion. The orange square in the top-right plot shows where the cell would be located if the translation were performed. -->
 
-Figure \ref{fig:ccfMap_example} provides an example of the output from the FFT-based CCF calculation method. In the top-left we see a $72 \times 72$ pixel cell from one surface matrix. In the top-right we see this cell's associated region in the other surface matrix of dimension $216 \times 216$ (triple the cell's side lengths). The bottom-left shows the CCF "map" calculated using this FFT-based method. Although the CCF need not be bounded between $-1$ and $1$ based on the definition, it is common to normalize the CCF for interpetability purposes and is done so in the \pkg{cmcR} package. A summary of the alignment parameters at which the CCF$_{\max}$ occurs is shown in the bottom-right. We can see that the two matrices are best-aligned when the cell is shifted "east" 20 pixels and ``north" 9 pixels starting from the center of the region. The $\theta = -18$ indicates that the overall cartridge case scan from which the region (shown in the top-right) was extracted was rotated by $-18$ degrees for this comparion. The orange square in the top-right plot shows where the cell would be located if the translation were performed.
+<!-- <!-- ```{r load-data, include = F, cache = T} --> -->
+<!-- <!-- fadul1.1 <- cmcR::selectBFImpression_sample_x3p("data/fadul1-1.x3p") --> -->
+<!-- <!-- fadul1.2 <- cmcR::selectBFImpression_sample_x3p("data/fadul1-2.x3p") --> -->
+<!-- <!-- ``` --> -->
 
-<!-- ```{r load-data, include = F, cache = T} -->
-<!-- fadul1.1 <- cmcR::selectBFImpression_sample_x3p("data/fadul1-1.x3p") -->
-<!-- fadul1.2 <- cmcR::selectBFImpression_sample_x3p("data/fadul1-2.x3p") -->
+<!-- ```{r cmc-ccf, include = F, cache = T} -->
+<!-- kmComparison <- cmcR::cellCCF_bothDirections(x3p1 = fadul1.1$x3p, -->
+<!--                                              x3p2 = fadul1.2$x3p, -->
+<!--                                              cellNumHoriz = 8, -->
+<!--                                              minObservedProp = .1, -->
+<!--                                              regionToCellProp = 9) -->
+<!-- ``` -->
+<!-- ```{r cmc-filter, include = F, cache = T} -->
+<!-- if (!file.exists("data/kmcmc.Rdata")) { -->
+<!--   kmCMC <- cmcR::cmcFilter_improved(kmComparison, -->
+<!--                                   ccf_thresh = .5, -->
+<!--                                   dx_thresh = 20, -->
+<!--                                   theta_thresh = 6, -->
+<!--                                   missingTheta_decision = "dismiss") -->
+<!--   save(kmCMC, file = "data/kmcmc.Rdata") -->
+<!-- } else { -->
+<!--   load("data/kmcmc.Rdata") -->
+<!-- } -->
+
+<!-- ``` -->
+<!-- ```{r region-pairs, include = F, cache = T} -->
+<!-- kmCellRegionPairs <- cmcR::getCellRegionPairs(fadul1.1$x3p,fadul1.2$x3p, -->
+<!--                                               ccfDF = kmCMC$highCMCs, -->
+<!--                                               cellCCF_params = kmComparison$comparison_1to2$params) -->
 <!-- ``` -->
 
-```{r cmc-ccf, include = F, cache = T}
-kmComparison <- cmcR::cellCCF_bothDirections(x3p1 = fadul1.1$x3p,
-                                             x3p2 = fadul1.2$x3p,
-                                             cellNumHoriz = 8,
-                                             minObservedProp = .1,
-                                             regionToCellProp = 9)
-```
-```{r cmc-filter, include = F, cache = T}
-if (!file.exists("data/kmcmc.Rdata")) {
-  kmCMC <- cmcR::cmcFilter_improved(kmComparison,
-                                  ccf_thresh = .5,
-                                  dx_thresh = 20,
-                                  theta_thresh = 6,
-                                  missingTheta_decision = "dismiss")
-  save(kmCMC, file = "data/kmcmc.Rdata")
-} else {
-  load("data/kmcmc.Rdata")
-}
+<!-- ```{r,echo=FALSE,cache=TRUE,fig.cap='\\label{fig:ccfMap_example} Example of a cross-correlation function "map" for a particular cell/region comparison',fig.align='center',fig.pos='htbp',out.width='\\textwidth'} -->
+<!-- invisible( -->
+<!--   kmCellRegionPairs[3] %>% -->
+<!--     map2(.x = ., -->
+<!--          .y = names(.),  -->
+<!--          function(set,theta){ -->
+<!--            map(set[5], ~ ccfMapPlot(mat1 = .[[1]], -->
+<!--                                     mat2 = .[[2]], -->
+<!--                                     theta = theta, -->
+<!--                                     type = "raster")) -->
+<!--          }) -->
+<!-- ) -->
+<!-- ``` -->
 
-```
-```{r region-pairs, include = F, cache = T}
-kmCellRegionPairs <- cmcR::getCellRegionPairs(fadul1.1$x3p,fadul1.2$x3p,
-                                              ccfDF = kmCMC$highCMCs,
-                                              cellCCF_params = kmComparison$comparison_1to2$params)
-```
+<!-- Using the estimated translation values at which the CCF$_{\max}$ occurs, we can calculate the pairwise-complete cross-correlation between the cell and a cell-sized matrix extracted from the larger region where missing values are not replaced. Think of this as punching-out the matrix enclosed in the orange square shown in the top-right plot of Figure \ref{fig:ccfMap_example}. This will be used as the high CCF$_{\max}$ estimate. This cell-based comparison procedure is performed for each cell/region pair for various rotation values. -->
 
-```{r,echo=FALSE,cache=TRUE,fig.cap='\\label{fig:ccfMap_example} Example of a cross-correlation function "map" for a particular cell/region comparison',fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
-invisible(
-  kmCellRegionPairs[3] %>%
-    map2(.x = .,
-         .y = names(.), 
-         function(set,theta){
-           map(set[5], ~ ccfMapPlot(mat1 = .[[1]],
-                                    mat2 = .[[2]],
-                                    theta = theta,
-                                    type = "raster"))
-         })
-)
-```
+<!-- ## The Congruent Matching Cells method -->
 
-Using the estimated translation values at which the CCF$_{\max}$ occurs, we can calculate the pairwise-complete cross-correlation between the cell and a cell-sized matrix extracted from the larger region where missing values are not replaced. Think of this as punching-out the matrix enclosed in the orange square shown in the top-right plot of Figure \ref{fig:ccfMap_example}. This will be used as the high CCF$_{\max}$ estimate. This cell-based comparison procedure is performed for each cell/region pair for various rotation values.
-
-## The Congruent Matching Cells method
-
-A particular cell/region pair is deemed "highly similar" if it passes a collection of user-defined similarity criteria. The criteria are based on the fact that a pair of matching cartridge case scans are not necessarily aligned properly in their raw format. In particular, one cartridge case scan needs to be rotated and translated to align correctly the other. Let CCF$_{\max}, dx, dy, \theta$ denote the "true" but unknown CCF, translation, and rotation values, respectively, by which a particular pair aligns. These unknown alignment parameters can be estimated for each cell/region pair using the cell-based comparison procedure discussed in section [3.1](#comparisonProcedure). Let CCF$_{\max,i}, dx_i, dy_i, \theta_i$ denote the estimated alignment parameter values for cell/region pair $i$, $i = 1,...,n$. For a truly matching pair of cartridge cases, we would expect these alignment parameter estimates to agree with each other across cell/region pairs; at least up to some threshold. Conversely, we would expect the estimates to vary randomly for a truly \emph{non}-matching pair. As such, the CMC method details how to determine whether a consensus exists among the estimated alignment parameter values across the cell/region pairs. The initially proposed method by \citet{song_proposed_2013} as well as an extension by \citet{tong_improved_2015} known as the High CMC method are implemented in the \pkg{cmcR} package.
+<!-- A particular cell/region pair is deemed "highly similar" if it passes a collection of user-defined similarity criteria. The criteria are based on the fact that a pair of matching cartridge case scans are not necessarily aligned properly in their raw format. In particular, one cartridge case scan needs to be rotated and translated to align correctly the other. Let CCF$_{\max}, dx, dy, \theta$ denote the "true" but unknown CCF, translation, and rotation values, respectively, by which a particular pair aligns. These unknown alignment parameters can be estimated for each cell/region pair using the cell-based comparison procedure discussed in section [3.1](#comparisonProcedure). Let CCF$_{\max,i}, dx_i, dy_i, \theta_i$ denote the estimated alignment parameter values for cell/region pair $i$, $i = 1,...,n$. For a truly matching pair of cartridge cases, we would expect these alignment parameter estimates to agree with each other across cell/region pairs; at least up to some threshold. Conversely, we would expect the estimates to vary randomly for a truly \emph{non}-matching pair. As such, the CMC method details how to determine whether a consensus exists among the estimated alignment parameter values across the cell/region pairs. The initially proposed method by \citet{song_proposed_2013} as well as an extension by \citet{tong_improved_2015} known as the High CMC method are implemented in the \pkg{cmcR} package. -->
 
 ### The initially proposed method {#initialMethod}
 
@@ -613,30 +664,30 @@ Cartridge case pairs that do not pass the high CMC criterion are assigned the CM
 <!--                                           gaussFilterType = "bp") #band-pass filter -->
 <!-- ``` -->
 
-\subsection{Implementation of cell-based comparison procedure}
+<!-- \subsection{Implementation of cell-based comparison procedure} -->
 
-The cell-based comparison procedure outlined in section [3.1](#comparisonProcedure) is implemented in the \code{cellCCF\_bothDirections} function. In particular, the procedure is performed twice so that both cartridge case scans take on the role of the scan that is partitioned into a grid of cells. This is necessary to apply the High CMC logic discussed in section [3.2.2](#highCMCMethod). Continuing with the current use case example, the code to perform this procedure on \code{fadul1.1} and \code{fadul1.2} is given by the following example. 
+<!-- The cell-based comparison procedure outlined in section [3.1](#comparisonProcedure) is implemented in the \code{cellCCF\_bothDirections} function. In particular, the procedure is performed twice so that both cartridge case scans take on the role of the scan that is partitioned into a grid of cells. This is necessary to apply the High CMC logic discussed in section [3.2.2](#highCMCMethod). Continuing with the current use case example, the code to perform this procedure on \code{fadul1.1} and \code{fadul1.2} is given by the following example.  -->
 
-```{r echo=TRUE,eval=FALSE}
-kmComparison <- cellCCF_bothDirections(x3p1 = fadul1.1,
-                                       x3p2 = fadul1.2,
-                                       thetas = seq(-30,30,by = 3),
-                                       cellNumHoriz = 8,
-                                       cellNumVert = cellNumHoriz,
-                                       minObservedProp = .1)
-```
+<!-- ```{r echo=TRUE,eval=FALSE} -->
+<!-- kmComparison <- cellCCF_bothDirections(x3p1 = fadul1.1, -->
+<!--                                        x3p2 = fadul1.2, -->
+<!--                                        thetas = seq(-30,30,by = 3), -->
+<!--                                        cellNumHoriz = 8, -->
+<!--                                        cellNumVert = cellNumHoriz, -->
+<!--                                        minObservedProp = .1) -->
+<!-- ``` -->
 
-The first few rows of results from the comparison between \code{fadul1.1} and \code{fadul1.2} in which \code{fadul1.1} was divided into a grid of cells and \code{fadul1.2} was rotated by 3 degrees is given below. Although a grid of $8 \times 8$ cells were used, there were only 43 cell/region pairs that contained a sufficient proportion of non-missing values (10% in this example). Recall that the features used in the CMC method are the CCF$_{\max}$ values (ccf column) and estimated alignment parameter values (dx, dy, and theta columns).
-```{r echo=TRUE,eval=FALSE}
-head(kmComparison$comparison_1to2$ccfResults$`3`)
-```
-```{r echo=FALSE,eval=TRUE,cache=TRUE}
-kmComparison$comparison_1to2$ccfResults$`3` %>%
-  head() %>%
-  knitr::kable(caption = "\\label{tab:cellCCF} Example of output from \\code{cellCCF} function",
-               format = "latex") %>%
-  kableExtra::kable_styling(latex_options = "hold_position")
-```
+<!-- The first few rows of results from the comparison between \code{fadul1.1} and \code{fadul1.2} in which \code{fadul1.1} was divided into a grid of cells and \code{fadul1.2} was rotated by 3 degrees is given below. Although a grid of $8 \times 8$ cells were used, there were only 43 cell/region pairs that contained a sufficient proportion of non-missing values (10% in this example). Recall that the features used in the CMC method are the CCF$_{\max}$ values (ccf column) and estimated alignment parameter values (dx, dy, and theta columns). -->
+<!-- ```{r echo=TRUE,eval=FALSE} -->
+<!-- head(kmComparison$comparison_1to2$ccfResults$`3`) -->
+<!-- ``` -->
+<!-- ```{r echo=FALSE,eval=TRUE,cache=TRUE} -->
+<!-- kmComparison$comparison_1to2$ccfResults$`3` %>% -->
+<!--   head() %>% -->
+<!--   knitr::kable(caption = "\\label{tab:cellCCF} Example of output from \\code{cellCCF} function", -->
+<!--                format = "latex") %>% -->
+<!--   kableExtra::kable_styling(latex_options = "hold_position") -->
+<!-- ``` -->
 
 
 ## Congruent Matching Cells logic
