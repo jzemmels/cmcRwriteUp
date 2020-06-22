@@ -68,6 +68,14 @@ set.seed(4132020)
 
 # Pre-Introduction
 
+\dfn{Research reproducibility} commonly refers to the ability to use the same materials and procedures as a previous study to arrive at the same results or conclusions. In computationally-intensive research, this is commonly translated to mean that the code and data used to produce results be made openly available \citep{peng_reproducible_2011}. Reproducibility is necessary for results to be considered valid by the wider scientific community (cite Goodman et al.). However, recent studies have raised concerns about reproducibility of scientific findings in various fields [cite Pasquier et al., \citet{baker_1500_2016}, King]. Commonly identified reasons for this lack of reproducibility include ambiguity in how a procedure was implemented and inaccessible data or code (cite Leek and Jager). Some journals have adopted policies encouraging or requiring that data and code be made available in an effort to build a "culture of reproducibility" in their respective fields [\citet{peng_reproducible_2011}, cite Peng and Zeger, Stodden et al.].
+
+Computational reproducibility poses additional challenges. Published results may be numerically sensitive to the particular implementation of a computational method including such considerations as data processing decisions, parameter settings, and even the chosen programming language [\citep{peng_reproducible_2011},\citet{Stodden2013SettingTD}]. Recently developed tools allow for greater clarity in how such decisions are made so that less time need be wasted double-checking how close reproduced output matches to published results [cite ICERM workshop paper].
+
+The development of computationally-intensive tools to assist forensic practitioners in making informed decisions has recently grown in interest \citep{council_strengthening_2009}. Many methods have been developed to handle problems such as identifying matching glass shards, shoe prints, or ballistic signatures. While many researchers in the forensic science community have adopted computationally reproducible habits [cite CSAFE stuff], there are notable exceptions (make this more/less pointed?). The Congruent Matching Cells (CMC) algorithm was developed at the National Institute of Standards and Technology in the early 2010s to perform firearm evidence identification using identifiable markings left on spent cartridge cases from a firearm's barrel \citet{song_proposed_2013}. The method and its numerous improvements/extensions indicate promising results in being able to correctly differentiate between matching and non-matching cartridge cases. However, based on the definitions given above, these results are not reproducible; computationally or otherwise. Qualitative reproduction of results has successfully been done among various NIST researchers. However, code for the CMC method or any of its improvements/extensions has been made openly available. Further, many procedures used in the CMC method are described qualitatively rather than algorithmically; meaning they do not sufficiently delve into the procedures' intricacies (e.g., parameter settings). Especially in applications like forensic science where results from computational methods may affect legal decisions, transparency in how a method or algorithm is implemented is necessary [\citep{angwin_machine_2016}, cite Cino].
+
+The \pkg{cmcR} package not only provides a open-source implementation of the CMC method, but also serves as an exemplar of what must be done to implement a method for which only a qualitative description is available. To be clear, we do not intend to criticize the quality of work of particular authors or research teams. Rather, we hope to use the \pkg{cmcR} package to discuss themes and issues surrounding reproducibility that pervade many domains of computationally-intensive research.
+
 ```{r eval=FALSE,echo=TRUE}
 library(cmcR)
 set.seed(4132020)
@@ -78,9 +86,9 @@ fadul1.1_id <- "DownloadMeasurement/2d9cc51f-6f66-40a0-973a-a9292dbee36d"
 fadul1.2_id <- "DownloadMeasurement/cb296c98-39f5-46eb-abff-320a2f5568e8"
 ```
 
-While issues related to reproducibility have been identified and explored in many academic fields [\citet{baker_1500_2016}, \citet{osc_estimating_2015}, \citet{goecks_galaxy_2010}], computational reproducibility poses its own challenges. Published results may be sensitive to the particular implementation of a computational method including such considerations as data processing decisions, parameter settings, and even the chosen programming language [\citep{peng_reproducible_2011},\citet{Stodden2013SettingTD}]. As such, peer-review in the truest sense requires that these be made openly available. Especially in applications like forensic science where results from computational methods may affect legal decisions \citep{angwin_machine_2016}, transparency in how a method or algorithm is implemented is necessary. 
+<!-- While issues related to reproducibility have been identified and explored in many academic fields [\citet{baker_1500_2016}, \citet{osc_estimating_2015}, \citet{goecks_galaxy_2010}], computational reproducibility poses its own challenges. Published results may be sensitive to the particular implementation of a computational method including such considerations as data processing decisions, parameter settings, and even the chosen programming language [\citep{peng_reproducible_2011},\citet{Stodden2013SettingTD}]. As such, peer-review in the truest sense requires that these be made openly available. Especially in applications like forensic science where results from computational methods may affect legal decisions \citep{angwin_machine_2016}, transparency in how a method or algorithm is implemented is necessary.  -->
 
-When faced with ambiguity in how a method is implemented, there are few options available apart from performing a brute-force search through combinations of decisions that may have been made to yield the results reported. Unsurprisingly, it can become incredibly time intensive to implement and then sift through a wide variety of decision combinations. The \pkg{cmcR} package not only provides a open-source implementation of the CMC method, but also serves as an exemplar of what must be done to implement a method for which only a qualitative description is available. To be clear, we do not intend to criticize the quality of work of particular authors or research teams. Rather, we hope to use the \pkg{cmcR} package to discuss themes and issues surrounding reproduciblity (or the lack thereof) that pervade many domains of computational-intensive research.
+<!-- When faced with ambiguity in how a method is implemented, there are few options available apart from performing a brute-force search through combinations of decisions that may have been made to yield the results reported. Unsurprisingly, it can become incredibly time intensive to implement and then sift through a wide variety of decision combinations.  -->
 
 \hh{XXX We need to be *very* careful to not claim that the suggested approach is ours, but that this is only an open source implementation of an existing method in the literature. We can't take the credit for inventing the approach, but we have to point out that an open source approach is necessary for scientific progress. }
 
@@ -139,19 +147,21 @@ knitr::include_graphics("images/cartridgeCasePair_comparison.PNG")
 <!-- knitr::include_graphics(c("images/breechFace.png","images/breechFaceImpression.png")) -->
 <!-- ``` -->
 
-These breech face impressions are considered to be analogous to a firearm's "fingerprint" left on a cartridge case. Matching an expended cartridge case of unknown source to one of known source based on breech face impressions has been performed for over 100 years by forensic practitioners \citep{firearm_id_thompson}. The development of computational and statistical methods to perform such identification has recently grown in interest \citep{council_strengthening_2009}. One such method is the Congruent Matching Cells (CMC) method invented at NIST that involves partitioning a cartridge case image or scan into a grid of "correlation cells" to isolate areas containing identifying breech face impression markings \citep{song_proposed_2013}. Since its invention in 2012, researchers at NIST have developed a number of extensions and improvements of the CMC method. However, to date there does not exist an openly available implementation of any of these techniques. 
-Many methods proposed in the CMC literature include a description of a proposed technique that does not delve into the intricacies of the implementation. Given that the implementations are not openly available, this makes it especially difficult to validate or assess results. Additionally, some procedures related to pre-processing the cartridge case data are done manually at NIST rather than with an automated method \citep{song_estimating_2018}. This compounds the difficulty to accurately reproduce results. 
+These breech face impressions are considered to be analogous to a firearm's "fingerprint" left on a cartridge case. Matching an expended cartridge case of unknown source to one of known source based on breech face impressions has been performed for over 100 years by forensic practitioners \citep{firearm_id_thompson}. 
+
+<!-- The development of computational and statistical methods to perform such identification has recently grown in interest \citep{council_strengthening_2009}. One such method is the Congruent Matching Cells (CMC) method invented at NIST that involves partitioning a cartridge case image or scan into a grid of "correlation cells" to isolate areas containing identifying breech face impression markings \citep{song_proposed_2013}. Since its invention in 2012, researchers at NIST have developed a number of extensions and improvements of the CMC method. However, to date there does not exist an openly available implementation of any of these techniques.  -->
+<!-- Many methods proposed in the CMC literature include a description of a proposed technique that does not delve into the intricacies of the implementation. Given that the implementations are not openly available, this makes it especially difficult to validate or assess results. Additionally, some procedures related to pre-processing the cartridge case data are done manually at NIST rather than with an automated method \citep{song_estimating_2018}. This compounds the difficulty to accurately reproduce results.  -->
 
 The \pkg{cmcR} package provides an open-source, fully-automatic implementation of the CMC method as described in \citet{song_3d_2014} as well an extension proposed by \citet{tong_improved_2015}. This extension was later referred to as the "High CMC" method by \citet{chen_convergence_2017} and is referred to as such in the \pkg{cmcR} package.
 
 \svp{Transition to NIST algorithm quotes section?}
 \svp{The next section may need to be abbreviated and moved into the description if at all possible - provide just the important background information.}
 
-# Methods
+# Methods {#methods}
 
 An initial implementation of the CMC method applied to 3D topographical scans of cartridge case surfaces is described in \citet{song_3d_2014}. To acknowledge the original work, excerpts from the article will be provided. A discussion about ambiguity in how the method was originally described and how it is actually implemented in the \pkg{cmcR} package will accompany these excerpts. The Appendix (LINK) contains pseudocode detailing the procedures more precisely.
 
-## Pre-processing procedures
+## Pre-processing procedures {#preProcessing}
 
 First, 3D topographical cartridge case surface data in their raw format need to be processed before the CMC method can be effectively applied. Cartridge case surface data are commonly represented via a \dfn{surface matrix}: a matrix of spatially-ordered elements or "pixels" whose values correspond to the height of the cartridge case surface at a particular location. Figure \ref{fig:cartridgeCasePair} shows the surface matrices of a known match (KM) pair of cartridge cases from a study by \citet{fadul_empirical_nodate}. A total of 63 cartridge cases were scanned for this study with a lateral resolution of 6.25 microns (micrometers) per pixel. The surface matrices vary around $1200 \times 1200$ pixels in size.
 
@@ -279,7 +289,7 @@ cmcR::x3pListPlot(x3pList = list("Fadul 1-1" = fadul1.1$x3p,
   theme(legend.position = c(1.11,.551),plot.margin = ggplot2::margin(c(0,3,.2,0),unit = "cm"))
 ```
 
-## "Correlation cell" comparison procedure
+## "Correlation cell" comparison procedure {#comparisonProcedure}
 
 As described in \citet{song_proposed_2013}, breech face markings are not uniformly impressed upon a cartridge case during the firing process. As such, only certain sections of the cartridge case have identifiable markings that make it possible to match to a firearm. Calculating a similarity score between the entirety of two cartridge case surfaces might not highlight these valid correlation regions. Instead, \citet{song_proposed_2013} proposes partitioning one surface matrix into a grid of "correlation cells," some of which will enclose the valid correlation regions of interest. If a large number of these correlation cells are deemed highly similar to regions in the other surface matrix, then there is evidence that the two cartridges cases match. Thus, the number of highly similar cells can be used as a more granular similarity metric.
 
@@ -332,7 +342,7 @@ kmComparison$comparison_1to2$ccfResults$`3` %>%
   kableExtra::kable_styling(latex_options = "hold_position")
 ```
 
-## The initially proposed CMC method
+## The initially proposed CMC method {#initialMethod}
 
 A number of features are extracted in a cartridge case comparison using the correlation cell comparison procedure. Accompanying the CCF$_{\max}$ similarity metric are the rotation and translation values at which the CCF$_{\max}$ was attained for each cell/region pair. As stated in \citet{song_3d_2014}, \emph{"[t]he qualiﬁcations of CMCs require not only high correlation values CCF$_{\max} \geq T_{\text{CCF}}$, but also similar registration angles $\theta$ (within the threshold $T_{\theta}$) and similar $x - y$ registration pattern (within the thresholds $T_x$, $T_y$)."} For a truly matching pair of cartridge cases, one might expect a "consensus" to exist amongst the various $\theta, x$, and $y$ values at which the CCF$_{\max}$ occurs (referred to as the \dfn{registration phase} of the cell/region pairs in \citet{song_proposed_2013}). The CMC method introduces criteria to determine whether a consensus exists amongst these values and quantifies the strength of the consensus by the number of cell/region pairs with similar registration phases.
 
@@ -360,7 +370,7 @@ if (!file.exists("data/kmcmc.Rdata")) {
 
 ```
 
-## The High CMC method
+## The High CMC method {#highMethod}
 
 The High CMC method (as it would come to be called) was proposed by \citet{tong_improved_2015} to address situations in which the initially proposed method is excessively strict. In particular, they observe that \emph{"some of the valid cell pairs may be mistakenly excluded from the CMC count because by chance their correlation yields a higher CCF value at a rotation angle outside the threshold range $T_\theta$."} The proposed extension to the initial method utilizes the behavior of the CCF$_{\max}$ values across various rotations more advantageously. Additionally, comparisons are performed in both “directions” so that each surface matrix takes on the role of the surface matrix that is partitioned into a grid of cells.
 
@@ -482,7 +492,7 @@ cmcPlot(x3p1 = fadul1.1$x3p,
   theme(legend.position = c(1.11,.51),plot.margin = ggplot2::margin(c(0,3,.2,0),unit = "cm"))
 ```
 
-# Results
+# Results {#results}
 
 As described in section [2](#data), the set of cartridge case scans from \citet{fadul_empirical_nodate} is commonly used to compare the performance of various methods in the CMC literature. This set consists of 40 cartridge cases. There are 63 known match pairs and 717 known non-match pairs. While the exact procedures by which these scans are processed are unavailable, the surface data are openly available in their raw, unprocessed format NIST Ballistics Toolmark Research Database. Thus, some level of comparison between the implementation provided in the \pkg{cmcR} package and published results is possible. However, justification for any differences will ultimately involve educated hypothesization due to the closed-source nature of the original implementations.
 
@@ -706,10 +716,103 @@ highCMC_roc %>%
   ggtitle("High CMC ROC Curves, Residuals, BP Filter - Cutoffs: 16, 250 microns")
 ```
 
-# Conclusion
+# Conclusion {#conclusion}
 
 The results shared in this manuscript indicate that the implementation of the CMC method in the \pkg{cmcR} package is at least qualitatively similar to those in the CMC literature. As such methods could potentially be used in the future as evidence to support legal conclusions, it is imperative that specific implementations be openly available for assessment and validation. Furthermore, reproducibility of results hinges on automating as much of the process by which these comparisons are made as possible. For example, selecting the region of a scan containing breech face impressions by hand, as is done in the CMC literature \citep{song_estimating_2018}, will yield different results depending on who is performing the selection. The procedure implemented in the \pkg{cmcR} package using the RANSAC and Hough transform methods, while reliant on randomly sampling the surface matrix, at least yields reproducibility across applications by setting a seed. Lastly, it is simply best academic practice to be transparent about how certain results were obtained and how sensitive these results are to different processing conditions. The \pkg{cmcR} package is intended to provide researchers with an automatic, transparent tool to further explore the potential of the CMC method and develop novel techniques to perform firearm evidence identification.
 
 Future changes to the current implementation will likely come in the form of improvements to the way that breech face impressions are automatically isolated and highlighted within the scan. For example, a Robust Gaussian Regression Filter can be used to simultaneously isolate and filter the breech face impression region in the surface matrix \citep{metrology}. There are also a number of other extensions to the initially proposed CMC method that currently lack an open-source implementation. The foundation set by the \pkg{cmcR} package should make it easier to implement these extensions in the future. 
 
 \bibliography{RJreferences}
+
+# Appendix {#appendix}
+
+## Pseudocode
+
+This section will provide a more detailed description of the various processing procedures implemented in the \pkg{cmcR} package in the form of \code{R} pseudocode. Additional documentation and source code are available on the \pkg{cmcR} package's [GitHub page](https://github.com/jzemmels/cmcR).
+
+Pre-processing: It is common in the CMC literature to first downsample surface matrices to reduce the computational load of the correlation cell comparison procedure described in section [3.2](#comaprisonProcedure). The \code{sample\_x3p} function from the \pkg{x3ptools} package will downsample an x3p's surface matrix by an integer factor (every $m$th row and column) and update the object's metadata. The \code{selectBFImpression\_sample\_x3p} function will perform this downsampling before applying the pre-processing procedures described in section [3.1](#preProcessing).
+
+```{r eval=FALSE,include=FALSE}
+selectBFImpression_sample_x3p <- function(x3p_path,
+                                          ransacInlierThresh = 1e-5,
+                                          ransacFinalSelectThresh = 2*1e-5,
+                                          ransacIters = 150,
+                                          useResiduals = TRUE,
+                                          croppingThresh = 1,
+                                          standardizeBF = FALSE,
+                                          m = 2,
+                                          mY = m,
+                                          offset = 0,
+                                          offsetY = offset,
+                                          gaussFilterRes,
+                                          gaussFilterWavelength = c(16,250),
+                                          gaussFilterType = "bp"){
+
+  # 1) Read-in and downsample x3p object every m-th row/column
+  
+  # 2) Apply RANSAC method once with 10*ransacInlerThresh and ransacIters/2 to
+  # obtain a "rough" estimate
+  
+  # 3) Extract the ...
+
+  #Some additional, unwanted pixels remain in the middle of the cartridge scan
+  #even after the RANSAC method has selected the breech face impression height
+  #values. We can remove these unwanted pixels by identifying the equation of
+  #the firing pin impression circle and filtering out any pixels within that
+  #circle. The following returns the estimated center and radius of the firing
+  #pin impression circle:
+  fpImpressionCircle <- preProcess_detectFPCircle(surfaceMat = bfImpression_ransacSelected,
+                                                  aggregation_function = mean,
+                                                  smootherSize = 2*round((.1*nrow(bfImpression_ransacSelected)/2)) + 1,
+                                                  meshSize = 1,
+                                                  houghScoreQuant = .9)
+
+  stopifnot(is.data.frame(fpImpressionCircle),
+            nrow(fpImpressionCircle) == 1)
+
+  #This then filters out any pixels within the firing pin
+  bfImpressionFinal <- removeFPImpressionCircle(bfImpression = bfImpression_ransacSelected,
+                                                fpImpressionCircle = fpImpressionCircle)
+
+  if(standardizeBF){
+    bfImpressionFinal <- (bfImpressionFinal - mean(bfImpressionFinal,na.rm = TRUE))/sd(bfImpressionFinal,na.rm = TRUE)
+  }
+
+  if(missing(gaussFilterRes) & !(missing(gaussFilterWavelength) & !missing(gaussFilterType))){
+    gaussFilterRes <- x3p$header.info$incrementY
+  }
+
+  if(!missing(gaussFilterRes) & !missing(gaussFilterWavelength) & !missing(gaussFilterType)){
+    bfImpressionFinal <- bfImpressionFinal %>%
+      preProcess_gaussFilter(res = gaussFilterRes,
+                             wavelength = gaussFilterWavelength,
+                             filtertype = gaussFilterType)
+  }
+
+  stopifnot(is.matrix(bfImpressionFinal),
+            all(dim(bfImpressionFinal) > c(0,0)),
+            sum(!is.na(bfImpressionFinal)) > 0)
+
+  #Important note: x3ptools and imager read an image from a surface matrix
+  #starting from the bottom left corner and moving upwards. Thus, a matrix ends
+  #up being treated like its transpose within these packages. For example, the
+  #"Y" axis of an x3p object actually refers to the columns in the surface
+  #matrix
+  x3p$header.info$sizeY <- ncol(bfImpressionFinal)
+  x3p$header.info$sizeX <- nrow(bfImpressionFinal)
+
+  x3p$surface.matrix <- bfImpressionFinal
+
+  return(list("params" = list(ransacInlierThresh = ransacInlierThresh,
+                              ransacIters = ransacIters,
+                              useResiduals = useResiduals,
+                              croppingThresh = croppingThresh,
+                              standardizeBF = standardizeBF,
+                              m = m,
+                              mY = mY,
+                              offset = offset,
+                              offsetY = offsetY),
+              "x3p" = x3p))
+}
+```
+
