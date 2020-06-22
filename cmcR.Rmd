@@ -501,7 +501,7 @@ As described in section [2](#data), the set of cartridge case scans from \citet{
 
 For any cartridge case pair, the number of CMCs can be determined under the initially proposed method described in section [3.2.1](#initialMethod) and the high CMC method described in section [3.2.2](#highCMCMethod). These CMC counts can be determined for all 780 cartridge case pairs available in the \citet{fadul_empirical_nodate} dataset. Perfect identification of all matching and non-matching pairs corresponds choosing a CMC count threshold that separates the distributions of the matching and non-matching CMC counts. Many authors have found success in choosing a CMC count threshold of 6 CMCs (\citet{tong_improved_2015}, \citet{song_estimating_2018}) as initially proposed by \citet{song_proposed_2013}, although this threshold has been shown to not generalize well to all proposed methods or cartridge case datasets \citep{chen_convergence_2017}. Further, little consensus exists among authors on the most effective alignment parameter thresholds ($T_{dx}, T_{dy}, T_{\theta}, T_{\text{CCF}}$ defined in section [3.2.1](#initialMethod)) for distinguishing matches from non-matches. Figure \ref{fig:initialCMC_perfectIdentification} shows an example of a particular set of thresholds that yields separation between the known match and known non-match CMC count distributions. An appropriate CMC count threshold would be where the dashed, vertical line is drawn at 8.5 CMCs. Separation is also achieved using the initially proposed method by \citet{tong_improved_2015} and \citet{chen_convergence_2017}, among others. It should be noted that these authors report CMC count distributions with fewer "false positive" CMCs for non-match pairs. However, the behavior of these distributions changes considerably depending on the thresholds specified.
 
-```{r echo=FALSE,fig.cap='\\label{fig:initialCMC_perfectIdentification} Initial CMC count distribution with $T_{\\text{CCF}} = .5$, $T_{dx} = T_{dy} = 30$, and $T_{\\theta} = 6$ degrees.',fig.align='center',fig.pos='htbp',out.width='\\textwidth',out.height=".55\\textwidth"}
+```{r echo=FALSE,fig.cap='\\label{fig:initialCMC_perfectIdentification} Initial CMC count distribution with $T_{\\text{CCF}} = .625$, $T_{dx} = T_{dy} = 22.5$, and $T_{\\theta} = 3$ degrees.',fig.align='center',fig.pos='htbp',out.width='\\textwidth',out.height=".55\\textwidth"}
 
 load("data/cmcCountData.RData")
 
@@ -562,7 +562,7 @@ cmcCountData_setSeed4132020 %>%
   facet_wrap(`CCF Threshold` ~ `Trans. Threshold`,ncol = 3,scales = "free_y",labeller = label_both) +
   theme_bw() + 
   theme(legend.position = "bottom",
-        strip.text.x = element_text(size = 7)) +
+        strip.text.x = element_text(size = 5)) +
   xlab("CMC Count") +
   ylab("Relative Frequency")
 ```
@@ -606,7 +606,7 @@ initialCMC_roc %>%
 
 Figure \ref{fig:highCMC_perfectIdentification} shows an example of a threshold combination that yields separation between the matching and non-matching CMC count distributions. The dashed, vertical line is agin drawn at 8.5 CMCs. Note that while known match pairs tend to be assigned higher CMC counts than under the initially proposed method, so too do certain known non-match pairs. The cluster of non-match pairs that are assigned a large High CMC count all pass the High CMC criterion. Similar non-match bimodal behavior can be seen in Figure 8 of \citet{chen_convergence_2017} where the High CMC method was applied to cartridge case data from \citet{laPorte_validation_2011}. 
 
-```{r echo=FALSE,fig.cap='\\label{fig:highCMC_perfectIdentification} High CMC count distribution with $T_{\\text{CCF}} = .5$, $T_{dx} = T_{dy} = 20$, and $T_{\\theta} = 6$ degrees',fig.align='center',fig.pos='htbp',out.width='\\textwidth',out.height='.55\\textwidth'}
+```{r echo=FALSE,fig.cap='\\label{fig:highCMC_perfectIdentification} High CMC count distribution with $T_{\\text{CCF}} = .625$, $T_{dx} = T_{dy} = 22.5$, and $T_{\\theta} = 3$ degrees',fig.align='center',fig.pos='htbp',out.width='\\textwidth',out.height='.55\\textwidth'}
 cmcCountData_setSeed4132020 %>%
   filter(cmcType == "high") %>%
   filter(thetaThresh ==  3 & ccfThresh == .625 & translateThresh == 22.5) %>%
@@ -671,7 +671,7 @@ cmcCountData_setSeed4132020 %>%
              labeller = label_both) +
   theme_bw() + 
   theme(legend.position = "bottom",
-        strip.text.x = element_text(size = 7)) +
+        strip.text.x = element_text(size = 5)) +
   ggtitle(expression("High CMC counts for various CCF & translation thresholds, T"[theta]*" = 6"^{o})) +
   xlab("CMC Count") +
   ylab("Relative Frequency")
