@@ -67,6 +67,19 @@ library(rgl)
 set.seed(4132020)
 ```
 
+# Couple of general comments 
+
+\hh{I noticed a few things during the spotlight on Monday that need to be addressed:
+\bgein{itemize}
+\item color schemes need to be more consistent: in figures 9/10 red/black are used to indicate alignment/not aligned
+and purple orange are used to show height
+in the histograms, e.g. fig 11, purple orange are used to show same source/different source. 
+\item use annotate rather than geom_text for annotations e.g. in figures 6 and 7. geom_text is repeated with the number of rows in a data set, annotation is only drawn once. That way the text doesn't look like it's bleeding
+\item fig 10: use fadul 1-1 as the reference rather than fadul 2-1. That way the pictures are directy comparable.
+\item I noticed that known matches and known non matches have a different scale (height) in the histograms. I think we need to talk about whether that's the best strategy. 
+\end{itemize}
+}
+
 # Introduction {#intro}
 
 \dfn{Research reproducibility} commonly refers to the ability to use the same procedures and materials as a previous study to arrive at the same results or conclusions. In computationally-intensive research, this is commonly translated to mean that the code and data used to produce published results be made openly available \citep{peng_reproducible_2011}. Reproducibility is necessary for results to be considered valid by the wider scientific community \citep{goodman_what_2016}. However, recent studies have raised concerns about reproducibility of scientific findings in various fields [\citet{king_replication_1995}, \citet{baker_1500_2016}, \citet{pasquier_if_2017}]. Commonly identified reasons for this lack of reproducibility include ambiguity in how a procedure was implemented and inaccessible data or code \citep{leek_is_2017}. Some journals have adopted policies encouraging or requiring that data and code be made available in an effort to build a "culture of reproducibility" in their respective fields [\citet{peng_reproducible_2009}, \citet{peng_reproducible_2011}, \citet{stodden_toward_2013}]. 
