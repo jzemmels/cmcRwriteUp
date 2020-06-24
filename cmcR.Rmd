@@ -70,13 +70,13 @@ set.seed(4132020)
 # Couple of general comments 
 
 \hh{I noticed a few things during the spotlight on Monday that need to be addressed:
-\bgein{itemize}
+\begin{itemize}
 \item color schemes need to be more consistent: in figures 9/10 red/black are used to indicate alignment/not aligned
 and purple orange are used to show height
-in the histograms, e.g. fig 11, purple orange are used to show same source/different source. 
-\item use annotate rather than geom_text for annotations e.g. in figures 6 and 7. geom_text is repeated with the number of rows in a data set, annotation is only drawn once. That way the text doesn't look like it's bleeding
-\item fig 10: use fadul 1-1 as the reference rather than fadul 2-1. That way the pictures are directy comparable.
-\item I noticed that known matches and known non matches have a different scale (height) in the histograms. I think we need to talk about whether that's the best strategy. 
+in the histograms, e.g. fig 11, purple orange are used to show same source/different source. \jz{Yeah, I agree that it would be better to change this. I like the orange/purple divergent color scheme representing height, so maybe the histograms could be changed to something else? The black and red CMC plots were meant to look like they do in \cite{tong_estimating_2018}, but maybe those could be changed to same color scheme as the histograms (representative of "matching" and "non-matching").}
+\item use annotate rather than geom_text for annotations e.g. in figures 6 and 7. geom_text is repeated with the number of rows in a data set, annotation is only drawn once. That way the text doesn't look like it's bleeding \jz{That's a really good point. I've fixed that in the cmcR function used to create the plot and have pushed the updated version.}
+\item fig 10: use fadul 1-1 as the reference rather than fadul 2-1. That way the pictures are directy comparable. \jz{Fadul 2-1 is used as the reference image to reflect the fact that it was partitioned into the grid of cells (instead of the other "direction" in which Fadul 1-1 was partitioned into a grid) to yield the 4 CMCs shown. I've added a better explanation for this, but it wouldn't be difficult to change to a different KNM scan if we wanted to.}
+\item I noticed that known matches and known non matches have a different scale (height) in the histograms. I think we need to talk about whether that's the best strategy. \jz{Yes, I'm not sure if plotting the density is the best way to visualize this (as is done in pretty much all of the CMC-related papers I've seen). We can brainstorm some ideas.}
 \end{itemize}
 }
 
