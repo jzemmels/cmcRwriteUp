@@ -506,7 +506,7 @@ cmcPlots$highCMC +
   theme(legend.position = c(1.11,.552),plot.margin = ggplot2::margin(c(0,3,.2,0),unit = "cm"))
 ```
 
-In contrast, Figure \ref{fig:knmCMCPlot} shows the CMC results for a comparison between Fadul 1-1 and a known non-match scan, Fadul 2-1, under the same pre, inter, and post-processing conditions used for the known match comparison. We can see that 4 initial CMCs were determined while there were 0 CMCs under the High CMC method.
+In contrast, Figure \ref{fig:knmCMCPlot} shows the CMC results for a comparison between Fadul 1-1 and a known non-match scan, Fadul 2-1, under the same pre, inter, and post-processing conditions used for the known match comparison. The "Fadul 1-1 vs. Fadul 2-1" direction yielded 7 initial CMCs while the "Fadul 2-1 vs. Fadul 1-1" direction yielded 4 initial CMCs. \citet{tong_improved_2015} propose choosing the minimum of these two as the initial CMC count. As such, the plot below reflects that Fadul 2-1 was the reference surface matrix partitioned into a grid of cells. There were 0 CMCs determined under the High CMC method for this comparison.
 ```{r,echo=FALSE,cache = T,fig.cap='\\label{fig:knmCMCPlot} CMC results from a known non-match comparison under the initially proposed method',fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth',out.extra="trim={0 2cm 0 1cm}"}
 cmcPlot(x3p1 = fadul1.1$x3p,
         x3p2 = fadul2.1$x3p,
