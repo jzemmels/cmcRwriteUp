@@ -1,0 +1,62 @@
+
+<!-- The \pkg{cmcR} package provides an open-source, fully-automatic implementation of the CMC method as initially proposed by \citet{song_proposed_2013} and one of its extensions proposed by \citet{tong_improved_2015} known as the High CMC method. The package also serves to illustrate what must be done to implement a method for which only a qualitative description is available. We hope to use the \pkg{cmcR} package to discuss themes and issues surrounding reproducibility that apply to many domains of computationally-intensive research. -->
+
+<!-- When faced with ambiguity in how a method is implemented, there are few options available apart from performing a brute-force search through combinations of decisions that may have been made to yield the results reported. Unsurprisingly, it can become incredibly time intensive to implement and then sift through a wide variety of decision combinations.  -->
+
+<!-- While issues related to reproducibility have been identified and explored in many academic fields [\citet{baker_1500_2016}, \citet{osc_estimating_2015}, \citet{goecks_galaxy_2010}], computational reproducibility poses its own challenges.  -->
+<!-- Published results may be sensitive to the particular implementation of a computational method including such considerations as data processing decisions, parameter settings, and even the chosen programming language [\citep{peng_reproducible_2011},\citet{Stodden2013SettingTD}].  -->
+<!-- As such, peer-review \svp{(and scientific progress)} in the truest sense requires that \svp{all preprocessed data, code, and results} be made openly available.  -->
+<!-- \hh{Publicly available, open-source implementations of algorithms are necessary to enable a true peer-review and foster further research in an area.} -->
+<!-- Especially in applications like forensic science, where results from computational methods may affect legal decisions \citep{angwin_machine_2016}, or medicine, transparency in how a method or algorithm is implemented is \svp{essential}.  \svp{XXX this sentence is a bit awkward - come back to it} -->
+
+<!-- \svp{In part, it is necessary to have open code and data because our publications generally do not contain sufficient detail to reproduce every part of the algorithm.}  -->
+<!-- \hh{Unfortunately, descriptions of algorithmic procedures are often published instead of that.} -->
+<!-- \svp{We generally do not describe the particular parameter settings used (or how those were derived) when we describe an algorithm in a publication.  -->
+<!-- As the purpose of a publication is to show the method, and the utility of the method, and not the fine details and parameter settings, this is an understandable editorial decision.} -->
+<!-- \hh{There is a lot of discussion on repeatability of experiments. }  -->
+<!-- \hh{Computational reproducibility id often taken for granted. } -->
+<!-- \svp{At one time, it was common to publish the specific implementation of an algorithm as raw source code\citep{bron_merge_1972} within the journal article (or at minimum, in the appendix\citep{friend_sorting_1956} if the article contained a significant amount of analysis); perhaps this practice has become less common as the complexity of algorithms has increased XXX speculation - not sure if warranted... XXX. -->
+<!-- While it is still relatively common to provide access to a github repository or other repository for source code, these repositories are not guaranteed to exist in perpetuity; certainly, when compared to \citep{bron_merge_1972}, the likelihood of being able to find the source code for an article is higher when the code is included in the article.  -->
+<!-- In many cases, though, authors do not make their code available for analysis; this provides a substantial hurdle when attempting to use, replicate, or compare the published method and represents a significant barrier to scientific progress.} -->
+
+<!-- \svp{If the written-language description of the method in the publication is the sole source of information about the algorithm, we trade computational reproducibility for readability.} -->
+<!-- While there is an extensive discussion (XXX cite) of experimental reproducibility, computational reproducibility is often taken for granted. } -->
+<!-- Our experience shows that when faced with ambiguity in how a method is implemented, there are few options available apart from performing a brute-force search through combinations of decisions that may have been made to yield the results reported. -->
+<!-- Unsurprisingly, it can become incredibly time intensive to implement and then sift through a wide variety of decision combinations.  -->
+<!-- \hh{XXX this is bad science - but we need to phrase that more diplomatically}  -->
+<!-- \svp{This is a significant barrier to scientific progress (and to the use of published research in practical settings).} -->
+
+<!-- \svp{XXX still haven't found a good way to work this in XXX} -->
+<!-- \hh{Unfortunately, a pure `re-implementation' of existing work generally does not count as research, which does not encourage to build on one another's work, not compare across  approaches from different research groups. } -->
+
+<!-- \hh{Here, we are discussing the steps necessary to provide an open-source implementation of existing research at the example of the CMC algorithm for comparing breech face impressions on pairs of cartridge cases. }  -->
+<!-- \svp{In this paper, we describe the process of implementing the Congruent Matching Cells (CMC) method for the comparison of marks on spent cartridge cases, using the descriptions in two published papers, \citet{song_3d_2014} and \citet{tong_improved_2015}. -->
+<!-- Our package, \pkg{cmcR}, provides an open-source implementation of the CMC method. -->
+<!-- It also serves as an example of the ambiguities introduced when translating published descriptions of algorithms into detailed source code. -->
+<!-- This process offers some insight into the necessary components which must be available for computational reproducibility.} -->
+<!-- The \pkg{cmcR} package not only provides a open-source implementation of the CMC method, but also serves as an exemplar of what must be done to implement a method for which only a qualitative description is available. % reworded above -->
+<!-- To be clear, we do not intend to criticize the quality of work of particular authors or research teams. \svp{I'm not convinced we need this bit - we are criticizing their work and the fact that they're not providing source code. It comes off as insincere.} -->
+<!-- Rather, we hope to use the \pkg{cmcR} package to discuss themes and issues surrounding reproduciblity (or the lack thereof) that  apply to many domains of computation-intensive research. -->
+
+<!-- \hh{XXX We need to be *very* careful to not claim that the suggested approach is ours, but that this is only an open source implementation of an existing method in the literature. We can't take the credit for inventing the approach, but we have to point out that an open source approach is necessary for scientific progress. } -->
+
+
+<!-- \hh{XXX outline the steps: identify algorithms, compare implementations of algorithms between programming languages, identify implicit parameters, idnetify parameter settings} -->
+
+<!-- \svp{I agree with Heike's assessment. Proposed structure:} -->
+
+<!-- - Reproducibility introduction - types, why, how -->
+<!--   - Cite old published algorithms -->
+<!--   - highlight the importance of reproducibility and transparency for legal applications in particular - innocence project paper on algorithms -->
+<!-- - Introduce case study - cartridge cases -->
+<!--   - background info -->
+<!-- - Step through the algorithm quoting NIST paper and then describing the different pieces of the necessary information which were missing from the paper, with pseudocode documented in section XX of the appendix referenced for each step -->
+<!-- - Describe the differences between the results in the NIST paper and what we can replicate -->
+<!-- - Discussion -->
+<!--   - Sources of ambiguity -->
+<!--     - descriptions of algorithms -->
+<!--     - unspecified parameters -->
+<!--     - unpublished manually cleaned data -->
+<!-- - Conclusion: Open source is vital for reproducibility, and absolutely essential for applications that depend on algorithms being correct - justice, medicine, aerospace... -->
+
+<!-- \svp{As it's structured now, this means that the intro stays, but the CMC method description gets integrated with the cmcR package description, chunk by chunk. So we pull out what they say about preprocessing, and then talk about how cmcR handles preprocessing, and so on. Then, at the end, we highlight the discrepancies and the corresponding failure to replicate the results, and talk about why that is problematic for science in general and also for the use of this algorithm in particular.} -->
