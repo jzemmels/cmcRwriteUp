@@ -125,6 +125,7 @@ nrbtd_url <- "https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement/"
 
 fadul1.1_id <- "DownloadMeasurement/2d9cc51f-6f66-40a0-973a-a9292dbee36d"
 fadul1.2_id <- "DownloadMeasurement/cb296c98-39f5-46eb-abff-320a2f5568e8"
+# Should have the download code here.
 ```
 
 
@@ -180,7 +181,10 @@ In addition, the source code to the full `cmcR` package is accessible at https:/
 
 ## Pre-processing procedures {#preProcessing}
 
-First, 3D topographical cartridge case surface data in their raw format need to be processed before the CMC method can be effectively applied. Cartridge case surface data are commonly represented via a \dfn{surface matrix}: a matrix of spatially-ordered elements or "pixels" whose values correspond to the height of the cartridge case surface at a particular location. Figure \ref{fig:cartridgeCasePair} shows the surface matrices of a known match (KM) pair of cartridge cases from a study by \citet{fadul_empirical_nodate}. A total of 40 cartridge cases were scanned for this study with a lateral resolution of 6.25 microns (micrometers) per pixel. The surface matrices vary around $1200 \times 1200$ pixels in size.
+First, 3D topographical cartridge case surface data in their raw format need to be processed before the CMC method can be effectively applied. 
+Cartridge case surface data are commonly represented via a \dfn{surface matrix}: a matrix of spatially-ordered elements or "pixels" whose values correspond to the height of the cartridge case surface at a particular location. 
+Figure \ref{fig:cartridgeCasePair} shows the surface matrices of a known match (KM) pair of cartridge cases from a study by \citet{fadul_empirical_nodate}. 
+\svp{A total of 40 cartridge cases were scanned with a lateral resolution of 6.25 microns (micrometers) per pixel. The surface matrices \svp{are approximately} $1200 \times 1200$ pixels in size.
 
 ```{r, fadul1-1Screenshot,include=FALSE}
 fadul1.1 <- x3ptools::read_x3p("data/fadul1-1.x3p")
