@@ -33,7 +33,7 @@ output: rticles::rjournal_article
 ---
 
 \newcommand{\hh}[1]{{\textcolor{orange}{#1}}}
-\newcommand{\svp}[1]{{\textcolor{teal}{#1}}}
+\newcommand{\svp}[1]{{\textcolor{blue}{#1}}}
 \newcommand{\jz}[1]{{\textcolor{purple}{#1}}}
 
 ```{r ,localDataDir, include=FALSE}
