@@ -60,3 +60,23 @@
 <!-- - Conclusion: Open source is vital for reproducibility, and absolutely essential for applications that depend on algorithms being correct - justice, medicine, aerospace... -->
 
 <!-- \svp{As it's structured now, this means that the intro stays, but the CMC method description gets integrated with the cmcR package description, chunk by chunk. So we pull out what they say about preprocessing, and then talk about how cmcR handles preprocessing, and so on. Then, at the end, we highlight the discrepancies and the corresponding failure to replicate the results, and talk about why that is problematic for science in general and also for the use of this algorithm in particular.} -->
+
+-----------------------------------
+
+
+
+<!-- An example of the breech face from a 12 GAUGE, single-shot shotgun is shown in Figure \ref{figure:barrelBF}. The hole in the center of the breech face houses the firing pin that shoots out to strike a region on the base of the cartridge case known as the \dfn{primer}. This in turn ignites the propellant within the cartridge case causing a deflagration of gases that propels the bullet forward down the barrel. Figure \ref{figure:impressionsBF} shows a cartridge case fired from the shotgun shown in Figure \ref{figure:barrelBF}. This cartridge case displays both a circular impression left by the firing pin in the middle of the primer as well as breech face impressions left on the outer region of the primer not impressed into by the firing pin. -->
+
+<!-- ```{r, impressionBF,echo=FALSE,fig.cap='Breech face of a barrel and breech face impression on a cartridge case \\citep{doyle}',fig.subcap=c('\\label{figure:barrelBF} Breech face of a shotgun barrel','\\label{figure:impressionsBF} Breech face impressions on a cartridge case primer'),fig.align='center',fig.pos='htbp',out.width='.49\\linewidth',out.height='2.5in'} -->
+<!-- knitr::include_graphics(c("images/breechFace.png","images/breechFaceImpression.png")) -->
+<!-- ``` -->
+
+ <!-- Matching an expended cartridge case of unknown source to one of known source based on breech face impressions has been performed for over 100 years by forensic practitioners \citep{firearm_id_thompson}.  -->
+
+<!-- The development of computational and statistical methods to perform such identification has recently grown in interest \citep{council_strengthening_2009}. One such method is the Congruent Matching Cells (CMC) method invented at NIST that involves partitioning a cartridge case image or scan into a grid of "correlation cells" to isolate areas containing identifying breech face impression markings \citep{song_proposed_2013}. Since its invention in 2012, researchers at NIST have developed a number of extensions and improvements of the CMC method. However, to date there does not exist an openly available implementation of any of these techniques.  -->
+<!-- Many methods proposed in the CMC literature include a description of a proposed technique that does not delve into the intricacies of the implementation. Given that the implementations are not openly available, this makes it especially difficult to validate or assess results. Additionally, some procedures related to pre-processing the cartridge case data are done manually at NIST rather than with an automated method \citep{song_estimating_2018}. This compounds the difficulty to accurately reproduce results.  -->
+
+<!-- The \pkg{cmcR} package provides an open-source, fully-automatic implementation of the CMC method as described in \citet{song_3d_2014} as well an extension proposed by \citet{tong_improved_2015}. This extension was later referred to as the "High CMC" method by \citet{chen_convergence_2017} and is referred to as such in the \pkg{cmcR} package. -->
+
+<!-- \svp{Transition to NIST algorithm quotes section?} -->
+<!-- \svp{The next section may need to be abbreviated and moved into the description if at all possible - provide just the important background information.} -->
