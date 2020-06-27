@@ -166,16 +166,18 @@ knitr::include_graphics("images/cartridgeCasePair_comparison.PNG")
 \svp{While \autoref{fig:ccPair_separated} and \autoref{fig:ccPair_combined} are from comparison microscopes, digital microscopy is capable of higher precision measurements of surface topology.
 Using a 3D microscope, we can obtain extremely detailed scans of the cartridge case surfaces which can be used as input to a comparison algorithm, such as the CMC method originally proposed in \citet{song_proposed_2013}.}
 
-\svp{XXX Briefly describe the contributions of each paper in the sequence - need to transition from visual to algorithmic examination. The paragraph below is a start, but could flow a bit better. I've tried to write the paragraph above in a way that can lead directly into this discussion.}
+<!-- \svp{XXX Briefly describe the contributions of each paper in the sequence - need to transition from visual to algorithmic examination. The paragraph below is a start, but could flow a bit better. I've tried to write the paragraph above in a way that can lead directly into this discussion.} -->
 
-An implementation of the initially proposed CMC method from \citet{song_proposed_2013} applied to 3D topographical scans of cartridge case surfaces is described in \citet{song_3d_2014}. An extension to this initially proposed method known as the High CMC method is discussed in \citet{tong_improved_2015}. 
+\jz{\citet{song_proposed_2013} lays much of the conceptual framework for what would become the Congruent Matching Cells algorithm (although it was referred to as the "Contiguous Matching Cells" method in that original paper). An actual implementation of the CMC method applied to 2D optical images was described in  \citet{tong_fired_2014} and to 3D topographical scans in \citet{song_3d_2014}. Results from both of these articles indicate that the initially proposed method was able to correctly identify all 63 matching and 717 non-matching cartridge case pairs in the \citet{fadul_empirical_nodate} dataset. The first extension of the initially proposed method was described by \citet{tong_improved_2015} who were also able to correctly identify matching and non-matching pairs in the \citet{fadul_empirical_nodate} dataset. While not given an official name in \citet{tong_improved_2015}, this method would later be referred to as the "High CMC" method in \citet{chen_convergence_2017} and is referred to as such in this paper. Various extensions of the original algorithm have been proposed since [\citet{zhang_correlation_2016}, \citet{chen_convergence_2017}, \citet{tong_valid_2018}]. The \pkg{cmcR} package contains implementations designed for use with 3D topographical scans of the initially proposed method described in \citet{song_proposed_2013} and \citet{song_3d_2014} and the High CMC method described in \citet{tong_improved_2015}.}
+
+<!-- An implementation of the initially proposed CMC method from \citet{song_proposed_2013} applied to 3D topographical scans of cartridge case surfaces is described in \citet{song_3d_2014}. An extension to this initially proposed method known as the High CMC method is discussed in \citet{tong_improved_2015}.  -->
 
 
 <!-- Transition -->
 \svp{In the next section, we examine the process of implementing the CMC method for automatic comparisons of 3D cartridge case scans. 
 At each step, we will compare the description in the published papers with the implementation in code, discussing the gaps in the method description and how we filled in those gaps during the creation of `cmcR`.
 We have included pseudocode implementing each procedure in the} [Appendix](#appendix) \svp{so that any ambiguities in the prosaic description are easily resolved.
-In addition, the source code to the full `cmcR` package is accessible at https://github.com/jzemmels/cmcR.
+In addition, the source code to the full `cmcR` package is accessible at https://github.com/CSAFE-ISU/cmcR.
 }
 <!-- \svp{XXX Joe - the package really should live under CSAFE-ISU, not your personal account. Would you mind transferring it over? That will make it easier for CSAFE to maintain once you've moved on to other projects. XXX}  \jz{Done!} -->
 
