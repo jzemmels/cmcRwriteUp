@@ -574,7 +574,10 @@ cmcPlots <- cmcR::cmcPlot(fadul1.1$x3p,
                           cellCCF_bothDirections_output = kmComparison,
                           cmcFilter_improved_output = kmCMC,
                           x3pNames = c("Fadul 1-1","Fadul 1-2"),
-                          legend.quantiles = c(0,.01,.2,.5,.8,.99,1)) 
+                          legend.quantiles = c(0,.01,.2,.5,.8,.99,1),
+                          height.colors = colorspace::darken(c('#7f3b08','#b35806','#e08214','#fdb863','#fee0b6','#f7f7f7','#d8daeb','#b2abd2','#8073ac','#542788','#2d004b'),amount = .2),
+        cell.colors = c("#d73027","#4575b4"),
+        na.value = "gray80")
 
 cmcPlots$initialCMC +
   guides(fill = guide_colourbar(barheight = grid::unit(2.1,"inches"),
@@ -622,7 +625,10 @@ cmcPlot(x3p1 = fadul1.1$x3p,
         cmcFilter_improved_output = knmCMC,
         type = "faceted",
         x3pNames = c("Fadul 1-1","Fadul 2-1"),
-        legend.quantiles = c(0,.01,.2,.5,.8,.99,1)) %>%
+        legend.quantiles = c(0,.01,.2,.5,.8,.99,1),
+        height.colors = colorspace::darken(c('#7f3b08','#b35806','#e08214','#fdb863','#fee0b6','#f7f7f7','#d8daeb','#b2abd2','#8073ac','#542788','#2d004b'),amount = .2),
+        cell.colors = c("#d73027","#4575b4"),
+        na.value = "gray80") %>%
   .$initialCMC +
   guides(fill = guide_colourbar(barheight = grid::unit(2.4,"inches"),
                                 label.theme = element_text(size = 8),
@@ -631,7 +637,6 @@ cmcPlot(x3p1 = fadul1.1$x3p,
                                 ticks.colour = "black")) +
   theme(legend.position = c(1.11,.51),plot.margin = ggplot2::margin(c(0,3,.2,0),unit = "cm"))
 ```
-
 # Results {#results}
 
 As described in section [2](#data), the set of cartridge case scans from \citet{fadul_empirical_nodate} is commonly used to compare the performance of various methods in the CMC literature. 
