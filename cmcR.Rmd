@@ -181,7 +181,9 @@ In addition, the source code to the full `cmcR` package is accessible at https:/
 }
 <!-- \svp{XXX Joe - the package really should live under CSAFE-ISU, not your personal account. Would you mind transferring it over? That will make it easier for CSAFE to maintain once you've moved on to other projects. XXX}  \jz{Done!} -->
 
-# Methods {#methods} \svp{XXX Could we call this Implementation? It's not traditional, but it's more specific.}
+<!-- # Methods {#methods} \svp{XXX Could we call this Implementation? It's not traditional, but it's more specific.} -->
+
+# Implementation {#implementation}
 
 <!-- To acknowledge the original work, excerpts from these articles will be provided. A discussion about ambiguity in how the methods were originally described and how they are implemented in the \pkg{cmcR} package will accompany these excerpts. The [Appendix](#appendix) contains pseudocode detailing the procedures more precisely. -->
 
@@ -291,7 +293,7 @@ The procedures used to process the surface matrices differ in the CMC literature
 While not said explicitly in \citet{song_3d_2014}, \citet{song_estimating_2018} indicates that the "trimming" of the unwanted interior and exterior regions of the scan is performed manually. 
 Additionally, it is unclear how the dropouts and outliers are "removed" from the scan or how outliers are defined. 
 To our knowledge, there does not exist an open-source implementation of the multivariate bandpass Gaussian regression filter used in surface metrology \citep{ISO16610-71}. 
-Further, there are various parameters requiring specification to implement a Gaussian regression filter and it is not clear how these parameters were chosen.
+Further, there are various parameters requiring specification to implement a Gaussian regression filter and it is not clear how these parameters were chosen \citep{blunt_jiang_advanced_2003}.
 
 In the \pkg{cmcR} package, breech face impression data are isolated using a combination of the Random Sample Consensus (RANSAC) robust iterative plane-fitting algorithm \citep{ransac}, the Hough Transform shape detection algorithm \citep{hough}, and cropping rows/columns of the surface matrix containing only \code{NA} values on the exterior of the breech face impression region. 
 This was inspired largely by \citet{tai_fully_2018} who detail a fully-automatic procedure for processing 2D cartridge case images. 
@@ -467,7 +469,7 @@ Figure \ref{fig:kmCMCPerTheta} shows the CMC counts per rotation value in both d
 We can clearly see a CMC mode around $\theta = -24$ in one direction and $21$ in the other, which is to be expected for a known match pair. 
 Figure \ref{fig:knmCMCPerTheta}, on the other hand, shows the CMC counts for a known non-match pair. We can see that no such CMC count mode is achieved.
 
-\citet{tong_improved_2015} introduce an additional criterion to identify a mode in the CMC per $\theta$ counts. 
+\citet{tong_improved_2015} introduce an additional criterion to identify a mode in the CMC count per $\theta$ distribution. 
 Namely, they introduce a "high" CMC threshold defined to be CMC$_{\text{high}} =$ CMC$_{\max} - \tau$ for some constant $\tau$ (they choose $\tau = 1$) where CMC$_{\max}$ is the maximum CMC count attained across all rotation values considered. 
 They propose finding the range of rotation values with associated CMC count greater than or equal to CMC$_{\text{high}}$. 
 If this range is greater than the threshold $T_\theta$, then there is evidence to suggest that a CMC count mode does not exist and the cartridge case pair is not a match. 
@@ -554,7 +556,7 @@ cmcPlots <- cmcR::cmcPlot(fadul1.1$x3p,
 
 cmcPlots$initialCMC
 ```
-```{r,echo=FALSE,cache = T,fig.cap='\\label{fig:initialCMCPlot} CMC results from a known match comparison under the initially proposed method',fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth',out.extra="trim={0 2.5cm 0 2cm}"}
+```{r,echo=FALSE,cache = F,fig.cap='\\label{fig:initialCMCPlot} CMC results from a known match comparison under the initially proposed method',fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth',out.extra="trim={0 2.5cm 0 2cm}"}
 #Actual code executed to tweak the size/position of the colorbar legend:
 cmcPlots <- cmcR::cmcPlot(fadul1.1$x3p,
                           fadul1.2$x3p,
@@ -576,7 +578,7 @@ Similarly, 34 CMCs and 10 non-CMCs determined under the High CMC method are show
 ```{r echo=TRUE,eval=FALSE}
 cmcPlots$highCMC
 ```
-```{r,echo=FALSE,cache = T,fig.cap='\\label{fig:highCMCPlot} CMC results from a known match comparison under the High CMC method',fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth',out.extra="trim={0 2.5cm 0 2cm}"}
+```{r,echo=FALSE,cache = F,fig.cap='\\label{fig:highCMCPlot} CMC results from a known match comparison under the High CMC method',fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth',out.extra="trim={0 2.5cm 0 2cm}"}
 #Actual code executed to tweak the size/position of the colorbar legend:
 cmcPlots$highCMC +
   guides(fill = guide_colourbar(barheight = grid::unit(2.47,"inches"),
@@ -592,7 +594,7 @@ The "Fadul 1-1 vs. Fadul 2-1" direction yielded 7 initial CMCs while the "Fadul 
 \citet{tong_improved_2015} propose choosing the minimum of these two as the initial CMC count. 
 As such, the plot below reflects that Fadul 2-1 was the reference surface matrix partitioned into a grid of cells. 
 There were 0 CMCs determined under the High CMC method for this comparison.
-```{r,echo=FALSE,cache = T,fig.cap='\\label{fig:knmCMCPlot} CMC results from a known non-match comparison under the initially proposed method',fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth',out.extra="trim={0 2cm 0 1cm}"}
+```{r,echo=FALSE,cache = F,fig.cap='\\label{fig:knmCMCPlot} CMC results from a known non-match comparison under the initially proposed method',fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth',out.extra="trim={0 2cm 0 1cm}"}
 cmcPlot(x3p1 = fadul1.1$x3p,
         x3p2 = fadul2.1$x3p,
         cellCCF_bothDirections_output = knmComparison,
@@ -662,8 +664,12 @@ cmcCountData_setSeed4132020 %>%
             aes(x = cmcCount,y = prop,label = n),
             nudge_y = .005,size = 2.5) +
   geom_vline(xintercept = 8.5,linetype = "dashed") +
-  scale_fill_manual(values = c("orange","#b19cd9"),aesthetics = c("colour","fill")) +
-  guides(fill = guide_legend(title = "Comparison Type",override.aes = list(alpha = 1)),
+  # scale_fill_manual(values = c("#fc8d59","#91bfdb"),
+  #                   aesthetics = c("colour","fill")) +
+  scale_fill_manual(values = c("#d73027","#4575b4"),
+                    aesthetics = c("colour","fill")) +
+  guides(fill = guide_legend(title = "Comparison Type",
+                             override.aes = list(alpha = 1)),
          colour = FALSE) +
   theme_bw() + 
   theme(legend.position = "bottom") +
@@ -688,7 +694,8 @@ cmcCountData_setSeed4132020 %>%
   ggplot(aes(x = cmcCount,y = ..density..)) +
   geom_histogram(aes(fill = comparisonType),colour = "black",binwidth = 1) +
   geom_histogram(alpha = 0,binwidth = 1) +
-  scale_fill_manual(values = c("orange","#b19cd9")) +
+  # scale_fill_manual(values = c("#fc8d59","#91bfdb")) +
+  scale_fill_manual(values = c("#d73027","#4575b4")) +
   guides(fill = guide_legend(title = "Comparison Type",override.aes = list(alpha = 1))) +
   facet_wrap(`CCF Threshold` ~ `Trans. Threshold`,ncol = 3,scales = "free_y",labeller = label_both) +
   theme_bw() + 
@@ -771,7 +778,8 @@ cmcCountData_setSeed4132020 %>%
             aes(x = cmcCount,y = prop,label = n),
             nudge_y = .005,size = 2) +
   geom_vline(xintercept = 8.5,linetype = "dashed") +
-  scale_fill_manual(values = c("orange","#b19cd9"),aesthetics = c("colour","fill")) +
+  # scale_fill_manual(values = c("#fc8d59","#91bfdb"),aesthetics = c("colour","fill")) +
+  scale_fill_manual(values = c("#d73027","#4575b4"),aesthetics = c("colour","fill")) +
   guides(fill = guide_legend(title = "Comparison Type",override.aes = list(alpha = 1)),
          colour = FALSE) +
   theme_bw() + 
@@ -803,7 +811,8 @@ cmcCountData_setSeed4132020 %>%
   ggplot(aes(x = cmcCount,y = ..density..)) +
   geom_histogram(aes(fill = comparisonType),colour = "black",binwidth = 1) +
   geom_histogram(alpha = 0,binwidth = 1) +
-  scale_fill_manual(values = c("orange","#b19cd9")) +
+  # scale_fill_manual(values = c("#fc8d59","#91bfdb")) +
+  scale_fill_manual(values = c("#d73027","#4575b4")) +
   guides(fill = guide_legend(override.aes = list(alpha = 1))) +
   facet_wrap(`CCF Threshold` ~ `Trans. Threshold`,
              ncol = 3,
