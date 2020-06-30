@@ -567,7 +567,7 @@ cmcPlots <- cmcR::cmcPlot(fadul1.1$x3p,
 
 cmcPlots$initialCMC
 ```
-```{r,echo=FALSE,cache = F,fig.cap='\\label{fig:topVoteCMCPlot} CMC results from a known match comparison under the \\citet{song_proposed_2013} asymmetric method using the \\code{cmcPlot} function',fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth',out.extra="trim={0 2.5cm 0 2cm}"}
+```{r,echo=FALSE,cache = F,fig.cap='\\label{fig:topVoteCMCPlot} CMC results from a known match comparison under the Top Vote method using the \\code{cmcPlot} function',fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth',out.extra="trim={0 2.5cm 0 2cm}"}
 #Actual code executed to tweak the size/position of the colorbar legend:
 cmcPlots <- cmcR::cmcPlot(fadul1.1$x3p,
                           fadul1.2$x3p,
@@ -575,7 +575,7 @@ cmcPlots <- cmcR::cmcPlot(fadul1.1$x3p,
                           cmcFilter_improved_output = kmCMC,
                           x3pNames = c("Fadul 1-1","Fadul 1-2"),
                           legend.quantiles = c(0,.01,.2,.5,.8,.99,1),
-                          height.colors = colorspace::darken(c('#7f3b08','#b35806','#e08214','#fdb863','#fee0b6','#f7f7f7','#d8daeb','#b2abd2','#8073ac','#542788','#2d004b'),amount = .2),
+                          height.colors = colorspace::desaturate(c('#7f3b08','#b35806','#e08214','#fdb863','#fee0b6','#f7f7f7','#d8daeb','#b2abd2','#8073ac','#542788','#2d004b'),amount = .75),
         cell.colors = c("#d73027","#4575b4"),
         na.value = "gray80")
 
@@ -626,7 +626,7 @@ cmcPlot(x3p1 = fadul1.1$x3p,
         type = "faceted",
         x3pNames = c("Fadul 1-1","Fadul 2-1"),
         legend.quantiles = c(0,.01,.2,.5,.8,.99,1),
-        height.colors = colorspace::darken(c('#7f3b08','#b35806','#e08214','#fdb863','#fee0b6','#f7f7f7','#d8daeb','#b2abd2','#8073ac','#542788','#2d004b'),amount = .2),
+        height.colors = colorspace::desaturate(c('#7f3b08','#b35806','#e08214','#fdb863','#fee0b6','#f7f7f7','#d8daeb','#b2abd2','#8073ac','#542788','#2d004b'),amount = .75),
         cell.colors = c("#d73027","#4575b4"),
         na.value = "gray80") %>%
   .$initialCMC +
@@ -656,12 +656,12 @@ Separation is also achieved using the Top Vote method by \citet{tong_improved_20
 It should be noted that these authors report CMC count distributions with fewer "false positive" CMCs for non-match pairs. 
 However, the behavior of these distributions changes considerably depending on the thresholds specified.
 
-TODO:
- <!-- - alpha = .8ish on histograms -->
- - add fill to cells (geom_rect or something of the like) with very low alpha
- - shrink geom_spoke line size
- - change color scheme on cmcPlot to grayscale background (muddle purple and orange w/ extra grey to reduce the strength of the background) -- turn down the "light" in colorspace package
- - Include "modularized" descriptions that illustrate different sections of the various algorithms and parameters that can be interchanged at different steps. 
+<!-- TODO: -->
+<!--  - alpha = .8ish on histograms -->
+<!--  - add fill to cells (geom_rect or something of the like) with very low alpha -->
+<!--  - shrink geom_spoke line size -->
+<!--  - change color scheme on cmcPlot to grayscale background (muddle purple and orange w/ extra grey to reduce the strength of the background) -- turn down the "light" in colorspace package -->
+<!--  - Include "modularized" descriptions that illustrate different sections of the various algorithms and parameters that can be interchanged at different steps.  -->
 
 ```{r echo=FALSE,fig.cap='\\label{fig:topVoteCMC_perfectIdentification} Top Vote CMC count distribution with $T_{\\text{CCF}} = .625$, $T_{dx} = T_{dy} = 22.5$, and $T_{\\theta} = 3$ degrees.',fig.align='center',fig.pos='htbp',out.width='\\textwidth',out.height=".55\\textwidth"}
 
@@ -695,7 +695,7 @@ cmcCountData_setSeed4132020 %>%
               group_by(comparisonType) %>%
               mutate(prop = n/sum(n)),
             aes(x = cmcCount,y = n,label = n),
-            nudge_y = 7,size = 3) +
+            nudge_y = 7,size = 2.5) +
   geom_vline(xintercept = 8.5,linetype = "dashed") +
   # scale_fill_manual(values = c("#fc8d59","#91bfdb"),
   #                   aesthetics = c("colour","fill")) +
@@ -783,7 +783,7 @@ cmcCountData_setSeed4132020 %>%
             aes(x = cmcCount,
                 y = n,
                 label = n),
-            nudge_y = 7,size = 3) +
+            nudge_y = 7,size = 2.25) +
   geom_vline(xintercept = 8.5,
              linetype = "dashed") +
   scale_fill_manual(values = c("#d73027","#4575b4"),
