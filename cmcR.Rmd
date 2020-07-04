@@ -191,14 +191,10 @@ In addition, the source code to the full `cmcR` package is accessible at https:/
 
 # Implementation {#implementation}
 
-<!-- To acknowledge the original work, excerpts from these articles will be provided. A discussion about ambiguity in how the methods were originally described and how they are implemented in the \pkg{cmcR} package will accompany these excerpts. The [Appendix](#appendix) contains pseudocode detailing the procedures more precisely. -->
-
-## Pre-processing procedures {#preProcessing}
-
-First, raw 3D topographical cartridge case surface data need to be processed before applying the CMC method. 
+## Initial Data
 Cartridge case surface data are commonly represented via a \dfn{surface matrix}: a matrix of spatially-ordered elements or "pixels" whose values correspond to the height of the cartridge case surface at a particular location. 
 \autoref{fig:cartridgeCasePair} shows the surface matrices of a known match (KM) pair of cartridge cases from a study by \citet{fadul_empirical_nodate}. 
-\svp{A total of 40 cartridge cases were scanned with a lateral resolution of 6.25 microns (micrometers) per pixel. The surface matrices \svp{are approximately} $1200 \times 1200$ pixels in size.
+A total of 40 cartridge cases were scanned with a lateral resolution of 6.25 microns (micrometers) per pixel. The surface matrices \svp{are approximately} $1200 \times 1200$ pixels in size.
 
 ```{r, fadul1-1Screenshot,include=FALSE}
 fadul1.1 <- x3ptools::read_x3p("data/fadul1-1.x3p")
@@ -286,21 +282,49 @@ knitr::include_graphics(c("derivatives/fadul1-1.png","derivatives/fadul1-2.png")
 Only certain regions of a cartridge case contain identifying breech face impression markings. 
 \citet{song_proposed_2013} refers to these as "valid correlation regions" that are to be used to determine whether two cartridge cases match. 
 Prior to applying the CMC comparison procedure, cartridge scans must undergo some pre-processing to remove sections of the cartridge case surface that do not come into contact with the breech face of the barrel. 
-These include a circular plateaued region in the center of the scan that is pushed aside by the firing pin during the firing process as well as clusters of observed values in the corners of the scan that are artifacts of the staging area in which the scan was captured. 
-The procedures used to process the surface matrices differ in the CMC literature. \citet{song_3d_2014} outline the following pre-processing procedure:
 
-\begin{enumerate}
-\item \emph{"Trim off the inside firing pin surface and other areas outside the breed face mark, so that only breech face impression data remain for correlation."}
 
-\item \emph{"Identify and remove dropouts or outliers."}
+## Pre-processing procedures {#preProcessing}
 
-\item \emph{"Apply a band-pass Gaussian regression filter with 40 $\mu$m short cutoff length and 400 $\mu$m long cutoff length to remove low frequency components, including surface curvature, form error, waviness and high frequency components which mainly arise from the instrument noise."}
-\end{enumerate}
+<!-- First, raw 3D topographical cartridge case surface data need to be processed before applying the CMC method.  -->
 
-While not said explicitly in \citet{song_3d_2014}, \citet{song_estimating_2018} indicates that the "trimming" of the unwanted interior and exterior regions of the scan is performed manually. 
-Additionally, it is unclear how the dropouts and outliers are "removed" from the scan or how outliers are defined. 
+\svp{During the pre-processing stage, several sequential steps are used to prepare each cartridge case for analysis. 
+In the different iterations of the CMC algorithm XXX something mildly snarky about re-publishing what is basically the same thing N times XXX, there have been several minor changes to the pre-processing steps; the different variations of the steps are shown in \autoref{fig:preprocessing-schematic}. 
+}
+
+\begin{figure}\label{fig:preprocessing-schematic}
+\includegraphics[width=3cm]{example-image-a}
+\caption{preprocessing schematic diagram, showing the different components of the preprocessing algorithm used in the different CMC implementations.}
+\end{figure}
+
+The implementation in \citet{tong_fired_2014} describes the preprocessing steps very succinctly:
+
+>  After trimming processing to remove unrelated correlations areas, the final image size is reduced to 700 × 700 pixel with an estimated pixel spacing of 5.0 $\mu$m. A Gaussian smoothing filter (standard deviation $\sigma$ = 1) was implemented first to remove high frequency noise.
+
+\svp{Complicating the issue, }the procedures used to process the surface matrices differ in \svp{each paper in} the CMC literature. \citet{song_3d_2014} outline the following pre-processing procedure:
+
+> Trim off the inside firing pin surface and other areas outside the breed face mark, so that only breech face impression data remain for correlation.
+
+> Identify and remove dropouts or outliers.
+
+> Apply a band-pass Gaussian regression filter with 40 $\mu$m short cutoff length and 400 $\mu$m long cutoff length to remove low frequency components, including surface curvature, form error, waviness and high frequency components which mainly arise from the instrument noise.
+
+While not \svp{explicit} in \citet{song_3d_2014}, \citet{song_estimating_2018} indicates that the "trimming" of the unwanted regions of the scan is performed manually. 
+\svp{
+The goal of this process is to remove the edges and center of the scan which did not come into contact with the breech face, as well as any artifacts of the scan and microscope staging which do not accurately represent the breech face surface.}
+<!-- These include a circular plateaued region in the center of the scan that is pushed aside by the firing pin during the firing process as well as clusters of observed values in the corners of the scan that are artifacts of the staging area in which the scan was captured.  -->
+\svp{
+No further information is given in the paper describing what criteria were used for this process; nor are the trimmed scans provided as intermediate data to make reproducibility possible. 
+}
+It is \svp{also} unclear how the dropouts and outliers are "removed" from the scan or how outliers are defined\svp{operationalized? outliers typically have a definition (1.5*IQR from upper or lower quartile), but I somehow doubt that's what they're using...}. 
+
+\svp{XXX It seems odd that there wouldn't be an open source version if it's an ISO standard... XXX}
 To our knowledge, there does not exist an open-source implementation of the multivariate bandpass Gaussian regression filter used in surface metrology \citep{ISO16610-71}. 
-Further, there are various parameters requiring specification to implement a Gaussian regression filter and it is not clear how these parameters were chosen \citep{blunt_jiang_advanced_2003}.
+Further, there are various parameters requiring specification to implement a Gaussian regression filter and it is not clear how these parameters were chosen \citep{blunt_jiang_advanced_2003}.\svp{XXX Make sure this is the most-cited multivariate gaussian filter paper, if possible -- just double check to see what's commonly cited elsewhere XXX}
+
+\svp{In order to reproducibly implement the preprocessing procedure, we modified a procedure from \citet{tai_fully_2018} used to automatically process images of cartridge cases.}
+\svp{XXX Describe this in steps, not in one long sentence XXX}
+\svp{In cases where you're using functions from other packages, mention that. Cite the specific section of code (break it into chunks!) in the appendix for each piece, and note any parameters that have to be set.}
 
 In the \pkg{cmcR} package, breech face impression data are isolated using a combination of the Random Sample Consensus (RANSAC) robust iterative plane-fitting algorithm \citep{ransac}, the Hough Transform shape detection algorithm \citep{hough}, and cropping rows/columns of the surface matrix containing only \code{NA} values on the exterior of the breech face impression region. 
 This was inspired largely by \citet{tai_fully_2018} who detail a fully-automatic procedure for processing 2D cartridge case images. 
@@ -309,6 +333,9 @@ A simpler Gaussian filter, a technique used by \citet{tong_fired_2014} and \cite
 In order to perform the comparison procedure, dropouts and other \code{NA}-valued pixels must be replaced with a non-\code{NA} value. 
 The convention adopted in the \pkg{cmcR} package is to use the average pixel value as a replacement. 
 There is currently no determination or removal of outliers in the \pkg{cmcR} package's pre-processing procedures.
+\svp{Why? Can you justify this decision?}
+\svp{XXX Could we embed a scan in the margin showing each subsequent stage of preprocessing? Would that show anything useful? Not sure, but I like visuals.}
+
 
 To illustrate the usage of the \pkg{cmcR} package, we will consider a comparison between the KM cartridge case pair shown in \autoref{fig:cartridgeCasePair}.
 For computational purposes it is common the CMC literature to down-sample a surface matrix prior to performing the correlation cell comparison procedure. 
