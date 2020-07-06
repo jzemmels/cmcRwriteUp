@@ -293,7 +293,7 @@ In the different iterations of the CMC algorithm XXX something mildly snarky abo
 }
 
 \begin{figure}\label{fig:preprocessing-schematic}
-\includegraphics[width=3cm]{example-image-a}
+\includegraphics[width=\linewidth]{images/preProcessingDiagram.png}
 \caption{preprocessing schematic diagram, showing the different components of the preprocessing algorithm used in the different CMC implementations.}
 \end{figure}
 
@@ -317,6 +317,7 @@ The goal of this process is to remove the edges and center of the scan which did
 No further information is given in the paper describing what criteria were used for this process; nor are the trimmed scans provided as intermediate data to make reproducibility possible. 
 }
 It is \svp{also} unclear how the dropouts and outliers are "removed" from the scan or how outliers are defined\svp{operationalized? outliers typically have a definition (1.5*IQR from upper or lower quartile), but I somehow doubt that's what they're using...}. 
+\jz{XXX Chapter 6 of [this PhD thesis](http://oa.upm.es/57106/1/CHEN_WANG.pdf) describes 10 different criteria by which outliers can be defined in surface metrology. XXX}
 
 \svp{XXX It seems odd that there wouldn't be an open source version if it's an ISO standard... XXX}
 To our knowledge, there does not exist an open-source implementation of the multivariate bandpass Gaussian regression filter used in surface metrology \citep{ISO16610-71}. 
@@ -334,6 +335,7 @@ In order to perform the comparison procedure, dropouts and other \code{NA}-value
 The convention adopted in the \pkg{cmcR} package is to use the average pixel value as a replacement. 
 There is currently no determination or removal of outliers in the \pkg{cmcR} package's pre-processing procedures.
 \svp{Why? Can you justify this decision?}
+\jz{XXX Both how outliers are defined as well as how observations are "removed" from the scan are unclear based on descriptions provided in the CMC literature. \citet{song_3d_2014} is the only paper in the CMC literature that references the removal of outliers and the low-pass part of the Gaussian filter reduces the effects of high frequency noise anyways. XXX}
 \svp{XXX Could we embed a scan in the margin showing each subsequent stage of preprocessing? Would that show anything useful? Not sure, but I like visuals.}
 
 
