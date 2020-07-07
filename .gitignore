@@ -3,8 +3,6 @@
 cmcR.tex
 cmcR_cache/
 cmcR_files/
-RJwrapper.tex
-RJwrapper.log
 data/fadul1-1.x3p
 data/fadul1-2.x3p
 data/fadul2-1.x3p
@@ -14,3 +12,10 @@ derivatives/
 .gitignore
 data/kmcmc.Rdata
 RJwrapper.pdf
+RJwrapper.aux
+RJwrapper.bbl
+RJwrapper.blg
+RJWrapper.out
+RJwrapper.tex
+RJwrapper.log
+RJwrapper.brf
