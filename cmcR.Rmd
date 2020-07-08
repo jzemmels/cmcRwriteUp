@@ -283,7 +283,6 @@ Only certain regions of a cartridge case contain identifying breech face impress
 \citet{song_proposed_2013} refers to these as "valid correlation regions" that are to be used to determine whether two cartridge cases match. 
 Prior to applying the CMC comparison procedure, cartridge scans must undergo some pre-processing to remove sections of the cartridge case surface that do not come into contact with the breech face of the barrel. 
 
-
 ## Pre-processing procedures {#preProcessing}
 
 <!-- First, raw 3D topographical cartridge case surface data need to be processed before applying the CMC method.  -->
@@ -605,16 +604,16 @@ cmcPlots <- cmcR::cmcPlot(fadul1.1$x3p,
                           x3pNames = c("Fadul 1-1","Fadul 1-2"),
                           legend.quantiles = c(0,.01,.2,.5,.8,.99,1),
                           height.colors = colorspace::desaturate(c('#7f3b08','#b35806','#e08214','#fdb863','#fee0b6','#f7f7f7','#d8daeb','#b2abd2','#8073ac','#542788','#2d004b'),amount = .75),
-        cell.colors = c("#d73027","#4575b4"),
+        cell.colors = c("#a60b00","#1b03a3"),
         na.value = "gray80")
 
-cmcPlots$initialCMC +
-  guides(fill = guide_colourbar(barheight = grid::unit(2.1,"inches"),
-                                label.theme = element_text(size = 8),
-                                title.theme = ggplot2::element_text(size = 10),
-                                frame.colour = "black",
-                                ticks.colour = "black")) +
-  theme(legend.position = c(1.11,.552),plot.margin = ggplot2::margin(c(0,3,0,0),unit = "cm"))
+cmcPlots$initialCMC #+
+  # guides(fill = guide_colourbar(barheight = grid::unit(2.1,"inches"),
+  #                               label.theme = element_text(size = 8),
+  #                               title.theme = ggplot2::element_text(size = 10),
+  #                               frame.colour = "black",
+  #                               ticks.colour = "black")) +
+  # theme(legend.position = c(1.11,.552),plot.margin = ggplot2::margin(c(0,3,0,0),unit = "cm"))
 ```
 
 Similarly, 34 CMCs and 10 non-CMCs determined under the High CMC method are shown in \autoref{fig:highCMCPlot}.
@@ -623,13 +622,13 @@ cmcPlots$highCMC
 ```
 ```{r,echo=FALSE,cache = F,fig.cap='\\label{fig:highCMCPlot} CMC results from a known match comparison under the High CMC method using the \\code{cmcPlot} function',fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth',out.extra="trim={0 2.5cm 0 2cm}"}
 #Actual code executed to tweak the size/position of the colorbar legend:
-cmcPlots$highCMC +
-  guides(fill = guide_colourbar(barheight = grid::unit(2.47,"inches"),
-                                label.theme = element_text(size = 8),
-                                title.theme = ggplot2::element_text(size = 10),
-                                frame.colour = "black",
-                                ticks.colour = "black")) +
-  theme(legend.position = c(1.11,.552),plot.margin = ggplot2::margin(c(0,3,.2,0),unit = "cm"))
+cmcPlots$highCMC #+
+  # guides(fill = guide_colourbar(barheight = grid::unit(2.47,"inches"),
+  #                               label.theme = element_text(size = 8),
+  #                               title.theme = ggplot2::element_text(size = 10),
+  #                               frame.colour = "black",
+  #                               ticks.colour = "black")) +
+  # theme(legend.position = c(1.11,.552),plot.margin = ggplot2::margin(c(0,3,.2,0),unit = "cm"))
 ```
 
 In contrast, \autoref{fig:knmCMCPlot} shows the CMC results for a comparison between Fadul 1-1 and a known non-match scan, Fadul 2-1, under the same pre, inter, and post-processing conditions used for the known match comparison. 
@@ -656,15 +655,15 @@ cmcPlot(x3p1 = fadul1.1$x3p,
         x3pNames = c("Fadul 1-1","Fadul 2-1"),
         legend.quantiles = c(0,.01,.2,.5,.8,.99,1),
         height.colors = colorspace::desaturate(c('#7f3b08','#b35806','#e08214','#fdb863','#fee0b6','#f7f7f7','#d8daeb','#b2abd2','#8073ac','#542788','#2d004b'),amount = .75),
-        cell.colors = c("#d73027","#4575b4"),
+        cell.colors = c("#a60b00","#1b03a3"),
         na.value = "gray80") %>%
-  .$initialCMC +
-  guides(fill = guide_colourbar(barheight = grid::unit(2.4,"inches"),
-                                label.theme = element_text(size = 8),
-                                title.theme = ggplot2::element_text(size = 10),
-                                frame.colour = "black",
-                                ticks.colour = "black")) +
-  theme(legend.position = c(1.11,.51),plot.margin = ggplot2::margin(c(0,3,.2,0),unit = "cm"))
+  .$initialCMC #+
+  # guides(fill = guide_colourbar(barheight = grid::unit(2.4,"inches"),
+  #                               label.theme = element_text(size = 8),
+  #                               title.theme = ggplot2::element_text(size = 10),
+  #                               frame.colour = "black",
+  #                               ticks.colour = "black")) +
+  # theme(legend.position = c(1.11,.51),plot.margin = ggplot2::margin(c(0,3,.2,0),unit = "cm"))
 ```
 # Results {#results}
 
@@ -685,13 +684,6 @@ Separation is also achieved using the Top Vote method by \citet{tong_improved_20
 It should be noted that these authors report CMC count distributions with fewer "false positive" CMCs for non-match pairs. 
 However, the behavior of these distributions changes considerably depending on the thresholds specified.
 
-<!-- TODO: -->
-<!--  - alpha = .8ish on histograms -->
-<!--  - add fill to cells (geom_rect or something of the like) with very low alpha -->
-<!--  - shrink geom_spoke line size -->
-<!--  - change color scheme on cmcPlot to grayscale background (muddle purple and orange w/ extra grey to reduce the strength of the background) -- turn down the "light" in colorspace package -->
-<!--  - Include "modularized" descriptions that illustrate different sections of the various algorithms and parameters that can be interchanged at different steps.  -->
-
 ```{r echo=FALSE,fig.cap='\\label{fig:topVoteCMC_perfectIdentification} Top Vote CMC count distribution with $T_{\\text{CCF}} = .625$, $T_{dx} = T_{dy} = 22.5$, and $T_{\\theta} = 3$ degrees.',fig.align='center',fig.pos='htbp',out.width='\\textwidth',out.height=".55\\textwidth"}
 
 load("data/cmcCountData.RData")
@@ -703,8 +695,10 @@ cmcCountData_setSeed4132020 %>%
   rename(`CCF Threshold` = ccfThresh,
          `Trans. Threshold` = translateThresh) %>%
   ggplot() +
-  geom_histogram(aes(x = cmcCount,fill = comparisonType),colour = "black",binwidth = 1) +
-  geom_histogram(aes(x = cmcCount),alpha = 0,binwidth = 1) +
+  stat_density(aes(x = cmcCount,y = ..density.., fill = comparisonType)) +
+  geom_bar(aes(x = cmcCount,fill = comparisonType)) +
+  # geom_histogram(aes(x = cmcCount,fill = comparisonType),colour = "black",binwidth = 1) +
+  # geom_histogram(aes(x = cmcCount),alpha = 0,binwidth = 1) +
   geom_text(data = cmcCountData_setSeed4132020 %>%
               pivot_wider(id_cols = c("pair","ccfThresh","translateThresh","thetaThresh","comparisonType"),
                           names_from = c("cmcType"),
@@ -728,7 +722,7 @@ cmcCountData_setSeed4132020 %>%
   geom_vline(xintercept = 8.5,linetype = "dashed") +
   # scale_fill_manual(values = c("#fc8d59","#91bfdb"),
   #                   aesthetics = c("colour","fill")) +
-  scale_fill_manual(values = c("#d73027","#4575b4"),
+  scale_fill_manual(values = c("#a60b00","#1b03a3"),
                     aesthetics = c("colour","fill")) +
   guides(fill = guide_legend(title = "Comparison Type",
                              override.aes = list(alpha = 1)),
@@ -745,7 +739,7 @@ The most restrictive threshold combination is in the bottom left corner while th
 Unsurprisingly, fewer CMCs are assigned to all pairs as the thresholds become more restrictive. 
 Additionally, many threshold combinations yield overlapping matching and non-matching CMC count distributions making perfect identification based on a minimum CMC count threshold impossible.
 
-\jz{Changing the faceted "sensitivity" plots like the one below to show Number of Pairs instead of Relative Frequency makes it almost impossible to see the known match distributions. And reducing the number of facets doesn't *really* help that much. I think the only options are to (1) keep the relative frequency and point-out that it's on a different scale from the above (although this would flow awkwardly) or (2) not include the sensitivity plots. Not sure what the best course of action would be.}
+<!-- \jz{Changing the faceted "sensitivity" plots like the one below to show Number of Pairs instead of Relative Frequency makes it almost impossible to see the known match distributions. And reducing the number of facets doesn't *really* help that much. I think the only options are to (1) keep the relative frequency and point-out that it's on a different scale from the above (although this would flow awkwardly) or (2) not include the sensitivity plots. Not sure what the best course of action would be.} -->
 
 ```{r echo=FALSE,fig.cap='\\label{fig:topVoteCMC_sensitivity} Top Vote CMC count relative frequencies for various $T_{dx}, T_{dy}$, and $T_{\\text{CCF}}$ values and $T_{\\theta} = 3$ degrees.',fig.align='left',fig.pos='htbp',out.width='1.2\\linewidth',out.extra="trim={2cm 0 0 0}"}
 
@@ -758,12 +752,13 @@ cmcCountData_setSeed4132020 %>%
   ggplot(aes(x = cmcCount
              ,y = ..density..
              )) +
+  # geom_density(aes(x = cmcCount,fill = comparisonType)) +
   geom_histogram(aes(fill = comparisonType),
                  alpha = .8,
                  colour = "black",
                  binwidth = 1) +
   geom_histogram(alpha = 0,binwidth = 1) +
-  scale_fill_manual(values = c("#d73027","#4575b4")) +
+  scale_fill_manual(values = c("#a60b00","#1b03a3")) +
   guides(fill = guide_legend(title = "Comparison Type",override.aes = list(alpha = 1))) +
   facet_wrap(`CCF Threshold` ~ `Trans. Threshold`,ncol = 3,scales = "free_y",labeller = label_both) +
   theme_bw() + 
@@ -786,11 +781,13 @@ cmcCountData_setSeed4132020 %>%
   rename(`CCF Threshold` = ccfThresh,
          `Trans. Threshold` = translateThresh) %>%
   ggplot() +
-  geom_histogram(aes(x = cmcCount,
-                     fill = comparisonType),
-                 colour = "black",
-                 binwidth = 1) +
-  geom_histogram(aes(x = cmcCount),alpha = 0,binwidth = 1) +
+  stat_density(aes(x = cmcCount,y = ..density.., fill = comparisonType)) +
+  geom_bar(aes(x = cmcCount,fill = comparisonType)) +
+  # geom_histogram(aes(x = cmcCount,
+  #                    fill = comparisonType),
+  #                colour = "black",
+  #                binwidth = 1) +
+  # geom_histogram(aes(x = cmcCount),alpha = 0,binwidth = 1) +
   geom_text(data = cmcCountData_setSeed4132020 %>%
               pivot_wider(id_cols = c("pair","ccfThresh","translateThresh","thetaThresh","comparisonType"),
                           names_from = c("cmcType"),
@@ -815,7 +812,7 @@ cmcCountData_setSeed4132020 %>%
             nudge_y = 7,size = 2.25) +
   geom_vline(xintercept = 8.5,
              linetype = "dashed") +
-  scale_fill_manual(values = c("#d73027","#4575b4"),
+  scale_fill_manual(values = c("#a60b00","#1b03a3"),
                     aesthetics = c("colour","fill")) +
   guides(fill = guide_legend(title = "Comparison Type",
                              override.aes = list(alpha = 1)),
@@ -854,7 +851,7 @@ cmcCountData_setSeed4132020 %>%
   geom_histogram(alpha = 0,
                  binwidth = 1) +
   # scale_fill_manual(values = c("#fc8d59","#91bfdb")) +
-  scale_fill_manual(values = c("#d73027","#4575b4")) +
+  scale_fill_manual(values = c("#a60b00","#1b03a3")) +
   guides(fill = guide_legend(override.aes = list(alpha = 1))) +
   facet_wrap(`CCF Threshold` ~ `Trans. Threshold`,
              ncol = 3,
@@ -912,11 +909,6 @@ highCMC_roc %>%
 ```
 
 # Conclusion {#conclusion}
-
-<!-- TODO: -->
-<!--  - Implicit parameters that aren't discussed -->
-<!--  - No intermediate data results (right before applying the method) -->
-<!--  - Absence of a deterministic algorithm (in pre-processing) that leads to inability to reproduce results -->
 
 The results shared in this manuscript indicate that the implementation of the CMC method in the \pkg{cmcR} package is qualitatively similar to those in the CMC literature. 
 As such methods could potentially be used in the future as evidence to support legal conclusions, it is imperative that specific implementations be openly available for assessment and validation. 
