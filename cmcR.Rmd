@@ -315,24 +315,20 @@ The goal of this process is to remove the edges and center of the scan which did
 \svp{
 No further information is given in the paper describing what criteria were used for this process; nor are the trimmed scans provided as intermediate data to make reproducibility possible. 
 }
-It is \svp{also} unclear how the dropouts and outliers are "removed" from the scan or how outliers are defined\svp{operationalized? outliers typically have a definition (1.5*IQR from upper or lower quartile), but I somehow doubt that's what they're using...}. 
+It is \svp{also} unclear how the dropouts and outliers are "removed" from the scan or how outliers are defined\svp{; many different methods for outlier detection and removal are used in surface metrology\citep{outlierdetection}. Most of the algorithms require the user to select thresholds or parameters; thus, without any details about how the outlier detection process was implemented, this portion of the paper is not reproducible.}
 
-\jz{XXX Chapter 6 of this PhD thesis 10 different criteria by which outliers can be defined in surface metrology: http://oa.upm.es/57106/1/CHEN_WANG.pdf describes XXX}
-
-\svp{XXX It seems odd that there wouldn't be an open source version if it's an ISO standard... XXX}
-
-\jz{XXX Apparently it's not common for ISO algorithms to have an accompanying open-source implementation. There are recent pushes for "open standards" by organizations such as OASIS (https://www.oasis-open.org/standards), but it doesn't look like they're interested in surface metrology. A now NIST researcher, Muralikrishnan, wrote a book on surface metrology algorithms that includes some MATLAB code implementing 0th order 3D Gaussian regression filter and a 2D robust Gaussian filter, but not for a 2nd order 3D robust Gaussian regression filter. His book was what I adapted to implement the method back in April that was rather slow. I found a paper that speeds up part of the procedure and provides some pseudocode by \citet{zeng_fast_2010} that I haven't implemented yet. XXX }
-
-\jz{XXX Maybe we can change the language of this sentence to reflect that there is not a commonly agreed-upon algorithm. The "parameters requiring specification" include choosing the penalty function used to identify and neglect outliers in the scans, but I'm not sure how detailed we need to be about this.  XXX}
+<!-- \jz{XXX Apparently it's not common for ISO algorithms to have an accompanying open-source implementation. There are recent pushes for "open standards" by organizations such as OASIS (https://www.oasis-open.org/standards), but it doesn't look like they're interested in surface metrology. A now NIST researcher, Muralikrishnan, wrote a book on surface metrology algorithms that includes some MATLAB code implementing 0th order 3D Gaussian regression filter and a 2D robust Gaussian filter, but not for a 2nd order 3D robust Gaussian regression filter. His book was what I adapted to implement the method back in April that was rather slow. I found a paper that speeds up part of the procedure and provides some pseudocode by \citet{zeng_fast_2010} that I haven't implemented yet. XXX } -->
+<!-- \jz{XXX Maybe we can change the language of this sentence to reflect that there is not a commonly agreed-upon algorithm. The "parameters requiring specification" include choosing the penalty function used to identify and neglect outliers in the scans, but I'm not sure how detailed we need to be about this.  XXX} -->
 
 To our knowledge, there does not exist an open-source implementation of the multivariate bandpass Gaussian regression filter used in surface metrology \citep{ISO16610-71}. 
-Further, there are various parameters requiring specification to implement a Gaussian regression filter and it is not clear how these parameters were chosen \citep{brinkman_bodschwinna_2003}.\svp{XXX Make sure this is the most-cited multivariate gaussian filter paper, if possible -- just double check to see what's commonly cited elsewhere XXX}
-\jz{XXX This is the paper that is cited in \citet{song_estimating_2018} (among others, I think). I got it from the library a while ago, but it just provides a high-level overview of math behind the method rather than any actual code. It's part of a collection of papers edited by Blunt and Jiang, but the original authors are Brinkman and Bodschwinna. I fixed the citation. XXX}
-\svp{In order to reproducibly implement the preprocessing procedure, we modified a procedure from \citet{tai_submitted_2019} used to automatically process surface matrices.} \jz{XXX I was mistaken -- the RANSAC method isn't from \citet{tai_fully_2018}, but from Xiao Hui's dissertation (specifically, from her unpublished package \pkg{cartridges3D}). XXX}
+Further, there are various parameters requiring specification to implement a Gaussian regression filter and it is not clear how these parameters were chosen \citep{brinkman_bodschwinna_2003}.
+<!-- \jz{XXX This is the paper that is cited in \citet{song_estimating_2018} (among others, I think). I got it from the library a while ago, but it just provides a high-level overview of math behind the method rather than any actual code. It's part of a collection of papers edited by Blunt and Jiang, but the original authors are Brinkman and Bodschwinna. I fixed the citation. XXX} -->
+\svp{In order to reproducibly implement the preprocessing procedure, we modified a procedure from \citet{tai_submitted_2019} used to automatically process surface matrices.} 
+<!-- \jz{XXX I was mistaken -- the RANSAC method isn't from \citet{tai_fully_2018}, but from Xiao Hui's dissertation (specifically, from her unpublished package \pkg{cartridges3D}). XXX} -->
 <!-- \svp{XXX Describe this in steps, not in one long sentence XXX} -->
 <!-- \svp{In cases where you're using functions from other packages, mention that. Cite the specific section of code (break it into chunks!) in the appendix for each piece, and note any parameters that have to be set.} -->
 
-\jz{I like the idea of including images that step through the pre-processing. I'm not exactly sure how we could fit them in the margins, but I'll include code here that at least plots them.}
+<!-- \jz{I like the idea of including images that step through the pre-processing. I'm not exactly sure how we could fit them in the margins, but I'll include code here that at least plots them.} -->
 
 ```{r include = F,cache = T}
 fadul1.1_downsampled <- x3ptools::x3p_sample(fadul1.1,m = 2)
