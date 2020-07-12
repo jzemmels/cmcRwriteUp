@@ -358,7 +358,7 @@ fadul1.1_filtered$surface.matrix <- fadul1.1_filtered$surface.matrix %>%
 cmcR::x3pListPlot(list("(1) Downsample scan" = fadul1.1_downsampled,
                        "(2) RANSAC to\nlevel surface" = fadul1.1_ransac,
                        "(3) Automatically\ncrop exterior" = fadul1.1_cropped,
-                       "(4) Hough Transform to\nremove firing pin" = fadul1.1_noFP,
+                       "(4) Hough transform\n(remove firing pin)" = fadul1.1_noFP,
                        "(5) Band-pass Filter" = fadul1.1_filtered),
                   type = "faceted",
                   legend.quantiles = c(0,.01,.1,.5,.9,.99,1)) +
