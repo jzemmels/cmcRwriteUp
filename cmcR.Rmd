@@ -808,7 +808,7 @@ cmcCountData_setSeed4132020 %>%
   # geom_density(aes(x = cmcCount,fill = comparisonType)) +
   geom_histogram(aes(fill = comparisonType),
                  alpha = .8,
-                 colour = "black",
+                 colour = "white",
                  binwidth = 1) +
   geom_histogram(alpha = 0,binwidth = 1) +
   scale_fill_manual(values = c("#a60b00","#1b03a3")) +
@@ -899,7 +899,7 @@ cmcCountData_setSeed4132020 %>%
   ggplot(aes(x = cmcCount,y = ..density..)) +
   geom_histogram(aes(fill = comparisonType),
                  alpha = .8,
-                 colour = "black",
+                 colour = "white",
                  binwidth = 1) +
   geom_histogram(alpha = 0,
                  binwidth = 1) +
