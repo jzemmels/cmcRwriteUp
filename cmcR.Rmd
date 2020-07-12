@@ -283,7 +283,7 @@ Only certain regions of a cartridge case contain identifying breech face impress
 \citet{song_proposed_2013} refers to these as "valid correlation regions" that are to be used to determine whether two cartridge cases match. 
 Prior to applying the CMC comparison procedure, cartridge scans must undergo some preprocessing to remove sections of the cartridge case surface that do not come into contact with the breech face of the barrel. 
 
-## preprocessing procedures {#preProcessing}
+## Preprocessing procedures {#preProcessing}
 
 <!-- First, raw 3D topographical cartridge case surface data need to be processed before applying the CMC method.  -->
 
