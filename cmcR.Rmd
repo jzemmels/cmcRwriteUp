@@ -408,7 +408,8 @@ fadul1.2 <- cmcR::selectBFImpression_sample_x3p("data/fadul1-2.x3p",
                                                 gaussFilterWavelength = c(16,500))
 ```
 
-```{r,echo=FALSE,cache = T,fig.cap='\\label{fig:processedScans} A known match pair of processed cartridge case scans',fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth',out.extra="trim={0 2.5cm 0 2cm}"}
+```{r,echo=FALSE,cache = T,fig.cap='\\label{fig:processedScans} A known match pair of preprocessed cartridge case scans',fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
+# out.extra="trim={0 2.5cm 0 2cm}"
 
 cmcR::x3pListPlot(x3pList = list("Fadul 1-1" = fadul1.1$x3p,
                                  "Fadul 1-2" = fadul1.2$x3p),
@@ -428,7 +429,7 @@ As such, only certain sections of the cartridge case have identifiable markings 
 Calculating a similarity score between the entirety of two cartridge case surfaces might not highlight these valid correlation regions. 
 Instead, \citet{song_proposed_2013} proposes partitioning one surface matrix into a grid of "correlation cells," some of which will enclose the valid correlation regions of interest. 
 If a large number of these correlation cells are deemed highly similar to regions in the other surface matrix, then there is evidence that the two cartridges cases match. 
-Thus, the number of highly similar cells can be used as a more granular similarity metric.
+\svp{T}he number of highly similar cells can be used as a more \svp{robust} similarity metric, \svp{compared to a score derived from the entire cartridge case}.
 
 ```{r, echo=FALSE,fig.cap='\\label{fig:cmc_illustration} Illustration of comparing a "cell" in one cartridge case scan to a region in another',fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
 
@@ -441,7 +442,7 @@ Each cell is paired with an associated larger region in the other scan.
 The absolute location of each cell and region in their respective surface matrices remain constant. 
 However, the scan on the right is rotated to determine the rotation at which the two scans are the most "similar," which is quantified using the \dfn{cross-correlation function} (CCF). 
 Note that rotating an image or surface matrix by an arbitrary angle (other than a multiple of 90 degrees) requires interpolating new pixel locations. 
-A variety of interpolation schemes exist and it is unclear how this is performed in the CMC literature \citep{parker_comparison_1983}.
+A variety of interpolation schemes exist\citep{parker_comparison_1983} and \svp{there are no details provided in the} CMC literature \svp{indicating which interpolation algorithm was used}. \svp{XXX what do we use? Make it explicit so we're not being hypocritical XXX}
 
 For two real-valued, $M \times N$ matrices $A$ and $B$, the cross-correlation function, denoted $(A \star B)$ can be defined as
 $$
