@@ -292,8 +292,8 @@ In the different iterations of the CMC algorithm XXX something mildly snarky abo
 }
 
 \begin{figure}\label{fig:preprocessing-schematic}
-\includegraphics[width=\linewidth]{images/preProcessingDiagram.png}
-\caption{preprocessing schematic diagram, showing the different components of the preprocessing algorithm used in the different CMC implementations.}
+\includegraphics[width=\linewidth]{images/preprocessing_flow.png}
+\caption{Each CMC implementation uses slightly different procedures. Where a procedure step is not discussed or explicitly not applied in the paper, the path traverses empty space.}
 \end{figure}
 
 The implementation in \citet{tong_fired_2014} describes the preprocessing steps very succinctly:
