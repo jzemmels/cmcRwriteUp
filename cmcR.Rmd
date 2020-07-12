@@ -89,7 +89,7 @@ Commonly identified reasons for this lack of reproducibility include ambiguity i
 
 In \svp{computational} research, this is commonly translated to mean that the code and data used to produce published results be made openly available \citep{peng_reproducible_2011}. \svp{Many papers describe (in broad terms) the computational methods which were used in the data analysis, but computational reproducibility requires more. 
 Published results may be numerically sensitive to the particular implementation of a computational method, including such considerations as data processing decisions, parameter settings, and even the chosen programming language. 
-As such, peer-review and scientific progress in the truest sense requires that \emph{all} pre-processed data, code, and results be made openly available. 
+As such, peer-review and scientific progress in the truest sense requires that \emph{all} preprocessed data, code, and results be made openly available. 
 In recognition of the additional requirements of computational reproducibility, } some journals have adopted policies encouraging or requiring that \svp{authors provide code and data sufficient to reproduce the statistical analyses, with the goal of building} a "culture of reproducibility" in their respective fields \citep{peng_reproducible_2009, peng_reproducible_2011, stodden_toward_2013}. 
 
 <!-- Keep the discussion general at first! All of this information applies not just to CMC, but to a broad swath of other applications -->
@@ -110,7 +110,7 @@ The Congruent Matching Cells (CMC) algorithm was developed at the National Insti
 Since then, the method and its numerous extensions \citep{tong_improved_2015,chen_convergence_2017,song_estimating_2018} have shown promise in being able to differentiate between matching and non-matching cartridge cases. 
 \svp{While NIST researchers and collaborators have been able to build on the foundation of the original algorithm, the code and data necessary to reproduce the results have not been made available to external researchers.}
 \svp{As a result, according to} the definitions given above, these results are not reproducible. 
-<!-- Various NIST researchers have been able to qualitatively reproduce results across publications [\citet{tong_improved_2015}, \citet{chen_convergence_2017}, \citet{song_estimating_2018}], but neither code nor pre-processed data for the CMC method or any of its extensions have been made publicly available.  -->
+<!-- Various NIST researchers have been able to qualitatively reproduce results across publications [\citet{tong_improved_2015}, \citet{chen_convergence_2017}, \citet{song_estimating_2018}], but neither code nor preprocessed data for the CMC method or any of its extensions have been made publicly available.  -->
 
 Here, we describe the process of implementing the Congruent Matching Cells (CMC) method for the comparison of marks on spent cartridge cases, using the descriptions from two published papers, \citet{song_3d_2014} and \citet{tong_improved_2015}. 
 Our package, \pkg{cmcR}, provides an open-source implementation of the CMC method\svp{, but i}t also serves as an example of the implementation barriers which occur when translating published descriptions of algorithms into detailed source code. 
@@ -281,14 +281,14 @@ knitr::include_graphics(c("derivatives/fadul1-1.png","derivatives/fadul1-2.png")
 
 Only certain regions of a cartridge case contain identifying breech face impression markings. 
 \citet{song_proposed_2013} refers to these as "valid correlation regions" that are to be used to determine whether two cartridge cases match. 
-Prior to applying the CMC comparison procedure, cartridge scans must undergo some pre-processing to remove sections of the cartridge case surface that do not come into contact with the breech face of the barrel. 
+Prior to applying the CMC comparison procedure, cartridge scans must undergo some preprocessing to remove sections of the cartridge case surface that do not come into contact with the breech face of the barrel. 
 
-## Pre-processing procedures {#preProcessing}
+## preprocessing procedures {#preProcessing}
 
 <!-- First, raw 3D topographical cartridge case surface data need to be processed before applying the CMC method.  -->
 
-\svp{During the pre-processing stage, several sequential steps are used to prepare each cartridge case for analysis. 
-In the different iterations of the CMC algorithm XXX something mildly snarky about re-publishing what is basically the same thing N times XXX, there have been several minor changes to the pre-processing steps; the different variations of the steps are shown in \autoref{fig:preprocessing-schematic}. 
+\svp{During the preprocessing stage, several sequential steps are used to prepare each cartridge case for analysis. 
+In the different iterations of the CMC algorithm XXX something mildly snarky about re-publishing what is basically the same thing N times XXX, there have been several minor changes to the preprocessing steps; the different variations of the steps are shown in \autoref{fig:preprocessing-schematic}. 
 }
 
 \begin{figure}\label{fig:preprocessing-schematic}
@@ -300,7 +300,7 @@ The implementation in \citet{tong_fired_2014} describes the preprocessing steps 
 
 >  After trimming processing to remove unrelated correlations areas, the final image size is reduced to 700 × 700 pixel with an estimated pixel spacing of 5.0 $\mu$m. A Gaussian smoothing filter (standard deviation $\sigma$ = 1) was implemented first to remove high frequency noise.
 
-\svp{Complicating the issue, }the procedures used to process the surface matrices differ in \svp{each paper in} the CMC literature. \citet{song_3d_2014} outline the following pre-processing procedure:
+\svp{Complicating the issue, }the procedures used to process the surface matrices differ in \svp{each paper in} the CMC literature. \citet{song_3d_2014} outline the following preprocessing procedure:
 
 > Trim off the inside firing pin surface and other areas outside the breed face mark, so that only breech face impression data remain for correlation.
 
@@ -328,17 +328,64 @@ It is \svp{also} unclear how the dropouts and outliers are "removed" from the sc
 To our knowledge, there does not exist an open-source implementation of the multivariate bandpass Gaussian regression filter used in surface metrology \citep{ISO16610-71}. 
 Further, there are various parameters requiring specification to implement a Gaussian regression filter and it is not clear how these parameters were chosen \citep{brinkman_bodschwinna_2003}.\svp{XXX Make sure this is the most-cited multivariate gaussian filter paper, if possible -- just double check to see what's commonly cited elsewhere XXX}
 \jz{XXX This is the paper that is cited in \citet{song_estimating_2018} (among others, I think). I got it from the library a while ago, but it just provides a high-level overview of math behind the method rather than any actual code. It's part of a collection of papers edited by Blunt and Jiang, but the original authors are Brinkman and Bodschwinna. I fixed the citation. XXX}
-\svp{In order to reproducibly implement the preprocessing procedure, we modified a procedure from \citet{tai_fully_2018} used to automatically process images of cartridge cases.}
-\svp{XXX Describe this in steps, not in one long sentence XXX}
-\svp{In cases where you're using functions from other packages, mention that. Cite the specific section of code (break it into chunks!) in the appendix for each piece, and note any parameters that have to be set.}
+\svp{In order to reproducibly implement the preprocessing procedure, we modified a procedure from \citet{tai_submitted_2019} used to automatically process surface matrices.} \jz{XXX I was mistaken -- the RANSAC method isn't from \citet{tai_fully_2018}, but from Xiao Hui's dissertation (specifically, from her unpublished package \pkg{cartridges3D}). XXX}
+<!-- \svp{XXX Describe this in steps, not in one long sentence XXX} -->
+<!-- \svp{In cases where you're using functions from other packages, mention that. Cite the specific section of code (break it into chunks!) in the appendix for each piece, and note any parameters that have to be set.} -->
 
-In the \pkg{cmcR} package, breech face impression data are isolated using a combination of the Random Sample Consensus (RANSAC) robust iterative plane-fitting algorithm \citep{ransac}, the Hough Transform shape detection algorithm \citep{hough}, and cropping rows/columns of the surface matrix containing only \code{NA} values on the exterior of the breech face impression region. 
-This was inspired largely by \citet{tai_fully_2018} who detail a fully-automatic procedure for processing 2D cartridge case images. 
-The \pkg{cmcR} package does not yet use a Gaussian regression filter.
-A simpler Gaussian filter, a technique used by \citet{tong_fired_2014} and \citet{song_estimating_2018}, is currently implemented instead. 
+\jz{I like the idea of including images that step through the pre-processing. I'm not exactly sure how we could fit them in the margins, but I'll include code here that at least plots them.}
+
+```{r include = F,cache = T}
+fadul1.1_downsampled <- x3ptools::x3p_sample(fadul1.1,m = 2)
+
+fadul1.1_ransac <- fadul1.1_downsampled
+fadul1.1_ransac$surface.matrix <- fadul1.1_ransac$surface.matrix %>%
+  cmcR::preProcess_ransac(iters = 600) %>%
+  cmcR::preProcess_levelBF(useResiduals = TRUE)
+
+fadul1.1_cropped <- fadul1.1_ransac
+fadul1.1_cropped$surface.matrix <- fadul1.1_cropped$surface.matrix %>%
+  cmcR::preProcess_cropWS(croppingThresh = 1)
+fadul1.1_cropped$header.info$sizeY <- ncol(fadul1.1_cropped$surface.matrix)
+fadul1.1_cropped$header.info$sizeX <- nrow(fadul1.1_cropped$surface.matrix)
+
+fadul1.1_noFP <- fadul1.1_cropped
+fadul1.1_noFP$surface.matrix <- fadul1.1_noFP$surface.matrix %>%
+  preProcess_removeFPCircle(aggregation_function = function(x,na.rm){median(x,na.rm) - 11})
+
+fadul1.1_filtered <- fadul1.1_noFP
+fadul1.1_filtered$surface.matrix <- fadul1.1_filtered$surface.matrix %>%
+  cmcR::preProcess_gaussFilter(res = fadul1.1_filtered$header.info$incrementY,
+                               wavelength = c(16,500))
+```
+
+```{r, echo=FALSE,cache = T,fig.cap='\\label{fig:processingPipeline} Illustration of \\pkg{cmcR} preprocessing pipeline.',fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth'}
+cmcR::x3pListPlot(list("(1) Resize Surface Matrix" = fadul1.1_downsampled,
+                       "(2) Residuals from RANSAC" = fadul1.1_ransac,
+                       "(3) Crop Exterior" = fadul1.1_cropped,
+                       "(4) Remove Firing Pin Obs." = fadul1.1_noFP,
+                       "(5) Band-pass Filter" = fadul1.1_filtered),
+                  type = "faceted",
+                  legend.quantiles = c(0,.01,.1,.5,.9,.99,1))
+```
+\jz{The preprocessing procedures implemented in the \pkg{cmcR} package are as follows. First, if desired, a surface matrix is resized by sampling pixels at a user-defined rate. It is common in the CMC literature to sample every other row and column in a surface matrix, resulting in a matrix that is approximately 25% of original's dimension. This downsampling is performed using the \code{x3p\_sample} function from the \pkg{x3ptools} package (CITE lines num-num in [Appendix](). An example of a resized yet unprocessed surface matrix is shown in the top-left corner of \autoref{fig:processingPipeline}.}
+
+\jz{After downsampling, the height value of the breech face impression region is estimated using the Random Sample Consensus (RANSAC) robust iterative plane-fitting algorithm \citep{ransac}. Then, either observations or residuals within a small, user-defined distance of the fitted plane are extracted from the surface matrix. Extracting residuals as opposed to "raw" observations helps remove the global trend in height values seen in \autoref{fig:processingPipeline} from the top-right to the bottom-left corner. Other than applying a high-pass Gaussian filter to attenuate large-scale structure, it is unclear how or if such trends are dealt with in the CMC literature. The implemented RANSAC and leveling procedure was adapted from the \pkg{cartridges3D} package \citep{cartridges3D} (CITE lines num-um in [Appendix](). The second plot in \autoref{fig:processingPipeline} shows the residuals after applying the RANSAC method. As we can see, the RANSAC leveling procedure has isolated the breech face impression region. However, there are still undesired observations within the firing pin impression circle and in the corners of surface matrix.}
+
+\jz{To remove observations in the corners of the surface matrix, a simple, automatic cropping procedure is applied. The columns consisting of the middle 20% of the surface matrix are extracted from surface matrix. Then, the number of non-\code{NA} pixels in each row is counted and compared to a user-defined cropping threshold. All rows between the first and last rows with a non-\code{NA} pixel count greater than or equal to the cropping threshold are selected from the entire surface matrix. The same is done with the rows consisting of the middle 20% of the surface matrix. The result is a surface matrix of smaller dimension, as illustrated in the third plot of \autoref{fig:processingPipeline}.}
+
+\jz{The Hough transform is a popular shape detection method that can be used to detect the often circular firing pin impression left in cartridge cases [\citet{hough}, \citet{gerules_survey_2013}]. Given a radius, the circular Hough transform can be used to identify the center of a circle in an image. However, firing pin impressions and thus their radii are not uniform across cartridge cases. Thus, the radius must first be estimated before the Hough transform can be applied. To estimate the radius, a novel approach is used. First, the values in the surface matrix are binarized into non-\code{NA} and \code{NA} classifications. Then, the number of non-\code{NA} pixels in each row is counted. The distance between the two largest modes of this count-per-row series is an estimate for the diameter of the firing pin impression circle. The count-per-row series is smoothed using a user-defined moving-average filter (via \code{zoo::rollmean}). The smoothed series is then differenced and the indices at which the differenced values' signs change from positive to negative are determined. Assuming the smoothing filter is adequate, the distance between these indices should estimate the firing pin impression circle diameter well. For added robustness, this procedure is also applied to the count-per-column series and repeated after the surface matrix is rotated by $15, 30, 45, 60$ and $75$ degrees. A total of 12 candidate radius estimates are calculated by this procedure. These are combined via a user-defined aggregation function to determine a consensual radius estimate.}
+
+\jz{The radius estimation procedure will often yield decent estimates of the true firing pin impression circle radius. However, the Hough transform estimated center can be quite sensitive to small changes in the radius value provided; especially if the perimeter of the circle is perforated as is often the case with cartridge cases. Thus, a more robust procedure is required than using a single radius value. The novel procedure used in the \pkg{cmcR} package is as follows. A user-defined grid of radius values centered on the consensual radius estimate is created. The Hough transform method is applied for each radius value in this grid. Since the Hough transform is a consensus-based algorithm, a large number of candidate circles are proposed and each is assigned a normalized score representing how "popular" it is among the pixels in the surface matrix. We take the candidate circle with the highest score for each radius value. This sequence of scores tends to be stable and near 1 for radius values close to the true radius of the firing pin impression circle and volatile otherwise. Thus, we determine the longest consecutive sequence of scores that are above some user-defined threshold and choose the circle associated with the median radius value of this sequence as the final estimate. The surface matrix after filtering pixels within the firing pin impression circle are shown in the fourth plot of \autoref{fig:processingPipeline}.}
+
+\jz{Finally, a band-pass filter is applied to the processed surface matrix to reduce the effects of undesired frequencies in the comparison procedure. For example, low frequency (high wavelength) global structure may exist in a cartridge case scan due to manufacturing specifications. As such, cartridge cases from the same manufacturer may be naturally more similar than those from different manufacturers. While at first this may appear to be a boon for classifying matching cartridge cases, note that not removing such information before making a comparison might increase the chances of making a false-positive identification. The goal in this analysis is to make identifications based on breech face impressions alone, so it is important that the inclusion of any other information be avoided, if possible. The effects of global structure can be attenuated using a high-pass Gaussian filter. Conversely, high frequency (low wavelength) noise and outliers persist in cartidge case scans due to, for example, imperfections in the scanning process. Such observations may also reduce the accuracy of our identifications. Their effects can be mitigated by applying a low-pass Gaussian filter that operates as a local, moving average. A band-pass Gaussian filter combines the effects of a low and high-pass filter. Various procedures exist to implement low, high, and band-pass Gaussian filters. The current implementation for the low-pass filter involves constructing a Gaussian kernel based on a user-specified wavelength to attenuate and convolving the kernel with the surface matrix in the frequency domain \citep{computerVision}. A high-pass filter of a particular wavelength is applied by subtracting-away the complementary low-pass filtered surface matrix. A band-pass filter of two wavelengths is applied by sequentially applying a high-pass of the greater wavelength followed by a low-pass filter of the lesser \citep{gauss_filter_source}.}
+
+<!-- In the \pkg{cmcR} package, breech face impression data are isolated using a comthebination of the Random Sample Consensus (RANSAC) robust iterative plane-fitting algorithm \citep{ransac}, the Hough Transform shape detection algorithm \citep{hough}, and cropping rows/columns of the surface matrix containing only \code{NA} values on the exterior of the breech face impression region.  -->
+<!-- This was inspired largely by \citet{tai_fully_2018} who detail a fully-automatic procedure for processing 2D cartridge case images.  -->
+<!-- The \pkg{cmcR} package does not yet use a Gaussian regression filter. -->
+<!-- A simpler Gaussian filter, a technique used by \citet{tong_fired_2014} and \citet{song_estimating_2018}, is currently implemented instead.  -->
 In order to perform the comparison procedure, dropouts and other \code{NA}-valued pixels must be replaced with a non-\code{NA} value. 
 The convention adopted in the \pkg{cmcR} package is to use the average pixel value as a replacement. 
-There is currently no determination or removal of outliers in the \pkg{cmcR} package's pre-processing procedures.
+There is currently no determination or removal of outliers in the \pkg{cmcR} package's preprocessing procedures.
 \svp{Why? Can you justify this decision?}
 \jz{XXX Both how outliers are defined as well as how observations are "removed" from the scan are unclear based on descriptions provided in the CMC literature. \citet{song_3d_2014} is the only paper in the CMC literature that references the removal of outliers and the low-pass part of the Gaussian filter reduces the effects of high frequency noise anyways. XXX}
 \svp{XXX Could we embed a scan in the margin showing each subsequent stage of preprocessing? Would that show anything useful? Not sure, but I like visuals.}
@@ -347,7 +394,7 @@ There is currently no determination or removal of outliers in the \pkg{cmcR} pac
 To illustrate the usage of the \pkg{cmcR} package, we will consider a comparison between the KM cartridge case pair shown in \autoref{fig:cartridgeCasePair}.
 For computational purposes it is common the CMC literature to down-sample a surface matrix prior to performing the correlation cell comparison procedure. 
 The sample_x3p function from the x3ptools package can be used used to sample every m th row/column of a surface matrix. 
-The \code{selectBFImpression\_sample\_x3p} function performs all of these pre-processing procedures in a single call. 
+The \code{selectBFImpression\_sample\_x3p} function performs all of these preprocessing procedures in a single call. 
 The code to produce the first surface matrix shown in \autoref{fig:processedScans} is given below while the code for the second surface matrix is skipped for redundancy.
 
 ```{r echo=TRUE,eval=FALSE}
@@ -524,7 +571,7 @@ This particular cartridge case pair would "pass" the high CMC criterion.
 The pair shown in \autoref{fig:knmCMCPerTheta} elicit considerably more diffuse $\theta$ values with associated CMC count great than or equal to CMC$_{\text{high}}$ and thus would not pass the high CMC criterion. 
 
 Similar behavior tends to be seen for the majority KM and KNM pairs. 
-However, we've observed that the behavior of the CMC-$\theta$ distributions depend heavily on the pre-processing procedures used and thresholds set. 
+However, we've observed that the behavior of the CMC-$\theta$ distributions depend heavily on the preprocessing procedures used and thresholds set. 
 In particular, the CMC-$\theta$ distributions for some KNM pairs exhibit the "prominent peak" behavior for a wide range of threshold values making them difficult to distinguish from KM pairs.
 
 ```{r,echo=FALSE,cache = T,fig.cap='\\label{fig:kmCMCPerTheta} CMC count per rotation ($\\theta$) values in both directions for a KM cartridge case pair',fig.align='center',fig.pos='h',out.width='.7\\textwidth'}
@@ -570,7 +617,7 @@ cmcR::cmcPerThetaBarPlot(knmComparison,
 \item \emph{"If the angular range of the “high CMCs” is within the range $T_\theta$, identify the CMCs for each rotation angle in this range and combine them to give the number of CMCs for this comparison in place of the original CMC number. In this step, if the range is narrower than $T_\theta$, the nearby angles are included to make the range equal to $T_\theta$; CMCs with same index in each rotation are only counted once."}
 \end{enumerate}
 A few critical pieces of information are missing from the method's description. 
-For one, there is no discussion nor reference to the procedures used to pre-process the scans. 
+For one, there is no discussion nor reference to the procedures used to preprocess the scans. 
 Additionally, there is no indication of how to deal with situations in which two adjacent $\theta$ values tie for the CMC$_{\max}$ count. 
 We've observed such situations to actually be quite common among both KM and KNM pairs. 
 Another common occurrence for which no guidance is provided is if one comparison direction passes the High CMC criterion (i.e., a CMC count mode is identified at a particular $\theta$ value) while the other direction fails the criterion. 
@@ -832,9 +879,9 @@ cmcCountData_setSeed4132020 %>%
 \autoref{fig:highCMC_sensitivity} shows CMC count distributions determined using the High CMC method for various CCF and translation thresholds. 
 We have observed that the High CMC criterion functions effectively as a preliminary classification rule for matching vs. non-matching cartridge case pairs. 
 Any pair that passes the High CMC criterion, matching or non-matching, is assigned a large number of CMCs. 
-Thus, the success of the High CMC method hinges on choosing pre-processing parameter and threshold values such that few non-matches pass the High CMC criterion. 
+Thus, the success of the High CMC method hinges on choosing preprocessing parameter and threshold values such that few non-matches pass the High CMC criterion. 
 An issue related to this is that there does not exist an agreed-upon set of alignment parameter thresholds nor a method, other than pure experimentation, by which these thresholds can be determined in the CMC literature. 
-While not shown here, we have seen that certain combinations of pre-processing conditions and thresholds yield a bimodal non-match CMC count distribution consisting of pairs that do not pass High CMC criterion (and are assigned few CMCs) and pairs that do (and are assigned many false positive CMCs). 
+While not shown here, we have seen that certain combinations of preprocessing conditions and thresholds yield a bimodal non-match CMC count distribution consisting of pairs that do not pass High CMC criterion (and are assigned few CMCs) and pairs that do (and are assigned many false positive CMCs). 
 Similar non-match bimodal behavior can be seen in Figure 8 of \citet{chen_convergence_2017} where the High CMC method was applied to cartridge case data from \citet{laPorte_validation_2011}.
 
 ```{r echo=FALSE,fig.cap='\\label{fig:highCMC_sensitivity} High CMC count distributions for various $T_{dx}, T_{dy}$, and $T_{\\text{CCF}}$ values and $T_{\\theta} = 3$ degrees.',fig.align='left',fig.pos='htbp',out.width='1.2\\linewidth',out.extra="trim={2cm 0 0 0}"}
@@ -922,7 +969,7 @@ Furthermore, reproducibility of results hinges on automating as much of the comp
 We have discussed the ways in which the prosaic descriptions of CMC procedures fail to adequately detail implementations that yield reproducible results. 
 Ambiguity in the implementation stems mainly from implicit parameters and processing choices in the written-language descriptions. 
 While admissible from a readability perspective, anything short of making the original code available renders published results not reproducible. 
-This is compounded by the fact that a critical pre-processing step is performed manually and that pre-processed data are not publicly available.
+This is compounded by the fact that a critical preprocessing step is performed manually and that preprocessed data are not publicly available.
 
 At one time, it was common to publish the specific implementation of an algorithm as raw source code \citep{bron_merge_1972} within the journal article (or at minimum, in the appendix \citep{friend_sorting_1956} if the article contained a significant amount of analysis). 
 While it is still relatively common to provide access to a github repository or other repository for source code, these repositories are not guaranteed to exist in perpetuity; certainly, when compared to \citep{bron_merge_1972}, the likelihood of being able to find the source code for an article is higher when the code is included in the article or made readily accessible in another format. 
@@ -944,9 +991,9 @@ Future changes to the current implementation will likely come in the form of imp
 This section will provide a more detailed description of the various processing procedures implemented in the \pkg{cmcR} package in the form of \code{R} pseudocode. 
 Additional documentation and source code are available on the \pkg{cmcR} package's [GitHub page](https://github.com/jzemmels/cmcR).
 
-\textbf{Pre-processing:} It is common in the CMC literature to first downsample surface matrices to reduce the computational load of the correlation cell comparison procedure described in section [3.2](#comaprisonProcedure). 
+\textbf{preprocessing:} It is common in the CMC literature to first downsample surface matrices to reduce the computational load of the correlation cell comparison procedure described in section [3.2](#comaprisonProcedure). 
 The \code{sample\_x3p} function from the \pkg{x3ptools} package will downsample an x3p's surface matrix by an integer factor (every $m$th row and column) and update the object's metadata. 
-The \code{selectBFImpression\_sample\_x3p} function will perform this downsampling before applying the pre-processing procedures described in section [3.1](#preProcessing).
+The \code{selectBFImpression\_sample\_x3p} function will perform this downsampling before applying the preprocessing procedures described in section [3.1](#preProcessing).
 
 ```{r eval=FALSE,include=FALSE}
 selectBFImpression_sample_x3p <- function(x3p_path,
