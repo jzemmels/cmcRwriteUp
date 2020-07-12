@@ -291,9 +291,9 @@ Prior to applying the CMC comparison procedure, cartridge scans must undergo som
 In the different iterations of the CMC algorithm XXX something mildly snarky about re-publishing what is basically the same thing N times XXX, there have been several minor changes to the preprocessing steps; the different variations of the steps are shown in \autoref{fig:preprocessing-schematic}. 
 }
 
-\begin{figure}\label{fig:preprocessing-schematic}
+\begin{figure}
 \includegraphics[width=\linewidth]{images/preprocessing_flow.png}
-\caption{Each CMC implementation uses slightly different procedures. Where a procedure step is not discussed or explicitly not applied in the paper, the path traverses empty space.}
+\caption{Each CMC implementation uses slightly different procedures. Where a procedure step is not discussed or explicitly not applied in the paper, the path traverses empty space.}\label{fig:preprocessing-schematic}
 \end{figure}
 
 The implementation in \citet{tong_fired_2014} describes the preprocessing steps very succinctly:
