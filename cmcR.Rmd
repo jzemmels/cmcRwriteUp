@@ -410,10 +410,10 @@ Their effects can be mitigated by applying a low-pass Gaussian filter that opera
 A band-pass Gaussian filter combines the effects of low and high-pass filters \jz{and can be implemented} \svp{by applying the filters consecutively} \citep{gauss_filter_source} \jz{XXX I only say "can be" to emphasize that we chose one of the commonly agreed-upon ways to implement a band-pass filter XXX}. 
 \svp{There is considerable variation in the filters applied in the CMC literature; initially, low-pass and gausian band-pass regression filters were used, but the most recent papers use a band-pass filter.} 
 The current implementation for the low-pass filter involves constructing a Gaussian kernel based on a user-specified wavelength to attenuate and convolving the kernel with the surface matrix in the frequency domain \citep{computerVision}. 
-A high-pass filter of a particular wavelength is applied by subtracting-away the complementary low-pass filtered surface matrix. The band-pass filtered surface matrix is shown in the fifth panel of \autoref{fig:processingPipeline} (\code{filterType = "bp"} and \code{wavelength = c(16,500)} default).
+A high-pass filter of a particular wavelength is applied by subtracting-away the complementary low-pass filtered surface matrix. 
+The band-pass filtered surface matrix is shown in the fifth panel of \autoref{fig:processingPipeline} (\code{filterType = "bp"} and \code{wavelength = c(16,500)} default).
 
 <!-- In the \pkg{cmcR} package, breech face impression data are isolated using a comthebination of the Random Sample Consensus (RANSAC) robust iterative plane-fitting algorithm \citep{ransac}, the Hough Transform shape detection algorithm \citep{hough}, and cropping rows/columns of the surface matrix containing only \code{NA} values on the exterior of the breech face impression region.  -->
-<!-- This was inspired largely by \citet{tai_fully_2018} who detail a fully-automatic procedure for processing 2D cartridge case images.  -->
 <!-- The \pkg{cmcR} package does not yet use a Gaussian regression filter. -->
 <!-- A simpler Gaussian filter, a technique used by \citet{tong_fired_2014} and \citet{song_estimating_2018}, is currently implemented instead.  -->
 
