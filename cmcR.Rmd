@@ -857,7 +857,7 @@ The dashed, vertical line is again drawn at 8.5 CMCs.
 The non-match pairs show the same distribution of CMCs as they did under the Top Vote method. 
 Many matching pairs are assigned a higher CMC count than under the Top Vote method.
 
-```{r echo=FALSE,fig.cap='\\label{fig:highCMC_perfectIdentification} High CMC count distribution with $T_{\\text{CCF}} = .625$, $T_{dx} = T_{dy} = 22.5$, and $T_{\\theta} = 3$ degrees',fig.align='center',fig.pos='htbp',out.width='\\textwidth',out.height='.55\\textwidth'}
+```{r echo=FALSE,fig.cap='\\label{fig:highCMC_perfectIdentification} High CMC count distribution with $T_{\\text{CCF}} = .625$, $T_{dx} = T_{dy} = 22.5$, and $T_{\\theta} = 3$ degrees',fig.align='center',fig.pos='htbp',out.width='\\textwidth',fig.height=4}
 cmcCountData_setSeed4132020 %>%
   filter(cmcType == "high") %>%
   filter(thetaThresh ==  3 & ccfThresh == .625 & translateThresh == 22.5) %>%
