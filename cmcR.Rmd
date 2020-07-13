@@ -385,7 +385,7 @@ All rows between the first and last rows with a non-\code{NA} pixel count greate
 The same is done with the rows consisting of the middle 20% of the surface matrix. 
 The result\svp{ing} surface matrix \svp{is slightly smaller, as shown} in the third plot of \autoref{fig:processingPipeline}.
 
-The Hough transform is a popular shape detection method that can be used to detect the often circular firing pin impression left in cartridge cases [\citet{hough}, \citet{gerules_survey_2013}]^[\svp{Some firearms leave a rectangular firing pin impression; this method could be modified to account for those models, but we have not yet expanded our automated processing to these types of firearms}]. 
+The Hough transform is a popular shape detection method that can be used to detect the often circular firing pin impression left in cartridge cases [\citet{hough}, \citet{gerules_survey_2013}]^[\svp{Some firearms leave a rectangular firing pin impression; this method could be modified to account for those models, but we have not yet expanded our automated processing to these types of firearms.}]. 
 The circular Hough transform can be used to identify the center of a circle in an image \svp{if the radius of the circle is known}. 
 \svp{We first estimate the radius, using a binary matrix which indicates the presence of missing values}. 
 The number of non-\code{NA} pixels in each row is counted. 
@@ -393,7 +393,7 @@ The distance between the two largest modes of this count-per-row series is an es
 The count-per-row series is smoothed using a moving-average filter (via \code{zoo::rollmean}, \code{smootherSize = 2*(.1*nrow(surfaceMat)) + 1} default). 
 The smoothed series is then differenced and the indices at which the differenced values' signs change from positive to negative are determined. 
 Assuming the smoothing filter is adequate, the distance between these indices should estimate the firing pin impression circle diameter well. 
-\svp{The same procedure is applied to the columns of the matrix, and, for added robustness, the rows and columns are assessed as the matrix is rotated in 15 degree intervals (15, 30, 45, 60, and 75). 
+\svp{The same procedure is applied to the columns of the matrix, and, for added robustness, the rows and columns are assessed as the matrix is rotated in 15 degree intervals (15, 30, 45, 60, and 75).}
 A total of 12 candidate radius estimates are calculated by this procedure. 
 These are combined via a user-defined aggregation function to determine a \svp{consensus} radius estimate (\code{aggregationFunction = mean} default).
 
