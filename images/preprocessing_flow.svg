@@ -48,16 +48,16 @@
      inkscape:pageshadow="2"
      inkscape:zoom="1.8986111"
      inkscape:cx="2212.8715"
-     inkscape:cy="448.72552"
+     inkscape:cy="322.31733"
      inkscape:document-units="mm"
-     inkscape:current-layer="layer2"
+     inkscape:current-layer="g1404"
      showgrid="true"
      inkscape:snap-global="false"
-     inkscape:window-width="3838"
-     inkscape:window-height="2095"
-     inkscape:window-x="-1"
+     inkscape:window-width="3840"
+     inkscape:window-height="2102"
+     inkscape:window-x="0"
      inkscape:window-y="0"
-     inkscape:window-maximized="0"
+     inkscape:window-maximized="1"
      units="in"
      showguides="false"
      inkscape:pagecheckerboard="false">
@@ -80,7 +80,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -112,7 +112,7 @@
          sodipodi:nodetypes="ccccccccccccccc"
          inkscape:connector-curvature="0"
          id="path355"
-         d="m 24.462839,120.47843 c 0,0 70.724549,-0.0582 74.903428,0.0647 14.637343,-0.0695 2.919383,34.18267 42.712683,34.14229 14.74495,0.0352 34.42427,0.0142 45.30193,0.4583 21.41059,0.27491 23.34933,55.32769 45.90679,55.2842 22.23306,-0.17935 37.56669,-0.31965 60.829,-0.41807 22.9148,-0.18236 14.924,-91.45165 41.87656,-91.13899 l 63.48873,-0.10905 c 12.67964,0.0486 10.85907,-0.67566 40.61577,-0.54759 14.42324,-0.4636 43.01556,-0.32442 57.02597,-0.33131 30.05601,-0.14567 -4.09303,71.56996 32.51629,71.78068 22.04763,0.79517 32.80596,-0.44757 55.79877,0.26901 21.90176,-0.40364 16.24311,75.07341 32.47581,75.22975 26.14711,-0.37074 62.92744,0.014 62.92744,0.014 l 102.15106,0.0606"
+         d="m 24.462839,120.47843 c 0,0 70.724549,-0.0582 74.903428,0.0647 14.637343,-0.0695 2.919383,34.18267 42.712683,34.14229 14.74495,0.0352 34.42427,0.0142 45.30193,0.4583 21.41059,0.27491 23.34933,55.32769 45.90679,55.2842 22.23306,-0.17935 37.56669,-0.31965 60.829,-0.41807 22.9148,-0.18236 14.924,-91.45165 41.87656,-91.13899 l 63.48873,-0.10905 c 12.67964,0.0486 10.85907,-0.67566 40.61577,-0.54759 14.42324,-0.4636 43.01556,-0.32442 57.02597,-0.33131 30.05601,-0.14567 -4.09303,71.56996 32.51629,71.78068 22.04763,0.79517 32.80596,-0.44757 55.79877,0.26901 21.90176,-0.40364 16.66118,83.15607 32.89388,83.31241 26.14711,-0.37074 62.92744,-0.54342 62.92744,-0.54342 l 101.73299,0.0606"
          style="fill:none;stroke:#a6a938;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.94117647" />
       <path
          sodipodi:nodetypes="ccccccccccccccc"
@@ -124,19 +124,19 @@
          sodipodi:nodetypes="ccccccccccccccc"
          inkscape:connector-curvature="0"
          id="path6313"
-         d="m 24.520563,175.35098 67.668857,0.0985 c 21.11247,0.0697 26.85411,46.89599 50.37728,46.75403 l 52.04957,0.27871 c 13.40893,0.36411 22.76273,-2.46317 33.79389,-2.09035 l 68.49359,-1.46324 c 12.49454,0.0663 19.91292,-40.97241 34.28165,-39.78621 l 63.6858,-0.55742 c 26.79843,0.3697 12.25205,-35.10902 36.72482,-35.21646 l 67.79733,0.14635 c 10.24027,0.25385 9.74035,8.47305 31.48955,9.01289 l 55.2358,0.33149 c 14.21711,0.16815 22.31049,19.39563 34.8061,19.4653 l 59.94624,-0.0816 102.25639,-0.12245"
+         d="m 24.520563,175.35098 67.668857,0.0985 c 21.11247,0.0697 26.85411,46.89599 50.37728,46.75403 l 52.04957,0.27871 c 13.40893,0.36411 22.76273,-2.46317 33.79389,-2.09035 l 68.49359,-1.46324 c 12.49454,0.0663 19.91292,-40.97241 34.28165,-39.78621 l 63.6858,-0.55742 c 26.79843,0.3697 12.25205,-35.10902 36.72482,-35.21646 l 67.79733,0.14635 c 10.24027,0.25385 8.76486,90.8326 30.51406,91.37244 l 55.2358,0.19213 c 14.21711,0.16815 26.35182,19.8137 38.84743,19.88337 l 57.01976,0.19711 101.69896,-0.95859"
          style="fill:none;stroke:#4e9231;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
       <path
          sodipodi:nodetypes="ccccccccccccccc"
          inkscape:connector-curvature="0"
          id="path6313-3"
-         d="m 24.528287,210.69037 65.677044,-0.0577 c 21.112479,0.0697 29.221719,20.08062 52.744889,19.93867 l 51.84308,-0.26326 c 10.73043,-0.15409 22.0786,2.32085 32.47592,2.19732 l 70.33664,0.25829 c 12.49454,0.0663 19.52961,-31.25248 34.04615,-31.05168 l 57.13606,-0.27872 c 26.79843,0.36972 18.56969,-33.72968 42.64829,-34.82252 l 67.49303,-0.14927 c 12.84966,-0.11514 16.99815,-1.65446 31.19393,-2.87466 l 55.46958,0.29912 c 14.21712,0.16815 18.49691,26.07653 30.99252,26.14621 l 64.20182,0.44343 102.29019,0.18161"
+         d="m 24.528287,210.69037 65.677044,-0.0577 c 21.112479,0.0697 29.221719,20.08062 52.744889,19.93867 l 51.84308,-0.26326 c 10.73043,-0.15409 22.0786,2.32085 32.47592,2.19732 l 70.33664,0.25829 c 12.49454,0.0663 19.52961,-31.25248 34.04615,-31.05168 l 57.13606,-0.27872 c 26.79843,0.36972 18.56969,-33.72968 42.64829,-34.82252 l 67.49303,-0.14927 c 12.84966,-0.11514 16.99815,-1.65446 31.19393,-2.87466 l 55.46958,0.29912 c 14.21712,0.16815 19.19369,17.43644 31.6893,17.50612 l 63.92311,0.58279 102.15083,0.0422"
          style="fill:none;stroke:#164900;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
       <path
          sodipodi:nodetypes="ccccccccccccccc"
          inkscape:connector-curvature="0"
          id="path6429"
-         d="m 24.414814,242.35456 70.258844,-0.0986 48.185932,-0.29561 h 57.2516 l 31.2371,0.0985 68.8793,0.29561 c 11.11711,-0.0985 23.24561,-15.39319 35.76992,-15.17512 l 62.08003,-0.19707 c 12.83818,-0.12925 19.70316,0.35058 34.48891,0.29561 l 66.61288,-0.59124 30.94149,0.0985 55.18225,0.19708 c 15.17126,0.003 20.51562,-18.0773 38.62759,-18.03277 l 56.95598,0.29562 102.1277,0.75451"
+         d="m 24.414814,242.35456 70.258844,-0.0986 48.185932,-0.29561 h 57.2516 l 31.2371,0.0985 68.8793,0.29561 c 11.11711,-0.0985 23.24561,-15.39319 35.76992,-15.17512 l 62.08003,-0.19707 c 12.83818,-0.12925 19.70316,0.35058 34.48891,0.29561 l 66.61288,-0.59124 30.94149,0.0985 55.18225,0.19708 c 15.17126,0.003 16.33493,-26.9961 34.4469,-26.95157 l 60.85796,0.9924 102.54577,-0.0816"
          style="fill:none;stroke:#5a2971;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
       <g
          transform="translate(2.0462906,0.78831802)"
@@ -202,12 +202,12 @@
       </g>
       <text
          id="text6831-4"
-         y="263.34198"
+         y="271.2796"
          x="707.29944"
          style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
          xml:space="preserve"><tspan
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:8.46666622px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26458332"
-           y="263.34198"
+           y="271.2796"
            x="707.29944"
            id="tspan6829-9"
            sodipodi:role="line">Song et al. (2014)</tspan></text>
@@ -224,12 +224,12 @@
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:8.46666622px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26458332">Tong et al. (2014)</tspan></text>
       <text
          id="text6839-3"
-         y="169.92628"
+         y="252.47517"
          x="706.72064"
          style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
          xml:space="preserve"><tspan
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:8.46666622px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26458332"
-           y="169.92628"
+           y="252.47517"
            x="706.72064"
            id="tspan6837-8"
            sodipodi:role="line">Chen et al. (2017)</tspan></text>
@@ -237,21 +237,21 @@
          xml:space="preserve"
          style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
          x="707.29944"
-         y="188.15617"
+         y="180.21878"
          id="text6843-7"><tspan
            sodipodi:role="line"
            id="tspan6841-9"
            x="707.29944"
-           y="188.15617"
+           y="180.21878"
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:8.46666622px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26458332">Song et al. (2018)</tspan></text>
       <text
          id="text6847-3"
-         y="207.17435"
+         y="199.23695"
          x="689.10931"
          style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
          xml:space="preserve"><tspan
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:8.46666622px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26458332"
-           y="207.17435"
+           y="199.23695"
            x="689.10931"
            id="tspan6845-8"
            sodipodi:role="line">Zemmels et al. (2020)</tspan></text>
