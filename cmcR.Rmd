@@ -418,7 +418,7 @@ The band-pass filtered surface matrix is shown in the fifth panel of \autoref{fi
 <!-- A simpler Gaussian filter, a technique used by \citet{tong_fired_2014} and \citet{song_estimating_2018}, is currently implemented instead.  -->
 
 In order to perform the comparison procedure, \code{NA}-valued pixels must be replaced with a non-\code{NA} value. 
-The convention adopted in the \pkg{cmcR} package is to use the average pixel value as a replacement. \svp{XXX Do we know that they did or did not use a similar consensus in the CMC method? XXX}
+The convention adopted in the \pkg{cmcR} package is to use the average pixel value as a replacement. \svp{XXX Do we know that they did or did not use a similar consensus in the CMC method? XXX} \jz{XXX The short answer is that we have no idea how they calculated the CCF. I started using the FFT-based method because that's how Xiao Hui calculates the CCF and because it's more common in image registration. However, the CCF values were all quite small, for both matches and non-matches, so we added the step of calculating the pairwise-complete correlation (back in February, I think?). A few papers [\citet{weller_confocal_2012}, \citet{ott_applying_2017}] define the CCF/"Areal Cross-Correlation", as they sometimes like to call it, similar to the one given above, but don't actually discuss how it's implemented. The definition in \citet{ott_applying_2017} indicates that the matrices are normalized by subtracting away the mean pixel intensity and dividing by the standard deviation. This is currently also the default in the \pkg{cmcR} package, so that should probably be discussed below. The definition in \citet{weller_confocal_2012} does not show the same normalization. The definition given for the ACCF in those two papers referenced are similar to one in \cite{vorburger_surface_2007} who say "it is advantageous to make use of frequency domain methods to speed up the computation of the similarity metric" (page 54). They discuss using proprietary software from a company called Intelligent Automation, Inc., but they don't go any further than saying that frequency domain methods are used. XXX}
 There is currently no determination or removal of outliers in the \pkg{cmcR} package's preprocessing procedures, \svp{in part because the CMC literature contains limited details on outlier removal. We instead rely on the low-pass portion of the Gaussian filter to reduce the effects of any high-frequency noise.}
 
 To illustrate the usage of the \pkg{cmcR} package, we will consider a comparison between the KM cartridge case pair shown in \autoref{fig:cartridgeCasePair}.
@@ -489,7 +489,7 @@ However, the scan on the right is rotated to determine the rotation at which the
 > CMC pairs are identified by three types of identification parameters: the correlation value $CCF_{max}$, registration angle $\theta$ and translation distances $x$, $y$ with thresholds $T_{CCF}$, $T_\theta$ and $T_x, T_y$, respectively. The correlated cell pairs are considered as CMCs when their correlation value $CCF_{max}$, $T_{CCF}$, and their registration angle $\theta$ and $x-y$ registration pattern are within the thresholds $T_\theta$, and $T_x, T_y$.
 
 Note that rotating an image or surface matrix by an arbitrary angle (other than a multiple of 90 degrees) requires interpolating new pixel locations. 
-A variety of interpolation schemes exist\citep{parker_comparison_1983} and \svp{there are no details provided in the} CMC literature \svp{indicating which interpolation algorithm was used}. \svp{In \pkg{cmcR}, s}urfaces matrices are rotated using a "nearest-neighbor" interpolation scheme \citep{imager}.
+A variety of interpolation schemes exist \citep{parker_comparison_1983} and \svp{there are no details provided in the} CMC literature \svp{indicating which interpolation algorithm was used}. \svp{In \pkg{cmcR}, s}urfaces matrices are rotated using a "nearest-neighbor" interpolation scheme \citep{imager}.
 
 <!-- \svp{XXX what do we use? Make it explicit so we're not being hypocritical XXX} \jz{XXX nearest-neighbor interpolation -- this is stated in the paragraph below describing the implementation XXX} -->
 
@@ -501,6 +501,9 @@ $$
 $$
 Note that this finite, discretized CCF definition yields a matrix whose $[m,n]$th element quantifies the similarity between matrices $A$ and $B$ for a translation of matrix $B$ by $m$ pixels horizontally and $n$ pixel vertically. 
 The index at which the CCF attains a maximum represents the \svp{optimal translation} needed to align $B$ with $A$.
+\jz{Based on the definition, the CCF need not be bounded between $-1$ and $1$. However, it is common to normalize the CCF for interpretability and is done in the \pkg{cmcR} package.}
+
+\jz{XXX Also describe how the calculation of the "Areal Cross-Correlation" in some NIST papers appears to normalize the surface matrices (based on some definitions). Normalization is currently done by default in the \pkg{cmcR} package (each cell/region are independently normalized), but this can be changed by the user.XXX}
 
 \svp{Published implementations of the CMC algorithm do not describe precisely how the CCF is calculated. 
 In image processing, it is common to use an implementation based on the discrete Fast Fourier Transform}\citep{Brown92asurvey}. 
@@ -531,7 +534,7 @@ The FFT does not tolerate missing values, and breech faces are not continuous su
 <!-- In particular, the procedure is performed twice so that both cartridge case scans take on the role of the scan that is partitioned into a grid of cells.  -->
 <!-- This is necessary to implement the High CMC method described below.  -->
 <!-- Continuing with the current example, the code to perform this procedure on \code{fadul1.1} and \code{fadul1.2} is given by the following. -->
-\svp{The matching procedure is performed twice: once with scan A partitioned and scan B as the target, and once with scan B partitioned and scan A as the target.} 
+\svp{The matching procedure is performed twice: once with scan A partitioned and scan B as the target, and once with scan B partitioned and scan A as the target.} \jz{For both of these comparisons, only cells with a minimum proportion of non-missing pixels are considered. The minimum threshold differs across CMC papers} \jz{XXX \citet{tong_fired_2014}, \citet{song_3d_2014}, and \citet{chu_validation_2013} say that they do it yet don't specify a threshold, \cite{tong_improved_2015} don't describe preprocessing at all, \citet{chen_convergence_2017} use a cutoff of 15%, \citet{song_estimating_2018} use 10% XXX}
 
 The correlation cell comparison procedure is implemented in the \code{cellCCF\_bothDirections} function. 
 
