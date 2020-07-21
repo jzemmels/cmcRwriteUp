@@ -92,7 +92,8 @@ fft_ccf <- function(a, b) {
     cmcR:::fftshift(.) %>% Re() %>%
     (function(.) ./length(.)) %>%
     `[`((hdim[1] + 1):(hdim[1] + dim(b)[1]), 
-        (hdim[2] + 1):(hdim[2] + dim(b)[2]))
+        (hdim[2] + 1):(hdim[2] + dim(b)[2])) %>%
+    magrittr::divide_by(sqrt(sum(a_pad^2))*sqrt(sum(a_pad^2)))
 }
 
 fft_ccf(m1$surface.matrix, m2$surface.matrix)
