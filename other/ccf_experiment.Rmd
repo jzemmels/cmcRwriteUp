@@ -60,7 +60,6 @@ pairwise_ccf <- function(a, b, offsetx = 0, offsety = 0) {
   cor(as.numeric(aadj), as.numeric(b), use = "pairwise.complete.obs")
 }
 
-
 crossing(offsetx = 1:20, offsety = 1:20) %>%
   rowwise() %>%
   mutate(cor = purrr::map2_dbl(offsetx, offsety, ~pairwise_ccf(m1, m2, .x, .y)))
@@ -93,7 +92,7 @@ fft_ccf <- function(a, b) {
     (function(.) ./length(.)) %>%
     `[`((hdim[1] + 1):(hdim[1] + dim(b)[1]), 
         (hdim[2] + 1):(hdim[2] + dim(b)[2])) %>%
-    magrittr::divide_by(sqrt(sum(a_pad^2))*sqrt(sum(a_pad^2)))
+    magrittr::divide_by(sqrt(sum(a_pad^2))*sqrt(sum(b_pad^2)))
 }
 
 fft_ccf(m1$surface.matrix, m2$surface.matrix)
