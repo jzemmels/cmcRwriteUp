@@ -1,0 +1,100 @@
+---
+title: "CCF Experiment"
+author: "Susan Vanderplas"
+date: "7/20/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(x3ptools)
+library(cmcR)
+library(tidyverse)
+```
+
+
+```{r}
+surf_matrix1 <- crossing(
+  x = 1:20,
+  y = 1:20
+) %>%
+  mutate(
+    mean_func = exp(-1/25*((x - 10)^2 + (y - 10)^2)),
+    gnoise = rnorm(n(), 0, .05),
+    value = mean_func + gnoise
+  )
+surf_m1_missing <- surf_matrix1  %>%
+  sample_frac(.95)
+
+surf_matrix2 <- crossing(x = 1:40, y = 1:40) %>%
+  mutate(
+    mean_func = exp(-1/25*((x - 20)^2 + (y - 20)^2)),
+    gnoise = rnorm(n(), 0, .05), 
+    value = mean_func + gnoise
+  ) 
+surf_m2_missing <- surf_matrix2  %>%
+  sample_frac(.95)
+
+
+nm1 <- df_to_x3p(surf_matrix1)
+nm2 <- df_to_x3p(surf_matrix2)
+m1 <- df_to_x3p(surf_m1_missing)
+m2 <- df_to_x3p(surf_m2_missing)
+
+image_x3p(m1, size = c(200, 200))
+image_x3p(m2, size = c(200, 200))
+```
+
+
+```{r}
+# compute ccf the long way 'round
+
+pairwise_ccf <- function(a, b, offsetx = 0, offsety = 0) {
+  if ("x3p" %in% class(a)) a <- a$surface.matrix
+  if ("x3p" %in% class(b)) b <- b$surface.matrix
+  
+  aadj <- NA*b
+  idx <- (offsetx + 1):(offsetx + ncol(a))
+  idy <- (offsety + 1):(offsety + nrow(a))
+  aadj[idx,idy] <- a
+  
+  cor(as.numeric(aadj), as.numeric(b), use = "pairwise.complete.obs")
+}
+
+crossing(offsetx = 1:20, offsety = 1:20) %>%
+  rowwise() %>%
+  mutate(cor = purrr::map2_dbl(offsetx, offsety, ~pairwise_ccf(m1, m2, .x, .y)))
+
+fft_ccf <- function(a, b) {
+  offset_init <- (dim(b) - dim(a))/2 + 1
+  
+  # Set a and b up so they're the same size
+  aadj <- NA*b
+  aadj[offset_init[1]:(offset_init[1] + ncol(a) - 1), offset_init[2]:(offset_init[2] + nrow(a) - 1)] <- a
+  
+  # Pad by 1/2 d on each side
+  ndim <- dim(b) * 2
+  hdim <- dim(b)/2
+  a_pad <- b_pad <- matrix(a, nrow = ndim[1], ncol = ndim[2])
+  a_pad[(hdim[1] + 1):(hdim[1] + dim(b)[1]), 
+        (hdim[2] + 1):(hdim[2] + dim(b)[2])] <- aadj
+  b_pad[(hdim[1] + 1):(hdim[1] + dim(b)[1]), 
+        (hdim[2] + 1):(hdim[2] + dim(b)[2])] <- b
+  
+  # replace with mean
+  a_pad[is.na(a_pad)] <- mean(na.omit(a_pad))
+  b_pad[is.na(b_pad)] <- mean(na.omit(b_pad))
+  
+  inner <- Conj(fft(cmcR:::fftshift(a_pad))) * 
+        fft(cmcR:::fftshift(b_pad))
+  
+  fft(inner, inverse = T) %>%
+    cmcR:::fftshift(.) %>% Re() %>%
+    (function(.) ./length(.)) %>%
+    `[`((hdim[1] + 1):(hdim[1] + dim(b)[1]), 
+        (hdim[2] + 1):(hdim[2] + dim(b)[2])) %>%
+    magrittr::divide_by(sqrt(sum(a_pad^2))*sqrt(sum(b_pad^2)))
+}
+
+fft_ccf(m1$surface.matrix, m2$surface.matrix)
+```
+
