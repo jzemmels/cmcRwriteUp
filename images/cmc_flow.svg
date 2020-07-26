@@ -16,7 +16,10 @@
    version="1.1"
    id="svg8"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
-   sodipodi:docname="cmc_flow.svg">
+   sodipodi:docname="cmc_flow.svg"
+   inkscape:export-filename="/home/susan/Projects/Work/2020-cmcRwriteUp/images/cmc_flow.png"
+   inkscape:export-xdpi="300"
+   inkscape:export-ydpi="300">
   <defs
      id="defs2">
     <marker
@@ -575,7 +578,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
-     inkscape:cx="58.86935"
+     inkscape:cx="-94.344936"
      inkscape:cy="566.73194"
      inkscape:document-units="in"
      inkscape:current-layer="layer2"
@@ -599,7 +602,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -796,7 +799,7 @@
                sodipodi:nodetypes="cccccccccccc"
                inkscape:connector-curvature="0"
                id="path6429-2"
-               d="m 66.25,110.47499 h -10 c -1.875,10e-6 -1.875,0 -3.75,0 H 35.625 32.5 26.875 23.75 17.5 16.875 10.625 c -1.875,0 -2.5,-2.5 -4.375,-2.5 l -4.375,0.625"
+               d="m 66.25,110.47499 h -10 c -1.875,10e-6 -1.875,0 -3.75,0 H 35.625 32.5 26.875 23.75 17.5 16.875 10.625 c -1.875,0 -2.5,-1.875 -4.375,-1.875 l -4.375,0"
                style="display:inline;fill:none;stroke:#5a2971;stroke-width:0.25;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker8574)"
                inkscape:export-xdpi="300"
                inkscape:export-ydpi="300" />
