@@ -479,7 +479,13 @@ The scan on the left is divided into a grid of $k \times k$ cells.
 
 > The cell size must be experimentally optimized, not too small and not too large. Either condition may result in low correlation accuracy. For the initial tests of 9 mm caliber cartridge cases, good correlation results for breech face correlations were obtained using the cell sizes ranging from (0.25 × 0.25) to (0.5 × 0.5) $mm^2$. \citep{song_3d_2014}
 
-\svp{XXX Make a similar flow diagram (on paper/sketched) for the papers in this step - what cell grid? Other choices? What's the cutoff for closeness? range of shifts considered? XXX}
+\svp{\autoref{fig:cmcflow-schematic} shows the steps of the correlation cell comparison process in each of the papers as well as the \pkg{cmcR} implementation. 
+
+\begin{figure}
+\includegraphics[width=\linewidth]{images/cmc_flow.png}
+\caption{Each CMC implementation uses slightly different procedures. Steps which are implemented with additional user-specified parameters are shaded purple; steps which are described but without sufficient detail are shaded grey.} \label{fig:cmcflow-schematic}
+\end{figure}
+
 Each cell is paired with an associated larger region in the other scan. 
 The absolute location of each cell and region in their respective surface matrices remain constant. 
 However, the scan on the right is rotated to determine the rotation at which the two scans are the most "similar," which is quantified using the \dfn{cross-correlation function} (CCF). 
@@ -517,13 +523,15 @@ This result allows us to trade the moving sum computations from the definition o
 The Fast Fourier Transform (FFT) algorithm can be used to reduce the computational load considerably.
 
 \svp{No computational shortcut comes without some tradeoffs, though, and this FFT-based CCF calculation is no different. 
-The FFT does not tolerate missing values, and breech faces are not continuous surfaces - the white regions in \autoref{fig:cartridgecasePair} and \autoref{fig:processingPipeline} are missing values.}
+The FFT does not tolerate missing values, and breech faces are not continuous surfaces - the white regions in \autoref{fig:cartridgecasePair} and \autoref{fig:processingPipeline} correspond to missing values.}
 \svp{While it is unclear how the CCF is implemented in the CMC papers (it is not even defined mathematically), the \pkg{cmcR} package adopts the following conventions:}
 
 - \svp{Missing values are replaced with the overall mean value when the FFT-based CCF is computed.} 
-- \svp{The optimal translation is determined using the FFT-based CCF. Replacing the missing values with the overal mean leads to a deflated CCF value, but produces an accurate estimate of the optimal translation.}
+- \svp{The optimal translation is determined using the FFT-based CCF. Replacing the missing values with the overal mean leads to a deflated CCF value (see appendix XXX for more details), but produces an accurate estimate of the optimal translation.}
 - \svp{Using the optimal translation determined from the FFT-based CCF, we compute the pairwise complete CCF directly, avoiding any distortion of the CCF computation based on compensation for missing values.}
 
+\jz{Only cells with a minimum proportion of non-missing pixels are }\svp{assessed}. \jz{The minimum threshold differs across CMC papers \citep{chen_convergence_2017,song_estimating_2018}}\svp{, as shown in \autoref{fig:cmcflow-schematic}, and is referenced but not specified in several other papers \citep{tong_fired_2014,song_3d_2014,chu_validation_2013}.} 
+<!-- \jz{XXX \citet{tong_fired_2014}, \citet{song_3d_2014}, and \citet{chu_validation_2013} say that they do it yet don't specify a threshold, \cite{tong_improved_2015} don't describe preprocessing at all, \citet{chen_convergence_2017} use a cutoff of 15%, \citet{song_estimating_2018} use 10% XXX} -->
 <!-- The \pkg{cmcR} package uses this FFT-based method to determine the translation values at which the maximum CCF value, denoted CCF$_{\max}$ in \citet{song_proposed_2013}, occurs. -->
 <!-- A practical consideration in calculating the CCF in this way is that the discrete Fourier transform is not defined for matrices containing missing values. -->
 <!-- As can be seen by the gray pixels in \autoref{fig:processedScans}, processed surface matrices contain many missing (\code{NA}-valued) elements; including both "dropouts" due to the measurement process and missing values on the interior and exterior of the breech face impression region. -->
@@ -534,7 +542,7 @@ The FFT does not tolerate missing values, and breech faces are not continuous su
 <!-- In particular, the procedure is performed twice so that both cartridge case scans take on the role of the scan that is partitioned into a grid of cells.  -->
 <!-- This is necessary to implement the High CMC method described below.  -->
 <!-- Continuing with the current example, the code to perform this procedure on \code{fadul1.1} and \code{fadul1.2} is given by the following. -->
-\svp{The matching procedure is performed twice: once with scan A partitioned and scan B as the target, and once with scan B partitioned and scan A as the target.} \jz{For both of these comparisons, only cells with a minimum proportion of non-missing pixels are considered. The minimum threshold differs across CMC papers} \jz{XXX \citet{tong_fired_2014}, \citet{song_3d_2014}, and \citet{chu_validation_2013} say that they do it yet don't specify a threshold, \cite{tong_improved_2015} don't describe preprocessing at all, \citet{chen_convergence_2017} use a cutoff of 15%, \citet{song_estimating_2018} use 10% XXX}
+\svp{The entire matching procedure is performed twice: once with scan A partitioned and scan B as the target, and once with scan B partitioned and scan A as the target.} 
 
 The correlation cell comparison procedure is implemented in the \code{cellCCF\_bothDirections} function. 
 
@@ -557,8 +565,9 @@ kmComparison <- cellCCF_bothDirections(x3p1 = fadul1.1,
 
 \autoref{tab:cellCCF} shows several rows of the result when \code{fadul1.1} was divided into a grid of cells and \code{fadul1.2} was rotated by 3 degrees. 
 <!-- The first few rows of results from the comparison between \code{fadul1.1} and \code{fadul1.2} in which \code{fadul1.1} was divided into a grid of cells and \code{fadul1.2} was rotated by 3 degrees is given in \autoref{tab:cellCCF}.  -->
-Although a grid of $8 \times 8$ cells were used, there were only 43 cell/region pairs that contained a sufficient proportion of non-missing values (10% in this example). \svp{XXX we don't discuss the missing value cells -- we should discuss that in the bulleted list of conventions, and mention how it is handled in the various CMC papers as well.}
-The features used in the CMC method are the CCF$_{\max}$ values (ccf column) and estimated alignment parameter values (dx, dy, and theta columns).
+Although a grid of $8 \times 8$ cells were used, there were only 43 cell/region pairs that contained a sufficient proportion of non-missing values (10% in this example). 
+\svp{The features derived from the correlation cell procedure (CCF$_{max}$, $dx$, $dy$, $\theta$) are used as inputs to the methods for assessment of match strength.}
+<!-- The features used in the CMC method are the CCF$_{\max}$ values (ccf column) and estimated alignment parameter values (dx, dy, and theta columns). -->
 ```{r include=FALSE,eval=FALSE}
 head(kmComparison$comparison_1to2$ccfResults$`3`)
 ```
