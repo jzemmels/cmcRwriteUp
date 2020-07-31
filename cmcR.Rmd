@@ -472,7 +472,7 @@ Instead, \citet{song_proposed_2013} proposes partitioning one surface matrix int
 If a large \svp{proportion} of these correlation cells are deemed highly similar to regions in the other surface matrix, then there is evidence that the two cartridges cases match. 
 \svp{T}he number of highly similar cells can be used as a more \svp{robust} similarity metric, \svp{compared to a score derived from the entire cartridge case}.
 
-```{r, echo=FALSE,fig.cap='\\label{fig:cmc_illustration} Illustration of comparing a "cell" in one cartridge case scan to a region in another',fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
+```{r, echo=FALSE,fig.cap='\\label{fig:cmc_illustration} Illustration of comparing a "cell" in one cartridge case scan to a region in another',fig.align='center',fig.pos='htbp',out.width='.75\\textwidth'}
 
 knitr::include_graphics("images/cmc_illustration.PNG")
 ```
@@ -484,7 +484,7 @@ The scan on the left is divided into a grid of $k \times k$ cells.
 > The cell size must be experimentally optimized, not too small and not too large. Either condition may result in low correlation accuracy. For the initial tests of 9 mm caliber cartridge cases, good correlation results for breech face correlations were obtained using the cell sizes ranging from (0.25 × 0.25) to (0.5 × 0.5) $mm^2$. \citep{song_3d_2014}
 
 
-\svp{\autoref{fig:cmcflow-schematic} shows the steps of the correlation cell comparison process in each of the papers as well as the \pkg{cmcR} implementation. 
+\svp{\autoref{fig:cmcflow-schematic} shows the steps of the correlation cell comparison process in each of the papers as well as the \pkg{cmcR} implementation.}
 
 \begin{figure}
 \includegraphics[width=\linewidth]{images/cmc_flow.png}
@@ -504,15 +504,16 @@ A variety of interpolation schemes exist \citep{parker_comparison_1983} and \svp
 
 <!-- \svp{XXX what do we use? Make it explicit so we're not being hypocritical XXX} \jz{XXX nearest-neighbor interpolation -- this is stated in the paragraph below describing the implementation XXX} -->
 
-\svp{For clarity and reproducibility, we will attempt to provide more precise mathematical and computational descriptions of the algorithm, starting with a definition of the cross-correlation function as well as more efficient computational implementations.}
-
+\svp{For clarity and reproducibility, we will attempt to provide more precise mathematical and computational descriptions of the algorithm, starting with a definition of the cross-correlation function as well as more efficient computational implementations.} 
 For two real-valued, $M \times N$ matrices $A$ and $B$, the cross-correlation function, denoted $(A \star B)$ can be defined as
 $$
 (A \star B)[m,n] = \sum_{i} \sum_{j} A[i,j] B[(i + m), (j + n)].
 $$
 Note that this finite, discretized CCF definition yields a matrix whose $[m,n]$th element quantifies the similarity between matrices $A$ and $B$ for a translation of matrix $B$ by $m$ pixels horizontally and $n$ pixel vertically. 
 The index at which the CCF attains a maximum represents the \svp{optimal translation} needed to align $B$ with $A$.
-\jz{Based on the definition, the CCF need not be bounded between $-1$ and $1$. However, it is common to normalize the CCF for interpretability and is the convention adopted by the \pkg{cmcR} package. Prior to calculating the CCF, the matrices $A$ and $B$ can be standardized through subtraction of their respective means and division by their respective standard deviations. This is referred to as the \dfn{Areal Cross-Correlation Function} (ACCF) in some CMC papers \citep{ott_applying_2017}.}
+\jz{Based on the definition, the CCF need not be bounded between $-1$ and $1$. However, it is common to normalize the CCF for interpretability and is the convention adopted by the \pkg{cmcR} package. 
+Prior to calculating the CCF, the matrices $A$ and $B$ can be standardized through subtraction of their respective means and division by their respective standard deviations. 
+This is referred to as the \dfn{Areal Cross-Correlation Function} (ACCF) in some CMC papers \citep{ott_applying_2017}.}
 
 \svp{Published implementations of the CMC algorithm do not describe precisely how the CCF is calculated. 
 In image processing, it is common to use an implementation based on the discrete Fast Fourier Transform}\citep{Brown92asurvey}. 
@@ -526,7 +527,7 @@ This result allows us to trade the moving sum computations from the definition o
 The Fast Fourier Transform (FFT) algorithm can be used to reduce the computational load considerably.
 
 \svp{No computational shortcut comes without some tradeoffs, though, and this FFT-based CCF calculation is no different. 
-The FFT does not tolerate missing values, and breech faces are not continuous surfaces - the white regions in \autoref{fig:cartridgecasePair} and \autoref{fig:processingPipeline} correspond to missing values.}
+The FFT does not tolerate missing values, and breech faces are not continuous surfaces - the white regions in \autoref{fig:cmc_illustration} correspond to missing values.}
 \svp{While it is unclear how the CCF is implemented in the CMC papers (it is not even defined mathematically), the \pkg{cmcR} package adopts the following conventions:}
 
 - \svp{Missing values are replaced with the overall mean value when the FFT-based CCF is computed.} 
@@ -536,7 +537,6 @@ The FFT does not tolerate missing values, and breech faces are not continuous su
 \jz{Only cells with a minimum proportion of non-missing pixels are }\svp{assessed}. \jz{The minimum threshold differs across CMC papers \citep{chen_convergence_2017,song_estimating_2018}}\svp{, as shown in \autoref{fig:cmcflow-schematic}, and is referenced but not specified in several other papers \citep{tong_fired_2014,song_3d_2014,chu_validation_2013}.} 
 
 \svp{The entire matching procedure is performed twice: once with scan A partitioned and scan B as the target, and once with scan B partitioned and scan A as the target.} 
-
 The correlation cell comparison procedure is implemented in the \code{cellCCF\_bothDirections} function. 
 
 ```{r cmc-ccf, include = F, cache = T}
@@ -557,10 +557,9 @@ kmComparison <- cellCCF_bothDirections(x3p1 = fadul1.1$x3p,
 ```
 
 \autoref{tab:cellCCF} shows several rows of the result when \code{fadul1.1} was divided into a grid of cells and \code{fadul1.2} was rotated by $-24$ degrees. 
-<!-- The first few rows of results from the comparison between \code{fadul1.1} and \code{fadul1.2} in which \code{fadul1.1} was divided into a grid of cells and \code{fadul1.2} was rotated by 3 degrees is given in \autoref{tab:cellCCF}.  -->
 Although a grid of $8 \times 8$ cells were used, there were only 43 cell/region pairs that contained a sufficient proportion of non-missing values (10% in this example). 
 \svp{The features derived from the correlation cell procedure (CCF$_{max}$, $dx$, $dy$, $\theta$) are used as inputs to the methods for assessment of match strength.}
-<!-- The features used in the CMC method are the CCF$_{\max}$ values (ccf column) and estimated alignment parameter values (dx, dy, and theta columns). -->
+
 ```{r include=FALSE,eval=FALSE}
 kmComparison$comparison_1to2$ccfResults %>%
   topResultsPerCell() %>%
@@ -593,20 +592,29 @@ kmComparison$comparison_1to2$ccfResults %>%
                             position = "center")
 ```
 
+\svp{Using the thetas, translation vectors, and CCFs produced by the correlation cell procedure, the CMC literature describes two slightly different methods for aggregating this information into a consensus decision about the similarity of the two cartridge cases.
+The first method described, which we have called the "top vote" method, uses a median estimate of the translation and rotation parameters, then assesses cells to determine whether they meet certain requirements.} 
+
 ## The Top Vote method {#topVoteMethod}
 
 A number of features are extracted in a cartridge case comparison using the correlation cell comparison procedure. 
-Accompanying the CCF$_{\max}$ similarity metric are the rotation and translation values at which the CCF$_{\max}$ was attained for each cell/region pair. 
-As stated in \citet{song_3d_2014}, \emph{"[t]he qualifications of CMCs require not only high correlation values CCF$_{\max} \geq T_{\text{CCF}}$, but also similar registration angles $\theta$ (within the threshold $T_{\theta}$) and similar $x - y$ registration pattern (within the thresholds $T_x$, $T_y$)."} 
+As stated in \citet{song_3d_2014}, 
+
+> [t]he qualifications of CMCs require not only high correlation values CCF$_{\max} \geq T_{\text{CCF}}$, but also similar registration angles $\theta$ (within the threshold $T_{\theta}$) and similar $x - y$ registration pattern (within the thresholds $T_x$, $T_y$).
+
 For a truly matching pair of cartridge cases, one might expect a "consensus" to exist among the various $\theta, x$, and $y$ values at which the CCF$_{\max}$ occurs (referred to as the \dfn{registration phase} of the cell/region pairs in \citet{song_proposed_2013}). 
+\svp{Let $x_i, y_i, \theta_i$ denote the translation and rotation parameters which produce the highest CCF for the alignment of cell/region pair $i$.}
 The CMC method introduces criteria to determine whether a consensus exists among these values and quantifies the strength of the consensus by the number of cell/region pairs with similar registration phases.
 
-\citet{song_3d_2014} proposes using \emph{"a virtual reference with three reference registration parameters $\theta_{\text{ref}}$, $x_{\text{ref}}$ and $y_{\text{ref}}$ generated by the median values of the collective $\theta$, and $x$-, $y$-translation values of all cell pairs."} 
+\citet{song_3d_2014} proposes using 
+> a virtual reference with three reference registration parameters $\theta_{\text{ref}}$, $x_{\text{ref}}$ and $y_{\text{ref}}$ generated by the median values of the collective $\theta$, and $x$-, $y$-translation values of all cell pairs.
+
 That is, a consensus is determined by finding the median registration phase values across the cell/region pairs for a particular cartridge case pair comparison. 
-The distances between the registration phases for each cell/region pair their respective consensus values are determined. 
-Let $x_i, y_i, \theta_i$ denote the registration phase values for cell/region pair $i$, $i = 1,...,n$. 
-To declare a particular cell/region pair as "congruent matching," \citet{song_3d_2014} requires that (1) the pair's estimated alignment parameter values are within some threshold distance of the consensual values and (2) the CCF$_{\max}$ value is greater than some threshold. 
-That is, for thresholds $T_{dx}, T_{dy}, T_{\theta},T_{\text{CCF}}$, cell/region pair $i$ is declared a match if all of the following conditions hold:
+\svp{Then, the distances between the consensus registration values and the cell comparison values are assessed to determine whether they are within a specified distance of the consensus.}
+\svp{This consensus assessment introduces threshold parameters $T_{x}, T_{y}, T_\theta, T_{\text{CCF}}$.
+}
+
+\svp{A c}ell/region pair $i$ is declared a match if all of the following conditions hold:
 \begin{enumerate}
 \item $|x_i - x_{\text{ref}}| \leq T_{dx}$ \\
 \item $|y_i - y_{\text{ref}}| \leq T_{dy}$ \\
@@ -630,10 +638,18 @@ There is little consensus on an optimal set of thresholds nor discussion on the 
 # }
 ```
 
+
+\svp{XXX Show the consensus estimates graphically, and the distribution of differences between estimated values and the consensus value. XXX}
+
+\svp{XXX do we want to discuss the sensitivity analysis here? XXX}
+
+\svp{The "top vote" method has one major limitation, which is highlighted in \citet{tong_improved_2015}:}
+
+> some of the valid cell pairs may be mistakenly excluded from the CMC count because by chance their correlation yields a higher CCF value at a rotation angle outside the threshold range $T_\theta$.
+
 ## The High CMC method {#highMethod}
 
 The High CMC method (as it would come to be called) was proposed by \citet{tong_improved_2015} to address situations in which the Top Vote method is excessively strict. 
-In particular, they observe that \emph{"some of the valid cell pairs may be mistakenly excluded from the CMC count because by chance their correlation yields a higher CCF value at a rotation angle outside the threshold range $T_\theta$."} 
 The proposed extension to the Top Vote method utilizes the behavior of the CCF$_{\max}$ values across various rotations more advantageously. 
 Additionally, comparisons are performed in both “directions” so that each surface matrix takes on the role of the surface matrix that is partitioned into a grid of cells.
 
