@@ -483,9 +483,7 @@ The scan on the left is divided into a grid of $k \times k$ cells.
 
 > The cell size must be experimentally optimized, not too small and not too large. Either condition may result in low correlation accuracy. For the initial tests of 9 mm caliber cartridge cases, good correlation results for breech face correlations were obtained using the cell sizes ranging from (0.25 × 0.25) to (0.5 × 0.5) $mm^2$. \citep{song_3d_2014}
 
-<<<<<<< HEAD
-<!-- \svp{XXX Make a similar flow diagram (on paper/sketched) for the papers in this step - what cell grid? Other choices? What's the cutoff for closeness? range of shifts considered? XXX} -->
-=======
+
 \svp{\autoref{fig:cmcflow-schematic} shows the steps of the correlation cell comparison process in each of the papers as well as the \pkg{cmcR} implementation. 
 
 \begin{figure}
@@ -493,7 +491,6 @@ The scan on the left is divided into a grid of $k \times k$ cells.
 \caption{Each CMC implementation uses slightly different procedures. Steps which are implemented with additional user-specified parameters are shaded purple; steps which are described but without sufficient detail are shaded grey.} \label{fig:cmcflow-schematic}
 \end{figure}
 
->>>>>>> ecc2c98b554c16c8da8428a82df95603b97255e6
 Each cell is paired with an associated larger region in the other scan. 
 The absolute location of each cell and region in their respective surface matrices remain constant. 
 However, the scan on the right is rotated to determine the rotation at which the two scans are the most "similar," which is quantified using the \dfn{cross-correlation function} (CCF). 
@@ -537,22 +534,8 @@ The FFT does not tolerate missing values, and breech faces are not continuous su
 - \svp{Using the optimal translation determined from the FFT-based CCF, we compute the pairwise complete CCF directly, avoiding any distortion of the CCF computation based on compensation for missing values.}
 
 \jz{Only cells with a minimum proportion of non-missing pixels are }\svp{assessed}. \jz{The minimum threshold differs across CMC papers \citep{chen_convergence_2017,song_estimating_2018}}\svp{, as shown in \autoref{fig:cmcflow-schematic}, and is referenced but not specified in several other papers \citep{tong_fired_2014,song_3d_2014,chu_validation_2013}.} 
-<!-- \jz{XXX \citet{tong_fired_2014}, \citet{song_3d_2014}, and \citet{chu_validation_2013} say that they do it yet don't specify a threshold, \cite{tong_improved_2015} don't describe preprocessing at all, \citet{chen_convergence_2017} use a cutoff of 15%, \citet{song_estimating_2018} use 10% XXX} -->
-<!-- The \pkg{cmcR} package uses this FFT-based method to determine the translation values at which the maximum CCF value, denoted CCF$_{\max}$ in \citet{song_proposed_2013}, occurs. -->
-<!-- A practical consideration in calculating the CCF in this way is that the discrete Fourier transform is not defined for matrices containing missing values. -->
-<!-- As can be seen by the gray pixels in \autoref{fig:processedScans}, processed surface matrices contain many missing (\code{NA}-valued) elements; including both "dropouts" due to the measurement process and missing values on the interior and exterior of the breech face impression region. -->
-<!-- In replacing these elements with the average pixel value in the matrix, the CCF values obtained tend to be "deflated" relative to the \dfn{pairwise-complete correlation} values that are calculated using only pairs of non-missing pixels. -->
-<!-- However, the translation estimates obtained from this method are often good estimates of the true translation values by which a cell/region pair align. -->
-<!-- Using the estimated translation values at which the CCF$_{\max}$ occurs, the pairwise-complete correlation can be calculated between the cell and a matrix of the same dimensions extracted from the larger region where \code{NA} values are not replaced. -->
 
-<!-- In particular, the procedure is performed twice so that both cartridge case scans take on the role of the scan that is partitioned into a grid of cells.  -->
-<!-- This is necessary to implement the High CMC method described below.  -->
-<!-- Continuing with the current example, the code to perform this procedure on \code{fadul1.1} and \code{fadul1.2} is given by the following. -->
-<<<<<<< HEAD
-\svp{The matching procedure is performed twice: once with scan A partitioned and scan B as the target, and once with scan B partitioned and scan A as the target.} \jz{For both of these comparisons, only cells with a minimum proportion of non-missing pixels are considered. The minimum threshold differs across CMC papers as summarized in \autoref{fig:cmc-schematic}.}
-=======
 \svp{The entire matching procedure is performed twice: once with scan A partitioned and scan B as the target, and once with scan B partitioned and scan A as the target.} 
->>>>>>> ecc2c98b554c16c8da8428a82df95603b97255e6
 
 The correlation cell comparison procedure is implemented in the \code{cellCCF\_bothDirections} function. 
 
