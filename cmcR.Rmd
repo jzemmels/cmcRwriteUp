@@ -592,8 +592,9 @@ kmComparison$comparison_1to2$ccfResults %>%
                             position = "center")
 ```
 
-\svp{Using the thetas, translation vectors, and CCFs produced by the correlation cell procedure, the CMC literature describes two slightly different methods for aggregating this information into a consensus decision about the similarity of the two cartridge cases.
-The first method described, which we have called the "top vote" method, uses a median estimate of the translation and rotation parameters, then assesses cells to determine whether they meet certain requirements.} 
+\svp{Using the thetas, translation vectors, and CCFs produced by the correlation cell procedure, the CMC literature describes slightly different methods for aggregating this information into a consensus decision about the similarity of the two cartridge cases.} 
+\jz{XXX I removed the word "two" from "describes two slightly different methods" because each paper in the CMC literature after the high CMC paper describe slight variations on the base method. Our goal with this project was to implement the high CMC method, which required also implementing the top vote method. XXX}
+\svp{The first method described, which we have called the "top vote" method, uses a median estimate of the translation and rotation parameters, then assesses cells to determine whether they meet certain requirements.} 
 
 ## The Top Vote method {#topVoteMethod}
 
@@ -616,8 +617,8 @@ That is, a consensus is determined by finding the median registration phase valu
 
 \svp{A c}ell/region pair $i$ is declared a match if all of the following conditions hold:
 \begin{enumerate}
-\item $|x_i - x_{\text{ref}}| \leq T_{dx}$ \\
-\item $|y_i - y_{\text{ref}}| \leq T_{dy}$ \\
+\item $|x_i - x_{\text{ref}}| \leq T_{x}$ \\
+\item $|y_i - y_{\text{ref}}| \leq T_{y}$ \\
 \item $|\theta_i - \theta_{\text{ref}}| \leq T_{\theta}$ \\
 \item CCF$_{\max,i} \geq T_{\text{CCF}}$.
 \end{enumerate}
@@ -640,6 +641,100 @@ There is little consensus on an optimal set of thresholds nor discussion on the 
 
 
 \svp{XXX Show the consensus estimates graphically, and the distribution of differences between estimated values and the consensus value. XXX}
+
+\jz{\autoref{fig:translationVotes} shows the distributions of the $(x_i, y_i)$ values which produce the highest CCF for the alignment of each cell/region pair of a known match and known non-match comparison. The squares in \autoref{fig:translationVotes} are centered on the comparisons' respective $(x_{\text{ref}},y_{\text{ref}})$ values and represent the maximum distance an $(x_i,y_i)$ estimated translation value can be from $(x_{\text{ref}},y_{\text{ref}})$ to be classified as "congruent" based on thresholds $T_{x} = T_{y} = 20$ pixels. Of the 43 cell/region pairs considered in the known match comparison, 28 $(x_i,y_i)$ values are within the specified thresholds of $(x_{\text{ref}},y_{\text{ref}})$. In contrast, 14 out of 42 $(x_i,y_i)$ are within the specified thresholds of $(x_{\text{ref}},y_{\text{ref}})$ for the known non-match comparison.}
+
+```{r,echo=FALSE,cache = T}
+fadul2.1 <- cmcR::selectBFImpression_sample_x3p("data/fadul2-1.x3p",
+                                                gaussFilterWavelength = c(16,500))
+
+knmComparison <- cmcR::cellCCF_bothDirections(x3p1 = fadul1.1$x3p,
+                                              x3p2 = fadul2.1$x3p,
+                                              cellNumHoriz = 8,
+                                              minObservedProp = .1,
+                                              regionToCellProp = 9,
+                                              ccfMethod = "fftThenPairwise")
+
+knmCMC <- cmcR::cmcFilter_improved(knmComparison,
+                                   ccf_thresh = .5,
+                                   dx_thresh = 20,
+                                   theta_thresh = 6,
+                                   missingTheta_decision = "fail")
+```
+
+```{r echo = FALSE,cache = T,fig.align = 'left',fig.cap='\\label{fig:translationVotes} Estimated translation values within 15 pixels of median value for 1 Known Match and 1 Known Non-Match cartridge case pair',fig.pos = 'h'}
+bind_rows(kmComparison$comparison_1to2$ccfResults %>%
+            topResultsPerCell() %>%
+            ungroup() %>%
+            mutate(`Comparison Type` = "Known Match"),
+          knmComparison$comparison_1to2$ccfResults %>%
+            topResultsPerCell() %>%
+            ungroup() %>%
+            mutate(`Comparison Type` = "Known Non-Match")) %>%
+  group_by(`Comparison Type`) %>%
+  mutate(med_dx = median(dx),
+         med_dy = median(dy)) %>%
+  mutate(dx_threshMinus = med_dx - 20,
+         dx_threshPlus = med_dx + 20,
+         dy_threshMinus = med_dy - 20,
+         dy_threshPlus = med_dy + 20) %>%
+  mutate(Classification = factor(ifelse(abs(dx - med_dx) <= 20 & abs(dy - med_dy) <= 20, "Congruent","Not Congruent"),levels = c("Not Congruent","Congruent"))) %>%
+  ggplot() +
+  geom_point(aes(x = dx,
+                 y = dy,
+                 colour = Classification)) +
+  geom_point(aes(x = med_dx,
+                 y = med_dy),
+             colour = "#7570b3",
+             size = 3,
+             shape = 4) +
+  scale_colour_manual(values = c("#a60b00","#1b03a3")) +
+  geom_rect(aes(xmin = dx_threshMinus,
+                xmax = dx_threshPlus,
+                ymin = dy_threshMinus,
+                ymax = dy_threshPlus),
+            colour = "#7570b3",
+            alpha = 0) +
+  theme_bw() +
+  coord_fixed() +
+  facet_wrap(~ `Comparison Type`,nrow = 1) +
+  theme(legend.position = "bottom")
+```
+
+\jz{\autoref{fig:rotationVotes} shows the distribution of the $\theta_i$ values which produce the highest CCF for the alignment of each cell/region pair of the known match and known non-match comparison. A vertical line is drawn at the comparisons' respective $\theta_{\text{ref}}$ value and a threshold of $T_{\theta} = 6$ degrees is used to classify $\theta_i$ values as "congruent." 24 of 43 known match and 4 of 42 known non-match $\theta_i$ values are classified as congruent under these conditions.}
+
+```{r echo = FALSE,cache = T,fig.align = 'left',fig.cap='\\label{fig:rotationVotes} Estimated rotation values within 3 degrees of median value for 1 Known Match and 1 Known Non-Match cartridge case pair',fig.pos = 'h'}
+bind_rows(kmComparison$comparison_1to2$ccfResults %>%
+            topResultsPerCell() %>%
+            ungroup() %>%
+            mutate(`Comparison Type` = "Known Match"),
+          knmComparison$comparison_1to2$ccfResults %>%
+            topResultsPerCell() %>%
+            ungroup() %>%
+            mutate(`Comparison Type` = "Known Non-Match")) %>%
+  group_by(`Comparison Type`) %>%
+  mutate(med_theta = median(theta)) %>%
+  mutate(theta_threshMinus = med_theta - 6,
+         theta_threshPlus = med_theta + 6) %>%
+  mutate(Classification = ifelse(abs(theta - med_theta) <= 6, "Congruent","Not Congruent")) %>%
+  mutate(Classification = factor(Classification,levels = c("Not Congruent","Congruent"))) %>%
+  ggplot() +
+  geom_histogram(aes(x = theta,
+                     fill = Classification),
+                 binwidth = 1) +
+  scale_fill_manual(values = c("#a60b00","#1b03a3")) +
+  geom_vline(aes(xintercept = med_theta),
+             colour = "#7570b3") +
+  # geom_vline(aes(xintercept = theta_threshMinus - .5),
+  #            colour = "#7570b3") + 
+  # geom_vline(aes(xintercept = theta_threshPlus + .5),
+  #            colour = "#7570b3") +
+  theme_bw() +
+  coord_fixed() +
+  scale_x_continuous(breaks = seq(-30,30,by = 3)) +
+  facet_wrap(~ `Comparison Type`,nrow = 2) +
+  theme(legend.position = "bottom")
+```
 
 \svp{XXX do we want to discuss the sensitivity analysis here? XXX}
 
@@ -681,24 +776,6 @@ cmcR::cmcPerThetaBarPlot(kmComparison,
                          theta_thresh = 6,
                          x3pNames = c("Fadul 1-1","Fadul 1-2")) +
   ylim(c(0,30))
-```
-
-```{r,echo=FALSE,cache = T}
-fadul2.1 <- cmcR::selectBFImpression_sample_x3p("data/fadul2-1.x3p",
-                                                gaussFilterWavelength = c(16,500))
-
-knmComparison <- cmcR::cellCCF_bothDirections(x3p1 = fadul1.1$x3p,
-                                              x3p2 = fadul2.1$x3p,
-                                              cellNumHoriz = 8,
-                                              minObservedProp = .1,
-                                              regionToCellProp = 9,
-                                              ccfMethod = "fftThenPairwise")
-
-knmCMC <- cmcR::cmcFilter_improved(knmComparison,
-                                   ccf_thresh = .5,
-                                   dx_thresh = 20,
-                                   theta_thresh = 6,
-                                   missingTheta_decision = "fail")
 ```
 
 ```{r,echo=FALSE,cache = T,fig.cap='\\label{fig:knmCMCPerTheta} CMC count per rotation ($\\theta$) values in both directions for a KNM cartridge case pair',fig.align='center',fig.align='center',fig.pos='h',out.width='.7\\textwidth'}
