@@ -59,7 +59,7 @@ if(!dir.exists("derivatives")){
 ```
 
 ```{r setup,echo=FALSE,message=FALSE,warning=FALSE}
-knitr::opts_chunk$set(cache = T, dpi = 300)
+knitr::opts_chunk$set(cache = T, dpi = 300, fig.width = 8, fig.height = 4, out.width = "\\textwidth")
 library(cmcR)
 library(tidyverse)
 library(x3ptools)
@@ -529,7 +529,7 @@ The FFT does not tolerate missing values, and breech faces are not continuous su
 - \svp{The optimal translation is determined using the FFT-based CCF. Replacing the missing values with the overal mean leads to a deflated CCF value (see appendix XXX for more details), but produces an accurate estimate of the optimal translation.}
 - \svp{Using the optimal translation determined from the FFT-based CCF, we compute the pairwise complete CCF directly, avoiding any distortion of the CCF computation based on compensation for missing values.}
 
-\jz{Only cells with a minimum proportion of non-missing pixels are }\svp{assessed}. \jz{The minimum threshold differs across CMC papers \citep{chen_convergence_2017,song_estimating_2018}}\svp{, as shown in \autoref{fig:cmcflow-schematic}, and is referenced but not specified in several other papers \citep{tong_fired_2014,song_3d_2014,chu_validation_2013}.} 
+\jz{Only cells with a minimum proportion of non-missing pixels are }\svp{assessed}. \jz{The minimum threshold differs across CMC papers \citep{chen_convergence_2017,song_estimating_2018}}\svp{, as shown in \autoref{fig:cmc-schematic}, and is referenced but not specified in several other papers \citep{tong_fired_2014,song_3d_2014,chu_validation_2013}.} 
 
 \svp{The entire matching procedure is performed twice: once with scan A partitioned and scan B as the target, and once with scan B partitioned and scan A as the target.} 
 The correlation cell comparison procedure is implemented in the \code{cellCCF\_bothDirections} function. 
@@ -676,7 +676,7 @@ bind_rows(kmComparison$comparison_1to2$ccfResults %>%
   ggplot() +
   geom_point(aes(x = dx,
                  y = dy,
-                 colour = Classification)) +
+                 colour = Classification), alpha = .5) +
   geom_point(aes(x = med_dx,
                  y = med_dy),
              colour = "#7570b3",
