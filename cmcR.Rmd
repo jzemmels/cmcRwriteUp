@@ -407,7 +407,8 @@ For example, low frequency (high wavelength) global structure may exist in a car
 The goal of this analysis is to match scans based on individualizing characteristics, and so we remove the global structure using a high-pass Gaussian filter. Similarly,} high frequency (low wavelength) noise and outliers persist in cartidge case scans due to, for example, imperfections in the scanning process. 
 Such observations may also reduce the accuracy of our identifications. 
 Their effects can be mitigated by applying a low-pass Gaussian filter that operates as a local, moving average. 
-A band-pass Gaussian filter combines the effects of low and high-pass filters \jz{and can be implemented} \svp{by applying the filters consecutively} \citep{gauss_filter_source} \jz{XXX I only say "can be" to emphasize that we chose one of the commonly agreed-upon ways to implement a band-pass filter XXX}. 
+A band-pass Gaussian filter combines the effects of low and high-pass filters\svp{; we have chosen to implement it by applying a low pass filter and a high pass filter consecutively.} 
+<!-- \jz{and can be implemented} \svp{by applying the filters consecutively} \citep{gauss_filter_source} \jz{XXX I only say "can be" to emphasize that we chose one of the commonly agreed-upon ways to implement a band-pass filter XXX}.  -->
 \svp{There is considerable variation in the filters applied in the CMC literature; initially, low-pass and gausian band-pass regression filters were used, but the most recent papers use a band-pass filter.} 
 The current implementation for the low-pass filter involves constructing a Gaussian kernel based on a user-specified wavelength to attenuate and convolving the kernel with the surface matrix in the frequency domain \citep{computerVision}. 
 A high-pass filter of a particular wavelength is applied by subtracting-away the complementary low-pass filtered surface matrix. 
@@ -508,7 +509,7 @@ $$
 $$
 Note that this finite, discretized CCF definition yields a matrix whose $[m,n]$th element quantifies the similarity between matrices $A$ and $B$ for a translation of matrix $B$ by $m$ pixels horizontally and $n$ pixel vertically. 
 The index at which the CCF attains a maximum represents the \svp{optimal translation} needed to align $B$ with $A$.
-\jz{Based on the definition, the CCF need not be bounded between $-1$ and $1$. However, it is common to normalize the CCF for interpretability and is the convention adopted by the \pkg{cmcR} package. 
+\jz{Based on the definition, the CCF need not be bounded between $-1$ and $1$. However, it is common to normalize the CCF for interpretability, and} \svp{this} \jz{is the convention adopted by the \pkg{cmcR} package. 
 Prior to calculating the CCF, the matrices $A$ and $B$ can be standardized through subtraction of their respective means and division by their respective standard deviations. 
 This is referred to as the \dfn{Areal Cross-Correlation Function} (ACCF) in some CMC papers \citep{ott_applying_2017}.}
 
@@ -531,9 +532,9 @@ The FFT does not tolerate missing values, and breech faces are not continuous su
 - \svp{The optimal translation is determined using the FFT-based CCF. Replacing the missing values with the overal mean leads to a deflated CCF value (see appendix XXX for more details), but produces an accurate estimate of the optimal translation.}
 - \svp{Using the optimal translation determined from the FFT-based CCF, we compute the pairwise complete CCF directly, avoiding any distortion of the CCF computation based on compensation for missing values.}
 
-\jz{Only cells with a minimum proportion of non-missing pixels are }\svp{assessed}. \jz{The minimum threshold differs across CMC papers \citep{chen_convergence_2017,song_estimating_2018}}\svp{, as shown in \autoref{fig:cmc-schematic}, and is referenced but not specified in several other papers \citep{tong_fired_2014,song_3d_2014,chu_validation_2013}.} 
+\jz{Only cells with a minimum proportion of non-missing pixels are }\svp{assessed}. \jz{The minimum threshold differs across CMC papers \citep{chen_convergence_2017,song_estimating_2018}}\svp{, as shown in \autoref{fig:cmc-schematic}, and is referenced but not specified in several other papers \citep{tong_fired_2014,song_3d_2014,chu_validation_2013}.} \svp{XXX what proportion do we use? If it's variable, we should say that we have implemented this as a parameter setting for compatibility with the other algorithms}
 
-\svp{The entire matching procedure is performed twice: once with scan A partitioned and scan B as the target, and once with scan B partitioned and scan A as the target.} 
+\svp{The entire matching procedure is performed twice: once with scan A partitioned and scan B as the target, and once with scan B partitioned and scan A as the target.}
 The correlation cell comparison procedure is implemented in the \code{cellCCF\_bothDirections} function. 
 
 ```{r cmc-ccf, include = F, cache = T}
@@ -599,7 +600,8 @@ As stated in \citet{song_3d_2014},
 
 > [t]he qualifications of CMCs require not only high correlation values CCF$_{\max} \geq T_{\text{CCF}}$, but also similar registration angles $\theta$ (within the threshold $T_{\theta}$) and similar $x - y$ registration pattern (within the thresholds $T_x$, $T_y$).
 
-For a truly matching pair of cartridge cases, one might expect a "consensus" to exist among the various $\theta, x$, and $y$ values at which the CCF$_{\max}$ occurs (referred to as the \dfn{registration phase} of the cell/region pairs in \citet{song_proposed_2013}). 
+A truly matching pair of cartridge cases \svp{would have similar translation and rotation values for each cell, estimated by maximizing the cell-wise CCF.} 
+\svp{This consensus set of $x, y, \theta$ is} referred to as the \dfn{registration phase} of the cell/region pairs \citep{song_proposed_2013}. 
 \svp{Let $x_i, y_i, \theta_i$ denote the translation and rotation parameters which produce the highest CCF for the alignment of cell/region pair $i$.}
 The CMC method introduces criteria to determine whether a consensus exists among these values and quantifies the strength of the consensus by the number of cell/region pairs with similar registration phases.
 
@@ -622,6 +624,7 @@ That is, a consensus is determined by finding the median registration phase valu
 
 \citet{song_3d_2014} indicate that these thresholds need to be determined experimentally. 
 There is little consensus on an optimal set of thresholds nor discussion on the sensitivity of proposed methods to different threshold choices in the CMC literature.
+\svp{XXX does song provide any information on how these thresholds should be determined? XXX make some snarky comment about how you can't use this method in a lab yet because ground truth isn't known?}
 
 ```{r cmc-filter, include = F, cache = T}
 # if (!file.exists("data/kmcmc.Rdata")) {
@@ -639,7 +642,11 @@ There is little consensus on an optimal set of thresholds nor discussion on the 
 
 \svp{XXX Show the consensus estimates graphically, and the distribution of differences between estimated values and the consensus value. XXX}
 
-\jz{\autoref{fig:translationVotes} shows the distributions of the $(x_i, y_i)$ values which produce the highest CCF for the alignment of each cell/region pair of a known match and known non-match comparison. The squares in \autoref{fig:translationVotes} are centered on the comparisons' respective $(x_{\text{ref}},y_{\text{ref}})$ values and represent the maximum distance an $(x_i,y_i)$ estimated translation value can be from $(x_{\text{ref}},y_{\text{ref}})$ to be classified as "congruent" based on thresholds $T_{x} = T_{y} = 20$ pixels. Of the 43 cell/region pairs considered in the known match comparison, 27 $(x_i,y_i)$ values are within the specified thresholds of $(x_{\text{ref}},y_{\text{ref}})$. In contrast, 13 out of 42 $(x_i,y_i)$ are within the specified thresholds of $(x_{\text{ref}},y_{\text{ref}})$ for the known non-match comparison.}
+\jz{\autoref{fig:translationVotes} shows the distributions of the $(x_i, y_i)$ values which produce the highest CCF for the alignment of each cell/region pair of a known match and known non-match comparison. 
+The squares in \autoref{fig:translationVotes} are centered on the comparisons' respective $(x_{\text{ref}},y_{\text{ref}})$ values and represent the maximum distance an $(x_i,y_i)$ estimated translation value can be from $(x_{\text{ref}},y_{\text{ref}})$ to be classified as "congruent" based on thresholds $T_{x} = T_{y} = 20$ pixels. 
+Of the 43 cell/region pairs considered in the known match comparison, 27 $(x_i,y_i)$ values are within the specified thresholds of $(x_{\text{ref}},y_{\text{ref}})$. 
+In contrast, 13 out of 42 $(x_i,y_i)$ are within the specified thresholds of $(x_{\text{ref}},y_{\text{ref}})$ for the known non-match comparison.}
+\svp{XXX I think some points are missing in the KM plot at least - how many points were excluded for not having enough area? I count 39 points (27 inside, I'm taking your word on that).}
 
 ```{r,echo=FALSE,cache = T}
 fadul2.1 <- cmcR::selectBFImpression_sample_x3p("data/fadul2-1.x3p",
@@ -697,7 +704,6 @@ bind_rows(kmComparison$comparison_1to2$ccfResults %>%
   facet_wrap(~ `Comparison Type`,nrow = 1) +
   theme(legend.position = "bottom")
 ```
-
 \jz{\autoref{fig:rotationVotes} shows the distribution of the $\theta_i$ values which produce the highest CCF for the alignment of each cell/region pair of the known match and known non-match comparison. A vertical line is drawn at the comparisons' respective $\theta_{\text{ref}}$ value and a threshold of $T_{\theta} = 6$ degrees is used to classify $\theta_i$ values as "congruent." 24 of 43 known match and 13 of 42 known non-match $\theta_i$ values are classified as congruent under these conditions.}
 
 ```{r echo = FALSE,cache = T,fig.align = 'left',fig.cap='\\label{fig:rotationVotes} Estimated rotation values within 6 degrees of median value for 1 Known Match and 1 Known Non-Match cartridge case pair. This threshold captures the obvious mode in the Known Match estimated rotations around -24 to -21 degrees. In contrast, no such mode is observed in the Known Non-Match estimated rotations and fewer values are classified as "Congruent" as a result.',fig.pos = 'h'}
@@ -716,9 +722,7 @@ bind_rows(kmComparison$comparison_1to2$ccfResults %>%
   mutate(Classification = ifelse(abs(theta - med_theta) <= 6, "Congruent","Not Congruent")) %>%
   mutate(Classification = factor(Classification,levels = c("Not Congruent","Congruent"))) %>%
   ggplot() +
-  geom_histogram(aes(x = theta,
-                     fill = Classification),
-                 binwidth = 1) +
+  geom_bar(aes(x = theta, fill = Classification)) +
   scale_fill_manual(values = c("#a60b00","#1b03a3")) +
   geom_vline(aes(xintercept = med_theta),
              colour = "#7570b3") +
@@ -728,16 +732,18 @@ bind_rows(kmComparison$comparison_1to2$ccfResults %>%
   #            colour = "#7570b3") +
   theme_bw() +
   coord_fixed() +
-  scale_x_continuous(breaks = seq(-30,30,by = 3)) +
+  scale_x_continuous(expression(paste("Estimated rotation angle ", theta)), breaks = seq(-30,30,by = 3)) +
+  scale_y_continuous("# Cell Pairs") + 
   facet_wrap(~ `Comparison Type`,nrow = 2) +
-  theme(legend.position = "bottom")
+  theme(legend.position = c(1, 1), legend.justification = c(1, 1), legend.direction = "horizontal", legend.background = element_blank())
 ```
+
 
 \svp{XXX do we want to discuss the sensitivity analysis here? XXX}
 
 \jz{\autoref{fig:topVoteCMC_sensitivity} illustrates the sensitivity of the Top Vote method to various $T_{CCF}$ and $T_{dx}, T_{dy}$ values where $T_{\theta} = 6$ degrees. The thresholds become more restrictive from top to bottom and from right to left, meaning the least restrictive set of thresholds is represented in the top-right corner. We can see that many of these combinations yield separation between the matching and non-matching CMC count distributions. Additionally, as one might expect, fewer CMCs are assigned to both non-matching and matching pairs as the thresholds become more restrictive.}
 
-```{r echo=FALSE,fig.cap='\\label{fig:topVoteCMC_sensitivity} Top Vote CMC count relative frequencies for various $T_{dx}, T_{dy}$, and $T_{\\text{CCF}}$ values and $T_{\\theta} = 6$ degrees.',fig.align='left',fig.pos='htbp',out.width='1.2\\linewidth'}
+```{r echo=FALSE,fig.cap='\\label{fig:topVoteCMC_sensitivity} Top Vote CMC count relative frequencies for various $T_{dx}, T_{dy}$, and $T_{\\text{CCF}}$ values and $T_{\\theta} = 6$ degrees.',fig.align='left',fig.pos='htbp',out.width='\\textwidth'}
 load("data/cmcCountData.RData")
 
 cmcs_downSampled %>%
