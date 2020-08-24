@@ -735,6 +735,37 @@ bind_rows(kmComparison$comparison_1to2$ccfResults %>%
 
 \svp{XXX do we want to discuss the sensitivity analysis here? XXX}
 
+\jz{\autoref{fig:topVoteCMC_sensitivity} illustrates the sensitivity of the Top Vote method to various $T_{CCF}$ and $T_{dx}, T_{dy}$ values where $T_{\theta} = 6$ degrees. The thresholds become more restrictive from top to bottom and from right to left, meaning the least restrictive set of thresholds is represented in the top-right corner. We can see that many of these combinations yield separation between the matching and non-matching CMC count distributions. Additionally, as one might expect, fewer CMCs are assigned to both non-matching and matching pairs as the thresholds become more restrictive.}
+
+```{r echo=FALSE,fig.cap='\\label{fig:topVoteCMC_sensitivity} Top Vote CMC count relative frequencies for various $T_{dx}, T_{dy}$, and $T_{\\text{CCF}}$ values and $T_{\\theta} = 6$ degrees.',fig.align='left',fig.pos='htbp',out.width='1.2\\linewidth'}
+load("data/cmcCountData.RData")
+
+cmcs_downSampled %>%
+  filter(theta_thresh == 6)  %>%
+  filter(round(ccf_thresh,1) %in% c(.3,.4,.5) &
+           dx_thresh %in% c(10,20,30)) %>%
+  rename(`CCF Threshold` = ccf_thresh,
+         `Trans. Threshold` = dx_thresh) %>%
+  ggplot(aes(x = topVoteCMCs,y = ..density..)) +
+  geom_histogram(aes(fill = type),
+                 alpha = .8,
+                 colour = "white",
+                 binwidth = 1) +
+  geom_histogram(alpha = 0,
+                 binwidth = 1) +
+  scale_fill_manual(values = c("#a60b00","#1b03a3")) +
+  guides(fill = guide_legend(override.aes = list(alpha = 1))) +
+  facet_wrap(`CCF Threshold` ~ `Trans. Threshold`,
+             ncol = 3,
+             scales = "free_y",
+             labeller = label_both) +
+  theme_bw() + 
+  theme(legend.position = "bottom",
+        strip.text.x = element_text(size = 5)) +
+  xlab("CMC Count") +
+  ylab("Relative Frequency")
+```
+
 \svp{The "top vote" method has one major limitation, which is highlighted in \citet{tong_improved_2015}:}
 
 > some of the valid cell pairs may be mistakenly excluded from the CMC count because by chance their correlation yields a higher CCF value at a rotation angle outside the threshold range $T_\theta$.
@@ -796,12 +827,95 @@ cmcR::cmcPerThetaBarPlot(knmComparison,
 
 > If the angular range of the “high CMCs” is within the range $T_\theta$, identify the CMCs for each rotation angle in this range and combine them to give the number of CMCs for this comparison in place of the original CMC number. In this step, if the range is narrower than $T_\theta$, the nearby angles are included to make the range equal to $T_\theta$; CMCs with same index in each rotation are only counted once.
 
-A few critical pieces of information are missing from the method's description. 
-For one, there is no discussion nor reference to the procedures used to preprocess the scans. 
-Additionally, there is no indication of how to deal with situations in which two adjacent $\theta$ values tie for the CMC$_{\max}$ count. 
+\jz{A few critical pieces of information are missing from the method's description. 
+For one, there is no discussion of the procedures used to preprocess the scans. 
+Additionally, it is unclear how situations in which two adjacent $\theta$ values tie for the CMC$_{\max}$ count should be dealt.
 We've observed such situations to actually be quite common among both KM and KNM pairs. 
-Another common occurrence for which no guidance is provided is if one comparison direction passes the High CMC criterion (i.e., a CMC count mode is identified at a particular $\theta$ value) while the other direction fails the criterion. 
-A case could be made that a failure in one direction should indicate a non-matching pair, but considerable experimentation on our part has shown that many KM pairs elicit this behavior.
+Another common occurrence that is ambiguously dealt with is if one comparison direction passes the High CMC criterion (i.e., a CMC count mode is identified at a particular $\theta$ value) while the other direction fails the criterion.
+Due to this ambiguity, a variety of processing conditions need to be considered.
+For example, we might behave as if both comparison directions failed the High CMC criterion if one comparison direction fails. 
+As mentioned above, such pairs would be assigned the minimum of the two Top Vote CMC counts determined in both directions.
+Alternatively, we could behave as if both directions pass the High CMC criterion if only one direction passes.
+This would involve replacing the missing modal $\theta$ in the direction that failed with the opposite of the modal $\theta$ value in the direction that passed.
+The High CMCs would then be counted as if both directions had passed the High CMC criterion.
+The \code{missingTheta\_decision} argument of the \code{cmcFilter\_improved} function controls how CMCs are assigned if only one direction passes the High CMC criterion.
+Additionally, we might require the $\theta_{\text{ref}}$ value determined under the Top Vote method to agree with the modal $\theta$ value determined under the High CMC method, say $\theta_{\text{mode}}$.
+Since the Top Vote and High CMC criterion are applied in both directions for the High CMC method, we determine specifically if $|\theta_{\text{ref},1-2} - \theta_{\text{mode},1-2}| \leq T_\theta$ and $|\theta_{\text{ref},2-1} - \theta_{\text{mode},2-1}| \leq T_\theta$ where the subscripts emphasize the direction considered. 
+If either of these inequalities fail to hold, then a cartridge case pair is assigned the minimum of the two Top Vote CMC counts determined in both directions.
+The \code{compareInitialAndHighThetas} argument of the \code{cmcFilter\_improved} function dictates whether this comparison is performed.}
+
+\jz{\autoref{fig:HighCMC_sensitivity} illustrates the sensitivity of the High CMC method to various $T_{CCF}$ and $T_{dx}, T_{dy}$ values where $T_{\theta} = 6$ degrees. 
+In particular, we set \code{missingTheta\_decision = "fail"} which treats a failure of the High CMC criterion in either direction as a failure in both directions.
+We also enforce agreement between the Top Vote $\theta_{\text{ref},1-2}, \theta_{\text{ref},2-1}$ and the High CMC $\theta_{\text{mode},1-2}, \theta_{\text{mode},2-1}$ values by setting \code{compareInitialAndHighThetas = TRUE}. 
+We can see considerable separation between the non-match and match CMC count distributions for multiple combinations of thresholds. 
+However, due to the more complicated logic employed in the High CMC method, the monotonic relationship between threshold value and CMC count observed in \autoref{fig:topVoteCMC_sensitivity} does not necessarily hold in \autoref{fig:HighCMC_sensitivity}.}
+
+```{r echo=FALSE,fig.cap='\\label{fig:HighCMC_sensitivity} High CMC count relative frequencies for various $T_{dx}, T_{dy}$, and $T_{\\text{CCF}}$ values and $T_{\\theta} = 6$ degrees.',fig.align='left',fig.pos='htbp',out.width='1.2\\linewidth'}
+
+cmcs_downSampled_tighterThreshs %>%
+  filter(missingTheta_decision == "fail" & compareInitialAndHighThetas == "TRUE") %>%
+  filter(theta_thresh == 6)  %>%
+  filter(ccf_thresh %in% c(.3,.4,.5) &
+           dx_thresh %in% c(10,20,30)) %>%
+  rename(`CCF Threshold` = ccf_thresh,
+         `Trans. Threshold` = dx_thresh) %>%
+  ggplot(aes(x = highCMCs,y = ..density..)) +
+  geom_histogram(aes(fill = type),
+                 alpha = .8,
+                 colour = "white",
+                 binwidth = 1) +
+  geom_histogram(alpha = 0,
+                 binwidth = 1) +
+  scale_fill_manual(values = c("#1b03a3","#a60b00")) +
+  guides(fill = guide_legend(override.aes = list(alpha = 1))) +
+  facet_wrap(`CCF Threshold` ~ `Trans. Threshold`,
+             ncol = 3,
+             scales = "free_y",
+             labeller = label_both) +
+  theme_bw() + 
+  theme(legend.position = "bottom",
+        strip.text.x = element_text(size = 5)) +
+  xlab("CMC Count") +
+  ylab("Relative Frequency")
+```
+
+\jz{It should also be noted that the success of the High CMC method hinges largely on selecting processing conditions such that no non-match pairs pass the High CMC criterion. 
+That is, the High CMC criterion functions as a rough match vs. non-match decision rule prior to assigning CMCs. 
+This is evidenced in \autoref{fig:HighCMC_sensitivity_relaxed} which shows the CMC count distributions under a less strict set of conditions than those of \autoref{fig:HighCMC_sensitivity}.
+In particular, we set \code{missingTheta\_decision = "replace"}, which treats passing the High CMC criterion in one direction as a pass in both, and \code{compareInitialAndHighThetas = FALSE}, which results in no comparison of the $\theta_{\text{ref},1-2}, \theta_{\text{ref},2-1}$ and $\theta_{\text{mode},1-2}, \theta_{\text{mode},2-1}$ values. 
+This results in considerably more false positive CMCs assigned to truly non-matching pairs. 
+The bimodal behavior of the non-match CMC distribution observed in \autoref{fig:HighCMC_sensitivity_relaxed} is similar to that of Figure 8 in \citet{chen_convergence_2017} where the High CMC method was applied to cartridge case data from \citet{laPorte_validation_2011}.}
+
+```{r echo=FALSE,fig.cap='\\label{fig:HighCMC_sensitivity_relaxed} High CMC count relative frequencies for various $T_{dx}, T_{dy}$, and $T_{\\text{CCF}}$ values and $T_{\\theta} = 6$ degrees.',fig.align='left',fig.pos='htbp',out.width='1.2\\linewidth'}
+cmcs_downSampled_tighterThreshs %>%
+  filter(missingTheta_decision == "replace" & compareInitialAndHighThetas == "FALSE") %>%
+  filter(theta_thresh == 6)  %>%
+  filter(ccf_thresh %in% c(.3,.4,.5) &
+           dx_thresh %in% c(10,20,30)) %>%
+  rename(`CCF Threshold` = ccf_thresh,
+         `Trans. Threshold` = dx_thresh) %>%
+  ggplot(aes(x = highCMCs,y = ..density..)) +
+  geom_histogram(aes(fill = type),
+                 alpha = .8,
+                 colour = "white",
+                 binwidth = 1) +
+  geom_histogram(alpha = 0,
+                 binwidth = 1) +
+  scale_fill_manual(values = c("#1b03a3","#a60b00")) +
+  guides(fill = guide_legend(override.aes = list(alpha = 1))) +
+  facet_wrap(`CCF Threshold` ~ `Trans. Threshold`,
+             ncol = 3,
+             scales = "free_y",
+             labeller = label_both) +
+  theme_bw() + 
+  theme(legend.position = "bottom",
+        strip.text.x = element_text(size = 5)) +
+  xlab("CMC Count") +
+  ylab("Relative Frequency")
+```
+
+
+\jz{XXX Maybe we should (re)move or re-purpose the stuff below? XXX}
 
 The \code{cmcFilter\_improved} function determines CMCs under both the Top Vote and High CMC methods for user-defined threshold values. 
 In the event of a CMC$_{\max}$ count tie between more than one adjacent $\theta$ values, then the median of these $\theta$ values is used as the registration angle. 
@@ -906,7 +1020,10 @@ cmcR::cmcPlot(x3p1 = fadul2.1$x3p,
               na.value = "gray80") %>%
   .$initialCMC
 ```
+
 # Results {#results}
+
+\jz{XXX A lot of what's below has been moved into the Top Vote and High CMC method sections above. I'm not sure if an official "Results" section is needed based on where we're taking the paper. XXX}
 
 As described in section [2](#data), the set of cartridge case scans from \citet{fadul_empirical_nodate} is commonly used to compare the performance of various methods in the CMC literature. 
 This set consists of 40 cartridge cases; 63 known match pairs and 717 known non-match pairs. 
@@ -925,50 +1042,41 @@ Separation is also achieved using the Top Vote method by \citet{tong_improved_20
 It should be noted that these authors report CMC count distributions with fewer "false positive" CMCs for non-match pairs. 
 However, the behavior of these distributions changes considerably depending on the thresholds specified.
 
-```{r echo=FALSE,fig.cap='\\label{fig:topVoteCMC_perfectIdentification} Top Vote CMC count distribution with $T_{\\text{CCF}} = .625$, $T_{dx} = T_{dy} = 22.5$, and $T_{\\theta} = 3$ degrees.',fig.align='center',fig.pos='htbp',out.width='\\textwidth',out.height=".55\\textwidth"}
+```{r echo=FALSE,fig.cap='\\label{fig:topVoteCMC_perfectIdentification} Top Vote CMC count distribution with $T_{\\text{CCF}} = .325$, $T_{dx} = T_{dy} = 25$, and $T_{\\theta} = 6$ degrees.',fig.align='center',fig.pos='htbp',out.width='\\textwidth',out.height=".55\\textwidth"}
 
-load("data/cmcCountData.RData")
+barHeights <- cmcs_downSampled_tighterThreshs %>%
+  select(topVoteCMCs,type,pairName,ccf_thresh,dx_thresh,theta_thresh) %>%
+  distinct() %>%
+  filter(theta_thresh ==  6 & ccf_thresh == .325 & dx_thresh == 25) %>%
+  mutate(type = factor(type,levels = c("non-match","match"))) %>%
+  rename(`CCF Threshold` = ccf_thresh,
+         `Trans. Threshold` = dx_thresh) %>%
+  group_by(type,topVoteCMCs) %>%
+  tally() %>%
+  ungroup() %>%
+  group_by(type) %>%
+  mutate(prop = n/sum(n))
 
-cmcCountData_setSeed4132020 %>%
-  filter(cmcType == "initial") %>%
-  filter(thetaThresh ==  3 & ccfThresh == .625 & translateThresh == 22.5) %>%
-  mutate(comparisonType = factor(comparisonType,levels = c("known non-match","known match"))) %>%
-  rename(`CCF Threshold` = ccfThresh,
-         `Trans. Threshold` = translateThresh) %>%
+cmcs_downSampled_tighterThreshs %>%
+  select(topVoteCMCs,type,pairName,ccf_thresh,dx_thresh,theta_thresh) %>%
+  distinct() %>%
+  filter(theta_thresh ==  6 & ccf_thresh == .325 & dx_thresh == 25) %>%
+  mutate(type = factor(type,levels = c("non-match","match"))) %>%
+  rename(`CCF Threshold` = ccf_thresh,
+         `Trans. Threshold` = dx_thresh) %>%
   ggplot() +
-  stat_density(aes(x = cmcCount,y = ..density.., fill = comparisonType)) +
-  geom_bar(aes(x = cmcCount,fill = comparisonType)) +
-  # geom_histogram(aes(x = cmcCount,fill = comparisonType),colour = "black",binwidth = 1) +
-  # geom_histogram(aes(x = cmcCount),alpha = 0,binwidth = 1) +
-  geom_text(data = cmcCountData_setSeed4132020 %>%
-              pivot_wider(id_cols = c("pair","ccfThresh","translateThresh","thetaThresh","comparisonType"),
-                          names_from = c("cmcType"),
-                          values_from = c("cmcCount")) %>%
-              mutate(high = ifelse(high == 0,initial,high)) %>%
-              pivot_longer(cols = c("initial","high"),
-                           names_to = "cmcType",
-                           values_to = "cmcCount") %>%
-              filter(cmcType == "initial") %>%
-              filter(thetaThresh ==  3 & ccfThresh == .625 & translateThresh == 22.5) %>%
-              mutate(comparisonType = factor(comparisonType,levels = c("known non-match","known match"))) %>%
-              rename(`CCF Threshold` = ccfThresh,
-                     `Trans. Threshold` = translateThresh) %>%
-              group_by(comparisonType,cmcCount) %>%
-              tally() %>%
-              ungroup() %>%
-              group_by(comparisonType) %>%
-              mutate(prop = n/sum(n)),
-            aes(x = cmcCount,y = n,label = n),
+  stat_density(aes(x = topVoteCMCs,y = ..density.., fill = type)) +
+  geom_bar(aes(x = topVoteCMCs,fill = type)) +
+  facet_wrap(~`Trans. Threshold`,labeller = label_both) +
+  geom_text(data = barHeights,
+            aes(x = topVoteCMCs,y = n,label = n),
             nudge_y = 7,size = 2.5) +
-  geom_vline(xintercept = 8.5,linetype = "dashed") +
-  # scale_fill_manual(values = c("#fc8d59","#91bfdb"),
-  #                   aesthetics = c("colour","fill")) +
   scale_fill_manual(values = c("#a60b00","#1b03a3"),
                     aesthetics = c("colour","fill")) +
   guides(fill = guide_legend(title = "Comparison Type",
                              override.aes = list(alpha = 1)),
          colour = FALSE) +
-  theme_bw() + 
+  theme_bw() +
   theme(legend.position = "bottom") +
   xlab("CMC Count") +
   ylab("Number of Pairs")
@@ -982,83 +1090,47 @@ Additionally, many threshold combinations yield overlapping matching and non-mat
 
 <!-- \jz{Changing the faceted "sensitivity" plots like the one below to show Number of Pairs instead of Relative Frequency makes it almost impossible to see the known match distributions. And reducing the number of facets doesn't *really* help that much. I think the only options are to (1) keep the relative frequency and point-out that it's on a different scale from the above (although this would flow awkwardly) or (2) not include the sensitivity plots. Not sure what the best course of action would be.} -->
 
-```{r echo=FALSE,fig.cap='\\label{fig:topVoteCMC_sensitivity} Top Vote CMC count relative frequencies for various $T_{dx}, T_{dy}$, and $T_{\\text{CCF}}$ values and $T_{\\theta} = 3$ degrees.',fig.align='left',fig.pos='htbp',out.width='1.2\\linewidth',out.extra="trim={2cm 0 0 0}"}
-
-cmcCountData_setSeed4132020 %>%
-  filter(cmcType == "initial") %>%
-  filter(ccfThresh %in% c(.5,.7,.9) & translateThresh %in% c(10,20,30)) %>%
-  mutate(comparisonType = factor(comparisonType,levels = c("known non-match","known match"))) %>%
-  rename(`CCF Threshold` = ccfThresh,
-         `Trans. Threshold` = translateThresh) %>%
-  ggplot(aes(x = cmcCount
-             ,y = ..density..
-             )) +
-  # geom_density(aes(x = cmcCount,fill = comparisonType)) +
-  geom_histogram(aes(fill = comparisonType),
-                 alpha = .8,
-                 colour = "white",
-                 binwidth = 1) +
-  geom_histogram(alpha = 0,binwidth = 1) +
-  scale_fill_manual(values = c("#a60b00","#1b03a3")) +
-  guides(fill = guide_legend(title = "Comparison Type",override.aes = list(alpha = 1))) +
-  facet_wrap(`CCF Threshold` ~ `Trans. Threshold`,ncol = 3,scales = "free_y",labeller = label_both) +
-  theme_bw() + 
-  theme(legend.position = "bottom",
-        strip.text.x = element_text(size = 5)) +
-  xlab("CMC Count") +
-  ylab("Relative Frequency")
-```
-
 \autoref{fig:highCMC_perfectIdentification} shows the distribution of high CMC counts under the same threshold values as in \autoref{fig:topVoteCMC_perfectIdentification}. 
 The dashed, vertical line is again drawn at 8.5 CMCs. 
 The non-match pairs show the same distribution of CMCs as they did under the Top Vote method. 
 Many matching pairs are assigned a higher CMC count than under the Top Vote method.
 
-```{r echo=FALSE,fig.cap='\\label{fig:highCMC_perfectIdentification} High CMC count distribution with $T_{\\text{CCF}} = .625$, $T_{dx} = T_{dy} = 22.5$, and $T_{\\theta} = 3$ degrees',fig.align='center',fig.pos='htbp',out.width='\\textwidth',fig.height=4}
-cmcCountData_setSeed4132020 %>%
-  filter(cmcType == "high") %>%
-  filter(thetaThresh ==  3 & ccfThresh == .625 & translateThresh == 22.5) %>%
-  mutate(comparisonType = factor(comparisonType,levels = c("known non-match","known match"))) %>%
-  rename(`CCF Threshold` = ccfThresh,
-         `Trans. Threshold` = translateThresh) %>%
+```{r echo=FALSE,fig.cap='\\label{fig:highCMC_perfectIdentification} High CMC count distribution with $T_{\\text{CCF}} = .325$, $T_{dx} = T_{dy} = 25$, and $T_{\\theta} = 6$ degrees',fig.align='center',fig.pos='htbp',out.width='\\textwidth',fig.height=4}
+barHeights <- cmcs_downSampled_tighterThreshs %>%
+  filter(missingTheta_decision == "fail" & compareInitialAndHighThetas == "TRUE") %>%
+  select(highCMCs,type,pairName,ccf_thresh,dx_thresh,theta_thresh) %>%
+  distinct() %>%
+  filter(theta_thresh ==  6 & ccf_thresh == .325 & dx_thresh == 25) %>%
+  mutate(type = factor(type,levels = c("non-match","match"))) %>%
+  rename(`CCF Threshold` = ccf_thresh,
+         `Trans. Threshold` = dx_thresh) %>%
+  group_by(type,highCMCs) %>%
+  tally() %>%
+  ungroup() %>%
+  group_by(type) %>%
+  mutate(prop = n/sum(n))
+
+cmcs_downSampled_tighterThreshs %>%
+  filter(missingTheta_decision == "fail" & compareInitialAndHighThetas == "TRUE") %>%
+  select(highCMCs,type,pairName,ccf_thresh,dx_thresh,theta_thresh) %>%
+  distinct() %>%
+  filter(theta_thresh ==  6 & ccf_thresh == .325 & dx_thresh == 25) %>%
+  mutate(type = factor(type,levels = c("non-match","match"))) %>%
+  rename(`CCF Threshold` = ccf_thresh,
+         `Trans. Threshold` = dx_thresh) %>%
   ggplot() +
-  stat_density(aes(x = cmcCount,y = ..density.., fill = comparisonType)) +
-  geom_bar(aes(x = cmcCount,fill = comparisonType)) +
-  # geom_histogram(aes(x = cmcCount,
-  #                    fill = comparisonType),
-  #                colour = "black",
-  #                binwidth = 1) +
-  # geom_histogram(aes(x = cmcCount),alpha = 0,binwidth = 1) +
-  geom_text(data = cmcCountData_setSeed4132020 %>%
-              pivot_wider(id_cols = c("pair","ccfThresh","translateThresh","thetaThresh","comparisonType"),
-                          names_from = c("cmcType"),
-                          values_from = c("cmcCount")) %>%
-              mutate(high = ifelse(high == 0,initial,high)) %>%
-              pivot_longer(cols = c("initial","high"),
-                           names_to = "cmcType",
-                           values_to = "cmcCount") %>%
-              filter(cmcType == "high") %>%
-              filter(thetaThresh ==  3 & ccfThresh == .625 & translateThresh == 22.5) %>%
-              mutate(comparisonType = factor(comparisonType,levels = c("known non-match","known match"))) %>%
-              rename(`CCF Threshold` = ccfThresh,
-                     `Trans. Threshold` = translateThresh) %>%
-              group_by(comparisonType,cmcCount) %>%
-              tally() %>%
-              ungroup() %>%
-              group_by(comparisonType) %>%
-              mutate(prop = n/sum(n)),
-            aes(x = cmcCount,
-                y = n,
-                label = n),
-            nudge_y = 7,size = 2.25) +
-  geom_vline(xintercept = 8.5,
-             linetype = "dashed") +
+  stat_density(aes(x = highCMCs,y = ..density.., fill = type)) +
+  geom_bar(aes(x = highCMCs,fill = type)) +
+  facet_wrap(~`Trans. Threshold`,labeller = label_both) +
+  geom_text(data = barHeights,
+            aes(x = highCMCs,y = n,label = n),
+            nudge_y = 7,size = 2.5) +
   scale_fill_manual(values = c("#a60b00","#1b03a3"),
                     aesthetics = c("colour","fill")) +
   guides(fill = guide_legend(title = "Comparison Type",
                              override.aes = list(alpha = 1)),
          colour = FALSE) +
-  theme_bw() + 
+  theme_bw() +
   theme(legend.position = "bottom") +
   xlab("CMC Count") +
   ylab("Number of Pairs")
@@ -1071,39 +1143,6 @@ Thus, the success of the High CMC method hinges on choosing preprocessing parame
 An issue related to this is that there does not exist an agreed-upon set of alignment parameter thresholds nor a method, other than pure experimentation, by which these thresholds can be determined in the CMC literature. 
 While not shown here, we have seen that certain combinations of preprocessing conditions and thresholds yield a bimodal non-match CMC count distribution consisting of pairs that do not pass High CMC criterion (and are assigned few CMCs) and pairs that do (and are assigned many false positive CMCs). 
 Similar non-match bimodal behavior can be seen in Figure 8 of \citet{chen_convergence_2017} where the High CMC method was applied to cartridge case data from \citet{laPorte_validation_2011}.
-
-```{r echo=FALSE,fig.cap='\\label{fig:highCMC_sensitivity} High CMC count distributions for various $T_{dx}, T_{dy}$, and $T_{\\text{CCF}}$ values and $T_{\\theta} = 3$ degrees.',fig.align='left',fig.pos='htbp',out.width='1.2\\linewidth',out.extra="trim={2cm 0 0 0}"}
-cmcCountData_setSeed4132020 %>%
-  pivot_wider(id_cols = c("pair","ccfThresh","translateThresh","thetaThresh","comparisonType"),names_from = c("cmcType"),values_from = c("cmcCount")) %>%
-  mutate(high = ifelse(high == 0,initial,high)) %>%
-  pivot_longer(cols = c("initial","high"),
-               names_to = "cmcType",
-               values_to = "cmcCount") %>%
-  filter(cmcType == "high") %>%
-  filter(ccfThresh %in% c(.5,.7,.9) & translateThresh %in% c(10,20,30)) %>%
-  mutate(comparisonType = factor(comparisonType,levels = c("known non-match","known match"))) %>%
-  rename(`CCF Threshold` = ccfThresh,
-         `Trans. Threshold` = translateThresh) %>%
-  ggplot(aes(x = cmcCount,y = ..density..)) +
-  geom_histogram(aes(fill = comparisonType),
-                 alpha = .8,
-                 colour = "white",
-                 binwidth = 1) +
-  geom_histogram(alpha = 0,
-                 binwidth = 1) +
-  # scale_fill_manual(values = c("#fc8d59","#91bfdb")) +
-  scale_fill_manual(values = c("#a60b00","#1b03a3")) +
-  guides(fill = guide_legend(override.aes = list(alpha = 1))) +
-  facet_wrap(`CCF Threshold` ~ `Trans. Threshold`,
-             ncol = 3,
-             scales = "free_y",
-             labeller = label_both) +
-  theme_bw() + 
-  theme(legend.position = "bottom",
-        strip.text.x = element_text(size = 5)) +
-  xlab("CMC Count") +
-  ylab("Relative Frequency")
-```
 
 Similar to the Top Vote method, the implementation in the \pkg{cmcR} package tends to give a larger number of false positive High CMCs to non-match pairs relative to results in the CMC literature. 
 On the other hand, the number of CMCs assigned to matching pairs is comparable under both methods. 
