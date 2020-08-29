@@ -748,7 +748,7 @@ load("data/cmcCountData.RData")
 
 cmcs_downSampled %>%
   filter(theta_thresh == 6)  %>%
-  filter(round(ccf_thresh,1) %in% c(.3,.4,.5) &
+  filter(round(ccf_thresh,1) %in% c(.4,.5) &
            dx_thresh %in% c(10,20,30)) %>%
   rename(`CCF Threshold` = ccf_thresh,
          `Trans. Threshold` = dx_thresh) %>%
@@ -759,7 +759,7 @@ cmcs_downSampled %>%
                  binwidth = 1) +
   geom_histogram(alpha = 0,
                  binwidth = 1) +
-  scale_fill_manual(values = c("#a60b00","#1b03a3")) +
+  scale_fill_manual(values = c("#1b03a3","#a60b00")) +
   guides(fill = guide_legend(override.aes = list(alpha = 1))) +
   facet_wrap(`CCF Threshold` ~ `Trans. Threshold`,
              ncol = 3,
@@ -861,7 +861,7 @@ However, due to the more complicated logic employed in the High CMC method, the 
 cmcs_downSampled_tighterThreshs %>%
   filter(missingTheta_decision == "fail" & compareInitialAndHighThetas == "TRUE") %>%
   filter(theta_thresh == 6)  %>%
-  filter(ccf_thresh %in% c(.3,.4,.5) &
+  filter((ccf_thresh == .5 | (ccf_thresh > .39 & ccf_thresh < .41)) &
            dx_thresh %in% c(10,20,30)) %>%
   rename(`CCF Threshold` = ccf_thresh,
          `Trans. Threshold` = dx_thresh) %>%
@@ -896,7 +896,7 @@ The bimodal behavior of the non-match CMC distribution observed in \autoref{fig:
 cmcs_downSampled_tighterThreshs %>%
   filter(missingTheta_decision == "replace" & compareInitialAndHighThetas == "FALSE") %>%
   filter(theta_thresh == 6)  %>%
-  filter(ccf_thresh %in% c(.3,.4,.5) &
+  filter((ccf_thresh == .5 | (ccf_thresh > .39 & ccf_thresh < .41)) &
            dx_thresh %in% c(10,20,30)) %>%
   rename(`CCF Threshold` = ccf_thresh,
          `Trans. Threshold` = dx_thresh) %>%
@@ -1048,12 +1048,14 @@ Separation is also achieved using the Top Vote method by \citet{tong_improved_20
 It should be noted that these authors report CMC count distributions with fewer "false positive" CMCs for non-match pairs. 
 However, the behavior of these distributions changes considerably depending on the thresholds specified.
 
-```{r echo=FALSE,fig.cap='\\label{fig:topVoteCMC_perfectIdentification} Top Vote CMC count distribution with $T_{\\text{CCF}} = .325$, $T_{dx} = T_{dy} = 25$, and $T_{\\theta} = 6$ degrees.',fig.align='center',fig.pos='htbp',out.width='\\textwidth',out.height=".55\\textwidth"}
+```{r echo=FALSE,fig.cap='\\label{fig:topVoteCMC_perfectIdentification} Top Vote CMC count distribution with $T_{\\text{CCF}} = .6$, $T_{dx} = T_{dy} = 20$, and $T_{\\theta} = 6$ degrees.',fig.align='center',fig.pos='htbp',out.width='\\textwidth',out.height=".55\\textwidth"}
 
 barHeights <- cmcs_downSampled_tighterThreshs %>%
   select(topVoteCMCs,type,pairName,ccf_thresh,dx_thresh,theta_thresh) %>%
   distinct() %>%
-  filter(theta_thresh ==  6 & ccf_thresh == .325 & dx_thresh == 25) %>%
+  mutate(ccf_thresh = round(ccf_thresh,3)) %>%
+  filter(theta_thresh ==  6 & ccf_thresh == .6 & dx_thresh == 20) %>%
+  # filter(theta_thresh ==  6 & ccf_thresh == .45 & dx_thresh == 20) %>%
   mutate(type = factor(type,levels = c("non-match","match"))) %>%
   rename(`CCF Threshold` = ccf_thresh,
          `Trans. Threshold` = dx_thresh) %>%
@@ -1066,14 +1068,16 @@ barHeights <- cmcs_downSampled_tighterThreshs %>%
 cmcs_downSampled_tighterThreshs %>%
   select(topVoteCMCs,type,pairName,ccf_thresh,dx_thresh,theta_thresh) %>%
   distinct() %>%
-  filter(theta_thresh ==  6 & ccf_thresh == .325 & dx_thresh == 25) %>%
+  mutate(ccf_thresh = round(ccf_thresh,3)) %>%
+  filter(theta_thresh ==  6 & ccf_thresh == .6 & dx_thresh == 20) %>%
+  # filter(theta_thresh ==  6 & ccf_thresh == .45 & dx_thresh == 20) %>%
   mutate(type = factor(type,levels = c("non-match","match"))) %>%
   rename(`CCF Threshold` = ccf_thresh,
          `Trans. Threshold` = dx_thresh) %>%
   ggplot() +
   stat_density(aes(x = topVoteCMCs,y = ..density.., fill = type)) +
   geom_bar(aes(x = topVoteCMCs,fill = type)) +
-  facet_wrap(~`Trans. Threshold`,labeller = label_both) +
+  # facet_wrap(~`Trans. Threshold`,labeller = label_both) +
   geom_text(data = barHeights,
             aes(x = topVoteCMCs,y = n,label = n),
             nudge_y = 7,size = 2.5) +
@@ -1101,12 +1105,14 @@ The dashed, vertical line is again drawn at 8.5 CMCs.
 The non-match pairs show the same distribution of CMCs as they did under the Top Vote method. 
 Many matching pairs are assigned a higher CMC count than under the Top Vote method.
 
-```{r echo=FALSE,fig.cap='\\label{fig:highCMC_perfectIdentification} High CMC count distribution with $T_{\\text{CCF}} = .325$, $T_{dx} = T_{dy} = 25$, and $T_{\\theta} = 6$ degrees',fig.align='center',fig.pos='htbp',out.width='\\textwidth',fig.height=4}
+```{r echo=FALSE,fig.cap='\\label{fig:highCMC_perfectIdentification} High CMC count distribution with $T_{\\text{CCF}} = .6$, $T_{dx} = T_{dy} = 20$, and $T_{\\theta} = 6$ degrees',fig.align='center',fig.pos='htbp',out.width='\\textwidth',fig.height=4}
 barHeights <- cmcs_downSampled_tighterThreshs %>%
   filter(missingTheta_decision == "fail" & compareInitialAndHighThetas == "TRUE") %>%
   select(highCMCs,type,pairName,ccf_thresh,dx_thresh,theta_thresh) %>%
   distinct() %>%
-  filter(theta_thresh ==  6 & ccf_thresh == .325 & dx_thresh == 25) %>%
+  mutate(ccf_thresh = round(ccf_thresh,3)) %>%
+  filter(theta_thresh ==  6 & ccf_thresh == .6 & dx_thresh == 20) %>%
+  # filter(theta_thresh ==  6 & ccf_thresh == .45 & dx_thresh == 20) %>%
   mutate(type = factor(type,levels = c("non-match","match"))) %>%
   rename(`CCF Threshold` = ccf_thresh,
          `Trans. Threshold` = dx_thresh) %>%
@@ -1120,14 +1126,16 @@ cmcs_downSampled_tighterThreshs %>%
   filter(missingTheta_decision == "fail" & compareInitialAndHighThetas == "TRUE") %>%
   select(highCMCs,type,pairName,ccf_thresh,dx_thresh,theta_thresh) %>%
   distinct() %>%
-  filter(theta_thresh ==  6 & ccf_thresh == .325 & dx_thresh == 25) %>%
+  mutate(ccf_thresh = round(ccf_thresh,3)) %>%
+  filter(theta_thresh ==  6 & ccf_thresh == .6 & dx_thresh == 20) %>%
+  # filter(theta_thresh ==  6 & ccf_thresh == .45 & dx_thresh == 20) %>%
   mutate(type = factor(type,levels = c("non-match","match"))) %>%
   rename(`CCF Threshold` = ccf_thresh,
          `Trans. Threshold` = dx_thresh) %>%
   ggplot() +
   stat_density(aes(x = highCMCs,y = ..density.., fill = type)) +
   geom_bar(aes(x = highCMCs,fill = type)) +
-  facet_wrap(~`Trans. Threshold`,labeller = label_both) +
+  # facet_wrap(~`Trans. Threshold`,labeller = label_both) +
   geom_text(data = barHeights,
             aes(x = highCMCs,y = n,label = n),
             nudge_y = 7,size = 2.5) +
