@@ -1073,13 +1073,28 @@ While the exact procedures by which these scans are processed are unavailable, t
 Thus, some level of comparison between the implementation provided in the \pkg{cmcR} package and published results is possible. 
 However, justification for any differences will ultimately involve educated hypothesization due to the closed-source nature of the original implementations.
 
-\jz{XXX Explain within/between variance ratio. Emphasize need for more specific diagnostic score since so many combinations yield "perfect" classification.}
-
 For any cartridge case pair, the number of CMCs can be determined under the Top Vote and High CMC methods described in section [3](#implementation).
 These CMC counts can be determined for all 780 cartridge case pairs available in the \citet{fadul_empirical_nodate} dataset. 
 Perfect identification of all matching and non-matching pairs corresponds to choosing a CMC count threshold that separates the distributions of the matching and non-matching CMC counts. 
 Many authors have found success in choosing a CMC count threshold of 6 CMCs [\citet{tong_improved_2015}, \citet{song_estimating_2018}] as initially proposed by \citet{song_proposed_2013}, although this threshold has been shown to not generalize well to all proposed methods or cartridge case datasets \citep{chen_convergence_2017}. 
 Further, little consensus exists among authors on the most effective alignment parameter thresholds ($T_{\Delta x}, T_{\Delta y}, T_{\theta}, T_{\text{CCF}}$ defined in section [3.2.1](#topVoteMethod)) for distinguishing matches from non-matches. 
+\jz{A sensitivity analysis of the original Top Vote method and its descendants has yet to be published. 
+As previously discussed, the conditions under which these proposed methods are applied differ considerably across papers making it difficult to compare results. 
+We hope to partly remedy this problem by providing a discussion of the sensitivity of the Top Vote and High CMC methods.
+While far from exhaustive, we focus this discussion on what we have found to be the largest influencing factors on the methods' sensitivity.}
+
+\jz{One of these influential factors is the choice of $T_x, T_y, T_\theta, T_{\text{CCF}}$ thresholds use to declare a particular cell/region pair "congruent." 
+Many combinations of these thresholds yield perfect separation between the matching and non-matching CMC count distributions. 
+As such, some other diagnostic must be used to compare different sets of thresholds.
+Considering that ground-truth is known for the Fadul dataset, we will obtain a group of known match CMC counts and a group of known non-match CMC counts for each set of thresholds. 
+A natural diagnostic based on this observation is the ratio of the between- and (average) within-group variances of the CMC counts.
+That is, let CMC$_{i,j_i}$ denote the CMC count assigned to the $j_i$th cartridge case pair, $j = 1,...,n_i$, $n_1 = 63, n_2 = 717$, from the $i$th group, $i = 1,2$ representing matches and non-matches, respectively. 
+Then for each set of thresholds we calculate}
+$$
+r = \frac{\frac{1}{n_1 + n_2 - 1} \sum_{i=1}^2 \sum_{j=1}^{n_i} \left(\text{CMC}_{i,j} - \overline{\text{CMC}}\right)^2}{\frac{1}{2} \sum_{i=1}^2 \frac{1}{n_i - 1}\sum_{j=1}^{n_i} \left(\text{CMC}_{i,j} - \overline{\text{CMC}}_i\right)^2}
+$$
+\jz{where $\overline{\text{CMC}}_i$ denotes the within-group CMC count average and $\overline{\text{CMC}}$ denotes the grand CMC count average. Greater separation between and less variability within the match and non-match CMC count distributions will yield larger $r$ values. As such, larger values of $r$ are preferred.}
+
 \autoref{fig:topVoteCMC_perfectIdentification} shows an example of a particular set of thresholds that yields separation between the known match and known non-match CMC count distributions. 
 An appropriate CMC count threshold would be where the dashed, vertical line is drawn at 8.5 CMCs. 
 Separation is also achieved using the Top Vote method by \citet{tong_improved_2015} and \citet{chen_convergence_2017}, among others. 
