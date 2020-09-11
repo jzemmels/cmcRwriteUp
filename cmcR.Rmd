@@ -291,7 +291,7 @@ x3ptools::x3p_snapshot(file = "derivatives/fadul1-2.png")
 rgl.close()
 ```
 
-```{r, rawBFs,echo=FALSE,fig.cap='\\label{fig:cartridgeCasePair} Two known match cartridge case scans from \\citet{fadul_empirical_nodate}',fig.subcap=c('',''),fig.align='center',fig.pos='htbp',out.width='.49\\linewidth',out.height='.49\\linewidth'}
+```{r, rawBFs,echo=FALSE,fig.cap='\\label{fig:cartridgeCasePair} Unprocessed surface matrices of Fadul 1-1 (left) and Fadul 1-2 (right) \\citep{fadul_empirical_nodate}.',fig.subcap=c('',''),fig.align='center',fig.pos='htbp',out.width='.49\\linewidth',out.height='.49\\linewidth'}
 knitr::include_graphics(c("derivatives/fadul1-1.png","derivatives/fadul1-2.png"))
 ```
 
@@ -351,7 +351,7 @@ Instead, \citet{song_proposed_2013} proposes partitioning one surface matrix int
 If a large \svp{proportion} of these correlation cells are deemed highly similar to regions in the other surface matrix, then there is evidence that the two cartridges cases match. 
 \svp{T}he number of highly similar cells can be used as a more \svp{robust} similarity metric, \svp{compared to a score derived from the entire cartridge case}.
 
-```{r, echo=FALSE,fig.cap='\\label{fig:cmc_illustration} Illustration of comparing a "cell" in one cartridge case scan to a region in another',fig.align='center',fig.pos='htbp',out.width='.75\\textwidth'}
+```{r, echo=FALSE,fig.cap='\\label{fig:cmc_illustration} Illustration of comparing a "cell" in the reference cartridge case scan (left) to a larger region in a questioned cartridge case scan (right). Every cell in the reference cartridge case is similarly paired with a region in the questioned. To determine the rotation at which the two cartridge cases align, the cell/region pairs are compared for various rotations of the questioned cartridge case.',fig.align='center',fig.pos='htbp',out.width='.75\\textwidth'}
 
 knitr::include_graphics("images/cmc_illustration.PNG")
 ```
@@ -690,8 +690,6 @@ If either of these inequalities fail to hold, then a cartridge case pair is assi
 
 ## Implementation of preprocessing procedures
 
-\jz{XXX Pretty much this whole preprocessing section will be re-written to reflect the new semi-automatic procedure. Remember to discuss how the inclusion of roll-off tends to inflate the CCF scores due to how "loud" the roll-off is relative to the minute changes in the cartridge case surface. XXX}
-
 \svp{In order to reproducibly implement the preprocessing procedure, we modified a procedure from \citet{tai_submitted_2019} used to automatically process surface matrices.} 
 <!-- \jz{XXX I was mistaken -- the RANSAC method isn't from \citet{tai_fully_2018}, but from Xiao Hui's dissertation (specifically, from her unpublished package \pkg{cartridges3D}). XXX} -->
 <!-- \svp{XXX Describe this in steps, not in one long sentence XXX} -->
@@ -722,9 +720,9 @@ If either of these inequalities fail to hold, then a cartridge case pair is assi
 #   cmcR::preProcess_gaussFilter(res = fadul1.1_filtered$header.info$incrementY,
 #                                wavelength = c(16,500))
 
-fadul1.1 <- x3ptools::read_x3p("data/fadul1-1.x3p")
+fadul1.1_original <- x3ptools::read_x3p("data/fadul1-1.x3p")
 
-fadul1.1_croppedExt <- cmcR::cropBFExterior(x3p = fadul1.1,
+fadul1.1_croppedExt <- cmcR::cropBFExterior(x3p = fadul1.1_original,
                                             radiusOffset = -30,
                                             agg.function = median) 
 
@@ -749,7 +747,7 @@ fadul1.1_bpFiltered$surface.matrix <- cmcR::preProcess_gaussFilter(surfaceMat = 
 
 ```{r, echo=FALSE,cache = T,fig.cap='\\label{fig:processingPipeline} Illustration of \\pkg{cmcR} preprocessing pipeline designed to automate the manual cleaning in the CMC papers.',fig.align='center',fig.pos='htbp',out.width='\\linewidth'}
 
-cmcR::x3pListPlot(list("(1) Original" = fadul1.1,
+cmcR::x3pListPlot(list("(1) Original" = fadul1.1_original,
                        "(2) Crop exterior/interior" = fadul1.1_croppedInt,
                        "(3) Level surface" = fadul1.1_medRemoved,
                        "(4) Band-pass filter" = fadul1.1_bpFiltered),
@@ -834,7 +832,7 @@ The band-pass filtered surface matrix is shown in the fifth panel of \autoref{fi
 <!-- A simpler Gaussian filter, a technique used by \citet{tong_fired_2014} and \citet{song_estimating_2018}, is currently implemented instead.  -->
 
 In order to perform the comparison procedure, \code{NA}-valued pixels must be replaced with a non-\code{NA} value. 
-The convention adopted in the \pkg{cmcR} package is to use the average pixel value as a replacement. \svp{XXX Do we know that they did or did not use a similar consensus in the CMC method? XXX} 
+The convention adopted in the \pkg{cmcR} package is to use the average pixel value as a replacement. \svp{XXX Do we know that they did or did not use a similar consensus in the CMC method? XXX} \jz{XXX No, we don't XXX}
 There is currently no determination or removal of outliers in the \pkg{cmcR} package's preprocessing procedures, \svp{in part because the CMC literature contains limited details on outlier removal. We instead rely on the low-pass portion of the Gaussian filter to reduce the effects of any high-frequency noise.}
 
 To illustrate the usage of the \pkg{cmcR} package, we will consider a comparison between the KM cartridge case pair shown in \autoref{fig:cartridgeCasePair}.
@@ -843,7 +841,7 @@ The code to produce the first surface matrix shown in \autoref{fig:processedScan
 
 <!-- \svp{XXX Joe - please parenthetically indicate each argument name in the text above, along with its default value XXX} -->
 
-```{r echo=TRUE,eval=FALSE}
+```{r include=FALSE,eval=FALSE}
 fadul1.1 <- selectBFImpression_sample_x3p(x3p_path = paste0(nrbtd_url,fadul1.1_id),
                                           ransacInlierThresh = 1e-6, #.1 microns
                                           ransacIters = 300,
@@ -852,7 +850,7 @@ fadul1.1 <- selectBFImpression_sample_x3p(x3p_path = paste0(nrbtd_url,fadul1.1_i
                                           gaussFilterType = "bp") #band-pass filter
 ```
 
-```{r,echo=FALSE,cache = T,fig.cap='\\label{fig:processedScans} A known match pair of preprocessed cartridge case scans',fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
+```{r,echo=FALSE,cache = T,fig.cap='\\label{fig:processedScans} Fadul 1-1 and Fadul 1-2 after preprocessing.',fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
 
 cmcR::x3pListPlot(x3pList = list("Fadul 1-1" = fadul1.1,
                                  "Fadul 1-2" = fadul1.2),
@@ -863,7 +861,7 @@ cmcR::x3pListPlot(x3pList = list("Fadul 1-1" = fadul1.1,
                   legend.quantiles = c(0,.01,.2,.5,.8,.99,1)) +
   guides(fill = guide_colourbar(barheight = grid::unit(2.6,"inches"),
                                 label.theme = element_text(size = 8),
-                                title.theme = ggplot2::element_text(size = 10),
+                                title.theme = ggplot2::element_text(size = 12),
                                 frame.colour = "black",
                                 ticks.colour = "black")) +
   theme(legend.position = c(1.11,.551),plot.margin = ggplot2::margin(c(0,3,.2,0),unit = "cm"))
@@ -890,7 +888,9 @@ The FFT does not tolerate missing values, and breech faces are not continuous su
 - \svp{The optimal translation is determined using the FFT-based CCF. Replacing the missing values with the overal mean leads to a deflated CCF value (see appendix XXX for more details), but produces an accurate estimate of the optimal translation.}
 - \svp{Using the optimal translation determined from the FFT-based CCF, we compute the pairwise complete CCF directly, avoiding any distortion of the CCF computation based on compensation for missing values.}
 
-\jz{Only cells with a minimum proportion of non-missing pixels are }\svp{assessed}. \jz{The minimum threshold differs across CMC papers \citep{chen_convergence_2017,song_estimating_2018}}\svp{, as shown in \autoref{fig:cmc-schematic}, and is referenced but not specified in several other papers \citep{tong_fired_2014,song_3d_2014,chu_validation_2013}.} \svp{XXX what proportion do we use? If it's variable, we should say that we have implemented this as a parameter setting for compatibility with the other algorithms}
+\jz{Only cells with a minimum proportion of non-missing pixels are }\svp{assessed}. \jz{The minimum threshold differs across CMC papers \citep{chen_convergence_2017,song_estimating_2018}}\svp{, as shown in \autoref{fig:cmc-schematic}, and is referenced but not specified in several other papers \citep{tong_fired_2014,song_3d_2014,chu_validation_2013}.} 
+\jz{The minimum threhsold used for the results in this paper is 10% non-missing.}
+<!-- \svp{XXX what proportion do we use? If it's variable, we should say that we have implemented this as a parameter setting for compatibility with the other algorithms} -->
 
 \svp{The entire matching procedure is performed twice: once with scan A partitioned and scan B as the target, and once with scan B partitioned and scan A as the target.}
 The correlation cell comparison procedure is implemented in the \code{cellCCF\_bothDirections} function. 
@@ -931,7 +931,7 @@ kmComparison$comparison_1to2$ccfResults %>%
   filter(theta == -24) %>%
   arrange(`Cell index`) %>%
   head() %>%
-  knitr::kable(caption = "\\label{tab:cellCCF} Example of output from correlation cell comparison procedure",
+  knitr::kable(caption = "\\label{tab:cellCCF} Example of output from correlation cell comparison procedure between Fadul 1-1 and Fadul 1-2 rotated by -24 degrees. Due to the large proportion of missing values that are replaced to compute the FFT-based correlation, the pairwise-complete correlation is most often greater than the FFT-based correlation.",
                format = "latex",
                align = c("|c","c","c","r","r","r","c|"),
                col.names = c("Cell Index",
@@ -964,8 +964,6 @@ The \code{cmcPlot} function will construct a plot to visualize cells have been d
 The CMCs and non-CMCs for the current example under the Top Vote method are shown in blue and red, respectively, in \autoref{fig:topVoteCMCPlot}.
 Blue cells show how each CMC aligns in the other surface matrix while red cells show how the non-CMCs align to attain their CCF$_{\max}$ value.
 
-\jz{XXX Need to tweak cmcPlot function to keep the cartridge case associated with the ordered cells (Fadul 1-1) consistent for each of these 3 plots. XXX}
-
 ```{r include=FALSE,eval=FALSE}
 cmcPlots <- cmcR::cmcPlot(fadul1.1$x3p,
                           fadul1.2$x3p,
@@ -975,27 +973,29 @@ cmcPlots <- cmcR::cmcPlot(fadul1.1$x3p,
 
 cmcPlots$initialCMC
 ```
-```{r,echo=FALSE,cache = T,fig.cap='\\label{fig:topVoteCMCPlot} CMC results from a known match comparison under the Top Vote method using the \\code{cmcPlot} function',fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth'}
-# kmComparison_swapped <- kmComparison
-# kmComparison_swapped$comparison_1to2 <- kmComparison$comparison_2to1
-# kmComparison_swapped$comparison_2to1 <- kmComparison$comparison_1to2
+```{r,echo=FALSE,cache = T,fig.cap='\\label{fig:topVoteCMCPlot} CMC results for the comparison between Fadul 1-1 and Fadul 1-2 using the Top Vote method. Fadul 1-1 (left) acts as the reference cartridge case to which Fadul 1-2 (right) is compared. The 19 blue cells on the right show the phase registration of each cell identified as congruent. The 12 red cells on the right show where cells \\emph{not} identified as congruent achieve the maximum pairwise-complete correlation across all rotations of Fadul 1-2 considered.',fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth'}
+#We want Fadul 1-1 to be the reference cartridge case for all 3 of these plots
+#to enforce visual consistency. The Top Vote CMC method applied to Fadul 1-1 and
+#Fadul 1-2 results in two CMC counts (one for each comparison direction), the
+#minimum of which is associated with Fadul 1-2 being the reference cartridge
+#case. Unless changed, the cmcPlot function (by design) will then create a Top
+#Vote CMC plot with Fadul 1-2 as the reference cartridge case (which we don't
+#want). Since we desire Fadul 1-1 to be the reference for this particular
+#illustrative example, we will artificially inflate the number CMCs in the Fadul
+#1-2 vs. Fadul 1-1 direction (i.e., with Fadul 1-2 as the reference) so as to
+#force Fadul 1-1 to be plotted as the reference.
 
+kmCMC_fake <- kmCMC
 
-# kmCMC_swapped <- cmcR::cmcFilter_improved(kmComparison_swapped,
-#                                           ccf_thresh = .5,
-#                                           dx_thresh = 20,
-#                                           dy_thresh = 20,
-#                                           theta_thresh = 6,
-#                                           missingTheta_decision = "fail")
-
-# kmCMC$topVoteCMCs$comparison_2to1 <- bind_rows(kmCMC$topVoteCMCs$comparison_2to1,kmCMC$topVoteCMCs$comparison_2to1)
+kmCMC_fake$topVoteCMCs$comparison_2to1 <- bind_rows(kmCMC_fake$topVoteCMCs$comparison_2to1,
+                                                    kmCMC_fake$topVoteCMCs$comparison_2to1)
 
 cmcPlots <- cmcR::cmcPlot(fadul1.1,
                           fadul1.2,
                           # fadul1.2$x3p,
                           # fadul1.1$x3p,
                           cellCCF_bothDirections_output = kmComparison,
-                          cmcFilter_improved_output = kmCMC,
+                          cmcFilter_improved_output = kmCMC_fake,
                           # cellCCF_bothDirections_output = kmComparison_swapped,
                           # cmcFilter_improved_output = kmCMC_swapped,
                           x3pNames = c("Fadul 1-1","Fadul 1-2"),
@@ -1020,35 +1020,17 @@ cmcPlots$topVoteCMCs
 ```
 
 Similarly, CMCs and non-CMCs determined under the High CMC method are shown in \autoref{fig:highCMCPlot}.
-```{r include=FALSE,eval=FALSE}
-cmcPlots$highCMCs
-```
-```{r,echo=FALSE,cache = T,fig.cap='\\label{fig:highCMCPlot} CMC results for the comparison between Fadul 1-1 and Fadul 1-2 under the High CMC method using the \\code{cmcPlot} function',fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth',out.extra="trim={0 2.5cm 0 2cm}"}
-#Actual code executed to tweak the size/position of the colorbar legend:
+```{r,echo=TRUE,cache = T,fig.cap='\\label{fig:highCMCPlot} CMC results for the comparison between Fadul 1-1 and Fadul 1-2 using the High CMC method, which tends to assign a higher CMC count to cartridge case pairs that pass its more stringent criteria (discussed in section REF). This matching cartridge case pair passes the High CMC criterion, meaning 26 cells are identified as congruent while only 6 are not.',fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth',out.extra="trim={0 2.5cm 0 2cm}"}
 cmcPlots$highCMCs
 ```
 
 In contrast, \autoref{fig:knmCMCPlot} shows the CMC results for a comparison between Fadul 1-1 and a known non-match scan, Fadul 2-1, under the same pre, inter, and post-processing conditions used for the known match comparison.
-```{r,echo=FALSE,cache = T,fig.cap='\\label{fig:knmCMCPlot} CMC results for the comparison between Fadul 1-1 and Fadul 2-1 under the Top Vote method using the \\code{cmcPlot} function. The High CMC method applied to this pair yielded 0 CMCs (i.e., the pair did not pass the High CMC criterion).', fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth',out.extra="trim={0 2cm 0 1cm}"}
-# knmComparison_swapped <- knmComparison
-# knmComparison_swapped$comparison_1to2 <- knmComparison$comparison_2to1
-# knmComparison_swapped$comparison_2to1 <- knmComparison$comparison_1to2
-# 
-# knmCMC_swapped <- cmcR::cmcFilter_improved(knmComparison_swapped,
-#                                            ccf_thresh = .5,
-#                                            dx_thresh = 20,
-#                                            dy_thresh = 20,
-#                                            theta_thresh = 6,
-#                                            missingTheta_decision = "fail")
+```{r,echo=FALSE,cache = T,fig.cap='\\label{fig:knmCMCPlot} CMC results for the comparison between the non-match pair Fadul 1-1 and Fadul 2-1. This pair failed the High CMC criterion and also yielded 0 CMCs under the Top Vote method. As such, all 32 cells considered were classified as non-congruent.', fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth',out.extra="trim={0 2cm 0 1cm}"}
 
 cmcR::cmcPlot(fadul1.1,
               fadul2.1,
-              #x3p1 = fadul2.1$x3p,
-              #x3p2 = fadul1.1$x3p,
               cellCCF_bothDirections_output = knmComparison,
               cmcFilter_improved_output = knmCMC,
-              # cellCCF_bothDirections_output = knmComparison_swapped,
-              # cmcFilter_improved_output = knmCMC_swapped,
               type = "faceted",
               x3pNames = c("Fadul 1-1","Fadul 2-1"),
               legend.quantiles = c(0,.01,.2,.5,.8,.99,1),
@@ -1095,11 +1077,11 @@ r = \frac{\frac{1}{n_1 + n_2 - 1} \sum_{i=1}^2 \sum_{j=1}^{n_i} \left(\text{CMC}
 $$
 \jz{where $\overline{\text{CMC}}_i$ denotes the within-group CMC count average and $\overline{\text{CMC}}$ denotes the grand CMC count average. Greater separation between and less variability within the match and non-match CMC count distributions will yield larger $r$ values. As such, larger values of $r$ are preferred.}
 
-\autoref{fig:topVoteCMC_perfectIdentification} shows an example of a particular set of thresholds that yields separation between the known match and known non-match CMC count distributions. 
-An appropriate CMC count threshold would be where the dashed, vertical line is drawn at 8.5 CMCs. 
-Separation is also achieved using the Top Vote method by \citet{tong_improved_2015} and \citet{chen_convergence_2017}, among others. 
-It should be noted that these authors report CMC count distributions with fewer "false positive" CMCs for non-match pairs. 
-However, the behavior of these distributions changes considerably depending on the thresholds specified.
+<!-- \autoref{fig:topVoteCMC_perfectIdentification} shows an example of a particular set of thresholds that yields separation between the known match and known non-match CMC count distributions.  -->
+<!-- An appropriate CMC count threshold would be where the dashed, vertical line is drawn at 8.5 CMCs.  -->
+<!-- Separation is also achieved using the Top Vote method by \citet{tong_improved_2015} and \citet{chen_convergence_2017}, among others.  -->
+<!-- It should be noted that these authors report CMC count distributions with fewer "false positive" CMCs for non-match pairs.  -->
+<!-- However, the behavior of these distributions changes considerably depending on the thresholds specified. -->
 
 ```{r include=FALSE,eval=FALSE,fig.cap='\\label{fig:topVoteCMC_perfectIdentification} Top Vote CMC count distribution with $T_{\\text{CCF}} = .6$, $T_{\\Delta x} = T_{\\Delta y} = 20$, and $T_{\\theta} = 6$ degrees.',fig.align='center',fig.pos='htbp',out.width='\\textwidth',out.height=".55\\textwidth"}
 
@@ -1236,13 +1218,13 @@ cmcs_aucs %>%
 <!-- The non-match pairs show the same distribution of CMCs as they did under the Top Vote method.  -->
 <!-- Many matching pairs are assigned a higher CMC count than under the Top Vote method. -->
 
-\jz{\autoref{fig:highCMC_conservative_sensitivity} illustrates the sensitivity of the High CMC method to various $T_{CCF}$ and $T_{\Delta x}, T_{\Delta y}$ values where $T_{\theta} = 6$ degrees. 
+\jz{\autoref{fig:highCMC_sensitivity} illustrates the sensitivity of the High CMC method to various $T_{CCF}$ and $T_{\Delta x}, T_{\Delta y}$ values where $T_{\theta} = 6$ degrees. 
 In particular, we set \code{missingTheta\_decision = "fail"} which treats a failure of the High CMC criterion in either direction as a failure in both directions.
 We also enforce agreement between the Top Vote $\theta_{\text{ref},1-2}, \theta_{\text{ref},2-1}$ and the High CMC $\theta_{\text{mode},1-2}, \theta_{\text{mode},2-1}$ values by setting \code{compareInitialAndHighThetas = TRUE}. 
 We can see considerable separation between the non-match and match CMC count distributions for multiple combinations of thresholds. 
-However, due to the more complicated logic employed in the High CMC method, the monotonic relationship between threshold value and CMC count observed in \autoref{fig:topVoteCMC_sensitivity} does not necessarily hold in \autoref{fig:HighCMC_sensitivity}.}
+However, due to the more complicated logic employed in the High CMC method, the monotonic relationship between threshold value and CMC count observed in \autoref{fig:topVoteCMC_sensitivity} does not necessarily hold in \autoref{fig:highCMC_sensitivity}.}
 
-```{r,echo=FALSE, fig.cap='\\label{fig:highCMC_conservative_sensitivity} High CMC count relative frequencies for various $T_{\\Delta x}, T_{\\Delta y}$, and $T_{\\text{CCF}}$ values and $T_{\\theta} = 6$ degrees, \\code{missingTheta\\_decision = "fail"}, and \\code{compareInitialAndHighThetas = TRUE}. Thresholds become more stringent as the $T_{\\Delta x}, T_{\\Delta y}$ values decrease and $T_{\\text{CCF}}$ values increase. AUCs based on the minimum CMC count classification threshold and Between/Within group variance ratios are shown for each combination.',fig.align='left',fig.pos='htbp',out.width='\\textwidth'}
+```{r,echo=FALSE, fig.cap='\\label{fig:highCMC_sensitivity} High CMC count relative frequencies for various $T_{\\Delta x}, T_{\\Delta y}$, and $T_{\\text{CCF}}$ values and $T_{\\theta} = 6$ degrees, \\code{missingTheta\\_decision = "fail"}, and \\code{compareInitialAndHighThetas = TRUE}. Thresholds become more stringent as the $T_{\\Delta x}, T_{\\Delta y}$ values decrease and $T_{\\text{CCF}}$ values increase. AUCs based on the minimum CMC count classification threshold and Between/Within group variance ratios are shown for each combination.',fig.align='left',fig.pos='htbp',out.width='\\textwidth'}
 highCMC_conservative_labels <- cmcs_aucs %>%
   ungroup() %>%
   filter(missingTheta_decision == "fail" & compareInitialAndHighThetas == TRUE & theta_thresh == 6) %>%
@@ -1293,11 +1275,11 @@ Recall from the section on the REF that ambiguity in the original description le
 Namely, how cartridge case pairs for which only one comparison direction passes the High CMC criterion should be dealt with.
 The \code{missingTheta\_decision} argument of the \code{cmcFilter\_improved} function controls how CMCs are assigned if only one direction passes the High CMC criterion. 
 Additionally, the \code{compareInitialAndHighThetas} argument dictates whether a comparison of the $\theta_{\text{ref}}$ value determined under the Top Vote method to agree with the modal $\theta_{\text{mode}}$ value determined under the High CMC method. 
-\autoref{fig:highCMC_comparison_sensitivity} demonstrates how results change under 4 combinations of these two arguments with $T_{\\Delta x} = T_{\\Delta y} = 20$, $T_{\\text{CCF}} = .5$, and $T_{\\theta} = 6$ degrees.
+\autoref{fig:highCMC_comparison_sensitivity} demonstrates how results change under 4 combinations of these two arguments with $T_{\Delta x} = T_{\Delta y} = 20$, $T_{\text{CCF}} = .5$, and $T_{\\theta} = 6$ degrees.
 In particular, considering \code{missingTheta\_decision = "replace"} vs. \code{"fail"}, which treats passing the High CMC criterion in one direction as a pass or fail in both, respectively. 
 We also consider \code{compareInitialAndHighThetas = TRUE} vs. \code{FALSE}, which changes whether the $\theta_{\text{ref},1-2}, \theta_{\text{ref},2-1}$ and $\theta_{\text{mode},1-2}, \theta_{\text{mode},2-1}$ values are compared.
 We can clearly see a second mode for the least restrictive argument specifications of \code{missingTheta\_decision = "replace"} and \code{compareInitialAndHighThetas = FALSE}.
-These large false-positive CMC counts are associated with cartridge case pairs that pass the high CMC criterion 
+These large false-positive CMC counts are associated with cartridge case pairs that pass the high CMC criterion.
 The bimodal behavior of the non-match CMC distribution observed in \autoref{fig:highCMC_comparison_sensitivity} is similar to that of Figure 8 in \citet{chen_convergence_2017} where the High CMC method was applied to cartridge case data from \citet{laPorte_validation_2011}.}
 
 
