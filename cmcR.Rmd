@@ -1,4 +1,5 @@
 ---
+#Title needs some work...
 title: "cmcR: Congruent Matching Cells Method in R for Cartridge Case Identification"
 author:
   - name: Joseph Zemmels
@@ -815,7 +816,8 @@ This is in contrast to the non-reproducible, manual procedure referenced in othe
 <!-- \svp{Values within the circle are removed, as in the fourth panel of} \autoref{fig:processingPipeline}. -->
 
 \svp{In the final preprocessing step,} a band-pass filter is applied to the processed surface matrix to reduce the effects of undesired frequencies in the comparison procedure. 
-For example, low frequency (high wavelength) global structure may exist in a cartridge case scan due to manufacturing specifications \svp{(In forensics, this type of structure is referred to as a class characteristic -- it is shared by many objects of the same make and model)}. 
+For example, low frequency (high wavelength) global structure may exist in a cartridge case scan due to manufacturing specifications \svp{(In forensics, this type of structure is referred to as a class characteristic -- it is shared by many objects of the same make and model)}.
+\jz{Such similarities are often used by forensic practitioners to initially pare down the possible pool of matching cartridge cases \citep{firearm_id_thompson}.}
 \svp{While this additional global structure may assist with matching cartridge cases, it may also artificially inflate the probability of making a false-positive identification. 
 The goal of this analysis is to match scans based on individualizing characteristics, and so we remove the global structure using a high-pass Gaussian filter. Similarly,} high frequency (low wavelength) noise and outliers persist in cartidge case scans due to, for example, imperfections in the scanning process. 
 Such observations may also reduce the accuracy of our identifications. 
@@ -1025,7 +1027,7 @@ cmcPlots$highCMCs
 ```
 
 In contrast, \autoref{fig:knmCMCPlot} shows the CMC results for a comparison between Fadul 1-1 and a known non-match scan, Fadul 2-1, under the same pre, inter, and post-processing conditions used for the known match comparison.
-```{r,echo=FALSE,cache = T,fig.cap='\\label{fig:knmCMCPlot} CMC results for the comparison between the non-match pair Fadul 1-1 and Fadul 2-1. This pair failed the High CMC criterion and also yielded 0 CMCs under the Top Vote method. As such, all 32 cells considered were classified as non-congruent.', fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth',out.extra="trim={0 2cm 0 1cm}"}
+```{r,echo=FALSE,cache = T,fig.cap='\\label{fig:knmCMCPlot} CMC results for the comparison between the non-match pair Fadul 1-1 and Fadul 2-1. This pair failed the High CMC criterion and also yielded 0 CMCs under the Top Vote method. As such, all 32 cells considered are classified as non-congruent.', fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth',out.extra="trim={0 2cm 0 1cm}"}
 
 cmcR::cmcPlot(fadul1.1,
               fadul2.1,
@@ -1047,6 +1049,7 @@ cmcR::cmcPlot(fadul1.1,
   .$topVoteCMCs
 ```
 
+\jz{XXX I don't like this section title, but just calling it "Results" or "Results and Discussion" doesn't seem appropriate. Brainstorm some ideas? XXX}
 # Lessons of reproducibility {#results}
 
 As described in section [2](#data), the set of cartridge case scans from \citet{fadul_empirical_nodate} is commonly used to compare the performance of various methods in the CMC literature. 
@@ -1085,7 +1088,7 @@ $$
 
 ```{r include=FALSE,eval=FALSE,fig.cap='\\label{fig:topVoteCMC_perfectIdentification} Top Vote CMC count distribution with $T_{\\text{CCF}} = .6$, $T_{\\Delta x} = T_{\\Delta y} = 20$, and $T_{\\theta} = 6$ degrees.',fig.align='center',fig.pos='htbp',out.width='\\textwidth',out.height=".55\\textwidth"}
 
-barHeights <- cmcs_downSampled_tighterThreshs %>%
+barHeights <- cmcs_downSampled %>%
   select(topVoteCMCs,type,pairName,ccf_thresh,dx_thresh,theta_thresh) %>%
   distinct() %>%
   mutate(ccf_thresh = round(ccf_thresh,3)) %>%
@@ -1099,7 +1102,7 @@ barHeights <- cmcs_downSampled_tighterThreshs %>%
   group_by(type) %>%
   mutate(prop = n/sum(n))
 
-cmcs_downSampled_tighterThreshs %>%
+cmcs_downSampled %>%
   select(topVoteCMCs,type,pairName,ccf_thresh,dx_thresh,theta_thresh) %>%
   distinct() %>%
   mutate(ccf_thresh = round(ccf_thresh,3)) %>%
@@ -1135,7 +1138,7 @@ Additionally, as one might expect, fewer CMCs are assigned to both non-matching 
 
 load("data/cmcCountData.RData")
 
-cmcs_varRatios <-  cmcs_downSampled_tighterThreshs %>%
+cmcs_varRatios <-  cmcs_downSampled %>%
   pivot_longer(cols = c(topVoteCMCs,highCMCs),names_to = "cmcType",values_to = "cmcCount") %>%
   group_by(theta_thresh,ccf_thresh,dx_thresh,missingTheta_decision,compareInitialAndHighThetas,cmcType,type) %>%
   mutate(group_var = var(cmcCount)) %>%
@@ -1144,7 +1147,7 @@ cmcs_varRatios <-  cmcs_downSampled_tighterThreshs %>%
          betweenGroup_var = var(cmcCount)) %>%
   mutate(varRatio = betweenGroup_var/withinGroup_var)
 
-cmcs_aucs <- cmcs_downSampled_tighterThreshs %>%
+cmcs_aucs <- cmcs_downSampled %>%
   group_by(theta_thresh,ccf_thresh,dx_thresh,missingTheta_decision,compareInitialAndHighThetas) %>%
   dplyr::group_split()  %>%
   map_dfr(function(paramConditionedResults = .x){
@@ -1282,6 +1285,7 @@ We can clearly see a second mode for the least restrictive argument specificatio
 These large false-positive CMC counts are associated with cartridge case pairs that pass the high CMC criterion.
 The bimodal behavior of the non-match CMC distribution observed in \autoref{fig:highCMC_comparison_sensitivity} is similar to that of Figure 8 in \citet{chen_convergence_2017} where the High CMC method was applied to cartridge case data from \citet{laPorte_validation_2011}.}
 
+\jz{This illustrates how a prosaic description of an algorithm is generally insufficient to properly implement the method. As is the case with the High CMC method, unintentional ambiguities in written-language descriptions lead to different interpretations of the method. Even precise algorithmic descriptions typically gloss-over the usage of particular programming languages, functions, or parameter settings. Algorithms that theoretically should be consistent across implementations may in-practice yield numerical inconsistencies due to factors that would require the authors' careful consideration to yield consistent. For example, how different programming languages handle various datatypes (floating-point, complex numbers, etc.) or how random seeds are used to initialize pseudorandom number generators. Because of this, anything short of providing the code and data used to produce published results renders computational reproduction challenging, if not impossible.}
 
 ```{r ,echo=FALSE, fig.cap='\\label{fig:highCMC_comparison_sensitivity} High CMC count relative frequencies for various interpretations on the High CMC method description given in \\citet{tong_improved_2015} with $T_{\\Delta x} = T_{\\Delta y} = 20$, $T_{\\text{CCF}} = .5$, and $T_{\\theta} = 6$ degrees. In particlar, compares CMC results for different the 4 combinations of \\code{missingTheta\\_decision = "fail"} or \\code{"replace"} and \\code{compareInitialAndHighThetas = TRUE} or \\code{FALSE} (see \\@sec:highMethod for details). Different interpretations of the High CMC method description lead to different results, particularly with respect to the behavior of the non-match CMC count distribution. Additionally, as evidenced by the stillness of the matching CMC count distribution, this illustrates how the High CMC criterion functions essentially as a preliminary classification rule for non-matches vs. matches.',fig.align='left',fig.pos='htbp',out.width='\\textwidth'}
 
@@ -1330,8 +1334,98 @@ cmcs_aucs %>%
                
 ```
 
-\jz{XXX Discuss benefits of modularized processing here, including results from not removing tilt.XXX}
+\jz{Changes to the preprocessing procedures have major impact on the effectiveness of the CMC method. 
+For example, consider a change to the procedure described in section REF in which surface matrices are not leveled before applying the bandpass Gaussian filter (i.e., skipping step 3 show of \autoref{fig:processingPipeline}). 
+Recall that this step is performed in our implementation due to the trends in height values exhibited frequently yet inconsistently across cartridge cases fired from the same firearm. 
+No explicit reference is given for how these trends are handled in the CMC literature.}
 
+\jz{\autoref{fig:highCMC_noLeveling_sensitivity} shows the results of the High CMC methods under the exact same processing conditions as in \autoref{fig:highCMC_sensitivity} except that the surface matrices were not leveled prior to applying the bandpass Gaussian filter. 
+These 6 plots are analogous to other threshold combinations considered for this sensitivity analysis (the data for which are available [wherever we put the data]). 
+They illustrate that the High CMC method becomes considerably less effective at differentiating matches from non-matches when surface matrices' trends aren't removed. 
+In particular, non-matching cartridge case pairs with similar trends may be assigned more "false-positive" CMCs while, conversely, matching pairs with dissimilar trends are assigned fewer CMCs.}
+
+\jz{This example illuminates another principle that can be generalized to any type of reproducible scientific research: modulurization of processing procedures. 
+Dividing a method into a modularized "pipeline" of exchangeable steps makes it easier to explore the sensitivites and deficiencies of a method.
+Further, results and scientific insights are more transparent compared to "black box" or close-source methods.
+Researchers such as the authors of the various CMC methods already have some form of this modularization, as evidenced by the slight differences in procedures across the CMC literature. 
+However, there has yet to be a consolidation of the various procedures used into an "optimal" processing pipeline. 
+Perhaps a more principled approach cast as an optimization problem is required rather than an experimental approach.}
+
+```{r,echo=FALSE, fig.cap='\\label{fig:highCMC_noLeveling_sensitivity} High CMC count relative frequencies for various $T_{\\Delta x}, T_{\\Delta y}$, and $T_{\\text{CCF}}$ values and $T_{\\theta} = 6$ degrees, \\code{missingTheta\\_decision = "fail"}, and \\code{compareInitialAndHighThetas = TRUE} where the breech face impression surfaces were not leveled during preprocessing. Compared to \\autoref{fig:highCMC_sensitivity}, this demonstrates that High CMC method becomes less effective if this processing step is skipped. Modularization of the processing procedures into a "pipeline" is useful for uncovering such sensitivites.',fig.align='left',fig.pos='htbp',out.width='\\textwidth'}
+cmcs_noLeveling_varRatios <-  cmcs_downSampled_noLeveling %>%
+  pivot_longer(cols = c(topVoteCMCs,highCMCs),names_to = "cmcType",values_to = "cmcCount") %>%
+  group_by(theta_thresh,ccf_thresh,dx_thresh,missingTheta_decision,compareInitialAndHighThetas,cmcType,type) %>%
+  mutate(group_var = var(cmcCount)) %>%
+  ungroup(type) %>%
+  mutate(withinGroup_var = mean(group_var),
+         betweenGroup_var = var(cmcCount)) %>%
+  mutate(varRatio = betweenGroup_var/withinGroup_var)
+
+cmcs_noLeveling_aucs <- cmcs_downSampled_noLeveling %>%
+  group_by(theta_thresh,ccf_thresh,dx_thresh,missingTheta_decision,compareInitialAndHighThetas) %>%
+  dplyr::group_split()  %>%
+  map_dfr(function(paramConditionedResults = .x){
+    
+    topVoteROC <- paramConditionedResults %>%
+      pROC::roc(response = type,
+                predictor = topVoteCMCs,
+                levels = c("non-match","match"),
+                quiet = TRUE)
+    
+    highROC <- paramConditionedResults %>%
+      pROC::roc(response = type,
+                predictor = highCMCs,
+                levels = c("non-match","match"),
+                quiet = TRUE)
+    
+    paramConditionedResults %>%
+      mutate(topVoteCMC_AUC = rep(topVoteROC$auc),
+             highCMC_AUC = rep(highROC$auc))
+  })
+
+highCMC_noLeveling_labels <- cmcs_noLeveling_aucs %>%
+  ungroup() %>%
+  filter(missingTheta_decision == "fail" & compareInitialAndHighThetas == TRUE & theta_thresh == 6) %>%
+  filter((ccf_thresh %in% c(.4,.5) | (ccf_thresh > .39 & ccf_thresh < .41)) & dx_thresh %in% c(10,20,30)) %>%
+  inner_join(cmcs_noLeveling_varRatios %>%
+               ungroup() %>%
+               filter(cmcType == "highCMCs" & missingTheta_decision == "fail" & compareInitialAndHighThetas == TRUE) %>%
+               select(ccf_thresh,dx_thresh,theta_thresh,varRatio) %>%
+               distinct(),
+             by = c("theta_thresh","ccf_thresh","dx_thresh")) %>%
+  select(ccf_thresh,dx_thresh,highCMC_AUC,varRatio) %>%
+  distinct() %>%
+  rename(`Trans. Thresh` = dx_thresh,
+         `CCF Thresh` = ccf_thresh)
+
+cmcs_noLeveling_aucs %>%
+  ungroup() %>%
+  filter(missingTheta_decision == "fail" & compareInitialAndHighThetas == TRUE & theta_thresh == 6) %>% 
+  filter((ccf_thresh %in% c(.4,.5) | (ccf_thresh > .39 & ccf_thresh < .41)) & dx_thresh %in% c(10,20,30)) %>%
+  distinct() %>%
+  rename(`Trans. Thresh` = dx_thresh,
+         `CCF Thresh` = ccf_thresh) %>%
+  ggplot() +
+  geom_bar(aes(x = highCMCs,
+               y = ..prop..,
+               fill = type),
+           stat = "count") +
+  geom_label(data = highCMC_noLeveling_labels,
+             aes(x = 22.5,
+                 y = .7,
+                 label = paste0("AUC = ",round(highCMC_AUC,6),"\n","Var. Ratio = ",round(varRatio,3))),
+             size = 4) +
+  facet_grid(rows = vars(`CCF Thresh`),
+             cols = vars(`Trans. Thresh`),
+             scales = "free_y",labeller = label_both) +
+  scale_fill_manual(values = c("#1b03a3","#a60b00")) +
+  guides(fill = guide_legend(override.aes = list(alpha = 1))) +
+  theme_bw() + 
+  theme(legend.position = "bottom",
+        strip.text = element_text(size = 7)) +
+  xlab("High CMC Count") +
+  ylab("Relative Frequency")
+```
 <!-- \autoref{fig:highCMC_sensitivity} shows CMC count distributions determined using the High CMC method for various CCF and translation thresholds.  -->
 <!-- We have observed that the High CMC criterion functions effectively as a preliminary classification rule for matching vs. non-matching cartridge case pairs.  -->
 <!-- Any pair that passes the High CMC criterion, matching or non-matching, is assigned a large number of CMCs.  -->
@@ -1342,15 +1436,8 @@ cmcs_aucs %>%
 
 <!-- Similar to the Top Vote method, the implementation in the \pkg{cmcR} package tends to give a larger number of false positive High CMCs to non-match pairs relative to results in the CMC literature.  -->
 <!-- On the other hand, the number of CMCs assigned to matching pairs is comparable under both methods.  -->
-Undoubtedly, finer tuning of the thresholding parameters would yield results more similar to those in the CMC literature. 
-Additionally, further exploration of procedures by which the breech face impressions can be isolated and highlighted may help reduce the effects of characteristics of the scan that make it difficult to distinguish matches from non-matches. 
-For example, cartridges from the same manufacturer may share similarities that cartridges from different manufacturers do not. 
-Such similarities are often used by forensic practitioners to initially pare down the possible pool of matching cartridge cases \citep{firearm_id_thompson}. However, not removing such characteristics might increase the probability of making a false positive matching identification. 
-A Robust Gaussian Regression Filter can be used to simultaneously isolate and filter the breech face impression region in the surface matrix \citep{metrology}, possibly more effectively than the currently implemented procedures.
 
 # Conclusion {#conclusion}
-
-\jz{XXX Re-iterate points made regarding importance of reproducibility in research. Also discuss challenges in implementing non-open-source methods and lessons learned in implementation (e.g., providing code AND data are necessary, modularization of procedures is best, etc.). XXX}
 
 The results shared in this manuscript indicate that the implementation of the CMC method in the \pkg{cmcR} package is qualitatively similar to those in the CMC literature. 
 As such methods could potentially be used in the future as evidence to support legal conclusions, it is imperative that specific implementations be openly available for assessment and validation. 
