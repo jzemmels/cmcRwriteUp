@@ -60,7 +60,7 @@ if(!dir.exists("derivatives")){
 ```
 
 ```{r setup,echo=FALSE,message=FALSE,warning=FALSE}
-knitr::opts_chunk$set(cache = T, dpi = 300, fig.width = 8, fig.height = 4, out.width = "\\textwidth")
+knitr::opts_chunk$set(cache = T, dpi = 300, fig.width = 8, fig.height = 4, out.width = "\\textwidth", dpi = 300)
 library(cmcR)
 library(tidyverse)
 library(x3ptools)
