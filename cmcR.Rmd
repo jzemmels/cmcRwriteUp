@@ -161,14 +161,15 @@ Using a 3D microscope, we can obtain extremely detailed scans of the cartridge c
 
 <!-- \svp{XXX Briefly describe the contributions of each paper in the sequence - need to transition from visual to algorithmic examination. The paragraph below is a start, but could flow a bit better. I've tried to write the paragraph above in a way that can lead directly into this discussion.} -->
 
-\jz{\citet{song_proposed_2013} lays much of the conceptual framework for what would become the Congruent Matching Cells algorithm (although it was referred to as the "Contiguous Matching Cells" method in that original paper). 
-For clarity, the initially proposed method is referred to as the "Top Vote" method in this paper. 
-An actual implementation of the Top Vote method applied to 2D optical images was described in  \citet{tong_fired_2014} and to 3D topographical scans in \citet{song_3d_2014}. 
-Results from both of these articles indicate that the method was able to correctly identify all 63 matching and 717 non-matching cartridge case pairs in the \citet{fadul_empirical_nodate} dataset. 
-The first extension of the Top Vote method was described by \citet{tong_improved_2015} who were also able to correctly identify matching and non-matching pairs in the \citet{fadul_empirical_nodate} dataset.
-While not given an official name in \citet{tong_improved_2015}, this method would later be referred to as the "High CMC" method in \citet{chen_convergence_2017} and is referred to as such in this paper. 
-Various extensions of the Top Vote algorithm have been proposed since [\citet{zhang_correlation_2016}, \citet{chen_convergence_2017}, \citet{tong_valid_2018}].
-The \pkg{cmcR} package contains implementations designed for use with 3D topographical scans of the Top Vote method described in \citet{song_proposed_2013} and \citet{song_3d_2014} and the High CMC method described in \citet{tong_improved_2015}.}
+\svp{In this paper, we describe the implementation of a general CMC method which encompassesses methods described in \citet{song_proposed_2013}, \citet{song_3d_2014}, \citet{tong_improved_2015}, \citet{chen_convergence_2017}, and \citet{tong_valid_2018}. \citet{song_proposed_2013} lays out the conceptual framework for the original CMC method, which is referred to as the ``Top Vote" method in subsequent literature; a subsequent improvement of the method presented in \citet{tong_improved_2015} and used in subsequent papers is referred to as the ``High CMC" method. Both implementations (and subsequent proposed improvements) can be used to correctly differentiate same and different-source cartridge cases from the test dataset \citep{fadul_empirical_nodate}.} 
+<!-- \citet{song_proposed_2013} lays much of the conceptual framework for what would become the Congruent} \svp{(or Contiguous)}} \jz{Matching Cells algorithm.  -->
+<!-- For clarity, the initially proposed method is referred to as the "Top Vote" method in this paper.  -->
+<!-- An actual implementation of the Top Vote method applied to 2D optical images was described in  \citet{tong_fired_2014} and to 3D topographical scans in \citet{song_3d_2014}.  -->
+<!-- Results from both of these articles indicate that the method was able to correctly identify all 63 matching and 717 non-matching cartridge case pairs in the \citet{fadul_empirical_nodate} dataset.  -->
+<!-- The first extension of the Top Vote method was described by \citet{tong_improved_2015} who were also able to correctly identify matching and non-matching pairs in the \citet{fadul_empirical_nodate} dataset. -->
+<!-- While not given an official name in \citet{tong_improved_2015}, this method would later be referred to as the "High CMC" method in \citet{chen_convergence_2017} and is referred to as such in this paper.  -->
+<!-- Various extensions of the Top Vote algorithm have been proposed since [\citet{zhang_correlation_2016}, \citet{chen_convergence_2017}, \citet{tong_valid_2018}]. -->
+\jz{The \pkg{cmcR} package contains implementations designed for use with 3D topographical scans of the Top Vote method described in \citet{song_proposed_2013} and \citet{song_3d_2014} and the High CMC method described in \citet{tong_improved_2015}.}
 
 <!-- An implementation of the initially proposed CMC method from \citet{song_proposed_2013} applied to 3D topographical scans of cartridge case surfaces is described in \citet{song_3d_2014}. An extension to this initially proposed method known as the High CMC method is discussed in \citet{tong_improved_2015}.  -->
 
@@ -189,20 +190,30 @@ In addition, the source code to the full `cmcR` package is accessible at https:/
 
 # The CMC method
 
-\jz{While numerous CMC-related methods have been proposed since the original \citet{song_proposed_2013} paper, all of these methods can be divided into three sub-procedures. 
-First, cartridge case scans must be processed to remove unwanted regions of the scan and emphasize breech face impressions. 
-Second, two cartridge cases are compared using a cell-based comparison procedure and similarity features are extracted. 
-Finally, these similarity features are combined via a decision rule to declare the cartridge case pair a match or non-match. 
-The proposed methods intentionally differ by the decision rule used to differentiate matches from non-matches.
-However, as will be discussed below, the conditions under which the preprocessing and comparison procedures are carried out also differ between proposed methods. 
+<!-- I've tried to make this a bit more concise -- so that people don't lose the point while reading this section -->
+\svp{All of the CMC methods can be broken down into three primary steps: preprocessing, cell-based similarity feature extraction, and application of a decision rule. 
+The primary difference between the high CMC and top-vote methods is the decision rules utilized to separate matches and non-matches, but there are also several small differences in the preprocessing and comparison procedures.} 
+<!-- While numerous CMC-related methods have been proposed since the original \citet{song_proposed_2013} paper, all of these methods can be divided into three sub-procedures.  -->
+<!-- First, cartridge case scans must be processed to remove unwanted regions of the scan and emphasize breech face impressions.  -->
+<!-- Second, two cartridge cases are compared using a cell-based comparison procedure and similarity features are extracted.  -->
+<!-- Finally, these similarity features are combined via a decision rule to declare the cartridge case pair a match or non-match.  -->
+<!-- The proposed methods intentionally differ by the decision rule used to differentiate matches from non-matches. -->
+<!-- However, as will be discussed below, the conditions under which the preprocessing and comparison procedures are carried out also differ between proposed methods.  -->
+\jz{
 Current CMC literature lacks justification for changing these conditions, yet demonstrates that the same method applied under different conditions yields considerably different results. 
 The sensitivity of various methods to different conditions has also not been discussed in CMC literature. 
-Such a discussion based on our implementation of the Top Vote and High CMC methods can be found in the REF.}
+Such a discussion based on our implementation of the Top Vote and High CMC methods can be found in the REF.} \svp{XXX found where now? XXX}
 
-\jz{Each sub-procedure of the CMC method will be described using excerpts from the original papers. A discussion of ambiguities in these descriptions will accompany. Following this, the procedures as implemented in the \pkg{cmcR} package will be detailed and an exploration of the greater lessons learned while reconciling the methods' ambiguities will be provided.}
+\svp{In this section, we will discuss e}\jz{ach sub-procedure of the CMC method}
+<!-- will be described  -->
+\jz{using excerpts from the original papers.}
+<!-- A discussion of ambiguities in these descriptions will accompany.  -->
+<!-- Switch to active voice -->
+\svp{Then, in \autoref{implementation}, we will examine the implementation of each sub-procedure in the \pkg{cmcR} package, considering the differences between the text description and actual code. XXX I don't like the use of actual here, but can't think of another way to get the point across... any ideas? XXX}
+<!-- Following this, the procedures as implemented in the \pkg{cmcR} package will be detailed and an exploration of the greater lessons learned while reconciling the methods' ambiguities will be provided.} -->
 
 ## Initial Data
-Cartridge case surface data are commonly represented via a \dfn{surface matrix}: a matrix of spatially-ordered elements or "pixels" whose values correspond to the height of the cartridge case surface at a particular location. 
+Cartridge case \svp{scans} are commonly \svp{encoded as} a \dfn{surface matrix}: a matrix of spatially-ordered elements or "pixels" whose values correspond to the height of the cartridge case surface at a particular location. 
 \autoref{fig:cartridgeCasePair} shows the surface matrices of a known match (KM) pair of cartridge cases from a study by \citet{fadul_empirical_nodate}. 
 A total of 40 cartridge cases were scanned with a lateral resolution of 6.25 microns (micrometers) per pixel. The surface matrices \svp{are approximately} $1200 \times 1200$ pixels in size.
 
@@ -680,7 +691,7 @@ Additionally, we might require the $\theta_{\text{ref}}$ value determined under 
 Since the Top Vote and High CMC criterion are applied in both directions for the High CMC method, we can determine specifically if $|\theta_{\text{ref},1-2} - \theta_{\text{mode},1-2}| \leq T_\theta$ and $|\theta_{\text{ref},2-1} - \theta_{\text{mode},2-1}| \leq T_\theta$ where the subscripts emphasize the direction considered. 
 If either of these inequalities fail to hold, then a cartridge case pair is assigned the minimum of the two Top Vote CMC counts determined in both directions.}
 
-# Implementation in the \pkg{cmcR} package
+# Implementation in the \pkg{cmcR} package {.implementation}
 
 ## Implementation of preprocessing procedures
 
