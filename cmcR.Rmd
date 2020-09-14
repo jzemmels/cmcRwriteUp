@@ -144,7 +144,7 @@ The markings left on \svp{the} cartridge case from the firearm's breech face are
 
 \svp{During a forensic examination, cartridge cases may be compared using a \dfn{comparison microscope}.} \svp{Comparison microscopes allow for the comparison of two separate objects using the same viewfinder, allowing forensic practitioners to compare two pieces of toolmark evidence.}
 Figures \ref{fig:ccPair_separated} and \ref{fig:ccPair_combined} \svp{show cartridge cases in unaligned and aligned states, as seen through a comparison microscope. }
-\svp{While there is some similarity in the markings on the two cartridge cases shown in \autoref{fig:ccPair_separated}, this correspondence is much clearer when the cartridge cases are aligned, as in \autoref{fig:ccPair_combined}\citep[Images from ][]{firearm_id_thompson}.}
+\svp{While there is some similarity in the markings on the two cartridge cases shown in \autoref{fig:ccPair_separated}, this correspondence is much clearer when the cartridge cases are aligned, as in \autoref{fig:ccPair_combined} \citep[Images from ][]{firearm_id_thompson}.}
 The degree to which these breech face markings align can be used to determine whether the two cartridge cases match; i.e., were fired from the same firearm. 
 These breech face impressions are considered to be analogous to a firearm's "fingerprint" left on a cartridge case \citep{firearm_id_thompson}.
 
@@ -156,8 +156,8 @@ knitr::include_graphics("images/cartridgeCasePair_separated.PNG")
 knitr::include_graphics("images/cartridgeCasePair_comparison.PNG")
 ```
 
-\svp{While \autoref{fig:ccPair_separated} and \autoref{fig:ccPair_combined} are from comparison microscopes, digital microscopy is capable of higher precision measurements of surface topology.
-Using a 3D microscope, we can obtain extremely detailed scans of the cartridge case surfaces which can be used as input to a comparison algorithm, such as the CMC method originally proposed in \citet{song_proposed_2013}.}
+\svp{While \autoref{fig:ccPair_separated} and \autoref{fig:ccPair_combined} are from comparison microscopes used by firearms examiners in laboratory settings, digital microscopy is capable of higher precision measurements of surface topology.
+Using a 3D microscope, we can obtain extremely detailed scans of the cartridge case surfaces which can be used as input to an automated comparison algorithm, such as the CMC method originally proposed in \citet{song_proposed_2013}.}
 
 <!-- \svp{XXX Briefly describe the contributions of each paper in the sequence - need to transition from visual to algorithmic examination. The paragraph below is a start, but could flow a bit better. I've tried to write the paragraph above in a way that can lead directly into this discussion.} -->
 
