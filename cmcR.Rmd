@@ -161,7 +161,9 @@ Using a 3D microscope, we can obtain extremely detailed scans of the cartridge c
 
 <!-- \svp{XXX Briefly describe the contributions of each paper in the sequence - need to transition from visual to algorithmic examination. The paragraph below is a start, but could flow a bit better. I've tried to write the paragraph above in a way that can lead directly into this discussion.} -->
 
-\svp{In this paper, we describe the implementation of a general CMC method which encompassesses methods described in \citet{song_proposed_2013}, \citet{song_3d_2014}, \citet{tong_improved_2015}, \citet{chen_convergence_2017}, and \citet{tong_valid_2018}. \citet{song_proposed_2013} lays out the conceptual framework for the original CMC method, which is referred to as the ``Top Vote" method in subsequent literature; a subsequent improvement of the method presented in \citet{tong_improved_2015} and used in subsequent papers is referred to as the ``High CMC" method. Both implementations (and subsequent proposed improvements) can be used to correctly differentiate same and different-source cartridge cases from the test dataset \citep{fadul_empirical_nodate}.} 
+\svp{In this paper, we describe the implementation of a general CMC method which encompasses methods described in \citet{song_proposed_2013}, \citet{song_3d_2014}, and \citet{tong_improved_2015}. \jz{XXX We don't implement the method in Chen et al. (2017) and Tong et al. (2018) don't really introduce a new method -- rather, it describes one way of modeling the CMC count distributions.}
+\citet{song_proposed_2013} lays out the conceptual framework for the original CMC method, which is referred to as the ``Top Vote" method in \jz{this paper}; \jz{XXX Everyone at NIST just calls the original CMC method "the original method" or something similar -- we decided to call it the "top-vote" to remove the ambiguity of what "original" refers to. XXX}
+a subsequent improvement of the method presented in \citet{tong_improved_2015} and used in subsequent papers is referred to as the ``High CMC" method \citep{chen_convergence_2017}. Both implementations (and subsequent proposed improvements) can be used to correctly differentiate same and different-source cartridge cases from the test dataset \citep{fadul_empirical_nodate}.}
 <!-- \citet{song_proposed_2013} lays much of the conceptual framework for what would become the Congruent} \svp{(or Contiguous)}} \jz{Matching Cells algorithm.  -->
 <!-- For clarity, the initially proposed method is referred to as the "Top Vote" method in this paper.  -->
 <!-- An actual implementation of the Top Vote method applied to 2D optical images was described in  \citet{tong_fired_2014} and to 3D topographical scans in \citet{song_3d_2014}.  -->
@@ -186,7 +188,7 @@ In addition, the source code to the full `cmcR` package is accessible at https:/
 
 <!-- # Implementation {#implementation} -->
 
-\jz{XXX Order based on newly proposed structure: XXX}
+<!-- \jz{XXX Order based on newly proposed structure: XXX} -->
 
 # The CMC method
 
@@ -202,14 +204,17 @@ The primary difference between the high CMC and top-vote methods is the decision
 \jz{
 Current CMC literature lacks justification for changing these conditions, yet demonstrates that the same method applied under different conditions yields considerably different results. 
 The sensitivity of various methods to different conditions has also not been discussed in CMC literature. 
-Such a discussion based on our implementation of the Top Vote and High CMC methods can be found in the REF.} \svp{XXX found where now? XXX}
+Such a discussion based on our implementation of the Top Vote and High CMC methods can be found in \autoref{sec:lessons}}.
+<!-- \svp{XXX found where now? XXX} -->
 
 \svp{In this section, we will discuss e}\jz{ach sub-procedure of the CMC method}
 <!-- will be described  -->
 \jz{using excerpts from the original papers.}
 <!-- A discussion of ambiguities in these descriptions will accompany.  -->
 <!-- Switch to active voice -->
-\svp{Then, in \autoref{implementation}, we will examine the implementation of each sub-procedure in the \pkg{cmcR} package, considering the differences between the text description and actual code. XXX I don't like the use of actual here, but can't think of another way to get the point across... any ideas? XXX}
+\svp{Then, in \autoref{implementation}, we will examine the implementation of each sub-procedure in the \pkg{cmcR} package, considering the differences between the text description and \jz{its algorithmic translation}.}
+
+<!-- actual code. XXX I don't like the use of actual here, but can't think of another way to get the point across... any ideas? XXX} -->
 <!-- Following this, the procedures as implemented in the \pkg{cmcR} package will be detailed and an exploration of the greater lessons learned while reconciling the methods' ambiguities will be provided.} -->
 
 ## Initial Data
@@ -777,7 +782,7 @@ Typically, in the CMC literature,} every other row and column in the surface mat
 This downsampling is performed using the \code{x3p\_sample} function from the \pkg{x3ptools} package (default is every other row and column, \code{m = 2} lines num-num in [Appendix](). 
 Step 1 in \autoref{fig:processingPipeline} shows an \jz{unprocessed surface matrix.}
 
-\jz{After reading in the surface matrix, three major regions of the scan are identified via a labeling algorithm described in \citet{hesselink_concurrent_2001} and implemented in the \pkg{imager} package \citep{imager}. 
+\jz{After reading in the surface matrix, three major regions of the scan are identified via a labeling algorithm described in \citet{hesselink_concurrent_2001} and available in the \pkg{imager} package \citep{imager}. 
 These regions are the exterior of the cartridge case primer, the breech face impression region, and the firing pin impression hole in the center of the scan. 
 The goal is to isolate the breech face impression region by removing (i.e., replacing with \code{NA}) the pixels in the other two regions.
 Upon labeling the different regions of the cartridge case scan, the centers of the cartridge case primer and firing pin impression hole are estimated. 
@@ -1054,7 +1059,7 @@ cmcR::cmcPlot(fadul1.1,
 ```
 
 \jz{XXX I don't like this section title, but just calling it "Results" or "Results and Discussion" doesn't seem appropriate. Brainstorm some ideas? XXX}
-# Lessons of reproducibility {#results}
+# Lessons of reproducibility {#lessons}
 
 As described in section [2](#data), the set of cartridge case scans from \citet{fadul_empirical_nodate} is commonly used to compare the performance of various methods in the CMC literature. 
 This set consists of 40 cartridge cases; 63 known match pairs and 717 known non-match pairs. 
