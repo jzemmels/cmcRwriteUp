@@ -148,11 +148,11 @@ Figures \ref{fig:ccPair_separated} and \ref{fig:ccPair_combined} \svp{show cartr
 The degree to which these breech face markings align can be used to determine whether the two cartridge cases match; i.e., were fired from the same firearm. 
 These breech face impressions are considered to be analogous to a firearm's "fingerprint" left on a cartridge case \citep{firearm_id_thompson}.
 
-```{r ,echo=FALSE,fig.cap='\\label{fig:ccPair_separated} Cartridge case pair with visible breech face impressions under a microscrope.',fig.align='center',fig.pos='htbp',out.width="\\textwidth"}
+```{r ,echo=FALSE,fig.cap='\\label{fig:ccPair_separated} A cartridge case pair with visible breech face impressions under a microscrope. Forensic practitioners determine by visual comparison how similar these impressions are to conclude whether the pair is a match. It can be especially challenging to determine whether a marking is an \\emph{individual characteristic} caused by contact with the breech face of a particular firearm or a \\emph{subclass characteristic} shared across cartridge cases manufactured by the same manufacturer within a short time frame \\citep{firearmTraining}.',fig.align='center',fig.pos='htbp',out.width="\\textwidth"}
 knitr::include_graphics("images/cartridgeCasePair_separated.PNG")
 ```
 
-```{r ,echo=FALSE,fig.cap='\\label{fig:ccPair_combined} Cartridge case pair viewed side by side under a comparison microscope.',fig.pos='htbp',out.width="\\textwidth"}
+```{r ,echo=FALSE,fig.cap='\\label{fig:ccPair_combined} Cartridge case pair viewed side by side under a comparison microscope. A thin line can be seen separating the two views. The degree to which the markings on each cartridge case align is used to conclude a match.',fig.pos='htbp',out.width="\\textwidth"}
 knitr::include_graphics("images/cartridgeCasePair_comparison.PNG")
 ```
 
@@ -303,7 +303,7 @@ x3ptools::x3p_snapshot(file = "derivatives/fadul1-2.png")
 rgl.close()
 ```
 
-```{r, rawBFs,echo=FALSE,fig.cap='\\label{fig:cartridgeCasePair} Unprocessed surface matrices of Fadul 1-1 (left) and Fadul 1-2 (right) \\citep{fadul_empirical_nodate}.',fig.subcap=c('',''),fig.align='center',fig.pos='htbp',out.width='.49\\linewidth',out.height='.49\\linewidth'}
+```{r, rawBFs,echo=FALSE,fig.cap='\\label{fig:cartridgeCasePair} Unprocessed surface matrices of the known-match Fadul 1-1 (left) and Fadul 1-2 (right) \\citep{fadul_empirical_nodate}. The observations in the corners of these surface matrices are artifacts of the staging area in which these scans were taken. The holes on the interior of the primer surfaces are caused by the firing pin striking the primer during the firing process. The region of the primer around this hole does not come into uniform contact with the breech face of the firearm.', fig.subcap=c('',''),fig.align='center',fig.pos='htbp',out.width='.49\\linewidth',out.height='.49\\linewidth'}
 knitr::include_graphics(c("derivatives/fadul1-1.png","derivatives/fadul1-2.png"))
 ```
 
@@ -871,7 +871,7 @@ fadul1.1 <- selectBFImpression_sample_x3p(x3p_path = paste0(nrbtd_url,fadul1.1_i
                                           gaussFilterType = "bp") #band-pass filter
 ```
 
-```{r,echo=FALSE,cache = T,fig.cap='\\label{fig:processedScans} Fadul 1-1 and Fadul 1-2 after preprocessing.',fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
+```{r,echo=FALSE,cache = T,fig.cap='\\label{fig:processedScans} Fadul 1-1 and Fadul 1-2 after preprocessing. Similar striated markings are now easier to visually identify on both surfaces.',fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
 
 cmcR::x3pListPlot(x3pList = list("Fadul 1-1" = fadul1.1,
                                  "Fadul 1-2" = fadul1.2),
@@ -994,7 +994,7 @@ cmcPlots <- cmcR::cmcPlot(fadul1.1$x3p,
 
 cmcPlots$initialCMC
 ```
-```{r,echo=FALSE,cache = T,fig.cap='\\label{fig:topVoteCMCPlot} CMC results for the comparison between Fadul 1-1 and Fadul 1-2 using the original method of \\citet{song_proposed_2013}. Fadul 1-1 (left) acts as the reference cartridge case to which Fadul 1-2 (right) is compared. The 19 blue cells on the right show the phase registration of each cell identified as congruent. The 12 red cells on the right show where cells \\emph{not} identified as congruent achieve the maximum pairwise-complete correlation across all rotations of Fadul 1-2 considered.',fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth'}
+```{r,echo=FALSE,cache = F,fig.cap='\\label{fig:topVoteCMCPlot} CMC results for the comparison between Fadul 1-1 and Fadul 1-2 using the original method of \\citet{song_proposed_2013}. Fadul 1-1 (left) acts as the reference cartridge case to which Fadul 1-2 (right) is compared. The 19 blue cells on the right show the phase registration of each cell identified as congruent. The 12 red cells on the right show where cells \\emph{not} identified as congruent achieve the maximum pairwise-complete correlation across all rotations of Fadul 1-2 considered.',fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
 #We want Fadul 1-1 to be the reference cartridge case for all 3 of these plots
 #to enforce visual consistency. The original CMC method applied to Fadul 1-1 and
 #Fadul 1-2 results in two CMC counts (one for each comparison direction), the
@@ -1042,14 +1042,14 @@ cmcPlots$topVoteCMCs
 
 Similarly, CMCs and non-CMCs determined under the High CMC method are shown in \autoref{fig:highCMCPlot}.
 
-```{r,echo=FALSE,cache = T,fig.cap='\\label{fig:highCMCPlot} CMC results for the comparison between Fadul 1-1 and Fadul 1-2 using the High CMC method, which tends to assign a higher CMC count to cartridge case pairs that pass its more stringent criteria (discussed in section REF). This matching cartridge case pair passes the High CMC criterion, meaning 26 cells are identified as congruent while only 6 are not.',fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth',out.extra="trim={0 2.5cm 0 2cm}"}
+```{r,echo=FALSE,cache = F,fig.cap='\\label{fig:highCMCPlot} CMC results for the comparison between Fadul 1-1 and Fadul 1-2 using the High CMC method, which tends to assign a higher CMC count to cartridge case pairs that pass its more stringent criteria (discussed in section REF). This matching cartridge case pair passes the High CMC criterion, meaning 26 cells are identified as congruent while only 6 are not.',fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
 
 cmcPlots$highCMCs
 ```
 
 In contrast, \autoref{fig:knmCMCPlot} shows the CMC results for a comparison between Fadul 1-1 and a known non-match scan, Fadul 2-1, under the same pre, inter, and post-processing conditions used for the known match comparison.
 
-```{r,echo=FALSE,cache = T,fig.cap='\\label{fig:knmCMCPlot} CMC results for the comparison between the non-match pair Fadul 1-1 and Fadul 2-1. This pair failed the High CMC criterion and also yielded 0 CMCs under the original method of \\citet{song_proposed_2013}. As such, all 32 cells considered are classified as non-congruent.', fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth',out.extra="trim={0 2cm 0 1cm}"}
+```{r,echo=FALSE,cache = F,fig.cap='\\label{fig:knmCMCPlot} CMC results for the comparison between the non-match pair Fadul 1-1 and Fadul 2-1. This pair failed the High CMC criterion and also yielded 0 CMCs under the original method of \\citet{song_proposed_2013}. As such, all 32 cells considered are classified as non-congruent.', fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
 
 cmcR::cmcPlot(fadul1.1,
               fadul2.1,
@@ -1089,8 +1089,7 @@ A sensitivity analysis of the original method \jz{of \citet{song_proposed_2013}}
 As previously discussed, the conditions under which these proposed methods are applied differ considerably across papers making it difficult to compare results. 
 We hope to partly remedy this problem by providing a discussion of the sensitivity of the original method of \citet{song_proposed_2013} and the High CMC method.
 While far from exhaustive, we focus this discussion on what we have found to be highly influential factors on the methods' sensitivity.
-These factors include sensitivity to the choice of congruency thresholds (discussed in the [section describing the orignal method's decision rule](\#originalMethod)), to the reader's interpretation of the methods' descriptions, and to the preprocessing procedures employed before feature-extraction.}
-<!-- Further, little consensus exists among authors on the most effective alignment parameter thresholds ($T_{\Delta x}, T_{\Delta y}, T_{\theta}, T_{\text{CCF}}$ defined in section [3.2.1](#topVoteMethod)) for distinguishing matches from non-matches.  -->
+These factors include sensitivity to the choice of congruency thresholds (discussed in the [section describing the orignal method's decision rule](\#originalMethod)), to the reader's interpretation of the methods' descriptions, and to the preprocessing procedures employed before feature-extraction.
 
 ## Sensitivity to experimentally-determined congruency thresholds
 
