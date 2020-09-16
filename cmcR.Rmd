@@ -60,7 +60,7 @@ if(!dir.exists("derivatives")){
 ```
 
 ```{r setup,echo=FALSE,message=FALSE,warning=FALSE}
-knitr::opts_chunk$set(cache = T, dpi = 300, fig.width = 8, fig.height = 4, out.width = "\\textwidth")
+knitr::opts_chunk$set(cache = T, dpi = 300, fig.width = 8, fig.height = 4, out.width = "\\textwidth", dpi = 300)
 library(cmcR)
 library(tidyverse)
 library(x3ptools)
@@ -1041,11 +1041,14 @@ cmcPlots$topVoteCMCs
 ```
 
 Similarly, CMCs and non-CMCs determined under the High CMC method are shown in \autoref{fig:highCMCPlot}.
+
 ```{r,echo=FALSE,cache = T,fig.cap='\\label{fig:highCMCPlot} CMC results for the comparison between Fadul 1-1 and Fadul 1-2 using the High CMC method, which tends to assign a higher CMC count to cartridge case pairs that pass its more stringent criteria (discussed in section REF). This matching cartridge case pair passes the High CMC criterion, meaning 26 cells are identified as congruent while only 6 are not.',fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth',out.extra="trim={0 2.5cm 0 2cm}"}
+
 cmcPlots$highCMCs
 ```
 
 In contrast, \autoref{fig:knmCMCPlot} shows the CMC results for a comparison between Fadul 1-1 and a known non-match scan, Fadul 2-1, under the same pre, inter, and post-processing conditions used for the known match comparison.
+
 ```{r,echo=FALSE,cache = T,fig.cap='\\label{fig:knmCMCPlot} CMC results for the comparison between the non-match pair Fadul 1-1 and Fadul 2-1. This pair failed the High CMC criterion and also yielded 0 CMCs under the original method of \\citet{song_proposed_2013}. As such, all 32 cells considered are classified as non-congruent.', fig.align='center',fig.pos='htbp',out.width='1.2\\textwidth',out.extra="trim={0 2cm 0 1cm}"}
 
 cmcR::cmcPlot(fadul1.1,
@@ -1145,7 +1148,7 @@ cmcs_downSampled %>%
                     aesthetics = c("colour","fill")) +
   guides(fill = guide_legend(title = "Comparison Type",
                              override.aes = list(alpha = 1)),
-         colour = FALSE) +
+         colour = "none") +
   theme_bw() +
   theme(legend.position = "bottom") +
   xlab("CMC Count") +
