@@ -196,7 +196,7 @@ At each step, we will compare the description in the published papers with the i
 
 <!-- I've tried to make this a bit more concise -- so that people don't lose the point while reading this section -->
 \svp{All of the CMC methods can be broken down into three primary steps: preprocessing, cell-based similarity feature extraction, and application of a decision rule. 
-The primary difference between the high CMC and top-vote methods is the decision rules utilized to separate matches and non-matches, but there are also several small differences in the preprocessing and comparison procedures.} 
+The primary difference between the original method of \citet{song_proposed_2013} and the high CMC method is the decision rules utilized to separate matches and non-matches, but there are also several small differences in the preprocessing and comparison procedures.} 
 <!-- While numerous CMC-related methods have been proposed since the original \citet{song_proposed_2013} paper, all of these methods can be divided into three sub-procedures.  -->
 <!-- First, cartridge case scans must be processed to remove unwanted regions of the scan and emphasize breech face impressions.  -->
 <!-- Second, two cartridge cases are compared using a cell-based comparison procedure and similarity features are extracted.  -->
@@ -458,7 +458,7 @@ There is little consensus on an optimal set of thresholds nor discussion on the 
 
 fadul1.1 <- x3ptools::read_x3p("data/fadul1-1.x3p") %>%
   cmcR::cropBFExterior(radiusOffset = -30,
-                 agg.function = median) %>%
+                 agg_function = median) %>%
   cmcR::filterBFInterior(radiusOffset = 200) %>%
   cmcR::levelByConditionalStatistic(statistic = "quantile",
                               tau = .5,
@@ -470,7 +470,7 @@ fadul1.1$surface.matrix <- cmcR::preProcess_gaussFilter(surfaceMat = fadul1.1$su
 
 fadul1.2 <- x3ptools::read_x3p("data/fadul1-2.x3p") %>%
   cmcR::cropBFExterior(radiusOffset = -30,
-                 agg.function = median) %>%
+                 agg_function = median) %>%
   cmcR::filterBFInterior(radiusOffset = 200) %>%
   cmcR::levelByConditionalStatistic(statistic = "quantile",
                               tau = .5,
@@ -523,7 +523,7 @@ In contrast, 3 out of 35 $(x_i,y_i)$ are within the specified thresholds of $(x_
 
 fadul2.1 <- x3ptools::read_x3p("data/fadul2-1.x3p") %>%
   cropBFExterior(radiusOffset = -30,
-                 agg.function = median) %>%
+                 agg_function = median) %>%
   filterBFInterior(radiusOffset = 200) %>%
   levelByConditionalStatistic(statistic = "quantile",
                               tau = .5,
@@ -744,7 +744,7 @@ fadul1.1_original <- x3ptools::read_x3p("data/fadul1-1.x3p")
 
 fadul1.1_croppedExt <- cmcR::cropBFExterior(x3p = fadul1.1_original,
                                             radiusOffset = -30,
-                                            agg.function = median) 
+                                            agg_function = median) 
 
 fadul1.1_croppedInt <- cmcR::filterBFInterior(fadul1.1_croppedExt,
                                               radiusOffset = 200)
@@ -1008,8 +1008,8 @@ cmcPlots$initialCMC
 
 kmCMC_fake <- kmCMC
 
-kmCMC_fake$topVoteCMCs$comparison_2to1 <- bind_rows(kmCMC_fake$topVoteCMCs$comparison_2to1,
-                                                    kmCMC_fake$topVoteCMCs$comparison_2to1)
+kmCMC_fake$originalMethodCMCs$comparison_2to1 <- bind_rows(kmCMC_fake$originalMethodCMCs$comparison_2to1,
+                                                    kmCMC_fake$originalMethodCMCs$comparison_2to1)
 
 cmcPlots <- cmcR::cmcPlot(fadul1.1,
                           fadul1.2,
@@ -1037,7 +1037,7 @@ cmcPlots <- cmcR::cmcPlot(fadul1.1,
         cell.alpha = .15,
         na.value = "gray80")
 
-cmcPlots$topVoteCMCs
+cmcPlots$originalMethodCMCs
 ```
 
 Similarly, CMCs and non-CMCs determined under the High CMC method are shown in \autoref{fig:highCMCPlot}.
@@ -1068,7 +1068,7 @@ cmcR::cmcPlot(fadul1.1,
               cell.colors = c("#a60b00","#1b03a3"),
               cell.alpha = .15,
               na.value = "gray80") %>%
-  .$topVoteCMCs
+  .$originalMethodCMCs
 ```
 
 
@@ -1114,21 +1114,21 @@ $$
 ```{r include=FALSE,eval=FALSE,fig.cap='\\label{fig:topVoteCMC_perfectIdentification} CMC count distribution under the original method of \\citet{song_proposed_2013} with $T_{\\text{CCF}} = .6$, $T_{\\Delta x} = T_{\\Delta y} = 20$, and $T_{\\theta} = 6$ degrees.',fig.align='center',fig.pos='htbp',out.width='\\textwidth',out.height=".55\\textwidth"}
 
 barHeights <- cmcs_downSampled %>%
-  select(topVoteCMCs,type,pairName,ccf_thresh,dx_thresh,theta_thresh) %>%
+  select(originalMethodCMCs,type,pairName,ccf_thresh,dx_thresh,theta_thresh) %>%
   distinct() %>%
   mutate(ccf_thresh = round(ccf_thresh,3)) %>%
   filter(theta_thresh ==  6 & ccf_thresh == .6 & dx_thresh == 20) %>%
   mutate(type = factor(type,levels = c("non-match","match"))) %>%
   rename(`CCF Threshold` = ccf_thresh,
          `Trans. Threshold` = dx_thresh) %>%
-  group_by(type,topVoteCMCs) %>%
+  group_by(type,originalMethodCMCs) %>%
   tally() %>%
   ungroup() %>%
   group_by(type) %>%
   mutate(prop = n/sum(n))
 
 cmcs_downSampled %>%
-  select(topVoteCMCs,type,pairName,ccf_thresh,dx_thresh,theta_thresh) %>%
+  select(originalMethodCMCs,type,pairName,ccf_thresh,dx_thresh,theta_thresh) %>%
   distinct() %>%
   mutate(ccf_thresh = round(ccf_thresh,3)) %>%
   filter(theta_thresh ==  6 & ccf_thresh == .6 & dx_thresh == 20) %>%
@@ -1137,11 +1137,11 @@ cmcs_downSampled %>%
   rename(`CCF Threshold` = ccf_thresh,
          `Trans. Threshold` = dx_thresh) %>%
   ggplot() +
-  stat_density(aes(x = topVoteCMCs,y = ..density.., fill = type)) +
-  geom_bar(aes(x = topVoteCMCs,fill = type)) +
+  stat_density(aes(x = originalMethodCMCs,y = ..density.., fill = type)) +
+  geom_bar(aes(x = originalMethodCMCs,fill = type)) +
   # facet_wrap(~`Trans. Threshold`,labeller = label_both) +
   geom_text(data = barHeights,
-            aes(x = topVoteCMCs,y = n,label = n),
+            aes(x = originalMethodCMCs,y = n,label = n),
             nudge_y = 7,size = 2.5) +
   scale_fill_manual(values = c("#a60b00","#1b03a3"),
                     aesthetics = c("colour","fill")) +
@@ -1164,7 +1164,7 @@ Additionally, as one might expect, fewer CMCs are assigned to both non-matching 
 load("data/cmcCountData.RData")
 
 cmcs_varRatios <-  cmcs_downSampled %>%
-  pivot_longer(cols = c(topVoteCMCs,highCMCs),names_to = "cmcType",values_to = "cmcCount") %>%
+  pivot_longer(cols = c(originalMethodCMCs,highCMCs),names_to = "cmcType",values_to = "cmcCount") %>%
   group_by(theta_thresh,ccf_thresh,dx_thresh,missingTheta_decision,compareInitialAndHighThetas,cmcType,type) %>%
   mutate(group_var = var(cmcCount)) %>%
   ungroup(type) %>%
@@ -1179,7 +1179,7 @@ cmcs_aucs <- cmcs_downSampled %>%
     
     topVoteROC <- paramConditionedResults %>%
       pROC::roc(response = type,
-                predictor = topVoteCMCs,
+                predictor = originalMethodCMCs,
                 levels = c("non-match","match"),
                 quiet = TRUE)
     
@@ -1200,7 +1200,7 @@ topVoteCMC_labels <- cmcs_aucs %>%
   filter((ccf_thresh %in% c(.4,.5) | (ccf_thresh > .39 & ccf_thresh < .41)) & dx_thresh %in% c(10,20,30)) %>%
   inner_join(cmcs_varRatios %>%
                ungroup() %>%
-               filter(cmcType == "topVoteCMCs") %>%
+               filter(cmcType == "originalMethodCMCs") %>%
                select(ccf_thresh,dx_thresh,theta_thresh,varRatio) %>%
                distinct(),by = c("theta_thresh","ccf_thresh","dx_thresh")) %>%
   select(ccf_thresh,dx_thresh,topVoteCMC_AUC,varRatio) %>%
@@ -1219,7 +1219,7 @@ cmcs_aucs %>%
   rename(`Trans. Thresh` = dx_thresh,
          `CCF Thresh` = ccf_thresh) %>%
   ggplot() +
-  geom_bar(aes(x = topVoteCMCs,
+  geom_bar(aes(x = originalMethodCMCs,
                y = ..prop..,
                fill = type),
            stat = "count") +
@@ -1384,7 +1384,7 @@ Perhaps a more principled approach cast as an optimization problem is required r
 
 ```{r,echo=FALSE, fig.cap='\\label{fig:highCMC_noLeveling_sensitivity} High CMC count relative frequencies for various $T_{\\Delta x}, T_{\\Delta y}$, and $T_{\\text{CCF}}$ values and $T_{\\theta} = 6$ degrees, \\code{missingTheta\\_decision = "fail"}, and \\code{compareInitialAndHighThetas = TRUE} where the breech face impression surfaces were not leveled during preprocessing. Compared to \\autoref{fig:highCMC_sensitivity}, this demonstrates that High CMC method becomes less effective if this processing step is skipped. Modularization of the processing procedures into a "pipeline" is useful for uncovering such sensitivites.',fig.align='left',fig.pos='htbp',out.width='\\textwidth'}
 cmcs_noLeveling_varRatios <-  cmcs_downSampled_noLeveling %>%
-  pivot_longer(cols = c(topVoteCMCs,highCMCs),names_to = "cmcType",values_to = "cmcCount") %>%
+  pivot_longer(cols = c(originalMethodCMCs,highCMCs),names_to = "cmcType",values_to = "cmcCount") %>%
   group_by(theta_thresh,ccf_thresh,dx_thresh,missingTheta_decision,compareInitialAndHighThetas,cmcType,type) %>%
   mutate(group_var = var(cmcCount)) %>%
   ungroup(type) %>%
@@ -1399,7 +1399,7 @@ cmcs_noLeveling_aucs <- cmcs_downSampled_noLeveling %>%
     
     topVoteROC <- paramConditionedResults %>%
       pROC::roc(response = type,
-                predictor = topVoteCMCs,
+                predictor = originalMethodCMCs,
                 levels = c("non-match","match"),
                 quiet = TRUE)
     
