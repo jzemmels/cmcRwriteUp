@@ -180,13 +180,9 @@ A subsequent improvement of the method presented in \citet{tong_improved_2015} a
 
 <!-- Transition -->
 \svp{In the next section, we examine the process of implementing the CMC method for automatic comparisons of 3D cartridge case scans. 
-At each step, we will compare the description in the published papers with the implementation in code, discussing the gaps in the method description and how we filled in those gaps during the creation of `cmcR`.
+At each step, we will compare the description in the published papers with the implementation in code, discussing the gaps in the method description and how we filled in those gaps during the creation of `cmcR`.}
 <!-- We have included pseudocode implementing each procedure in the} [Appendix](#appendix) \svp{so that any ambiguities in the prosaic description are easily resolved. -->
-\jz{T}he source code to the full `cmcR` package is accessible at https://github.com/CSAFE-ISU/cmcR.
-}
-<!-- \svp{XXX Joe - the package really should live under CSAFE-ISU, not your personal account. Would you mind transferring it over? That will make it easier for CSAFE to maintain once you've moved on to other projects. XXX}  \jz{Done!} -->
-
-<!-- # Methods {#methods} \svp{XXX Could we call this Implementation? It's not traditional, but it's more specific.} -->
+The source code to the full `cmcR` package is accessible at https://github.com/CSAFE-ISU/cmcR.
 
 <!-- # Implementation {#implementation} -->
 
