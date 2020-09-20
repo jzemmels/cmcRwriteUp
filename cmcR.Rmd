@@ -192,7 +192,7 @@ The source code to the full `cmcR` package is accessible at https://github.com/C
 \svp{All of the CMC methods can be broken down into three broad stages: preprocessing, cell-based similarity feature extraction, and application of a decision rule; these steps are illustrated in \autoref{fig:overview-flow}}. 
 \svp{The advantage to treating these algorithms as modular is that we can implement the algorithms as a unified set of procedures, and then test new variations against the old in a coherent, unified framework.}
 
-\begin{figure}
+\begin{figure}\label{fig:overview-flow}
 \centering
 \includegraphics[width=.8\textwidth]{images/overview-flow.png}
 \caption{The stages of CMC methods. In the preprocessing stage, each scan is prepared for analysis, removing extraneous information and noise. Then, each scan is broken up into cells, which are numerically compared to cells in the other scan to determine an optimal alignment. Finally, each of the scores arising from the cells in the second stage are compared to a reference distribution to determine whether the scans originate from the same source or from different sources.}
@@ -1314,7 +1314,7 @@ cmcs_downSampled %>%
                     aesthetics = c("colour","fill")) +
   guides(fill = guide_legend(title = "Comparison Type",
                              override.aes = list(alpha = 1)),
-         colour = "none") +
+         colour = F) +
   theme_bw() +
   theme(legend.position = "bottom") +
   xlab("CMC Count") +
