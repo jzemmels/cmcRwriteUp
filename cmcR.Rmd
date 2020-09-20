@@ -542,7 +542,7 @@ fadul1.1 <- selectBFImpression_sample_x3p(x3p_path = paste0(nrbtd_url,fadul1.1_i
                                           gaussFilterType = "bp") #band-pass filter
 ```
 
-```{r,echo=FALSE,cache = T,fig.cap='\\label{fig:processedScans} Fadul 1-1 and Fadul 1-2 after preprocessing. Similar striated markings are now easier to visually identify on both surfaces.',fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
+```{r,echo=FALSE,cache = T,fig.cap='\\label{fig:processedScans} Fadul 1-1 and Fadul 1-2 after preprocessing. Similar striated markings are now easier to visually identify on both surfaces.',fig.align='center',fig.pos='htbp',out.width='\\textwidth', message = F, warning = F}
 
 cmcR::x3pListPlot(x3pList = list("Fadul 1-1" = fadul1.1,
                                  "Fadul 1-2" = fadul1.2),
