@@ -532,7 +532,7 @@ The \code{selectBFImpression\_sample\_x3p} function performs all of \svp{the} pr
 The code to produce the first surface matrix shown in \autoref{fig:processedScans} is provided below; \svp{the second matrix is processed using the same function arguments}.
 
 <!-- \svp{XXX Joe - please parenthetically indicate each argument name in the text above, along with its default value XXX} -->
-\svp{xxx This probably should be a pipeline, not a single function call. But that's just my opinion. Also, this still has ransac parameters, which we might want to get rid of as we're no longer explaining them XXX} \jz{XXX Yes, we've switched this function out for a different one. I think this was just left here from the old version -- will delete.XXX}
+
 ```{r include=FALSE,eval=FALSE}
 fadul1.1 <- selectBFImpression_sample_x3p(x3p_path = paste0(nrbtd_url,fadul1.1_id),
                                           ransacInlierThresh = 1e-6, #.1 microns
