@@ -498,26 +498,11 @@ This is in contrast to the non-reproducible, manual procedure referenced in othe
 
 In \jz{steps 1 and 2 of \autoref{fig:processingPipeline}} \svp{it is clear that there is a} \jz{southwest-to-northeast trend in height values. 
 Such a trend is observable in many cartridge case scans, yet does not occur consistently across cartridge cases fired from the same firearm. 
-Instead, a trend in the height values could be an artifact of the scanning process where cartridge cases are not precisely, horizontally leveled prior to taking the scan.
+Instead, a trend in the height values could be an artifact of the scanning process where cartridge cases are not precisely, horizontally leveled prior to taking the scan.}
 <!-- (XXX should we cite something about scanning SOP here? XXX).  -->
-As discussed in section REF, neglecting to remove such trends leads to very different results based on our implementation. 
-For example, two non-match cartridge cases with similar trends might be incorrectly deemed "congruent." }
+\jz{As discussed in section REF, neglecting to remove such trends leads to very different results based on our implementation. 
+For example, two different-source cartridge cases with similar trends might be incorrectly deemed "congruent." }
 \svp{It is unclear how such trends in height values are dealt with in the CMC literature; certainly, a high-pass Gaussian filter will remove some structure, but it is not explicitly mentioned whether any leveling is performed manually as well.} In the \pkg{cmcR} package, the breech face impression regions obtained from step 2 are leveled by estimating and subtracting the conditional median via the \code{rq} function of the \pkg{quantreg} package \citep{quantreg}. Step 3 of \autoref{fig:processingPipeline} shows a median-leveled surface matrix.
-seft in cartridge cases [\citet{hough}, \citet{gerules_survey_2013}]^[\svp{Some firearms leave a rectangular firing pin impression; this method could be modified to account for those models, but we have not yet expanded our automated processing to these types of firearms.}].  -->
-<!-- The circular Hough transform can be used to identify the center of a circle in an image \svp{if the radius of the circle is known}.  -->
-<!-- \svp{We first estimate the radius, using a binary matrix which indicates the presence of missing values}.  -->
-<!-- The number of non-\code{NA} pixels in each row is counted.  -->
-<!-- The distance between the two largest modes of this count-per-row series is an estimate for the diameter of the firing pin impression circle.  -->
-<!-- The count-per-row series is smoothed using a moving-average filter (via \code{zoo::rollmean}, \code{smootherSize = 2*(.1*nrow(surfaceMat)) + 1} default).  -->
-<!-- The smoothed series is then differenced and the indices at which the differenced values' signs change from positive to negative are determined.  -->
-<!-- Assuming the smoothing filter is adequate, the distance between these indices should estimate the firing pin impression circle diameter well.  -->
-<!-- \svp{The same procedure is applied to the columns of the matrix, and, for added robustness, the rows and columns are assessed as the matrix is rotated in 15 degree intervals (15, 30, 45, 60, and 75).} -->
-<!-- A total of 12 candidate radius estimates are calculated by this procedure.  -->
-<!-- These are combined via a user-defined aggregation function to determine a \svp{consensus} radius estimate (\code{aggregationFunction = mean} default). -->
-
-<!-- \svp{This estimation procedure provides a relatively good estimate of the radius of the firing pin impression, but because these impressions are not always entirely regular, we compute Hough transforms in a small neighborhood of the consensus estimate \jz{after applying a Canny edge detector to the surface matrix with automatically estimated thresholds (\code{gridSize = 40} and \code{gridGranularity = 1} default) [\citet{canny_computational_1986}, \citet{imager}]}. For each radius value, we accept the candidate circle with the highest score; these scores tend to be stable and near 1 for values close to the true radius, and volatile otherwise.}  -->
-<!-- We determine the longest consecutive sequence of scores that are above some user-defined threshold (above the 90% percentile of scores, \code{houghScoreQuant = .9}, default) and choose the circle associated with the median radius value of this sequence as the final estimate.  -->
-<!-- \svp{Values within the circle are removed, as in the fourth panel of} \autoref{fig:processingPipeline}. -->
 
 \svp{In the final preprocessing step,} a band-pass filter is applied to the processed surface matrix to reduce the effects of undesired frequencies in the comparison procedure. 
 For example, low frequency (high wavelength) global structure may exist in a cartridge case scan due to manufacturing specifications \svp{(In forensics, this type of structure is referred to as a class characteristic -- it is shared by many objects of the same make and model)}.
