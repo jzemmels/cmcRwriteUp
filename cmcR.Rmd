@@ -338,19 +338,184 @@ The implementation in \citet{tong_fired_2014} describes the preprocessing steps 
 
 While not \svp{explicit} in \citet{song_3d_2014}, \citet{song_estimating_2018} indicates that the "trimming" of the unwanted regions of the scan is performed manually. 
 \svp{
-The goal of this process is to remove the edges and center of the scan which did not come into contact with the breech face, as well as any artifacts of the scan and microscope staging which do not accurately represent the breech face surface.}
+The goal of this process is to remove the edges and center of the scan which did not come into contact with the breech face, as well as any artifacts of the scan and microscope staging which do not accurately represent the breefch face surface.}
 <!-- These include a circular plateaued region in the center of the scan that is pushed aside by the firing pin during the firing process as well as clusters of observed values in the corners of the scan that are artifacts of the staging area in which the scan was captured.  -->
 \svp{
 No further information is given in the paper describing what criteria were used for this process; nor are the trimmed scans provided as intermediate data to make reproducibility possible. 
 }
 It is \svp{also} unclear how the dropouts and outliers are "removed" from the scan or how outliers are defined\svp{; many different methods for outlier detection and removal are used in surface metrology\citep{outlierdetection}. Most of the algorithms require the user to select thresholds or parameters; thus, without any details about how the outlier detection process was implemented, this portion of the paper is not reproducible.}
 
-<!-- \jz{XXX Apparently it's not common for ISO algorithms to have an accompanying open-source implementation. There are recent pushes for "open standards" by organizations such as OASIS (https://www.oasis-open.org/standards), but it doesn't look like they're interested in surface metrology. A now NIST researcher, Muralikrishnan, wrote a book on surface metrology algorithms that includes some MATLAB code implementing 0th order 3D Gaussian regression filter and a 2D robust Gaussian filter, but not for a 2nd order 3D robust Gaussian regression filter. His book was what I adapted to implement the method back in April that was rather slow. I found a paper that speeds up part of the procedure and provides some pseudocode by \citet{zeng_fast_2010} that I haven't implemented yet. XXX } -->
-<!-- \jz{XXX Maybe we can change the language of this sentence to reflect that there is not a commonly agreed-upon algorithm. The "parameters requiring specification" include choosing the penalty function used to identify and neglect outliers in the scans, but I'm not sure how detailed we need to be about this.  XXX} -->
-
-To our knowledge, there does not exist an open-source implementation of the multivariate band-pass Gaussian regression filter used in surface metrology \citep{ISO16610-71}. 
+\svp{We are not aware of} an open-source implementation of the multivariate band-pass Gaussian regression filter used in surface metrology \citep{ISO16610-71}. 
 Further, there are various parameters requiring specification to implement a Gaussian regression filter and it is not clear how these parameters were chosen \citep{brinkman_bodschwinna_2003}.
-<!-- \jz{XXX This is the paper that is cited in \citet{song_estimating_2018} (among others, I think). I got it from the library a while ago, but it just provides a high-level overview of math behind the method rather than any actual code. It's part of a collection of papers edited by Blunt and Jiang, but the original authors are Brinkman and Bodschwinna. I fixed the citation. XXX} -->
+
+\svp{As a result of these ambiguities, during our implementation of the preprocessing algorithm, we had to make several educated guesses in order to match the described procedure as closely as possible.}
+
+### Implementation of preprocessing procedures
+
+<!-- \svp{In order to reproducibly implement the preprocessing procedure, we modified a procedure from \citet{tai_submitted_2019} used to automatically process surface matrices.}  -->
+
+```{r include = F,cache = T}
+# fadul1.1_downsampled <- x3ptools::x3p_sample(fadul1.1,m = 2)
+# 
+# fadul1.1_ransac <- fadul1.1_downsampled
+# fadul1.1_ransac$surface.matrix <- fadul1.1_ransac$surface.matrix %>%
+#   cmcR::preProcess_ransac(ransacInlierThresh = 1e-5) %>%
+#   cmcR::preProcess_levelBF(useResiduals = TRUE)
+# 
+# fadul1.1_cropped <- fadul1.1_ransac
+# fadul1.1_cropped$surface.matrix <- fadul1.1_cropped$surface.matrix %>%
+#   cmcR::preProcess_cropWS(croppingThresh = 1)
+# fadul1.1_cropped$header.info$sizeY <- ncol(fadul1.1_cropped$surface.matrix)
+# fadul1.1_cropped$header.info$sizeX <- nrow(fadul1.1_cropped$surface.matrix)
+# 
+# fadul1.1_noFP <- fadul1.1_cropped
+# fadul1.1_noFP$surface.matrix <- fadul1.1_noFP$surface.matrix %>%
+#   cmcR::preProcess_removeFPCircle(aggregationFunction = function(x,na.rm){median(x,na.rm) - 11})
+# 
+# fadul1.1_filtered <- fadul1.1_noFP
+# fadul1.1_filtered$surface.matrix <- fadul1.1_filtered$surface.matrix %>%
+#   cmcR::preProcess_gaussFilter(res = fadul1.1_filtered$header.info$incrementY,
+#                                wavelength = c(16,500))
+
+fadul1.1_original <- x3ptools::read_x3p("data/fadul1-1.x3p")
+
+fadul1.1_croppedExt <- cmcR::cropBFExterior(x3p = fadul1.1_original,
+                                            radiusOffset = -30,
+                                            agg.function = median) 
+
+fadul1.1_croppedInt <- cmcR::filterBFInterior(fadul1.1_croppedExt,
+                                              radiusOffset = 200)
+
+fadul1.1_medRemoved <-   cmcR::levelByConditionalStatistic(fadul1.1_croppedInt,
+                                                           statistic = "quantile",
+                                                           tau = .5,
+                                                           method = "fn")
+
+fadul1.1_downsampled <- x3ptools::sample_x3p(fadul1.1_medRemoved,
+                                             m = 2)
+
+fadul1.1_bpFiltered <- fadul1.1_downsampled
+fadul1.1_bpFiltered$surface.matrix <- cmcR::preProcess_gaussFilter(surfaceMat = fadul1.1_bpFiltered$surface.matrix,
+                                                                    res = fadul1.1_bpFiltered$header.info$incrementY,
+                                                                    wavelength = c(16,500),
+                                                                    filtertype = "bp")
+```
+
+
+```{r, echo=FALSE,cache = T,fig.cap='\\label{fig:processingPipeline} Illustration of \\pkg{cmcR} preprocessing pipeline designed to automate the manual cleaning in the CMC papers.',fig.align='center',fig.pos='htbp',out.width='\\linewidth'}
+
+cmcR::x3pListPlot(list("(1) Original" = fadul1.1_original,
+                       "(2) Crop exterior/interior" = fadul1.1_croppedInt,
+                       "(3) Level surface" = fadul1.1_medRemoved,
+                       "(4) Band-pass filter" = fadul1.1_bpFiltered),
+                  type = "faceted",
+                  legend.quantiles = c(0,.01,.1,.5,.9,.99,1)) +
+  theme(legend.position = "none") +
+  facet_wrap(~x3p, ncol = 4)
+
+# cmcR::x3pListPlot(list("(1) Downsample scan" = fadul1.1_downsampled,
+#                        "(2) RANSAC to\nlevel surface" = fadul1.1_ransac,
+#                        "(3) Automatically\ncrop exterior" = fadul1.1_cropped,
+#                        "(4) Hough transform\n(remove firing pin)" = fadul1.1_noFP,
+#                        "(5) Band-pass Filter" = fadul1.1_filtered),
+#                   type = "faceted",
+#                   legend.quantiles = c(0,.01,.1,.5,.9,.99,1)) +
+#   theme(legend.position = "none") +
+#   facet_wrap(~x3p, ncol = 5)
+```
+
+\svp{We begin with a 3D scan, which is optionally downsampled. 
+Typically, in the CMC literature,} every other row and column in the surface matrix \svp{is retained}, resulting in a matrix that is approximately 25% of the original scan dimension. 
+This downsampling is performed using the \code{x3p\_sample} function from the \pkg{x3ptools} package (default is every other row and column, \code{m = 2} lines num-num in [Appendix](). 
+Step 1 in \autoref{fig:processingPipeline} shows an \jz{unprocessed surface matrix.}
+
+\jz{After reading in the surface matrix, three major regions of the scan are identified via a labeling algorithm described in \citet{hesselink_concurrent_2001} and available in the \pkg{imager} package \citep{imager}. 
+These regions are the exterior of the cartridge case primer, the breech face impression region, and the firing pin impression hole in the center of the scan. 
+The goal is to isolate the breech face impression region by removing (i.e., replacing with \code{NA}) the pixels in the other two regions.
+Upon labeling the different regions of the cartridge case scan, the centers of the cartridge case primer and firing pin impression hole are estimated. 
+Note that, as seen in step 1 of \autoref{fig:processingPipeline}, the center of the firing pin impression hole might be offset from the center of the cartridge case. 
+With these centers identified, the user then specifies radii that they deem appropriate for removing the unwanted observations on the exterior of the breech face impression surface (including roll-off of the cartridge case primer) and the firing pin impression. 
+While this step requires user input, the resulting surface matrix, like the one shown in step 2 of \autoref{fig:processingPipeline}, is reproducible assuming the same user-specified radii values are used. 
+This is in contrast to the non-reproducible, manual procedure referenced in other CMC papers to isolate the breech face impression region.}
+
+In \jz{steps 1 and 2 of \autoref{fig:processingPipeline}} \svp{it is clear that there is a} \jz{southwest-to-northeast trend in height values. 
+Such a trend is observable in many cartridge case scans, yet does not occur consistently across cartridge cases fired from the same firearm. 
+Instead, a trend in the height values could be an artifact of the scanning process where cartridge cases are not precisely, horizontally leveled prior to taking the scan.
+<!-- (XXX should we cite something about scanning SOP here? XXX).  -->
+As discussed in section REF, neglecting to remove such trends leads to very different results based on our implementation. 
+For example, two non-match cartridge cases with similar trends might be incorrectly deemed "congruent." }
+\svp{It is unclear how such trends in height values are dealt with in the CMC literature; certainly, a high-pass Gaussian filter will remove some structure, but it is not explicitly mentioned whether any leveling is performed manually as well.} In the \pkg{cmcR} package, the breech face impression regions obtained from step 2 are leveled by estimating and subtracting the conditional median via the \code{rq} function of the \pkg{quantreg} package \citep{quantreg}. Step 3 of \autoref{fig:processingPipeline} shows a median-leveled surface matrix.
+seft in cartridge cases [\citet{hough}, \citet{gerules_survey_2013}]^[\svp{Some firearms leave a rectangular firing pin impression; this method could be modified to account for those models, but we have not yet expanded our automated processing to these types of firearms.}].  -->
+<!-- The circular Hough transform can be used to identify the center of a circle in an image \svp{if the radius of the circle is known}.  -->
+<!-- \svp{We first estimate the radius, using a binary matrix which indicates the presence of missing values}.  -->
+<!-- The number of non-\code{NA} pixels in each row is counted.  -->
+<!-- The distance between the two largest modes of this count-per-row series is an estimate for the diameter of the firing pin impression circle.  -->
+<!-- The count-per-row series is smoothed using a moving-average filter (via \code{zoo::rollmean}, \code{smootherSize = 2*(.1*nrow(surfaceMat)) + 1} default).  -->
+<!-- The smoothed series is then differenced and the indices at which the differenced values' signs change from positive to negative are determined.  -->
+<!-- Assuming the smoothing filter is adequate, the distance between these indices should estimate the firing pin impression circle diameter well.  -->
+<!-- \svp{The same procedure is applied to the columns of the matrix, and, for added robustness, the rows and columns are assessed as the matrix is rotated in 15 degree intervals (15, 30, 45, 60, and 75).} -->
+<!-- A total of 12 candidate radius estimates are calculated by this procedure.  -->
+<!-- These are combined via a user-defined aggregation function to determine a \svp{consensus} radius estimate (\code{aggregationFunction = mean} default). -->
+
+<!-- \svp{This estimation procedure provides a relatively good estimate of the radius of the firing pin impression, but because these impressions are not always entirely regular, we compute Hough transforms in a small neighborhood of the consensus estimate \jz{after applying a Canny edge detector to the surface matrix with automatically estimated thresholds (\code{gridSize = 40} and \code{gridGranularity = 1} default) [\citet{canny_computational_1986}, \citet{imager}]}. For each radius value, we accept the candidate circle with the highest score; these scores tend to be stable and near 1 for values close to the true radius, and volatile otherwise.}  -->
+<!-- We determine the longest consecutive sequence of scores that are above some user-defined threshold (above the 90% percentile of scores, \code{houghScoreQuant = .9}, default) and choose the circle associated with the median radius value of this sequence as the final estimate.  -->
+<!-- \svp{Values within the circle are removed, as in the fourth panel of} \autoref{fig:processingPipeline}. -->
+
+\svp{In the final preprocessing step,} a band-pass filter is applied to the processed surface matrix to reduce the effects of undesired frequencies in the comparison procedure. 
+For example, low frequency (high wavelength) global structure may exist in a cartridge case scan due to manufacturing specifications \svp{(In forensics, this type of structure is referred to as a class characteristic -- it is shared by many objects of the same make and model)}.
+\jz{Such similarities are often used by forensic practitioners to initially pare down the possible pool of matching cartridge cases \citep{firearm_id_thompson}.}
+\svp{While this additional global structure may assist with matching cartridge cases, it may also artificially inflate the probability of making a false-positive identification. 
+The goal of this analysis is to match scans based on individualizing characteristics, and so we remove the global structure using a high-pass Gaussian filter. Similarly,} high frequency (low wavelength) noise and outliers persist in cartidge case scans due to, for example, imperfections in the scanning process. 
+Such observations may also reduce the accuracy of our identifications. 
+Their effects can be mitigated by applying a low-pass Gaussian filter that operates as a local, moving average. 
+A band-pass Gaussian filter combines the effects of low and high-pass filters\svp{; we have chosen to implement it by applying a low pass filter and a high pass filter consecutively.} 
+<!-- \jz{and can be implemented} \svp{by applying the filters consecutively} \citep{gauss_filter_source} \jz{XXX I only say "can be" to emphasize that we chose one of the commonly agreed-upon ways to implement a band-pass filter XXX}.  -->
+\svp{There is considerable variation in the filters applied in the CMC literature; initially, low-pass and gausian band-pass regression filters were used, but the most recent papers use a band-pass filter.} 
+The current implementation for the low-pass filter involves constructing a Gaussian kernel based on a user-specified wavelength to attenuate and convolving the kernel with the surface matrix in the frequency domain \citep{computerVision}. 
+A high-pass filter of a particular wavelength is applied by subtracting-away the complementary low-pass filtered surface matrix. 
+The band-pass filtered surface matrix is shown in the fifth panel of \autoref{fig:processingPipeline} (\code{filterType = "bp"} and \code{wavelength = c(16,500)} default).
+
+<!-- In the \pkg{cmcR} package, breech face impression data are isolated using a comthebination of the Random Sample Consensus (RANSAC) robust iterative plane-fitting algorithm \citep{ransac}, the Hough Transform shape detection algorithm \citep{hough}, and cropping rows/columns of the surface matrix containing only \code{NA} values on the exterior of the breech face impression region.  -->
+<!-- The \pkg{cmcR} package does not yet use a Gaussian regression filter. -->
+<!-- A simpler Gaussian filter, a technique used by \citet{tong_fired_2014} and \citet{song_estimating_2018}, is currently implemented instead.  -->
+
+In order to perform the comparison procedure, \code{NA}-valued pixels must be replaced with a non-\code{NA} value. 
+The convention adopted in the \pkg{cmcR} package is to use the average pixel value as a replacement. 
+<!-- \svp{XXX Do we know that they did or did not use a similar consensus in the CMC method? XXX} \jz{XXX No, we don't XXX} -->
+There is currently no determination or removal of outliers in the \pkg{cmcR} package's preprocessing procedures, \svp{in part because the CMC literature contains limited details on outlier removal. We instead rely on the low-pass portion of the Gaussian filter to reduce the effects of any high-frequency noise.}
+
+To illustrate the usage of the \pkg{cmcR} package, we will consider a comparison between the KM cartridge case pair shown in \autoref{fig:cartridgeCasePair}.
+The \code{selectBFImpression\_sample\_x3p} function performs all of \svp{the} preprocessing procedures \svp{described above} in a single call. 
+The code to produce the first surface matrix shown in \autoref{fig:processedScans} is provided below; \svp{the second matrix is processed using the same function arguments}.
+
+<!-- \svp{XXX Joe - please parenthetically indicate each argument name in the text above, along with its default value XXX} -->
+\svp{xxx This probably should be a pipeline, not a single function call. But that's just my opinion. Also, this still has ransac parameters, which we might want to get rid of as we're no longer explaining them XXX}
+```{r include=FALSE,eval=FALSE}
+fadul1.1 <- selectBFImpression_sample_x3p(x3p_path = paste0(nrbtd_url,fadul1.1_id),
+                                          ransacInlierThresh = 1e-6, #.1 microns
+                                          ransacIters = 300,
+                                          m = 2, #sample_x3p downsample rate
+                                          gaussFilterWavelength = c(16,500),
+                                          gaussFilterType = "bp") #band-pass filter
+```
+
+```{r,echo=FALSE,cache = T,fig.cap='\\label{fig:processedScans} Fadul 1-1 and Fadul 1-2 after preprocessing. Similar striated markings are now easier to visually identify on both surfaces.',fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
+
+cmcR::x3pListPlot(x3pList = list("Fadul 1-1" = fadul1.1,
+                                 "Fadul 1-2" = fadul1.2),
+                  # x3pList = list("Fadul 1-1" = fadul1.1$x3p,
+                  #"Fadul 1-2" = fadul1.2$x3p),
+                  type = "faceted",
+                  rotate = 90,
+                  legend.quantiles = c(0,.01,.2,.5,.8,.99,1)) +
+  guides(fill = guide_colourbar(barheight = grid::unit(2.6,"inches"),
+                                label.theme = element_text(size = 8),
+                                title.theme = ggplot2::element_text(size = 12),
+                                frame.colour = "black",
+                                ticks.colour = "black")) +
+  theme(legend.position = c(1.11,.551),plot.margin = ggplot2::margin(c(0,3,.2,0),unit = "cm"))
+```
+
 
 ## "Correlation cell" comparison procedure {#comparisonProcedure}
 
@@ -708,185 +873,6 @@ If either of these inequalities fail to hold, then a cartridge case pair is assi
 
 # Implementation in the \pkg{cmcR} package {#implementation}
 
-## Implementation of preprocessing procedures
-
-\svp{In order to reproducibly implement the preprocessing procedure, we modified a procedure from \citet{tai_submitted_2019} used to automatically process surface matrices.} 
-<!-- \jz{XXX I was mistaken -- the RANSAC method isn't from \citet{tai_fully_2018}, but from Xiao Hui's dissertation (specifically, from her unpublished package \pkg{cartridges3D}). XXX} -->
-<!-- \svp{XXX Describe this in steps, not in one long sentence XXX} -->
-<!-- \svp{In cases where you're using functions from other packages, mention that. Cite the specific section of code (break it into chunks!) in the appendix for each piece, and note any parameters that have to be set.} -->
-
-<!-- \jz{I like the idea of including images that step through the pre-processing. I'm not exactly sure how we could fit them in the margins, but I'll include code here that at least plots them.} -->
-
-```{r include = F,cache = T}
-# fadul1.1_downsampled <- x3ptools::x3p_sample(fadul1.1,m = 2)
-# 
-# fadul1.1_ransac <- fadul1.1_downsampled
-# fadul1.1_ransac$surface.matrix <- fadul1.1_ransac$surface.matrix %>%
-#   cmcR::preProcess_ransac(ransacInlierThresh = 1e-5) %>%
-#   cmcR::preProcess_levelBF(useResiduals = TRUE)
-# 
-# fadul1.1_cropped <- fadul1.1_ransac
-# fadul1.1_cropped$surface.matrix <- fadul1.1_cropped$surface.matrix %>%
-#   cmcR::preProcess_cropWS(croppingThresh = 1)
-# fadul1.1_cropped$header.info$sizeY <- ncol(fadul1.1_cropped$surface.matrix)
-# fadul1.1_cropped$header.info$sizeX <- nrow(fadul1.1_cropped$surface.matrix)
-# 
-# fadul1.1_noFP <- fadul1.1_cropped
-# fadul1.1_noFP$surface.matrix <- fadul1.1_noFP$surface.matrix %>%
-#   cmcR::preProcess_removeFPCircle(aggregationFunction = function(x,na.rm){median(x,na.rm) - 11})
-# 
-# fadul1.1_filtered <- fadul1.1_noFP
-# fadul1.1_filtered$surface.matrix <- fadul1.1_filtered$surface.matrix %>%
-#   cmcR::preProcess_gaussFilter(res = fadul1.1_filtered$header.info$incrementY,
-#                                wavelength = c(16,500))
-
-fadul1.1_original <- x3ptools::read_x3p("data/fadul1-1.x3p")
-
-fadul1.1_croppedExt <- cmcR::cropBFExterior(x3p = fadul1.1_original,
-                                            radiusOffset = -30,
-                                            agg.function = median) 
-
-fadul1.1_croppedInt <- cmcR::filterBFInterior(fadul1.1_croppedExt,
-                                              radiusOffset = 200)
-
-fadul1.1_medRemoved <-   cmcR::levelByConditionalStatistic(fadul1.1_croppedInt,
-                                                           statistic = "quantile",
-                                                           tau = .5,
-                                                           method = "fn")
-
-fadul1.1_downsampled <- x3ptools::sample_x3p(fadul1.1_medRemoved,
-                                             m = 2)
-
-fadul1.1_bpFiltered <- fadul1.1_downsampled
-fadul1.1_bpFiltered$surface.matrix <- cmcR::preProcess_gaussFilter(surfaceMat = fadul1.1_bpFiltered$surface.matrix,
-                                                                    res = fadul1.1_bpFiltered$header.info$incrementY,
-                                                                    wavelength = c(16,500),
-                                                                    filtertype = "bp")
-```
-
-
-```{r, echo=FALSE,cache = T,fig.cap='\\label{fig:processingPipeline} Illustration of \\pkg{cmcR} preprocessing pipeline designed to automate the manual cleaning in the CMC papers.',fig.align='center',fig.pos='htbp',out.width='\\linewidth'}
-
-cmcR::x3pListPlot(list("(1) Original" = fadul1.1_original,
-                       "(2) Crop exterior/interior" = fadul1.1_croppedInt,
-                       "(3) Level surface" = fadul1.1_medRemoved,
-                       "(4) Band-pass filter" = fadul1.1_bpFiltered),
-                  type = "faceted",
-                  legend.quantiles = c(0,.01,.1,.5,.9,.99,1)) +
-  theme(legend.position = "none") +
-  facet_wrap(~x3p, ncol = 4)
-
-# cmcR::x3pListPlot(list("(1) Downsample scan" = fadul1.1_downsampled,
-#                        "(2) RANSAC to\nlevel surface" = fadul1.1_ransac,
-#                        "(3) Automatically\ncrop exterior" = fadul1.1_cropped,
-#                        "(4) Hough transform\n(remove firing pin)" = fadul1.1_noFP,
-#                        "(5) Band-pass Filter" = fadul1.1_filtered),
-#                   type = "faceted",
-#                   legend.quantiles = c(0,.01,.1,.5,.9,.99,1)) +
-#   theme(legend.position = "none") +
-#   facet_wrap(~x3p, ncol = 5)
-```
-
-\svp{In order to mimic the manual trimming and orientation process described in the CMC papers, we begin with a 3D scan, which is optionally downsampled. 
-Typically, in the CMC literature,} every other row and column in the surface matrix \svp{is retained}, resulting in a matrix that is approximately 25% of the original scan dimension. 
-This downsampling is performed using the \code{x3p\_sample} function from the \pkg{x3ptools} package (default is every other row and column, \code{m = 2} lines num-num in [Appendix](). 
-Step 1 in \autoref{fig:processingPipeline} shows an \jz{unprocessed surface matrix.}
-
-\jz{After reading in the surface matrix, three major regions of the scan are identified via a labeling algorithm described in \citet{hesselink_concurrent_2001} and available in the \pkg{imager} package \citep{imager}. 
-These regions are the exterior of the cartridge case primer, the breech face impression region, and the firing pin impression hole in the center of the scan. 
-The goal is to isolate the breech face impression region by removing (i.e., replacing with \code{NA}) the pixels in the other two regions.
-Upon labeling the different regions of the cartridge case scan, the centers of the cartridge case primer and firing pin impression hole are estimated. 
-Note that, as seen in step 1 of \autoref{fig:processingPipeline}, the center of the firing pin impression hole might be offset from the center of the cartridge case. 
-With these centers identified, the user then specifies radii that they deem appropriate for removing the unwanted observations on the exterior of the breech face impression surface (including roll-off of the cartridge case primer) and the firing pin impression. 
-While this step requires user input, the resulting surface matrix, like the one shown in step 2 of \autoref{fig:processingPipeline}, is reproducible assuming the same user-specified radii values are used. 
-This is in contrast to the non-reproducible, manual procedure referenced in other CMC papers to isolate the breech face impression region.}
-
-\jz{Take note in steps 1 and 2 of \autoref{fig:processingPipeline} of the southwest-to-northeast trend in height values. Such a trend is observable in many cartridge case scans, yet does not occur consistently across cartridge cases fired from the same firearm. Instead, a trend in the height values could be an artifact of the scanning process where cartridge cases are not precisely, horizontally leveled prior to taking the scan (XXX should we cite something about scanning SOP here? XXX). As discussed in section REF, neglecting to remove such trends leads to very different results based on our implementation. For example, two non-match cartridge cases with similar trends might be incorrectly deemed "congruent." \svp{It is unclear how such trends in height values are dealt with in the CMC literature; certainly, a high-pass Gaussian filter will remove some structure, but it is not explicitly mentioned whether any leveling is performed manually as well.} In the \pkg{cmcR} package, the breech face impression regions obtained from step 2 are leveled by estimating and subtracting the conditional median via the \code{rq} function of the \pkg{quantreg} package \citep{quantreg}. Step 3 of \autoref{fig:processingPipeline} shows a median-leveled surface matrix.}
-
-<!-- After downsampling, the height value of the breech face impression region is estimated using the Random Sample Consensus (RANSAC) robust iterative plane-fitting algorithm \citep{ransac} (\code{ransacInlierThresh = 1e-6} and \code{iters = 300} default).  -->
-<!-- Then, either observations or residuals within a small, user-defined distance of the fitted plane are extracted from the surface matrix (\code{useResiduals = TRUE} and \code{ransacFinalSelectThresh = 2e-5} default). -->
-<!-- Extracting residuals as opposed to "raw" observations helps remove the global trend in height values seen in \autoref{fig:processingPipeline} from the top-right to the bottom-left corner.  -->
-<!-- \svp{It is unclear how such trends in height values are dealt with in the CMC literature; certainly, a high-pass Gaussian filter will remove some structure, but it is not explicitly mentioned whether any leveling is performed manually as well.}  -->
-<!-- The implemented RANSAC and leveling procedure was adapted from the \pkg{cartridges3D} package \citep{cartridges3D}; code is provided in (CITE lines num-um in [Appendix]().  -->
-<!-- The second plot in \autoref{fig:processingPipeline} shows the residuals after applying the RANSAC method.  -->
-<!-- The RANSAC leveling procedure has isolated the breech face impression region \svp{and removed the global tilt in the angle of the surface matrix.} -->
-
-<!-- To remove observations in the corners of the surface matrix, a simple, automatic cropping procedure is applied.  -->
-<!-- The columns consisting of the middle 20% of the surface matrix are extracted.  -->
-<!-- The number of non-\code{NA} pixels in each row is counted and compared to a user-defined cropping threshold (\code{croppingThresh = 1} default).  -->
-<!-- All rows between the first and last rows with a non-\code{NA} pixel count greater than or equal to the cropping threshold are selected from the surface matrix.  -->
-<!-- The same is done with the rows consisting of the middle 20% of the surface matrix.  -->
-<!-- The result\svp{ing} surface matrix \svp{is slightly smaller, as shown} in the third plot of \autoref{fig:processingPipeline}. -->
-
-<!-- The Hough transform is a popular shape detection method that can be used to detect the often circular firing pin impression left in cartridge cases [\citet{hough}, \citet{gerules_survey_2013}]^[\svp{Some firearms leave a rectangular firing pin impression; this method could be modified to account for those models, but we have not yet expanded our automated processing to these types of firearms.}].  -->
-<!-- The circular Hough transform can be used to identify the center of a circle in an image \svp{if the radius of the circle is known}.  -->
-<!-- \svp{We first estimate the radius, using a binary matrix which indicates the presence of missing values}.  -->
-<!-- The number of non-\code{NA} pixels in each row is counted.  -->
-<!-- The distance between the two largest modes of this count-per-row series is an estimate for the diameter of the firing pin impression circle.  -->
-<!-- The count-per-row series is smoothed using a moving-average filter (via \code{zoo::rollmean}, \code{smootherSize = 2*(.1*nrow(surfaceMat)) + 1} default).  -->
-<!-- The smoothed series is then differenced and the indices at which the differenced values' signs change from positive to negative are determined.  -->
-<!-- Assuming the smoothing filter is adequate, the distance between these indices should estimate the firing pin impression circle diameter well.  -->
-<!-- \svp{The same procedure is applied to the columns of the matrix, and, for added robustness, the rows and columns are assessed as the matrix is rotated in 15 degree intervals (15, 30, 45, 60, and 75).} -->
-<!-- A total of 12 candidate radius estimates are calculated by this procedure.  -->
-<!-- These are combined via a user-defined aggregation function to determine a \svp{consensus} radius estimate (\code{aggregationFunction = mean} default). -->
-
-<!-- \svp{This estimation procedure provides a relatively good estimate of the radius of the firing pin impression, but because these impressions are not always entirely regular, we compute Hough transforms in a small neighborhood of the consensus estimate \jz{after applying a Canny edge detector to the surface matrix with automatically estimated thresholds (\code{gridSize = 40} and \code{gridGranularity = 1} default) [\citet{canny_computational_1986}, \citet{imager}]}. For each radius value, we accept the candidate circle with the highest score; these scores tend to be stable and near 1 for values close to the true radius, and volatile otherwise.}  -->
-<!-- We determine the longest consecutive sequence of scores that are above some user-defined threshold (above the 90% percentile of scores, \code{houghScoreQuant = .9}, default) and choose the circle associated with the median radius value of this sequence as the final estimate.  -->
-<!-- \svp{Values within the circle are removed, as in the fourth panel of} \autoref{fig:processingPipeline}. -->
-
-\svp{In the final preprocessing step,} a band-pass filter is applied to the processed surface matrix to reduce the effects of undesired frequencies in the comparison procedure. 
-For example, low frequency (high wavelength) global structure may exist in a cartridge case scan due to manufacturing specifications \svp{(In forensics, this type of structure is referred to as a class characteristic -- it is shared by many objects of the same make and model)}.
-\jz{Such similarities are often used by forensic practitioners to initially pare down the possible pool of matching cartridge cases \citep{firearm_id_thompson}.}
-\svp{While this additional global structure may assist with matching cartridge cases, it may also artificially inflate the probability of making a false-positive identification. 
-The goal of this analysis is to match scans based on individualizing characteristics, and so we remove the global structure using a high-pass Gaussian filter. Similarly,} high frequency (low wavelength) noise and outliers persist in cartidge case scans due to, for example, imperfections in the scanning process. 
-Such observations may also reduce the accuracy of our identifications. 
-Their effects can be mitigated by applying a low-pass Gaussian filter that operates as a local, moving average. 
-A band-pass Gaussian filter combines the effects of low and high-pass filters\svp{; we have chosen to implement it by applying a low pass filter and a high pass filter consecutively.} 
-<!-- \jz{and can be implemented} \svp{by applying the filters consecutively} \citep{gauss_filter_source} \jz{XXX I only say "can be" to emphasize that we chose one of the commonly agreed-upon ways to implement a band-pass filter XXX}.  -->
-\svp{There is considerable variation in the filters applied in the CMC literature; initially, low-pass and gausian band-pass regression filters were used, but the most recent papers use a band-pass filter.} 
-The current implementation for the low-pass filter involves constructing a Gaussian kernel based on a user-specified wavelength to attenuate and convolving the kernel with the surface matrix in the frequency domain \citep{computerVision}. 
-A high-pass filter of a particular wavelength is applied by subtracting-away the complementary low-pass filtered surface matrix. 
-The band-pass filtered surface matrix is shown in the fifth panel of \autoref{fig:processingPipeline} (\code{filterType = "bp"} and \code{wavelength = c(16,500)} default).
-
-<!-- In the \pkg{cmcR} package, breech face impression data are isolated using a comthebination of the Random Sample Consensus (RANSAC) robust iterative plane-fitting algorithm \citep{ransac}, the Hough Transform shape detection algorithm \citep{hough}, and cropping rows/columns of the surface matrix containing only \code{NA} values on the exterior of the breech face impression region.  -->
-<!-- The \pkg{cmcR} package does not yet use a Gaussian regression filter. -->
-<!-- A simpler Gaussian filter, a technique used by \citet{tong_fired_2014} and \citet{song_estimating_2018}, is currently implemented instead.  -->
-
-In order to perform the comparison procedure, \code{NA}-valued pixels must be replaced with a non-\code{NA} value. 
-The convention adopted in the \pkg{cmcR} package is to use the average pixel value as a replacement. \svp{XXX Do we know that they did or did not use a similar consensus in the CMC method? XXX} \jz{XXX No, we don't XXX}
-There is currently no determination or removal of outliers in the \pkg{cmcR} package's preprocessing procedures, \svp{in part because the CMC literature contains limited details on outlier removal. We instead rely on the low-pass portion of the Gaussian filter to reduce the effects of any high-frequency noise.}
-
-To illustrate the usage of the \pkg{cmcR} package, we will consider a comparison between the KM cartridge case pair shown in \autoref{fig:cartridgeCasePair}.
-The \code{selectBFImpression\_sample\_x3p} function performs all of \svp{the} preprocessing procedures \svp{described above} in a single call. 
-The code to produce the first surface matrix shown in \autoref{fig:processedScans} is provided below; \svp{the second matrix is processed using the same function arguments}.
-
-<!-- \svp{XXX Joe - please parenthetically indicate each argument name in the text above, along with its default value XXX} -->
-
-```{r include=FALSE,eval=FALSE}
-fadul1.1 <- selectBFImpression_sample_x3p(x3p_path = paste0(nrbtd_url,fadul1.1_id),
-                                          ransacInlierThresh = 1e-6, #.1 microns
-                                          ransacIters = 300,
-                                          m = 2, #sample_x3p downsample rate
-                                          gaussFilterWavelength = c(16,500),
-                                          gaussFilterType = "bp") #band-pass filter
-```
-
-```{r,echo=FALSE,cache = T,fig.cap='\\label{fig:processedScans} Fadul 1-1 and Fadul 1-2 after preprocessing. Similar striated markings are now easier to visually identify on both surfaces.',fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
-
-cmcR::x3pListPlot(x3pList = list("Fadul 1-1" = fadul1.1,
-                                 "Fadul 1-2" = fadul1.2),
-                  # x3pList = list("Fadul 1-1" = fadul1.1$x3p,
-                  #"Fadul 1-2" = fadul1.2$x3p),
-                  type = "faceted",
-                  rotate = 90,
-                  legend.quantiles = c(0,.01,.2,.5,.8,.99,1)) +
-  guides(fill = guide_colourbar(barheight = grid::unit(2.6,"inches"),
-                                label.theme = element_text(size = 8),
-                                title.theme = ggplot2::element_text(size = 12),
-                                frame.colour = "black",
-                                ticks.colour = "black")) +
-  theme(legend.position = c(1.11,.551),plot.margin = ggplot2::margin(c(0,3,.2,0),unit = "cm"))
-```
 
 ## Implementation of cell-based comparison procedure
 
