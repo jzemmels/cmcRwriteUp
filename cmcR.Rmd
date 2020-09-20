@@ -460,7 +460,7 @@ fadul1.1_bpFiltered$surface.matrix <- cmcR::preProcess_gaussFilter(surfaceMat = 
 ```
 
 
-```{r, echo=FALSE,cache = T,fig.cap='\\label{fig:processingPipeline} Illustration of \\pkg{cmcR} preprocessing pipeline designed to automate the manual cleaning in the CMC papers.',fig.align='center',fig.pos='htbp',out.width='\\linewidth'}
+```{r, echo=FALSE,cache = T,fig.cap='\\label{fig:processingPipeline} Illustration of \\pkg{cmcR} preprocessing pipeline designed to automate the manual cleaning in the CMC papers. \\svp{At each stage, the amount of variability in height across the scan decreases as extraneous sources of noise are removed.}',fig.align='center',fig.pos='htbp',out.width='\\textwidth', message = F, warning = F}
 
 cmcR::x3pListPlot(list("(1) Original" = fadul1.1_original,
                        "(2) Crop exterior/interior" = fadul1.1_croppedInt,
