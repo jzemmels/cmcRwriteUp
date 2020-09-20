@@ -47,7 +47,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.4747"
-     inkscape:cx="1492"
+     inkscape:cx="1076"
      inkscape:cy="1436"
      inkscape:document-units="mm"
      inkscape:current-layer="layer2"
@@ -84,7 +84,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -246,13 +246,13 @@
      style="display:inline"
      transform="translate(-19.69,-73.96)">
     <path
-       style="fill:none;stroke:#0055d4;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.9412"
+       style="fill:none;stroke:#0066ff;stroke-width:3.0005;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.9412"
        d="M 24.42,116.5 C 24.42,116.5 95.15,116.4 99.33,116.5 C 131.3,116.1 119.2,150.7 142.1,150.7 C 156.8,150.7 182,149.9 192.9,150.3 C 214.3,150.6 203.2,206.5 225.8,206.4 C 248,206.2 270.9,206.1 294.1,206 C 313.9,206.4 315.3,123.1 336.6,122.8 L 398.9,121.9 C 417,121.8 416.9,154.7 441.2,154.8 C 455.6,154.4 483.4,155.9 497.4,155.9 C 518.4,156 501.7,111.1 529,111.2 C 549.9,111.4 592.4,110.9 592.4,110.9 L 696,111.6"
        id="path355"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccccccccccscc" />
     <path
-       style="fill:none;stroke:#002255;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:none;stroke:#003380;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M 24.38,141.3 L 97.1,141.6 C 121.8,141.4 123.2,209.8 141.7,209.8 L 197.3,209.6 C 224.4,209.6 203.5,150.8 228.4,150.7 L 297.3,150.5 C 313.7,150.7 313.9,186.2 330.9,186.4 L 399.2,186.6 C 416.9,186.5 416.9,205.7 431.3,205.7 L 500.5,205.9 C 514.4,206.2 516,186.2 530.1,186.1 C 548.7,186 583.7,186.9 592.9,187 C 611.5,186.8 696.5,187.1 696.5,187.1"
        id="path6311"
        inkscape:connector-curvature="0"
