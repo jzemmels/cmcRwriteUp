@@ -316,7 +316,7 @@ Prior to applying the CMC comparison procedure, cartridge scans must undergo som
 <!-- First, raw 3D topographical cartridge case surface data need to be processed before applying the CMC method.  -->
 
 \svp{During the preprocessing stage, several sequential steps are used to prepare each cartridge case for analysis. 
-In the different iterations of the CMC algorithm XXX something mildly snarky about re-publishing what is basically the same thing N times XXX, there have been several minor changes to the preprocessing steps; the different variations of the steps are shown in \autoref{fig:preprocessing-schematic}.
+In the different iterations of the CMC algorithm, there have been several minor changes to the preprocessing steps; the different variations of the steps are shown in \autoref{fig:preprocessing-schematic}.
 }
 
 \begin{figure}
