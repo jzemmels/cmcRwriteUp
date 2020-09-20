@@ -189,16 +189,16 @@ The source code to the full `cmcR` package is accessible at https://github.com/C
 <!-- \jz{XXX Order based on newly proposed structure: XXX} -->
 
 # The CMC method {#cmcMethod}
-\svp{All of the CMC methods can be broken down into three broad stages: preprocessing, cell-based similarity feature extraction, and application of a decision rule; these steps are illustrated in \autoref{fig:overview-flow}}. 
+\svp{All of the CMC methods can be broken down into three broad stages: preprocessing, cell-based similarity feature extraction, and application of a decision rule; these steps are illustrated in} \autoref{fig:overview-flow}. 
 \svp{The advantage to treating these algorithms as modular is that we can implement the algorithms as a unified set of procedures, and then test new variations against the old in a coherent, unified framework.}
 
-\begin{figure}\label{fig:overview-flow}
+\begin{figure}
 \centering
 \includegraphics[width=.8\textwidth]{images/overview-flow.png}
-\caption{The stages of CMC methods. In the preprocessing stage, each scan is prepared for analysis, removing extraneous information and noise. Then, each scan is broken up into cells, which are numerically compared to cells in the other scan to determine an optimal alignment. Finally, each of the scores arising from the cells in the second stage are compared to a reference distribution to determine whether the scans originate from the same source or from different sources.}
+\caption{The stages of CMC methods. In the preprocessing stage, each scan is prepared for analysis, removing extraneous information and noise. Then, each scan is broken up into cells, which are numerically compared to cells in the other scan to determine an optimal alignment. Finally, each of the scores arising from the cells in the second stage are compared to a reference distribution to determine whether the scans originate from the same source or from different sources.\label{fig:overview-flow}}
 \end{figure}
 
-The primary difference between the original and high CMC methods is the decision rules utilized to separate matches and non-matches, but there are also several small differences in the preprocessing and comparison procedures.} 
+The primary difference between the original and high CMC methods is the decision rules utilized to separate matches and non-matches, but there are also several small differences in the preprocessing and comparison procedures.
 
 \jz{
 Current CMC literature lacks justification for changing these conditions, yet demonstrates that the same method applied under different conditions yields considerably different results. 
