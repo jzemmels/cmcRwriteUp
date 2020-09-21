@@ -1043,7 +1043,7 @@ Additionally, we might require the $\theta_{\text{ref}}$ value determined under 
 Since the original method of \citet{song_proposed_2013} and High CMC criteria are applied in both directions for the High CMC method, we can determine specifically if $|\theta_{\text{ref},1-2} - \theta_{\text{mode},1-2}| \leq T_\theta$ and $|\theta_{\text{ref},2-1} - \theta_{\text{mode},2-1}| \leq T_\theta$ where the subscripts emphasize the direction considered. 
 If either of these inequalities fail to hold, then a cartridge case pair is assigned the minimum of the two CMC counts determined in both directions under the original method of \citet{song_proposed_2013}.}
 
-# Investigation of cell-based forensic pattern matching methods {investigation}
+# Investigation of cell-based forensic pattern matching methods {#investigation}
 
 As described in [initial data](#initialData) section, the set of cartridge case scans from \citet{fadul_empirical_nodate} is commonly used to compare the performance of various methods in the CMC literature. 
 This set consists of 40 cartridge cases; 63 known match pairs and 717 known non-match pairs. 
