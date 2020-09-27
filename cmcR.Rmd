@@ -635,7 +635,7 @@ The FFT does not tolerate missing values, and breech faces are not continuous su
 - \svp{The optimal translation is determined using the FFT-based CCF. Replacing the missing values with the overal mean leads to a deflated CCF value (see appendix XXX for more details), but produces an accurate estimate of the optimal translation.}
 - \svp{Using the optimal translation determined from the FFT-based CCF, we compute the pairwise complete CCF directly, avoiding any distortion of the CCF computation based on compensation for missing values.}
 
-\jz{Only cells with a minimum proportion of non-missing pixels are }\svp{assessed}. \jz{The minimum threshold differs across CMC papers \citep{chen_convergence_2017,song_estimating_2018}}\svp{, as shown in \autoref{fig:cmc-schematic}, and is referenced but not specified in several other papers \citep{tong_fired_2014,song_3d_2014,chu_validation_2013}.} 
+\jz{Only cells with a minimum proportion of non-missing pixels are }\svp{assessed}. \jz{The minimum threshold differs across CMC papers \citep{chen_convergence_2017,song_estimating_2018}}\svp{, as shown in \autoref{fig:cmc-schematic}, and is referenced but not specified in several other papers \citep{tong_fired_2014,song_3d_2014,chu_validation_2013}.}
 \jz{The minimum threhsold used for the results in this paper is 10% non-missing.}
 <!-- \svp{XXX what proportion do we use? If it's variable, we should say that we have implemented this as a parameter setting for compatibility with the other algorithms} -->
 
@@ -703,9 +703,177 @@ As stated in \citet{song_3d_2014},
 
 A truly matching pair of cartridge cases \svp{would have similar translation and rotation values for each cell, estimated by maximizing the cell-wise CCF; a nonmatching pair of cartridge cases would have a variety of different translation and rotation values showing no particular pattern.}
 
+<!-- \svp{XXX Add a figure (and reference) here showing CMCs from the original method as in figure 15, 16, for matching and nonmatching cartridges. So e.g. A | A' B, 3 across, with blue and red squares on A' and B showing the cells from A aligned.} -->
 
+\jz{\autoref{fig:originalMethod_sideBySide} shows the CMCs determined under the original method of \citet{song_proposed_2013} from comparing the matching pair Fadul 1-1 to Fadul 1-2 and the non-matching pair Fadul 1-1 to Fadul 2-1. 
+Fadul 1-1 was treated as the reference scan in both comparisons. 
+Descendants of the original method of \citet{song_proposed_2013} perform comparisons twice for a given pair so that each scan is treated as the reference scan (referred to as the two \dfn{comparison directions}). 
+Blue cells represent the 19 cells identified as CMCs between Fadul 1-1 and Fadul 1-2. 
+Red cells represent the alignment of non-CMCs at which they attain the highest CCF$_{\max}$ value. 
+The comparison between Fadul 1-1 and Fadul 1-2 yields 12 non-CMCs. 
+The comparison between Fadul 1-1 and Fadul 2-1 yields 32 non-CMCs.}
 
-\svp{XXX Add a figure (and reference) here showing CMCs from the original method as in figure 15, 16, for matching and nonmatching cartridges. So e.g. A | A' B, 3 across, with blue and red squares on A' and B showing the cells from A aligned.}
+```{r,echo=FALSE,cache = T}
+# fadul2.1 <- cmcR::selectBFImpression_sample_x3p("data/fadul2-1.x3p",
+#                                                 gaussFilterWavelength = c(16,500))
+
+fadul2.1 <- x3ptools::read_x3p("data/fadul2-1.x3p") %>%
+  cropBFExterior(radiusOffset = -30,
+                 agg_function = median) %>%
+  filterBFInterior(radiusOffset = 200) %>%
+  levelByConditionalStatistic(statistic = "quantile",
+                              tau = .5,
+                              method = "fn") %>%
+  x3ptools::sample_x3p()
+
+fadul2.1$surface.matrix <- cmcR::preProcess_gaussFilter(surfaceMat = fadul2.1$surface.matrix,
+                                                        res = fadul2.1$header.info$incrementY)
+
+knmComparison <- cmcR::cellCCF_bothDirections(x3p1 = fadul1.1,
+                                              x3p2 = fadul2.1,
+                                              #x3p1 = fadul1.2$x3p,
+                                              #x3p2 = fadul2.1$x3p,
+                                              cellNumHoriz = 8,
+                                              minObservedProp = .1,
+                                              regionToCellProp = 9,
+                                              ccfMethod = "fftThenPairwise")
+
+knmCMC <- cmcR::cmcFilter_improved(knmComparison,
+                                   ccf_thresh = .5,
+                                   dx_thresh = 20,
+                                   theta_thresh = 6,
+                                   missingTheta_decision = "fail")
+```
+
+```{r cache = T,include=FALSE}
+knmCMCPlot <- cmcR::cmcPlot(fadul1.1,
+              fadul2.1,
+              cellCCF_bothDirections_output = knmComparison,
+              cmcFilter_improved_output = knmCMC,
+              type = "faceted",
+              x3pNames = c("Fadul 1-1","Fadul 2-1"),
+              legend.quantiles = c(0,.01,.2,.5,.8,.99,1),
+              height.colors = colorspace::desaturate(c('#7f3b08','#b35806',
+                                                       '#e08214','#fdb863',
+                                                       '#fee0b6','#f7f7f7',
+                                                       '#d8daeb','#b2abd2',
+                                                       '#8073ac','#542788',
+                                                       '#2d004b'),
+                                                     amount = .75),
+              cell.colors = c("#a60b00","#1b03a3"),
+              cell.alpha = .15,
+              na.value = "gray80")
+
+#We want Fadul 1-1 to be the reference cartridge case for all 3 of these plots
+#to enforce visual consistency. The original CMC method applied to Fadul 1-1 and
+#Fadul 1-2 results in two CMC counts (one for each comparison direction), the
+#minimum of which is associated with Fadul 1-2 being the reference cartridge
+#case. Unless changed, the cmcPlot function (by design) will then create a Top
+#Vote CMC plot with Fadul 1-2 as the reference cartridge case (which we don't
+#want). Since we desire Fadul 1-1 to be the reference for this particular
+#illustrative example, we will artificially inflate the number CMCs in the Fadul
+#1-2 vs. Fadul 1-1 direction (i.e., with Fadul 1-2 as the reference) so as to
+#force Fadul 1-1 to be plotted as the reference.
+
+kmCMC_fake <- kmCMC
+
+kmCMC_fake$originalMethodCMCs$comparison_2to1 <- bind_rows(kmCMC_fake$originalMethodCMCs$comparison_2to1,
+                                                    kmCMC_fake$originalMethodCMCs$comparison_2to1)
+
+kmCMCPlot <- cmcR::cmcPlot(fadul1.1,
+                          fadul1.2,
+                          # fadul1.2$x3p,
+                          # fadul1.1$x3p,
+                          cellCCF_bothDirections_output = kmComparison,
+                          cmcFilter_improved_output = kmCMC_fake,
+                          # cellCCF_bothDirections_output = kmComparison_swapped,
+                          # cmcFilter_improved_output = kmCMC_swapped,
+                          x3pNames = c("Fadul 1-1","Fadul 1-2"),
+                          legend.quantiles = c(0,.01,.2,.5,.8,.99,1),
+                          height.colors = colorspace::desaturate(c('#7f3b08',
+                                                                   '#b35806',
+                                                                   '#e08214',
+                                                                   '#fdb863',
+                                                                   '#fee0b6',
+                                                                   '#f7f7f7',
+                                                                   '#d8daeb',
+                                                                   '#b2abd2',
+                                                                   '#8073ac',
+                                                                   '#542788',
+                                                                   '#2d004b'),
+                                                                 amount = .75),
+        cell.colors = c("#a60b00","#1b03a3"),
+        cell.alpha = .15,
+        na.value = "gray80")
+
+knmCMCPlot_list <- cmcR::cmcPlot(fadul1.1,
+              fadul2.1,
+              cellCCF_bothDirections_output = knmComparison,
+              cmcFilter_improved_output = knmCMC,
+              type = "list",
+              x3pNames = c("Fadul 1-1","Fadul 2-1"),
+              legend.quantiles = c(0,.01,.2,.5,.8,.99,1),
+              height.colors = colorspace::desaturate(c('#7f3b08','#b35806',
+                                                       '#e08214','#fdb863',
+                                                       '#fee0b6','#f7f7f7',
+                                                       '#d8daeb','#b2abd2',
+                                                       '#8073ac','#542788',
+                                                       '#2d004b'),
+                                                     amount = .75),
+              cell.colors = c("#a60b00","#1b03a3"),
+              cell.alpha = .15,
+              na.value = "gray80")
+
+kmCMCPlot_list <- cmcR::cmcPlot(fadul1.1,
+                          fadul1.2,
+                          # fadul1.2$x3p,
+                          # fadul1.1$x3p,
+                          cellCCF_bothDirections_output = kmComparison,
+                          cmcFilter_improved_output = kmCMC_fake,
+                          # cellCCF_bothDirections_output = kmComparison_swapped,
+                          # cmcFilter_improved_output = kmCMC_swapped,
+                          x3pNames = c("Fadul 1-1","Fadul 1-2"),
+                          legend.quantiles = c(0,.01,.2,.5,.8,.99,1),
+                          height.colors = colorspace::desaturate(c('#7f3b08',
+                                                                   '#b35806',
+                                                                   '#e08214',
+                                                                   '#fdb863',
+                                                                   '#fee0b6',
+                                                                   '#f7f7f7',
+                                                                   '#d8daeb',
+                                                                   '#b2abd2',
+                                                                   '#8073ac',
+                                                                   '#542788',
+                                                                   '#2d004b'),
+                                                                 amount = .75),
+        cell.colors = c("#a60b00","#1b03a3"),
+        cell.alpha = .15,
+        na.value = "gray80",
+        type = "list")
+```
+
+```{r echo=FALSE,message=FALSE,error=FALSE,out.width='\\textwidth',cache = T,fig.cap='\\label{fig:originalMethod_sideBySide} CMC results under the original method of \\citet{song_proposed_2013} from comparing the matching pair Fadul 1-1 to Fadul 1-2 and the non-matching pair Fadul 1-1 to Fadul 2-1. In the right two plots, blue cells show how each CMC aligns in the other surface matrix while red cells show how the non-CMCs align to attain their CCF$_{\\max}$ value. Note that Fadul 1-1 is treated as the "reference" scan in both of these comparison, meaning it is divided into a grid of cells that are compared to larger regions in the other scans.',fig.pos = 'h'}
+# kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1` <- kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1` +
+#   ggplot2::theme(legend.position = "none")
+# 
+# knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1` <- knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1` +
+#   ggplot2::theme(legend.position = "none")
+
+# kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2` <- kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2` +
+#   ggplot2::theme(legend.position = "none")
+
+# ggplot2::ggsave(filename = "derivatives/fadul1-1_cmc.png",
+#                 plot = kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1`)
+# 
+# ggplot2::ggsave(filename = "derivatives/fadul1-2_cmc.png",
+#                 plot = kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2`)
+# 
+# ggplot2::ggsave(filename = "derivatives/fadul2-1_cmc.png",
+#                 plot = knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1`)
+
+knitr::include_graphics("images/originalMethod_sideBySide.PNG")
+```
+
 
 \svp{The first step in the decision process is to obtain a consensus estimate of $x, y, \theta$; these estimated values are then used in the evaluation of the alignment of each cell/region pair.}
 \svp{The consensus set of $x, y, \theta$ is} referred to as the \dfn{registration phase} of the cell/region pairs \citep{song_proposed_2013}. 
@@ -720,7 +888,7 @@ In this section, we describe two particular methods that are implemented in the 
 
 ### The original method of \citet{song_proposed_2013} {#originalMethod}
 
-\jz{The decision rule} \citet{song_3d_2014} propose using \jz{is based on}
+\jz{An actual implementation fo the original method of \citet{song_proposed_2013} is described in \citet{song_3d_2014}. The decision rule} \citet{song_3d_2014} describe using \jz{is based on}
 
 > a virtual reference with three reference registration parameters $\theta_{\text{ref}}$, $x_{\text{ref}}$ and $y_{\text{ref}}$ generated by the median values of the collective $\theta$, and $x$-, $y$-translation values of all cell pairs.
 
@@ -774,38 +942,6 @@ The squares in \autoref{fig:translationVotes} are centered on the comparisons' r
 Of the 29 cell/region pairs considered in the known match comparison between Fadul 1-1 and Fadul 1-2, 19 $(x_i,y_i)$ values are within 20 pixels of $(x_{\text{ref}},y_{\text{ref}})$. 
 In contrast, 3 out of 35 $(x_i,y_i)$ are within 20 pixels of $(x_{\text{ref}},y_{\text{ref}})$ for the known non-match comparison between Fadul 1-1 and Fadul 2-1.} These plots exhibit similar behavior to Figures 1 and 2 in \citet{chen_convergence_2017} which show the estimated translation values for various rotation values for the same cartridge case pairs.
 <!-- \svp{XXX I think some points are missing in the KM plot at least - how many points were excluded for not having enough area? I count 39 points (27 inside, I'm taking your word on that).} -->
-
-```{r,echo=FALSE,cache = T}
-# fadul2.1 <- cmcR::selectBFImpression_sample_x3p("data/fadul2-1.x3p",
-#                                                 gaussFilterWavelength = c(16,500))
-
-fadul2.1 <- x3ptools::read_x3p("data/fadul2-1.x3p") %>%
-  cropBFExterior(radiusOffset = -30,
-                 agg_function = median) %>%
-  filterBFInterior(radiusOffset = 200) %>%
-  levelByConditionalStatistic(statistic = "quantile",
-                              tau = .5,
-                              method = "fn") %>%
-  x3ptools::sample_x3p()
-
-fadul2.1$surface.matrix <- cmcR::preProcess_gaussFilter(surfaceMat = fadul2.1$surface.matrix,
-                                                        res = fadul2.1$header.info$incrementY)
-
-knmComparison <- cmcR::cellCCF_bothDirections(x3p1 = fadul1.1,
-                                              x3p2 = fadul2.1,
-                                              #x3p1 = fadul1.2$x3p,
-                                              #x3p2 = fadul2.1$x3p,
-                                              cellNumHoriz = 8,
-                                              minObservedProp = .1,
-                                              regionToCellProp = 9,
-                                              ccfMethod = "fftThenPairwise")
-
-knmCMC <- cmcR::cmcFilter_improved(knmComparison,
-                                   ccf_thresh = .5,
-                                   dx_thresh = 20,
-                                   theta_thresh = 6,
-                                   missingTheta_decision = "fail")
-```
 
 ```{r echo = FALSE,cache = T,fig.align = 'left',fig.cap="\\label{fig:translationVotes} Estimated translation values for the comparison of Fadul 1-1 and Fadul 1-2 (left) and Fadul 1-1 and Fadul 2-1 (right). The 19 $(x_i,y_i)$ pairs (out of 29) within the purple square on the left satisfy the congruency criteria of being within 20 pixels of the median value. In contrast, only 3 out of 35 $(x_i,y_i)$ pairs on the right satisfy the congruency criteria. These examples are illustrative of the more general phenomenon that estimated translation values for non-matching pairs tend to be more diffuse than for matching pairs.",fig.pos = 'h'}
 bind_rows(kmComparison$comparison_1to2$ccfResults %>%
@@ -960,11 +1096,12 @@ cmcR::cmcPerThetaBarPlot(knmComparison,
 
 
 ### Implementation of decision rules {#decisionRuleImplementation}
+
 <!-- \svp{XXX this is a bit abrupt, can you transition into the implementation a bit more gently? Make the point that the parameters described above are included as parameters, and thus, we defer the determination of what the values of those parameters should be until the next section?} -->
 
 \jz{In this section, we will demonstrate our implementation of the decision rules applied in the original method of \citet{song_proposed_2013} and the High CMC method of \citet{tong_improved_2015}.
 For illustrative purposes, we will consider a particular set of $T_x, T_y, T_{\theta}, T_{\text{CCF}}$ values.
-A discussion of how to actually \emph{determine} thresholds is provided in the} [investigation](#investigation) \jz{section}.
+A discussion of how to actually determine thresholds is provided in the} [investigation](#investigation) \jz{section}.
 
 The \code{cmcFilter\_improved} function determines CMCs under both the \jz{original method of \citet{song_proposed_2013}} and the High CMC method for user-defined threshold values.
 In the event of a CMC$_{\max}$ count tie between more than one adjacent $\theta$ values, then the median of these $\theta$ values is used as the registration angle. 
@@ -982,97 +1119,29 @@ The \code{cmcPlot} function will construct a plot to visualize cells have been d
 The CMCs and non-CMCs for the current example under the \jz{original method of \cite{song_proposed_2013}} are shown in blue and red, respectively, in \autoref{fig:topVoteCMCPlot}.
 Blue cells show how each CMC aligns in the other surface matrix while red cells show how the non-CMCs align to attain their CCF$_{\max}$ value.
 
-```{r include=FALSE,eval=FALSE}
-cmcPlots <- cmcR::cmcPlot(fadul1.1$x3p,
-                          fadul1.2$x3p,
-                          cellCCF_bothDirections_output = kmComparison,
-                          cmcFilter_improved_output = kmCMC,
-                          x3pNames = c("Fadul 1-1","Fadul 1-2")) 
-
-cmcPlots$initialCMC
-```
-
 ```{r,echo=FALSE,cache = F,fig.cap='\\label{fig:topVoteCMCPlot} CMC results for the comparison between Fadul 1-1 and Fadul 1-2 using the original method of \\citet{song_proposed_2013}. Fadul 1-1 (left) acts as the reference cartridge case to which Fadul 1-2 (right) is compared. The 19 blue cells on the right show the phase registration of each cell identified as congruent. The 12 red cells on the right show where cells \\emph{not} identified as congruent achieve the maximum pairwise-complete correlation across all rotations of Fadul 1-2 considered.',fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
 
-#We want Fadul 1-1 to be the reference cartridge case for all 3 of these plots
-#to enforce visual consistency. The original CMC method applied to Fadul 1-1 and
-#Fadul 1-2 results in two CMC counts (one for each comparison direction), the
-#minimum of which is associated with Fadul 1-2 being the reference cartridge
-#case. Unless changed, the cmcPlot function (by design) will then create a Top
-#Vote CMC plot with Fadul 1-2 as the reference cartridge case (which we don't
-#want). Since we desire Fadul 1-1 to be the reference for this particular
-#illustrative example, we will artificially inflate the number CMCs in the Fadul
-#1-2 vs. Fadul 1-1 direction (i.e., with Fadul 1-2 as the reference) so as to
-#force Fadul 1-1 to be plotted as the reference.
-
-kmCMC_fake <- kmCMC
-
-kmCMC_fake$originalMethodCMCs$comparison_2to1 <- bind_rows(kmCMC_fake$originalMethodCMCs$comparison_2to1,
-                                                    kmCMC_fake$originalMethodCMCs$comparison_2to1)
-
-cmcPlots <- cmcR::cmcPlot(fadul1.1,
-                          fadul1.2,
-                          # fadul1.2$x3p,
-                          # fadul1.1$x3p,
-                          cellCCF_bothDirections_output = kmComparison,
-                          cmcFilter_improved_output = kmCMC_fake,
-                          # cellCCF_bothDirections_output = kmComparison_swapped,
-                          # cmcFilter_improved_output = kmCMC_swapped,
-                          x3pNames = c("Fadul 1-1","Fadul 1-2"),
-                          legend.quantiles = c(0,.01,.2,.5,.8,.99,1),
-                          height.colors = colorspace::desaturate(c('#7f3b08',
-                                                                   '#b35806',
-                                                                   '#e08214',
-                                                                   '#fdb863',
-                                                                   '#fee0b6',
-                                                                   '#f7f7f7',
-                                                                   '#d8daeb',
-                                                                   '#b2abd2',
-                                                                   '#8073ac',
-                                                                   '#542788',
-                                                                   '#2d004b'),
-                                                                 amount = .75),
-        cell.colors = c("#a60b00","#1b03a3"),
-        cell.alpha = .15,
-        na.value = "gray80")
-
-cmcPlots$originalMethodCMCs
+kmCMCPlot$originalMethodCMCs
 ```
 
 Similarly, CMCs and non-CMCs determined under the High CMC method are shown in \autoref{fig:highCMCPlot}.
 
 ```{r,echo=FALSE,cache = F,fig.cap='\\label{fig:highCMCPlot} CMC results for the comparison between Fadul 1-1 and Fadul 1-2 using the High CMC method, which tends to assign a higher CMC count to cartridge case pairs that pass its more stringent criteria (discussed in section REF). This matching cartridge case pair passes the High CMC criterion, meaning 26 cells are identified as congruent while only 6 are not.',fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
 
-cmcPlots$highCMCs
+kmCMCPlot$highCMCs
 ```
 
 In contrast, \autoref{fig:knmCMCPlot} shows the CMC results for a comparison between Fadul 1-1 and a known non-match scan, Fadul 2-1, under the same pre, inter, and post-processing conditions used for the known match comparison.
 
 ```{r,echo=FALSE,cache = F,fig.cap='\\label{fig:knmCMCPlot} CMC results for the comparison between the non-match pair Fadul 1-1 and Fadul 2-1. This pair failed the High CMC criterion and also yielded 0 CMCs under the original method of \\citet{song_proposed_2013}. As such, all 32 cells considered are classified as non-congruent.', fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
 
-cmcR::cmcPlot(fadul1.1,
-              fadul2.1,
-              cellCCF_bothDirections_output = knmComparison,
-              cmcFilter_improved_output = knmCMC,
-              type = "faceted",
-              x3pNames = c("Fadul 1-1","Fadul 2-1"),
-              legend.quantiles = c(0,.01,.2,.5,.8,.99,1),
-              height.colors = colorspace::desaturate(c('#7f3b08','#b35806',
-                                                       '#e08214','#fdb863',
-                                                       '#fee0b6','#f7f7f7',
-                                                       '#d8daeb','#b2abd2',
-                                                       '#8073ac','#542788',
-                                                       '#2d004b'),
-                                                     amount = .75),
-              cell.colors = c("#a60b00","#1b03a3"),
-              cell.alpha = .15,
-              na.value = "gray80") %>%
-  .$originalMethodCMCs
+knmCMCPlot$originalMethodCMCs
 ```
 
 
 ## An incomplete method? XXX this needs a better title XXX
-<!-- \svp{This section needs to serve as a transition between the method and the investigation - summarizing the holes we've discovered in the descriptions and moving towards a resolution of those holes through brute-force investigation.} -->
+
+\svp{This section needs to serve as a transition between the method and the investigation - summarizing the holes we've discovered in the descriptions and moving towards a resolution of those holes through brute-force investigation.}
 
 \jz{In this section we summarize the ambiguities identified in the original descriptions of the CMC methods. 
 In the following section we investigate ways in which such ambiguities can be rectified by exploring a set of reproducibility principles.}
@@ -1089,7 +1158,7 @@ This is akin to other statistical faux pas such as p-hacking and, left unchecked
 \jz{Apart from the CMC methods' generalizability, we also simply do not know how the proposed methods are implemented. 
 Ambiguities in the methods range from minor implicit parameter choices (e.g., the convergence criteria for the robust Gaussian regression filter \citep{brinkman_bodschwinna_2003}) to procedures that fundamentally change how similarity features are extracted (e.g., how the cross-correlation is calculated). 
 As discussed in the} [introduction](#intro), \jz{this an issue that pervades computational research for which only prosaic descriptions of algorithms are provided.}
-The only solution to such ambiguity is to enumerate, implement, and pare-down the possible choices that could have been made to arrive to published results.
+\jz{The only solution to such ambiguity is to enumerate, implement, and pare-down the possible choices that could have been made to arrive to published results.
 Unsurprisingly, this process takes a considerable amount of time and resources that would be better spent furthering the state of the field.}
 
 \jz{Ambiguities in the decision rules' prosaic descriptions, specifically that of the High CMC method, lead to different interpretations of how to apply the rules.
