@@ -119,7 +119,7 @@ Our experience shows that when faced with ambiguity in how a method is implement
 Unsurprisingly, it can become incredibly time intensive to implement \svp{the described results} and then sift through a wide variety of decision combinations. <!--This stymies scientific progress.-->
 \svp{This not only serves as a general barrier to scientific progress; in this application, it also highlights the importance of open-source, transparent methodology in high-stakes fields such as forensic analysis.}
 
-\svp{XXX should we cite Fadul too, since it's the original source?}\hh{XXX yes, we should cite the original source}
+<!-- \svp{XXX should we cite Fadul too, since it's the original source?}\hh{XXX yes, we should cite the original source} -->
 \svp{We will use the same data set which is referenced in \citet{song_3d_2014} and \citet{tong_improved_2015} to illustrate usage of the \pkg{cmcR} package. These 3d scans of cartridge cases are} available from the NIST Ballistics Toolmark Research Database \citep[NBTRD;][]{nbtrd}. The strings defined below refer to two cartridge case scans available on the NBTRD from \citet{fadul_empirical_nodate} and will be used \svp{throughout the remainder of this paper}.
 
 ```{r eval=FALSE,echo=TRUE}
@@ -202,7 +202,7 @@ The primary difference between the original and high CMC methods is the decision
 
 \jz{
 Current CMC literature lacks justification for changing these conditions, yet demonstrates that the same method applied under different conditions yields considerably different results. 
-The sensitivity of various methods to different conditions has also not been discussed in CMC literature. }
+The sensitivity of various methods to different conditions has also not been discussed in CMC literature.}
 <!-- \svp{} -->
 <!-- Such a discussion based on our implementation of the \jz{original method of \citet{song_proposed_2013}} and the High CMC method can be found [below](investigation)}. -->
 
@@ -595,7 +595,7 @@ However, the scan on the right is rotated to determine the rotation at which the
 
 \svp{In \citet{song_3d_2014}, the process is described with characteristic brevity:}
 
-> CMC pairs are identified by three types of identification parameters: the correlation value $CCF_{max}$, registration angle $\theta$ and translation distances $x$, $y$ with thresholds $T_{CCF}$, $T_\theta$ and $T_x, T_y$, respectively. The correlated cell pairs are considered as CMCs when their correlation value $CCF_{max}$, $T_{CCF}$, and their registration angle $\theta$ and $x-y$ registration pattern are within the thresholds $T_\theta$, and $T_x, T_y$.
+> CMC pairs are identified by three types of identification parameters: the correlation value CCF$_{\max}$, registration angle $\theta$ and translation distances $x$, $y$ with thresholds $T_{\text{CCF}}$, $T_\theta$ and $T_x, T_y$, respectively. The correlated cell pairs are considered as CMCs when their correlation value CCF$_{\max}$, $T_{\text{CCF}}$, and their registration angle $\theta$ and $x-y$ registration pattern are within the thresholds $T_\theta$, and $T_x, T_y$.
 
 Note that rotating an image or surface matrix by an arbitrary angle (other than a multiple of 90 degrees) requires interpolating new pixel locations. 
 A variety of interpolation schemes exist \citep{parker_comparison_1983} and \svp{there are no details provided in the} CMC literature \svp{indicating which interpolation algorithm was used}. \svp{In \pkg{cmcR}, s}urfaces matrices are rotated using a "nearest-neighbor" interpolation scheme \citep{imager}.
@@ -643,8 +643,8 @@ The FFT does not tolerate missing values, and breech faces are not continuous su
 The correlation cell comparison procedure is implemented in the \code{cellCCF\_bothDirections} function. 
 
 ```{r echo=TRUE,eval=FALSE}
-kmComparison <- cellCCF_bothDirections(x3p1 = fadul1.1$x3p,
-                                       x3p2 = fadul1.2$x3p,
+kmComparison <- cellCCF_bothDirections(x3p1 = fadul1.1,
+                                       x3p2 = fadul1.2,
                                        thetas = seq(-30,30,by = 3),
                                        cellNumHoriz = 8,
                                        cellNumVert = 8,
@@ -692,8 +692,6 @@ kmComparison$comparison_1to2$ccfResults %>%
   kableExtra::kable_styling(latex_options = "hold_position",
                             position = "center")
 ```
-
-
 
 ## Decision Rule
 
@@ -908,7 +906,7 @@ Additionally, comparisons are performed in both “directions” so that each su
 \citet{tong_improved_2015} propose \jz{building a "CMC-$\theta$" distribution by applying the translation and CCF$_{\max}$ similarity criteria from the original method of \citet{song_proposed_2013} at each $\theta$ valued considered.
 \citet{tong_improved_2015} consider this as counting the number of "congruent cells" per $\theta$ value.
 Thus, there may be more than one $\theta$ value for which a single cell/region pair is considered a CMC.
-While seemingly contradictory (there should be only one "true" $\theta$ alignment value), \citet{tong_improved_2015} justify their method by the empirical observation:}
+While seemingly contradictory (as there should be only one "true" $\theta$ alignment value), \citet{tong_improved_2015} justify their method by the empirical observation:}
 
 > [i]f two images are truly matching, the CMC-$\theta$ distribution of matching image pairs should have a prominent peak located near the initial phase angle $\Theta_0$, while non-matching image pairs may have a relatively flat and random CMC-$\theta$ distribution pattern.
 
@@ -944,7 +942,7 @@ Thus, the non-match pair would "fail" the High CMC criterion.}
 
 The "prominent peak" empirical observation upon which the High CMC method is based does seem to hold for many known match and known non-match pairs in our experience.
 However, we've observed that the behavior of the CMC-$\theta$ distributions depend heavily on the preprocessing procedures used and thresholds set. 
-In particular, the CMC-$\theta$ distributions for some KNM pairs exhibit the "prominent peak" behavior for a wide range of threshold values making them difficult to distinguish from KM pairs.
+In particular, the CMC-$\theta$ distributions for some KNM pairs exhibit the prominent peak behavior for a wide range of threshold values making them difficult to distinguish from KM pairs.
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE,cache = F,fig.cap='\\label{fig:kmCMCPerTheta} CMC count per rotation value in both directions for the comparison between Fadul 1-1 and Fadul 1-2. The High CMC threshold is defined to be the max CMC count observed across all rotation values minus some constant ($\\tau = 1$ in this example). A clear CMC count mode is observed in both directions at opposite $\\theta$ values. The only $\\theta$ values with associated CMC counts greater than or equal to the High CMC threshold are adjacent (in particular, within $T_{\\theta} = 6$ degrees of each other). \\citet{tong_improved_2015} propose using this as evidence that the cartridge case pair are matches.', fig.align='center',fig.pos='h',out.width='.7\\textwidth'}
 cmcR::cmcPerThetaBarPlot(kmComparison,
@@ -963,10 +961,10 @@ cmcR::cmcPerThetaBarPlot(knmComparison,
 ```
 
 
-### Implementation of decision rules
+### Implementation of decision rules {#decisionRuleImplementation}
 <!-- \svp{XXX this is a bit abrupt, can you transition into the implementation a bit more gently? Make the point that the parameters described above are included as parameters, and thus, we defer the determination of what the values of those parameters should be until the next section?} -->
 
-\jz{In this section, we will demonstrate our implementation of the decision rules enacted in the original method of \citet{song_proposed_2013} and the High CMC method of \citet{tong_improved_2015}.
+\jz{In this section, we will demonstrate our implementation of the decision rules applied in the original method of \citet{song_proposed_2013} and the High CMC method of \citet{tong_improved_2015}.
 For illustrative purposes, we will consider a particular set of $T_x, T_y, T_{\theta}, T_{\text{CCF}}$ values.
 A discussion of how to actually \emph{determine} thresholds is provided in the} [investigation](#investigation) \jz{section}.
 
@@ -1076,22 +1074,47 @@ cmcR::cmcPlot(fadul1.1,
 
 
 ## An incomplete method? XXX this needs a better title XXX
-\svp{This section needs to serve as a transition between the method and the investigation - summarizing the holes we've discovered in the descriptions and moving towards a resolution of those holes through brute-force investigation.}
-\jz{A few critical pieces of information are missing from the original description of the High CMC method. 
-For one, there is no discussion of the procedures used to preprocess the scans. 
-Additionally, it is unclear how situations in which two adjacent $\theta$ values tie for the CMC$_{\max}$ count should be dealt.
-We've observed such situations to actually be quite common among both KM and KNM pairs. 
-Another common occurrence that is ambiguously dealt with is if one comparison direction passes the High CMC criterion (i.e., a CMC count mode is identified at a particular $\theta$ value) while the other direction fails the criterion.
-Due to this ambiguity, a variety of processing conditions need to be considered.
-For example, we might behave as if both comparison directions failed the High CMC criterion if one comparison direction fails. 
-As mentioned above, such pairs would be assigned the minimum of the two CMC counts determined in both directions under the original method of \citet{song_proposed_2013}.
-Alternatively, we could behave as if both directions pass the High CMC criterion if only one direction passes.
-This would involve replacing the missing modal $\theta$ in the direction that failed with the opposite of the modal $\theta$ value in the direction that passed.
-The High CMCs would then be counted as if both directions had passed the High CMC criterion.}
+<!-- \svp{This section needs to serve as a transition between the method and the investigation - summarizing the holes we've discovered in the descriptions and moving towards a resolution of those holes through brute-force investigation.} -->
 
-\jz{Additionally, we might require the $\theta_{\text{ref}}$ value determined under the original method of \citet{song_proposed_2013} to agree with the modal $\theta$ value, $\theta_{\text{mode}}$ say, determined under the High CMC method.
-Since the original method of \citet{song_proposed_2013} and High CMC criteria are applied in both directions for the High CMC method, we can determine specifically if $|\theta_{\text{ref},1-2} - \theta_{\text{mode},1-2}| \leq T_\theta$ and $|\theta_{\text{ref},2-1} - \theta_{\text{mode},2-1}| \leq T_\theta$ where the subscripts emphasize the direction considered. 
-If either of these inequalities fail to hold, then a cartridge case pair is assigned the minimum of the two CMC counts determined in both directions under the original method of \citet{song_proposed_2013}.}
+\jz{In this section we summarize the ambiguities identified in the original descriptions of the CMC methods. 
+In the following section we investigate ways in which such ambiguities can be rectified by exploring a set of reproducibility principles.}
+
+\jz{It is important to note that much of what we have presented as "the CMC method" might not be considered as such by the original authors. 
+In particular, other authors might distinguish proposed methods based only on how their decision rules differ.
+We include the preprocessing and cell-based comparison procedures as part of the CMC methodology to emphasize how dependent the final results are on decisions made in these first two steps.
+We have only come to this realization after considerable experimentation with and tweaking of our implementation.
+The preprocessing and cell-based comparison procedures are discussed only briefly, if at all \citep{tong_improved_2015}, in the CMC literature, yet the results reported often indicate a sensitivity to these procedures.
+An actual sensitivity analysis of proposed CMC methods has yet to be published.
+Instead, such an analysis seems to be done internally and only promising results are reported.
+This is akin to other statistical faux pas such as p-hacking and, left unchecked, leads to results that are difficult to generalize to new data XXX is this too critical? XXX.}
+
+\jz{Apart from the CMC methods' generalizability, we also simply do not know how the proposed methods are implemented. 
+Ambiguities in the methods range from minor implicit parameter choices (e.g., the convergence criteria for the robust Gaussian regression filter \citep{brinkman_bodschwinna_2003}) to procedures that fundamentally change how similarity features are extracted (e.g., how the cross-correlation is calculated). 
+As discussed in the} [introduction](#intro), \jz{this an issue that pervades computational research for which only prosaic descriptions of algorithms are provided.}
+The only solution to such ambiguity is to enumerate, implement, and pare-down the possible choices that could have been made to arrive to published results.
+Unsurprisingly, this process takes a considerable amount of time and resources that would be better spent furthering the state of the field.}
+
+\jz{Ambiguities in the decision rules' prosaic descriptions, specifically that of the High CMC method, lead to different interpretations of how to apply the rules.
+Recall from} [High CMC method](#highCMCMethod) \jz{section that the High CMC criterion attempts to identify a "prominent peak" or mode in the CMC-$\theta$ distribution.
+However, based on the description it is unclear how to proceed if a mode wider than one $\theta$ value is identified (i.e., if two or more consecutive $\theta$ values have CMC counts equal to CMC$_{\max}$).
+We've observed such situations to be quite common among both matching and non-matching pairs.
+As described in the} [Decision Rule Implementation](#decisionRuleImplementation) \jz{section, \pkg{cmcR} treats the median of such $\theta$ values as the "modal" $\theta$ value.}
+
+\jz{It also common to observe situations among matching and non-matching pairs in which a mode is identified at a particular $\theta$ value in one comparison direction but not in the other.
+Due to this ambiguity, a variety of processing conditions need to be considered.
+Let $\theta_{\text{mode},1-2}$ and $\theta_{\text{mode},2-1}$ be the modal $\theta$ values identified in the two comparison directions (note that either or both of these may be missing values if the associated direction fails the High CMC criterion).
+If acting conservatively, we might behave as if both $\theta_{\text{mode},1-2}$ and $\theta_{\text{mode},2-1}$ are missing if one of them is.
+In this case, the cartridge case pair would "fail" the High CMC criterion and be assigned the minimum of the two CMC counts determined in both directions under the original method of \citet{song_proposed_2013}.
+A more liberal alternative would be to behave as if both directions pass the High CMC criterion if only one direction passes.
+This would involve replacing the missing modal $\theta$, $\theta_{\text{mode},1-2}$ for sake of argument, with $-\theta_{\text{mode},2-1}$.
+The High CMCs would then be counted as if neither $\theta_{\text{mode},1-2}$ nor $\theta_{\text{mode},2-1}$ were missing.}
+
+\jz{We might also require the reference rotation values determined under the original method of \citet{song_proposed_2013}, $\theta_{\text{ref},1-2}, \theta_{\text{ref},2-1}$, to agree with the modal $\theta$ values determined under the High CMC method, $\theta_{\text{mode},1-2},  \theta_{\text{mode},2-1}$.
+Since the original method of \citet{song_proposed_2013} and High CMC criteria are applied in both directions for the High CMC method, we can determine specifically if $|\theta_{\text{ref},1-2} - \theta_{\text{mode},1-2}| \leq T_\theta$ and $|\theta_{\text{ref},2-1} - \theta_{\text{mode},2-1}| \leq T_\theta$.
+Indeed, assuming that both the original method of \citet{song_proposed_2013} and the High CMC method are effective at differentiating matching and non-matching cartridge cases, they should both provide a relatively accurate estimate of the correct alignment rotation.
+If either of these inequalities fail to hold, then a cartridge case pair would be assigned the minimum of the two CMC counts determined in both directions under the original method of \citet{song_proposed_2013}.}
+
+\jz{In the next section, we describe the process of resolving these ambiguities in the CMC method descriptions. In doing so, we abstract a set of principles by which methods and results can be rendered both computationally reproducible and better understood.}
 
 # Investigation of cell-based forensic pattern matching methods {#investigation}
 
@@ -1109,20 +1132,20 @@ In this section, we will investigate how ambiguities identified in the [CMC meth
 A sensitivity analysis of the original method \jz{of \citet{song_proposed_2013}} and its descendants has yet to be published. 
 As previously discussed, the conditions under which these proposed methods are applied differ considerably across papers making it difficult to compare results. 
 We hope to partly remedy this problem by providing a discussion of the sensitivity of the original method of \citet{song_proposed_2013} and the High CMC method.
-While far from exhaustive, we focus this discussion on what we have found to be highly influential factors on the methods' sensitivity.
-These factors include sensitivity to the choice of congruency thresholds (discussed in the [section describing the orignal method's decision rule](\#originalMethod)), to the reader's interpretation of the methods' descriptions, and to the preprocessing procedures employed before feature-extraction.
+While the presentation provided here is far from exhaustive, we focus this discussion on what we have found to be highly influential factors on the methods' sensitivity.
+These factors include sensitivity to the choice of congruency thresholds (discussed in the [section describing the orignal method's decision rule](\#originalMethod)), to the reader's interpretation of the methods' descriptions, and to the preprocessing procedures employed before feature-extraction. \jz{In identifying these influential factors, we also propose a set of principles applicable to any type of computationally reproducible research. We argue that adherence to these principles yields not only reproducible results, but also greater clarity of a proposed method.}
 
-## Sensitivity to experimentally-determined congruency thresholds
+## Communicating a method's sensitivity to processing conditions
 
 \jz{One of these influential factors is the choice of $T_x, T_y, T_\theta, T_{\text{CCF}}$ thresholds use to declare a particular cell/region pair "congruent." 
 Many combinations of these thresholds yield perfect separation between the matching and non-matching CMC count distributions. 
 As such, some other diagnostic must be used to compare different sets of thresholds.
 Considering that ground-truth is known for the Fadul dataset, we will obtain a group of known match CMC counts and a group of known non-match CMC counts for each set of thresholds. 
-A natural diagnostic based on this observation is the ratio of the between- and (average) within-group variances of the CMC counts.
-That is, let CMC$_{i,j_i}$ denote the CMC count assigned to the $j_i$th cartridge case pair, $j = 1,...,n_i$, $n_1 = 63, n_2 = 717$, from the $i$th group, $i = 1,2$ representing matches and non-matches, respectively. 
+A simple diagnostic based on this observation is the ratio of the between- and (average) within-group variances of the CMC counts.
+That is, let CMC$_{i,j_i}$ denote the CMC count assigned to the $j_i$th cartridge case pair, $j_i = 1,...,n_i$, $n_1 = 63, n_2 = 717$, from the $i$th group, $i = 1,2$ representing matches and non-matches, respectively. 
 Then for each set of thresholds we calculate}
 $$
-r = \frac{\frac{1}{n_1 + n_2 - 1} \sum_{i=1}^2 \sum_{j=1}^{n_i} \left(\text{CMC}_{i,j} - \overline{\text{CMC}}\right)^2}{\frac{1}{2} \sum_{i=1}^2 \frac{1}{n_i - 1}\sum_{j=1}^{n_i} \left(\text{CMC}_{i,j} - \overline{\text{CMC}}_i\right)^2}
+r = \frac{\frac{1}{n_1 + n_2 - 1} \sum_{i=1}^2 \sum_{j=1}^{n_i} \left(\text{CMC}_{i,j_i} - \overline{\text{CMC}}\right)^2}{\frac{1}{2} \sum_{i=1}^2 \frac{1}{n_i - 1}\sum_{j=1}^{n_i} \left(\text{CMC}_{i,j_i} - \overline{\text{CMC}}_i\right)^2}
 $$
 \jz{where $\overline{\text{CMC}}_i$ denotes the within-group CMC count average and $\overline{\text{CMC}}$ denotes the grand CMC count average. Greater separation between and less variability within the match and non-match CMC count distributions will yield larger $r$ values. As such, larger values of $r$ are preferred.}
 
@@ -1132,7 +1155,7 @@ $$
 <!-- It should be noted that these authors report CMC count distributions with fewer "false positive" CMCs for non-match pairs.  -->
 <!-- However, the behavior of these distributions changes considerably depending on the thresholds specified. -->
 
-\jz{\autoref{fig:topVoteCMC_sensitivity} illustrates the sensitivity of the original method of \citet{song_proposed_2013} to various $T_{CCF}$ and $T_{\Delta x}, T_{\Delta y}$ values where $T_{\theta} = 6$ degrees. 
+\jz{\autoref{fig:topVoteCMC_sensitivity} illustrates the sensitivity of the original method of \citet{song_proposed_2013} to various $T_{\text{CCF}}$ and $T_{\Delta x}, T_{\Delta y}$ values where $T_{\theta} = 6$ degrees. 
 The thresholds become more restrictive from top to bottom and from right to left, meaning the least restrictive set of thresholds is represented in the top-right corner.
 We can see that many of these combinations yield separation between the matching and non-matching CMC count distributions.
 Additionally, as one might expect, fewer CMCs are assigned to both non-matching and matching pairs as the thresholds become more restrictive.}
@@ -1226,7 +1249,7 @@ cmcs_aucs %>%
 <!-- The non-match pairs show the same distribution of CMCs as they did under the Top Vote method.  -->
 <!-- Many matching pairs are assigned a higher CMC count than under the Top Vote method. -->
 
-\jz{\autoref{fig:highCMC_sensitivity} illustrates the sensitivity of the High CMC method to various $T_{CCF}$ and $T_{\Delta x}, T_{\Delta y}$ values where $T_{\theta} = 6$ degrees. 
+\jz{\autoref{fig:highCMC_sensitivity} illustrates the sensitivity of the High CMC method to various $T_{\text{CCF}}$ and $T_{\Delta x}, T_{\Delta y}$ values where $T_{\theta} = 6$ degrees. 
 In particular, we set \code{missingTheta\_decision = "fail"} which treats a failure of the High CMC criterion in either direction as a failure in both directions.
 We also enforce agreement between the $\theta_{\text{ref},1-2}, \theta_{\text{ref},2-1}$ from the original method of \citet{song_proposed_2013} and the High CMC $\theta_{\text{mode},1-2}, \theta_{\text{mode},2-1}$ values by setting \code{compareInitialAndHighThetas = TRUE}. 
 We can see considerable separation between the non-match and match CMC count distributions for multiple combinations of thresholds. 
@@ -1279,7 +1302,7 @@ cmcs_aucs %>%
   ylab("Relative Frequency")
 ```
 
-## Multiple interpretations of prosaic descriptions
+## The dangers of prosaic algorithm descriptions
 
 \jz{It should also be noted that the success of the High CMC method hinges largely on selecting processing conditions such that no non-match pairs pass the High CMC criterion. 
 That is, the High CMC criterion functions as a rough match vs. non-match decision rule prior to assigning CMCs. 
@@ -1344,7 +1367,7 @@ cmcs_aucs %>%
   ylab("Relative Frequency")
 ```
 
-## Ambiguous descriptions of preprocessing procedures
+## The benfits of modularizing an algorithm
 
 \jz{Changes to the preprocessing procedures have major impact on the effectiveness of the CMC method. 
 For example, consider a change to the procedure described in section REF in which surface matrices are not leveled before applying the bandpass Gaussian filter (i.e., skipping step 3 show of \autoref{fig:processingPipeline}). 
