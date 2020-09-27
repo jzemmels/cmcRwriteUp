@@ -705,9 +705,11 @@ As stated in \citet{song_3d_2014},
 
 A truly matching pair of cartridge cases \svp{would have similar translation and rotation values for each cell, estimated by maximizing the cell-wise CCF; a nonmatching pair of cartridge cases would have a variety of different translation and rotation values showing no particular pattern.}
 
-
-
-\svp{XXX Add a figure (and reference) here showing CMCs from the original method as in figure 15, 16, for matching and nonmatching cartridges. So e.g. A | A' B, 3 across, with blue and red squares on A' and B showing the cells from A aligned.}
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{images/Sketch.png}
+\caption{\svp{XXX Add a figure (and reference) here showing CMCs from the original method as in figure 15, 16, for matching and nonmatching cartridges. So e.g. A | A' B, 3 across, with square outlines (not colored yet) on A' and B showing the cells from A aligned, and the derivative distributions of $T_x, T_y, T_\theta, CCF_{max}$.}}
+\end{figure}
 
 \svp{The first step in the decision process is to obtain a consensus estimate of $x, y, \theta$; these estimated values are then used in the evaluation of the alignment of each cell/region pair.}
 \svp{The consensus set of $x, y, \theta$ is} referred to as the \dfn{registration phase} of the cell/region pairs \citep{song_proposed_2013}. 
