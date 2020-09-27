@@ -705,6 +705,8 @@ As stated in \citet{song_3d_2014},
 
 A truly matching pair of cartridge cases \svp{would have similar translation and rotation values for each cell, estimated by maximizing the cell-wise CCF; a nonmatching pair of cartridge cases would have a variety of different translation and rotation values showing no particular pattern.}
 
+
+
 \svp{XXX Add a figure (and reference) here showing CMCs from the original method as in figure 15, 16, for matching and nonmatching cartridges. So e.g. A | A' B, 3 across, with blue and red squares on A' and B showing the cells from A aligned.}
 
 \svp{The first step in the decision process is to obtain a consensus estimate of $x, y, \theta$; these estimated values are then used in the evaluation of the alignment of each cell/region pair.}
@@ -740,15 +742,39 @@ That is, a consensus is determined by finding the median registration phase valu
 
 \citet{song_3d_2014} indicate that these thresholds need to be determined experimentally. 
 There is little consensus on an optimal set of thresholds nor discussion on the sensitivity of proposed methods to different threshold choices in the CMC literature.
-\jz{This means that there is little known about the effectiveness of the any CMC method to "out-of-bag" samples.}
+\jz{This means that there is little known about the effectiveness of the any CMC method to "out-of-bag" samples.
+\autoref{tab:thresholdTable} summarizes the thresholds used in various CMC papers.}
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|l|r|r|r|}
+      \hline
+        Paper & Translation (pix.) & Rotation (deg.) & CCF$_{\max}$ \\
+        \hline
+        \citet{song_3d_2014} & 20 & 6 & .6 \\
+        \hline
+        \citet{tong_fired_2014} & 30 & 3 & .25 \\
+        \hline
+        \citet{tong_improved_2015} & 15 & 3 & .55 \\
+        \hline
+        \citet{chen_convergence_2017} & 20 & 3 & .4 \\
+        \hline
+        \citet{song_estimating_2018} & 20 & 6 & .5\\
+        \hline
+    \end{tabular}
+    \caption{Each CMC implementation uses slightly different translation, rotation, and CCF$_{\max}$ thresholds to classify matches. There is currently no principled approach to determining these thresholds in the CMC literature. Instead, thresholds seem to be chosen by authors through experimentation and selecting thresholds that provide promising results.}
+    \label{tab:thresholdTable}
+\end{table}
+
 <!-- \svp{XXX does song provide any information on how these thresholds should be determined? XXX make some snarky comment about how you can't use this method in a lab yet because ground truth isn't known?} -->
 
 <!-- \svp{XXX Show the consensus estimates graphically, and the distribution of differences between estimated values and the consensus value. XXX} -->
 
-\jz{To illustrate the assumptions underlying the CMC method, consider \autoref{fig:translationVotes} which shows the distributions of the $(x_i, y_i)$ values which produce the highest CCF for the alignment of each cell/region pair of a known match and known non-match comparison.
+\jz{To illustrate the assumptions underlying the CMC method, compare the results of the cell-based comparison procedure for the comparison between the known match pair Fadul 1-1 and Fadul 1-2 and the known non-match pair Fadul 1-1 and Fadul 2-1. 
+\autoref{fig:translationVotes} shows the distributions of the $\{(x_i, y_i)\}_{i = 1,...,n}$ values which produce the highest CCF for the alignment of each cell/region pair.
 The squares in \autoref{fig:translationVotes} are centered on the comparisons' respective $(x_{\text{ref}},y_{\text{ref}})$ values and represent the maximum distance an $(x_i,y_i)$ estimated translation value can be from $(x_{\text{ref}},y_{\text{ref}})$ to be classified as "congruent" based on thresholds $T_{x} = T_{y} = 20$ pixels. 
-Of the 29 cell/region pairs considered in the known match comparison between Fadul 1-1 and Fadul 1-2, 19 $(x_i,y_i)$ values are within the specified thresholds of $(x_{\text{ref}},y_{\text{ref}})$. 
-In contrast, 3 out of 35 $(x_i,y_i)$ are within the specified thresholds of $(x_{\text{ref}},y_{\text{ref}})$ for the known non-match comparison between Fadul 1-1 and Fadul 2-1.} These plots exhibit similar behavior to Figures 1 and 2 in \citet{chen_convergence_2017} which show the estimated translation values for various rotation values for the same cartridge case pairs.
+Of the 29 cell/region pairs considered in the known match comparison between Fadul 1-1 and Fadul 1-2, 19 $(x_i,y_i)$ values are within 20 pixels of $(x_{\text{ref}},y_{\text{ref}})$. 
+In contrast, 3 out of 35 $(x_i,y_i)$ are within 20 pixels of $(x_{\text{ref}},y_{\text{ref}})$ for the known non-match comparison between Fadul 1-1 and Fadul 2-1.} These plots exhibit similar behavior to Figures 1 and 2 in \citet{chen_convergence_2017} which show the estimated translation values for various rotation values for the same cartridge case pairs.
 <!-- \svp{XXX I think some points are missing in the KM plot at least - how many points were excluded for not having enough area? I count 39 points (27 inside, I'm taking your word on that).} -->
 
 ```{r,echo=FALSE,cache = T}
@@ -821,7 +847,7 @@ bind_rows(kmComparison$comparison_1to2$ccfResults %>%
   facet_wrap(~ `Comparison Type`,nrow = 1) +
   theme(legend.position = "bottom")
 ```
-\jz{\autoref{fig:rotationVotes} shows the distribution of the $\theta_i$ values which produce the highest CCF for the alignment of each cell/region pair of the known match and known non-match comparison. A vertical line is drawn at the comparisons' respective $\theta_{\text{ref}}$ value and a threshold of $T_{\theta} = 6$ degrees is used to classify $\theta_i$ values as "congruent." 25 of 29 known match and 2 of 34 known non-match $\theta_i$ values are classified as congruent under these conditions.}
+Turning our attention to the estimated rotation values, \jz{\autoref{fig:rotationVotes} shows the distribution of the $\theta_i$ values which produce the highest CCF for the comparisons of Fadul 1-1 vs. Fadul 1-2 and Fadul 1-1 vs. Fadul 2-1. A vertical line is drawn at the comparisons' respective $\theta_{\text{ref}}$ value and a threshold of $T_{\theta} = 6$ degrees is used to classify $\theta_i$ values as "congruent." 25 of 29 known match and 2 of 34 known non-match $\theta_i$ values are classified as congruent under these conditions.}
 
 ```{r echo = FALSE,cache = T,fig.align = 'left',fig.cap='\\label{fig:rotationVotes} Estimated rotation values for the comparison of Fadul 1-1 and Fadul 1-2 (left) and Fadul 1-1 and Fadul 2-1 (right). Values within the purple bands satisfy the congruency criterion of being within 6 degrees of the median rotation value. This threshold envelopes the obvious mode around -24 degrees consisting of 25 estimated translation values for the Fadul 1-1 vs. Fadul 1-2 matching pair. In contrast, no such mode is observed for the Fadul 1-1 vs. Fadul 2-1 non-match pair and consequently only 8 estimated rotation values are classified as "congruent".',fig.pos = 'h'}
 bind_rows(kmComparison$comparison_1to2$ccfResults %>%
@@ -877,27 +903,44 @@ The High CMC method was proposed by \citet{tong_improved_2015} to address situat
 The proposed extension to the \jz{original method of \citet{song_proposed_2013}} of utilizes the behavior of the CCF$_{\max}$ values across various rotations more advantageously. 
 Additionally, comparisons are performed in both “directions” so that each surface matrix takes on the role of the surface matrix that is partitioned into a grid of cells.
 
-\citet{tong_improved_2015} propose applying the translation and CCF$_{\max}$ CMC criteria to the comparison results for each rotation value. 
-In doing so, a CMC count for each rotation can be obtained. 
-As they justify:
+\citet{tong_improved_2015} propose \jz{building a "CMC-$\theta$" distribution by applying the translation and CCF$_{\max}$ similarity criteria from the original method of \citet{song_proposed_2013} at each $\theta$ valued considered.
+\citet{tong_improved_2015} consider this as counting the number of "congruent cells" per $\theta$ value.
+Thus, there may be more than one $\theta$ value for which a single cell/region pair is considered a CMC.
+While seemingly contradictory (there should be only one "true" $\theta$ alignment value), \citet{tong_improved_2015} justify their method by the empirical observation:}
 
 > [i]f two images are truly matching, the CMC-$\theta$ distribution of matching image pairs should have a prominent peak located near the initial phase angle $\Theta_0$, while non-matching image pairs may have a relatively flat and random CMC-$\theta$ distribution pattern.
 
 These phenomena are illustrated in Figures \ref{fig:kmCMCPerTheta} and \ref{fig:knmCMCPerTheta}. 
-\autoref{fig:kmCMCPerTheta} shows the CMC counts per rotation value in both directions for a known match pair of cartridge case scans from \citet{fadul_empirical_nodate}. 
+\autoref{fig:kmCMCPerTheta} shows the CMC counts per rotation value in both directions for the known match pair Fadul 1-1 and Fadul 1-2 from \citet{fadul_empirical_nodate}. 
 We can clearly see a CMC mode around $\theta = -24$ in one direction and $21$ in the other, which is to be expected for a known match pair. 
-\autoref{fig:knmCMCPerTheta}, on the other hand, shows the CMC counts for a known non-match pair; in this comparison, no such CMC count mode is achieved.
+\autoref{fig:knmCMCPerTheta}, on the other hand, shows the CMC counts for the known non-match pair Fadul 1-1 and Fadul 2-1; in this comparison, no such CMC count mode is achieved.
 
-\citet{tong_improved_2015} introduce an additional criterion to identify a mode in the CMC count per $\theta$ distribution. 
-Namely, they \svp{define} a "high" CMC threshold defined to be CMC$_{\text{high}} =$ CMC$_{\max} - \tau$ for some constant $\tau$ (they choose $\tau = 1$) where CMC$_{\max}$ is the maximum CMC count attained across all rotation values considered. 
-They propose finding the range of rotation values with associated CMC count greater than or equal to CMC$_{\text{high}}$. 
-If this range is greater than the threshold $T_\theta$, then there is evidence to suggest that a CMC count mode does not exist and the cartridge case pair is not a match. 
-The CMC$_{\text{high}}$ thresholds are shown as horizontal dashed lines in Figures \ref{fig:kmCMCPerTheta} and \ref{fig:knmCMCPerTheta}. 
-We can see in \autoref{fig:kmCMCPerTheta} that the only $\theta$ values with associated CMC counts greater than or equal to CMC$_{\text{high}}$ are adjacent. 
-This particular cartridge case pair would "pass" the high CMC criterion. 
-The pair shown in \autoref{fig:knmCMCPerTheta} elicit considerably more diffuse $\theta$ values with associated CMC count great than or equal to CMC$_{\text{high}}$ and thus would not pass the high CMC criterion. 
+Based on this observation, \citet{tong_improved_2015} outline the following procedure for the High CMC method:
 
-Similar behavior tends to be seen for the majority KM and KNM pairs. 
+> Conduct both forward and backward correlations at each rotation and record the registration based on CCF$_{\max}$, $x$, and $y$ for each cell at each rotation. These data will be used in the next two steps separately.
+
+> At every rotation angle, each cell in the reference image finds a registration position in the compared image with a maximum CCF value. By selecting the registration with the maximum CCF value for each cell, the two CMC numbers determined by the four thresholds can be obtained based on the original algorithm [\citet{tong_fired_2014}]. The lower CMC number is used as the initial result.
+
+> Build CMC-$\theta$ distributions using the data generated in step 1, by counting the number of cells that have congruent positions at each individual rotation angle. Calculate the angular range of “high CMCs” using both the forward and backward CMC-$\theta$ distributions, as illustrated in Figs. 2 and 3.
+
+> If the angular range of the “high CMCs” is within the range $T_\theta$, identify the CMCs for each rotation angle in this range and combine them to give the number of CMCs for this comparison in place of the original CMC number. In this step, if the range is narrower than $T_\theta$, the nearby angles are included to make the range equal to $T_\theta$; CMCs with same index in each rotation are only counted once.
+
+\citet{tong_improved_2015} introduce an additional criterion to identify a mode in the CMC count per $\theta$ distribution.
+\jz{Let $\{\text{CMC}_{\theta} : \theta \in \Theta \}$ denote the CMC-$\theta$ distribution where $\Theta$ is the set of rotation values considered for the comparison. 
+Define CMC$_{\max} \equiv \max_{\theta} \{\text{CMC}_{\theta} : \theta \in \Theta\}$.
+\citet{tong_improved_2015} \svp{define} a "high" CMC threshold as CMC$_{\text{high}} \equiv$ CMC$_{\max} - \tau$ for some constant $\tau$ (they choose $\tau = 1$).
+Now let $\Theta_{\text{high}} \equiv \{\theta : \text{CMC}_{\theta} \geq \text{CMC}_{\text{high}}\}$.
+That is, $\Theta_{\text{high}}$ consists of the $\theta$ values with "high" CMC counts.
+\citet{tong_improved_2015} propose calculating $R = \max_{\theta} \Theta_{\text{high}} - \min_{\theta} \Theta_{\text{high}}$.
+If $R \leq T_{\theta}$, then there is evidence that a single mode exists in the CMC-$\theta$ distribution (and thus that the cartridge case pair is a match).
+Otherwise, no such mode exists (by their definition) and the cartridge case pair is likely not a match.
+The horizontal dashed lines in Figures \ref{fig:kmCMCPerTheta} and \ref{fig:knmCMCPerTheta} represent the CMC$_{\text{high}}$ thresholds. 
+The $\theta \in \Theta_{\text{high}}$ are represented by blue bars.
+For the matching pair shown in \ref{fig:kmCMCPerTheta}, the range of $\Theta_{\text{high}}$ is less than the threshold $T_{\theta} = 6$ degrees, so this pair would "pass" the High CMC criterion.
+In contrast, the range of $\Theta_{\text{high}}$ is larger than $T_{\theta} = 6$ degrees for the non-match pair shown in \autoref{fig:knmCMCPerTheta}. 
+Thus, the non-match pair would "fail" the High CMC criterion.}
+
+The "prominent peak" empirical observation upon which the High CMC method is based does seem to hold for many known match and known non-match pairs in our experience.
 However, we've observed that the behavior of the CMC-$\theta$ distributions depend heavily on the preprocessing procedures used and thresholds set. 
 In particular, the CMC-$\theta$ distributions for some KNM pairs exhibit the "prominent peak" behavior for a wide range of threshold values making them difficult to distinguish from KM pairs.
 
@@ -917,20 +960,15 @@ cmcR::cmcPerThetaBarPlot(knmComparison,
                          x3pNames = c("Fadul 1-1","Fadul 2-1"))
 ```
 
-\citet{tong_improved_2015} outline the following procedure:
-
-> Conduct both forward and backward correlations at each rotation and record the registration based on CCF$_{\max}$, $x$, and $y$ for each cell at each rotation. These data will be used in the next two steps separately.
-
-> At every rotation angle, each cell in the reference image finds a registration position in the compared image with a maximum CCF value. By selecting the registration with the maximum CCF value for each cell, the two CMC numbers determined by the four thresholds can be obtained based on the original algorithm [\citet{tong_fired_2014}]. The lower CMC number is used as the initial result.
-
-> Build CMC-$\theta$ distributions using the data generated in step 1, by counting the number of cells that have congruent positions at each individual rotation angle. Calculate the angular range of “high CMCs” using both the forward and backward CMC-$\theta$ distributions, as illustrated in Figs. 2 and 3.
-
-> If the angular range of the “high CMCs” is within the range $T_\theta$, identify the CMCs for each rotation angle in this range and combine them to give the number of CMCs for this comparison in place of the original CMC number. In this step, if the range is narrower than $T_\theta$, the nearby angles are included to make the range equal to $T_\theta$; CMCs with same index in each rotation are only counted once.
-
 
 ### Implementation of decision rules
-\svp{XXX this is a bit abrupt, can you transition into the implementation a bit more gently? Make the point that the parameters described above are included as parameters, and thus, we defer the determination of what the values of those parameters should be until the next section?}
-The \code{cmcFilter\_improved} function determines CMCs under both the \jz{original method of \citet{song_proposed_2013}} and the High CMC method for user-defined threshold values. 
+<!-- \svp{XXX this is a bit abrupt, can you transition into the implementation a bit more gently? Make the point that the parameters described above are included as parameters, and thus, we defer the determination of what the values of those parameters should be until the next section?} -->
+
+\jz{In this section, we will demonstrate our implementation of the decision rules enacted in the original method of \citet{song_proposed_2013} and the High CMC method of \citet{tong_improved_2015}.
+For illustrative purposes, we will consider a particular set of $T_x, T_y, T_{\theta}, T_{\text{CCF}}$ values.
+A discussion of how to actually \emph{determine} thresholds is provided in the} [investigation](#investigation) \jz{section}.
+
+The \code{cmcFilter\_improved} function determines CMCs under both the \jz{original method of \citet{song_proposed_2013}} and the High CMC method for user-defined threshold values.
 In the event of a CMC$_{\max}$ count tie between more than one adjacent $\theta$ values, then the median of these $\theta$ values is used as the registration angle. 
 Different options exist to handle situations in which one direction fails the High CMC criterion while the other passes. See the \code{cmcFilter\_improved} documentation for more information.
 
@@ -1037,7 +1075,7 @@ cmcR::cmcPlot(fadul1.1,
 
 ## An incomplete method? XXX this needs a better title XXX
 \svp{This section needs to serve as a transition between the method and the investigation - summarizing the holes we've discovered in the descriptions and moving towards a resolution of those holes through brute-force investigation.}
-\jz{A few critical pieces of information are missing from the method's description. 
+\jz{A few critical pieces of information are missing from the original description of the High CMC method. 
 For one, there is no discussion of the procedures used to preprocess the scans. 
 Additionally, it is unclear how situations in which two adjacent $\theta$ values tie for the CMC$_{\max}$ count should be dealt.
 We've observed such situations to actually be quite common among both KM and KNM pairs. 
@@ -1047,8 +1085,9 @@ For example, we might behave as if both comparison directions failed the High CM
 As mentioned above, such pairs would be assigned the minimum of the two CMC counts determined in both directions under the original method of \citet{song_proposed_2013}.
 Alternatively, we could behave as if both directions pass the High CMC criterion if only one direction passes.
 This would involve replacing the missing modal $\theta$ in the direction that failed with the opposite of the modal $\theta$ value in the direction that passed.
-The High CMCs would then be counted as if both directions had passed the High CMC criterion.
-Additionally, we might require the $\theta_{\text{ref}}$ value determined under the original method of \citet{song_proposed_2013} to agree with the modal $\theta$ value determined under the High CMC method, say $\theta_{\text{mode}}$.
+The High CMCs would then be counted as if both directions had passed the High CMC criterion.}
+
+\jz{Additionally, we might require the $\theta_{\text{ref}}$ value determined under the original method of \citet{song_proposed_2013} to agree with the modal $\theta$ value, $\theta_{\text{mode}}$ say, determined under the High CMC method.
 Since the original method of \citet{song_proposed_2013} and High CMC criteria are applied in both directions for the High CMC method, we can determine specifically if $|\theta_{\text{ref},1-2} - \theta_{\text{mode},1-2}| \leq T_\theta$ and $|\theta_{\text{ref},2-1} - \theta_{\text{mode},2-1}| \leq T_\theta$ where the subscripts emphasize the direction considered. 
 If either of these inequalities fail to hold, then a cartridge case pair is assigned the minimum of the two CMC counts determined in both directions under the original method of \citet{song_proposed_2013}.}
 
@@ -1061,10 +1100,10 @@ Thus, some level of comparison between the implementation provided in the \pkg{c
 However, justification for any differences will ultimately involve educated hypothesization due to the closed-source nature of the original implementations.
 
 For any cartridge case pair, the number of CMCs can be determined under the original method of \citet{song_proposed_2013} and the High CMC method described in [implementation](#implementation) section.
-These CMC counts can be determined for all 780 cartridge case pairs available in the \citet{fadul_empirical_nodate} dataset. 
+\jz{We have applied our implementation of these two methods to the} 780 cartridge case pairs available in the \citet{fadul_empirical_nodate} dataset \jz{under a wide variety of processing conditions to determine which conditions yield perfect identification}.
 Perfect identification of all matching and non-matching pairs corresponds to choosing a CMC count threshold that separates the distributions of the matching and non-matching CMC counts. 
 Many authors have found success in choosing a CMC count threshold of 6 CMCs [\citet{tong_improved_2015}, \citet{song_estimating_2018}] as initially proposed by \citet{song_proposed_2013}, although this threshold has been shown to not generalize well to all proposed methods or cartridge case datasets \citep{chen_convergence_2017}.
-In this section, we will investigate how ambiguities identified in the CMC method descriptions (\autoref{sec:cmcMethod}) induces a high degree of sensitivity to choosing the "correct" processing conditions.
+In this section, we will investigate how ambiguities identified in the [CMC method descriptions](cmcMethod) induce a high degree of sensitivity to choosing the "correct" processing conditions.
 A sensitivity analysis of the original method \jz{of \citet{song_proposed_2013}} and its descendants has yet to be published. 
 As previously discussed, the conditions under which these proposed methods are applied differ considerably across papers making it difficult to compare results. 
 We hope to partly remedy this problem by providing a discussion of the sensitivity of the original method of \citet{song_proposed_2013} and the High CMC method.
