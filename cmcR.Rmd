@@ -820,60 +820,60 @@ knmCMCPlot_list <- cmcR::cmcPlot(fadul1.1,
                                                        '#8073ac','#542788',
                                                        '#2d004b'),
                                                      amount = .75),
-              cell.colors = c("#a60b00","#1b03a3"),
+              cell.colors = c("black","black"),
               cell.alpha = .15,
+              cell.text.size = 7,
               na.value = "gray80")
 
 kmCMCPlot_list <- cmcR::cmcPlot(fadul1.1,
-                          fadul1.2,
-                          # fadul1.2$x3p,
-                          # fadul1.1$x3p,
-                          cellCCF_bothDirections_output = kmComparison,
-                          cmcFilter_improved_output = kmCMC_fake,
-                          # cellCCF_bothDirections_output = kmComparison_swapped,
-                          # cmcFilter_improved_output = kmCMC_swapped,
-                          x3pNames = c("Fadul 1-1","Fadul 1-2"),
-                          legend.quantiles = c(0,.01,.2,.5,.8,.99,1),
-                          height.colors = colorspace::desaturate(c('#7f3b08',
-                                                                   '#b35806',
-                                                                   '#e08214',
-                                                                   '#fdb863',
-                                                                   '#fee0b6',
-                                                                   '#f7f7f7',
-                                                                   '#d8daeb',
-                                                                   '#b2abd2',
-                                                                   '#8073ac',
-                                                                   '#542788',
-                                                                   '#2d004b'),
-                                                                 amount = .75),
-        cell.colors = c("#a60b00","#1b03a3"),
-        cell.alpha = .15,
-        na.value = "gray80",
-        type = "list")
+                                fadul1.2,
+                                # fadul1.2$x3p,
+                                # fadul1.1$x3p,
+                                cellCCF_bothDirections_output = kmComparison,
+                                cmcFilter_improved_output = kmCMC_fake,
+                                # cellCCF_bothDirections_output = kmComparison_swapped,
+                                # cmcFilter_improved_output = kmCMC_swapped,
+                                x3pNames = c("Fadul 1-1","Fadul 1-2"),
+                                legend.quantiles = c(0,.01,.2,.5,.8,.99,1),
+                                height.colors = colorspace::desaturate(c('#7f3b08',
+                                                                         '#b35806',
+                                                                         '#e08214',
+                                                                         '#fdb863',
+                                                                         '#fee0b6',
+                                                                         '#f7f7f7',
+                                                                         '#d8daeb',
+                                                                         '#b2abd2',
+                                                                         '#8073ac',
+                                                                         '#542788',
+                                                                         '#2d004b'),
+                                                                       amount = .75),
+                                cell.colors = c("black","black"),
+                                cell.alpha = .15,
+                                cell.text.size = 7,
+                                na.value = "gray80",
+                                type = "list")
+
+kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1` <- kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1` +
+  ggplot2::theme(legend.position = "none")
+
+kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2` <- kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2` +
+  ggplot2::theme(legend.position = "none")
+
+knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1` <- knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1` +
+  ggplot2::theme(legend.position = "none")
+
+
 ```
 
 ```{r echo=FALSE,message=FALSE,error=FALSE,out.width='\\textwidth',cache = T,fig.cap='\\label{fig:originalMethod_sideBySide} CMC results under the original method of \\citet{song_proposed_2013} from comparing the matching pair Fadul 1-1 to Fadul 1-2 and the non-matching pair Fadul 1-1 to Fadul 2-1. In the right two plots, blue cells show how each CMC aligns in the other surface matrix while red cells show how the non-CMCs align to attain their CCF$_{\\max}$ value. Note that Fadul 1-1 is treated as the "reference" scan in both of these comparison, meaning it is divided into a grid of cells that are compared to larger regions in the other scans.',fig.pos = 'h'}
-# kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1` <- kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1` +
-#   ggplot2::theme(legend.position = "none")
-# 
-# knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1` <- knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1` +
-#   ggplot2::theme(legend.position = "none")
-
-# kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2` <- kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2` +
-#   ggplot2::theme(legend.position = "none")
-
-# ggplot2::ggsave(filename = "derivatives/fadul1-1_cmc.png",
-#                 plot = kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1`)
-# 
-# ggplot2::ggsave(filename = "derivatives/fadul1-2_cmc.png",
-#                 plot = kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2`)
-# 
-# ggplot2::ggsave(filename = "derivatives/fadul2-1_cmc.png",
-#                 plot = knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1`)
-
-knitr::include_graphics("images/originalMethod_sideBySide.PNG")
+knitr::include_graphics("images/correlationResults_sideBySide.PNG")
 ```
 
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{images/Sketch.png}
+\caption{\svp{XXX Add a figure (and reference) here showing CMCs from the original method as in figure 15, 16, for matching and nonmatching cartridges. So e.g. A | A' B, 3 across, with square outlines (not colored yet) on A' and B showing the cells from A aligned, and the derivative distributions of $T_x, T_y, T_\theta, CCF_{max}$.}}
+\end{figure}
 
 \svp{The first step in the decision process is to obtain a consensus estimate of $x, y, \theta$; these estimated values are then used in the evaluation of the alignment of each cell/region pair.}
 \svp{The consensus set of $x, y, \theta$ is} referred to as the \dfn{registration phase} of the cell/region pairs \citep{song_proposed_2013}. 
