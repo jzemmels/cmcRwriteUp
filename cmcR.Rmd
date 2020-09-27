@@ -962,7 +962,7 @@ cmcR::cmcPerThetaBarPlot(knmComparison,
 ### Implementation of decision rules {#decisionRuleImplementation}
 <!-- \svp{XXX this is a bit abrupt, can you transition into the implementation a bit more gently? Make the point that the parameters described above are included as parameters, and thus, we defer the determination of what the values of those parameters should be until the next section?} -->
 
-\jz{In this section, we will demonstrate our implementation of the decision rules enacted in the original method of \citet{song_proposed_2013} and the High CMC method of \citet{tong_improved_2015}.
+\jz{In this section, we will demonstrate our implementation of the decision rules applied in the original method of \citet{song_proposed_2013} and the High CMC method of \citet{tong_improved_2015}.
 For illustrative purposes, we will consider a particular set of $T_x, T_y, T_{\theta}, T_{\text{CCF}}$ values.
 A discussion of how to actually \emph{determine} thresholds is provided in the} [investigation](#investigation) \jz{section}.
 
@@ -1074,23 +1074,36 @@ cmcR::cmcPlot(fadul1.1,
 ## An incomplete method? XXX this needs a better title XXX
 <!-- \svp{This section needs to serve as a transition between the method and the investigation - summarizing the holes we've discovered in the descriptions and moving towards a resolution of those holes through brute-force investigation.} -->
 
-\jz{In this section we summarize the ambiguities identified in the original descriptions of the CMC methods. In the following section, we will investigate ways in which such ambiguities can be rectified by proposing a set of reproducibility principles.}
+\jz{In this section we summarize the ambiguities identified in the original descriptions of the CMC methods. 
+In the following section we investigate ways in which such ambiguities can be rectified by exploring a set of reproducibility principles.}
 
-\jz{Critical information is missing from the description of the High CMC method in \citet{tong_improved_2015}.
-For one, separate from the description of the decision rule procedure, there is no discussion in \citet{tong_improved_2015} of the procedures used to preprocess the scans.
-Because the preprocessing procedures vary in the CMC literature when they are discussed, it is difficult to know how each scan was preprocessed in \citet{tong_improved_2015}.
-As we have discussed, this means that the results in \citet{tong_improved_2015} are not reproducible.}
+\jz{It is important to note that much of what we have presented as "the CMC method" might not be considered as such by the original authors. 
+In particular, other authors might distinguish proposed methods based only on how their decision rules differ.
+We include the preprocessing and cell-based comparison procedures as part of the CMC methodology to emphasize how dependent the final results are on decisions made in these first two steps.
+We have only come to this realization after considerable experimentation with and tweaking of our implementation.
+The preprocessing and cell-based comparison procedures are discussed only briefly, if at all \citep{tong_improved_2015}, in the CMC literature, yet the results reported often indicate a sensitivity to these procedures.
+An actual sensitivity analysis of proposed CMC methods has yet to be published.
+Instead, such an analysis seems to be done internally and only promising results are reported.
+This is akin to other statistical faux pas such as p-hacking and, left unchecked, leads to results that are difficult to generalize to new data XXX is this too critical? XXX.}
 
-\jz{Additionally, because the High CMC criterion attempts to identify a mode in the CMC-$\theta$ distribution, it is unclear how to proceed if a mode wider than one $\theta$ value is identified (i.e., if two or more consecutive $\theta$ values have CMC counts equal to CMC$_{\max}$).
+\jz{Apart from the CMC methods' generalizability, we also simply do not know how the proposed methods are implemented. 
+Ambiguities in the methods range from minor implicit parameter choices (e.g., the convergence criteria for the robust Gaussian regression filter \citep{brinkman_bodschwinna_2003}) to procedures that fundamentally change how similarity features are extracted (e.g., how the cross-correlation is calculated). 
+As discussed in the} [introduction](#intro), \jz{this an issue that pervades computational research for which only prosaic descriptions of algorithms are provided.}
+The only solution to such ambiguity is to enumerate, implement, and pare-down the possible choices that could have been made to arrive to published results.
+Unsurprisingly, this process takes a considerable amount of time and resources that would be better spent furthering the state of the field.}
+
+\jz{Ambiguities in the decision rules' prosaic descriptions, specifically that of the High CMC method, lead to different interpretations of how to apply the rules.
+Recall from} [High CMC method](#highCMCMethod) \jz{section that the High CMC criterion attempts to identify a "prominent peak" or mode in the CMC-$\theta$ distribution.
+However, based on the description it is unclear how to proceed if a mode wider than one $\theta$ value is identified (i.e., if two or more consecutive $\theta$ values have CMC counts equal to CMC$_{\max}$).
 We've observed such situations to be quite common among both matching and non-matching pairs.
 As described in the} [Decision Rule Implementation](#decisionRuleImplementation) \jz{section, \pkg{cmcR} treats the median of such $\theta$ values as the "modal" $\theta$ value.}
 
 \jz{It also common to observe situations among matching and non-matching pairs in which a mode is identified at a particular $\theta$ value in one comparison direction but not in the other.
 Due to this ambiguity, a variety of processing conditions need to be considered.
 Let $\theta_{\text{mode},1-2}$ and $\theta_{\text{mode},2-1}$ be the modal $\theta$ values identified in the two comparison directions (note that either or both of these may be missing values if the associated direction fails the High CMC criterion).
-We might behave as if both comparison directions failed the High CMC criterion if one comparison direction fails.
-As mentioned above, such pairs would be assigned the minimum of the two CMC counts determined in both directions under the original method of \citet{song_proposed_2013}.
-Alternatively, we might behave as if both directions pass the High CMC criterion if only one direction passes.
+If acting conservatively, we might behave as if both $\theta_{\text{mode},1-2}$ and $\theta_{\text{mode},2-1}$ are missing if one of them is.
+In this case, the cartridge case pair would "fail" the High CMC criterion and be assigned the minimum of the two CMC counts determined in both directions under the original method of \citet{song_proposed_2013}.
+A more liberal alternative would be to behave as if both directions pass the High CMC criterion if only one direction passes.
 This would involve replacing the missing modal $\theta$, $\theta_{\text{mode},1-2}$ for sake of argument, with $-\theta_{\text{mode},2-1}$.
 The High CMCs would then be counted as if neither $\theta_{\text{mode},1-2}$ nor $\theta_{\text{mode},2-1}$ were missing.}
 
