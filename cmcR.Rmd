@@ -832,7 +832,9 @@ bind_rows(kmComparison$comparison_1to2$ccfResults %>%
   mutate(Classification = ifelse(abs(theta - med_theta) <= 6, "Congruent","Not Congruent")) %>%
   mutate(Classification = factor(Classification,levels = c("Not Congruent","Congruent"))) %>%
   ggplot() +
-  geom_bar(aes(x = theta, fill = Classification)) +
+  geom_bar(aes(x = theta, 
+               fill = Classification),
+           alpha = .7) +
   scale_fill_manual(values = c("#a60b00","#1b03a3")) +
   geom_vline(aes(xintercept = med_theta),
              colour = "#7570b3") +
@@ -892,7 +894,7 @@ Similar behavior tends to be seen for the majority KM and KNM pairs.
 However, we've observed that the behavior of the CMC-$\theta$ distributions depend heavily on the preprocessing procedures used and thresholds set. 
 In particular, the CMC-$\theta$ distributions for some KNM pairs exhibit the "prominent peak" behavior for a wide range of threshold values making them difficult to distinguish from KM pairs.
 
-```{r,echo=FALSE,message=FALSE,warning=FALSE,cache = T,fig.cap='\\label{fig:kmCMCPerTheta} CMC count per rotation value in both directions for the comparison between Fadul 1-1 and Fadul 1-2. The High CMC threshold is defined to be the max CMC count observed across all rotation values minus some constant ($\\tau = 1$ in this example). A clear CMC count mode is observed in both directions at opposite $\\theta$ values. The only $\\theta$ values with associated CMC counts greater than or equal to the High CMC threshold are adjacent (in particular, within $T_{\\theta} = 6$ degrees of each other). \\citet{tong_improved_2015} propose using this as evidence that the cartridge case pair are matches.', fig.align='center',fig.pos='h',out.width='.7\\textwidth'}
+```{r,echo=FALSE,message=FALSE,warning=FALSE,cache = F,fig.cap='\\label{fig:kmCMCPerTheta} CMC count per rotation value in both directions for the comparison between Fadul 1-1 and Fadul 1-2. The High CMC threshold is defined to be the max CMC count observed across all rotation values minus some constant ($\\tau = 1$ in this example). A clear CMC count mode is observed in both directions at opposite $\\theta$ values. The only $\\theta$ values with associated CMC counts greater than or equal to the High CMC threshold are adjacent (in particular, within $T_{\\theta} = 6$ degrees of each other). \\citet{tong_improved_2015} propose using this as evidence that the cartridge case pair are matches.', fig.align='center',fig.pos='h',out.width='.7\\textwidth'}
 cmcR::cmcPerThetaBarPlot(kmComparison,
                          ccf_thresh = .5,
                          dx_thresh = 20,
@@ -900,7 +902,7 @@ cmcR::cmcPerThetaBarPlot(kmComparison,
                          x3pNames = c("Fadul 1-1","Fadul 1-2"))
 ```
 
-```{r,echo=FALSE,cache = T,fig.cap='\\label{fig:knmCMCPerTheta} CMC count per rotation value in both directions for the comparison between Fadul 1-1 and Fadul 2-1. In contrast to \\autoref{fig:kmCMCPerTheta}, the $\\theta$ values with associated CMC count greater than or equal to the High CMC threshold are considerably more diffuse (in particular, the range of such $\\theta$ values is larger than $T_{\\theta} = 6$ degrees). \\citet{tong_improved_2015} propose using this as evidence that the cartridge case pair are non-matches.',fig.align='center',fig.align='center',fig.pos='h',out.width='.7\\textwidth'}
+```{r,echo=FALSE,cache = F,fig.cap='\\label{fig:knmCMCPerTheta} CMC count per rotation value in both directions for the comparison between Fadul 1-1 and Fadul 2-1. In contrast to \\autoref{fig:kmCMCPerTheta}, the $\\theta$ values with associated CMC count greater than or equal to the High CMC threshold are considerably more diffuse (in particular, the range of such $\\theta$ values is larger than $T_{\\theta} = 6$ degrees). \\citet{tong_improved_2015} propose using this as evidence that the cartridge case pair are non-matches.',fig.align='center',fig.align='center',fig.pos='h',out.width='.7\\textwidth'}
 cmcR::cmcPerThetaBarPlot(knmComparison,
                          ccf_thresh = .5,
                          dx_thresh = 20,
@@ -1082,49 +1084,6 @@ $$
 <!-- It should be noted that these authors report CMC count distributions with fewer "false positive" CMCs for non-match pairs.  -->
 <!-- However, the behavior of these distributions changes considerably depending on the thresholds specified. -->
 
-```{r include=FALSE,eval=FALSE,fig.cap='\\label{fig:topVoteCMC_perfectIdentification} CMC count distribution under the original method of \\citet{song_proposed_2013} with $T_{\\text{CCF}} = .6$, $T_{\\Delta x} = T_{\\Delta y} = 20$, and $T_{\\theta} = 6$ degrees.',fig.align='center',fig.pos='htbp',out.width='\\textwidth',out.height=".55\\textwidth"}
-
-barHeights <- cmcs_downSampled %>%
-  select(originalMethodCMCs,type,pairName,ccf_thresh,dx_thresh,theta_thresh) %>%
-  distinct() %>%
-  mutate(ccf_thresh = round(ccf_thresh,3)) %>%
-  filter(theta_thresh ==  6 & ccf_thresh == .6 & dx_thresh == 20) %>%
-  mutate(type = factor(type,levels = c("non-match","match"))) %>%
-  rename(`CCF Threshold` = ccf_thresh,
-         `Trans. Threshold` = dx_thresh) %>%
-  group_by(type,originalMethodCMCs) %>%
-  tally() %>%
-  ungroup() %>%
-  group_by(type) %>%
-  mutate(prop = n/sum(n))
-
-cmcs_downSampled %>%
-  select(originalMethodCMCs,type,pairName,ccf_thresh,dx_thresh,theta_thresh) %>%
-  distinct() %>%
-  mutate(ccf_thresh = round(ccf_thresh,3)) %>%
-  filter(theta_thresh ==  6 & ccf_thresh == .6 & dx_thresh == 20) %>%
-  # filter(theta_thresh ==  6 & ccf_thresh == .45 & dx_thresh == 20) %>%
-  mutate(type = factor(type,levels = c("non-match","match"))) %>%
-  rename(`CCF Threshold` = ccf_thresh,
-         `Trans. Threshold` = dx_thresh) %>%
-  ggplot() +
-  stat_density(aes(x = originalMethodCMCs,y = ..density.., fill = type)) +
-  geom_bar(aes(x = originalMethodCMCs,fill = type)) +
-  # facet_wrap(~`Trans. Threshold`,labeller = label_both) +
-  geom_text(data = barHeights,
-            aes(x = originalMethodCMCs,y = n,label = n),
-            nudge_y = 7,size = 2.5) +
-  scale_fill_manual(values = c("#a60b00","#1b03a3"),
-                    aesthetics = c("colour","fill")) +
-  guides(fill = guide_legend(title = "Comparison Type",
-                             override.aes = list(alpha = 1)),
-         colour = F) +
-  theme_bw() +
-  theme(legend.position = "bottom") +
-  xlab("CMC Count") +
-  ylab("Number of Pairs")
-```
-
 \jz{\autoref{fig:topVoteCMC_sensitivity} illustrates the sensitivity of the original method of \citet{song_proposed_2013} to various $T_{CCF}$ and $T_{\Delta x}, T_{\Delta y}$ values where $T_{\theta} = 6$ degrees. 
 The thresholds become more restrictive from top to bottom and from right to left, meaning the least restrictive set of thresholds is represented in the top-right corner.
 We can see that many of these combinations yield separation between the matching and non-matching CMC count distributions.
@@ -1193,7 +1152,8 @@ cmcs_aucs %>%
   geom_bar(aes(x = originalMethodCMCs,
                y = ..prop..,
                fill = type),
-           stat = "count") +
+           stat = "count",
+           alpha = .7) +
   geom_label(data = topVoteCMC_labels,
              aes(x = 15,
                  y = .7,
@@ -1202,7 +1162,7 @@ cmcs_aucs %>%
   facet_grid(rows = vars(`CCF Thresh`),
              cols = vars(`Trans. Thresh`),
              scales = "free_y",labeller = label_both) +
-  scale_fill_manual(values = c("#1b03a3","#a60b00")) +
+  scale_fill_manual(values = c("#40B0A6","#E1BE6A")) +
   guides(fill = guide_legend(override.aes = list(alpha = 1))) +
   theme_bw() + 
   theme(legend.position = "bottom",
@@ -1252,7 +1212,8 @@ cmcs_aucs %>%
   geom_bar(aes(x = highCMCs,
                y = ..prop..,
                fill = type),
-           stat = "count") +
+           stat = "count",
+           alpha = .7) +
   geom_label(data = highCMC_conservative_labels,
              aes(x = 22.5,
                  y = .7,
@@ -1261,7 +1222,7 @@ cmcs_aucs %>%
   facet_grid(rows = vars(`CCF Thresh`),
              cols = vars(`Trans. Thresh`),
              scales = "free_y",labeller = label_both) +
-  scale_fill_manual(values = c("#1b03a3","#a60b00")) +
+  scale_fill_manual(values = c("#40B0A6","#E1BE6A")) +
   guides(fill = guide_legend(override.aes = list(alpha = 1))) +
   theme_bw() + 
   theme(legend.position = "bottom",
@@ -1316,7 +1277,8 @@ cmcs_aucs %>%
   geom_bar(aes(x = highCMCs,
                y = ..prop..,
                fill = type),
-           stat = "count") +
+           stat = "count",
+           alpha = .7) +
   geom_label(data = highCMC_comparison_labels,
              aes(x = 22.5,
                  y = .5,
@@ -1325,7 +1287,7 @@ cmcs_aucs %>%
   facet_grid(rows = vars(`Missing Theta`),
              cols = vars(`Compare Initial/High Thetas`),
              scales = "free_y",labeller = label_both) +
-  scale_fill_manual(values = c("#1b03a3","#a60b00")) +
+  scale_fill_manual(values = c("#40B0A6","#E1BE6A")) +
   guides(fill = guide_legend(override.aes = list(alpha = 1))) +
   theme_bw() + 
   theme(legend.position = "bottom",
@@ -1412,7 +1374,8 @@ cmcs_noLeveling_aucs %>%
   geom_bar(aes(x = highCMCs,
                y = ..prop..,
                fill = type),
-           stat = "count") +
+           stat = "count",
+           alpha = .7) +
   geom_label(data = highCMC_noLeveling_labels,
              aes(x = 22.5,
                  y = .7,
@@ -1421,7 +1384,7 @@ cmcs_noLeveling_aucs %>%
   facet_grid(rows = vars(`CCF Thresh`),
              cols = vars(`Trans. Thresh`),
              scales = "free_y",labeller = label_both) +
-  scale_fill_manual(values = c("#1b03a3","#a60b00")) +
+  scale_fill_manual(values = c("#40B0A6","#E1BE6A")) +
   guides(fill = guide_legend(override.aes = list(alpha = 1))) +
   theme_bw() + 
   theme(legend.position = "bottom",
