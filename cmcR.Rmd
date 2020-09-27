@@ -693,18 +693,25 @@ kmComparison$comparison_1to2$ccfResults %>%
                             position = "center")
 ```
 
-\svp{Using the thetas, translation vectors, and CCFs produced by the correlation cell procedure, the CMC literature describes slightly different methods for aggregating this information into a consensus decision about the similarity of the two cartridge cases.} 
-<!-- \svp{The first method described, which we have called the "top vote" method, uses a median estimate of the translation and rotation parameters, then assesses cells to determine whether they meet certain requirements.}  -->
+
 
 ## Decision Rule
 
-A number of features are extracted in a cartridge case comparison using the correlation cell comparison procedure. 
+\svp{Using the thetas, translation vectors, and CCFs produced by the correlation cell procedure, the CMC literature describes two slightly different methods for aggregating this information into a consensus decision about the similarity of the two cartridge cases.} 
+
 As stated in \citet{song_3d_2014}, 
 
 > [t]he qualifications of CMCs require not only high correlation values CCF$_{\max} \geq T_{\text{CCF}}$, but also similar registration angles $\theta$ (within the threshold $T_{\theta}$) and similar $x - y$ registration pattern (within the thresholds $T_x$, $T_y$).
 
-A truly matching pair of cartridge cases \svp{would have similar translation and rotation values for each cell, estimated by maximizing the cell-wise CCF.} 
-\svp{This consensus set of $x, y, \theta$ is} referred to as the \dfn{registration phase} of the cell/region pairs \citep{song_proposed_2013}. 
+A truly matching pair of cartridge cases \svp{would have similar translation and rotation values for each cell, estimated by maximizing the cell-wise CCF; a nonmatching pair of cartridge cases would have a variety of different translation and rotation values showing no particular pattern.}
+
+\svp{XXX Add a figure (and reference) here showing CMCs from the original method as in figure 15, 16, for matching and nonmatching cartridges. So e.g. A | A' B, 3 across, with blue and red squares on A' and B showing the cells from A aligned.}
+
+\svp{The first step in the decision process is to obtain a consensus estimate of $x, y, \theta$; these estimated values are then used in the evaluation of the alignment of each cell/region pair.}
+\svp{The consensus set of $x, y, \theta$ is} referred to as the \dfn{registration phase} of the cell/region pairs \citep{song_proposed_2013}. 
+
+<!-- \svp{Both methods enforce decision criteria on the CCF, translation in x, translation in y, and rotation angle $\theta$ to determine which cells are declared to be sufficiently similar; then, the total number of similar cells is used to evaluate the cartridge cases as whole units.} -->
+<!-- \svp{The criteria proposed in \citet{song_proposed_2013} are fairly strict; the High CMC method described in \citet{tong_improved_2015} adjusts the procedure for determining consensus estimates and the subsequent decision rules.} -->
 \jz{The final step in any CMC method is to apply a set of criteria (i.e., a decision rule) to determine whether a consensus exists among these values. 
 Where the various proposed CMC methods principally differ is in these criteria. 
 For example, in the original method of \citet{song_proposed_2013}, the strength of the consensus is quantified by the number of cell/region pairs with "similar" registration phases (to be defined in [the description of the original method](\#originalMethod)). To overcome limitations of the original method, its descendants, including the High CMC method, apply more stringent criteria.}
