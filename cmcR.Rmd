@@ -871,8 +871,8 @@ knitr::include_graphics("images/correlationResults_sideBySide.PNG")
 
 \begin{figure}
 \centering
-\includegraphics[width=\textwidth]{images/Sketch.png}
-\caption{\svp{XXX Add a figure (and reference) here showing CMCs from the original method as in figure 15, 16, for matching and nonmatching cartridges. So e.g. A | A' B, 3 across, with square outlines (not colored yet) on A' and B showing the cells from A aligned, and the derivative distributions of $T_x, T_y, T_\theta, CCF_{max}$.}}
+\includegraphics[width=\textwidth]{images/originalMethod_sideBySide.png}
+\caption{\jz{Estimated phase alignment and CCF$_{\max}$ distributions for the comparison between the matching Fadul 1-1 vs. Fadul 1-2 and non-matching Fadul 1-1 vs. Fadul 2-1. Fadul 1-1 is treated as the "reference" scan, meaning it is split into a grid of cells and compared to regions in the other cartridge cases. The cells shown on Fadul 1-2 and Fadul 2-1 represent where each cell in Fadul 1-1 attains the highest CCF$_{\max}$ value. The distributions below the scans depict the actual $x,y,\theta$, and CCF$_{\max}$ values for each cell/region pair used in the comparison. For the first three rows, $x,y,$ and $\theta$ values within the blue ribbons are "congruent" in that they are within the allowed tolerance $(T_x = T_y = 20$ pixels, $T_\theta = 6$ degree) of the median alignment value. In the last row, CCF$_{\max}$ values above the allowed threshold $(T_{\text{CCF}} \geq .5$) are considered "congruent."}}
 \end{figure}
 
 \svp{The first step in the decision process is to obtain a consensus estimate of $x, y, \theta$; these estimated values are then used in the evaluation of the alignment of each cell/region pair.}
@@ -943,44 +943,304 @@ Of the 29 cell/region pairs considered in the known match comparison between Fad
 In contrast, 3 out of 35 $(x_i,y_i)$ are within 20 pixels of $(x_{\text{ref}},y_{\text{ref}})$ for the known non-match comparison between Fadul 1-1 and Fadul 2-1.} These plots exhibit similar behavior to Figures 1 and 2 in \citet{chen_convergence_2017} which show the estimated translation values for various rotation values for the same cartridge case pairs.
 <!-- \svp{XXX I think some points are missing in the KM plot at least - how many points were excluded for not having enough area? I count 39 points (27 inside, I'm taking your word on that).} -->
 
-```{r echo = FALSE,cache = T,fig.align = 'left',fig.cap="\\label{fig:translationVotes} Estimated translation values for the comparison of Fadul 1-1 and Fadul 1-2 (left) and Fadul 1-1 and Fadul 2-1 (right). The 19 $(x_i,y_i)$ pairs (out of 29) within the purple square on the left satisfy the congruency criteria of being within 20 pixels of the median value. In contrast, only 3 out of 35 $(x_i,y_i)$ pairs on the right satisfy the congruency criteria. These examples are illustrative of the more general phenomenon that estimated translation values for non-matching pairs tend to be more diffuse than for matching pairs.",fig.pos = 'h'}
-bind_rows(kmComparison$comparison_1to2$ccfResults %>%
-            topResultsPerCell() %>%
-            ungroup() %>%
-            mutate(`Comparison Type` = "Fadul 1-1 vs. Fadul 1-2"),
-          knmComparison$comparison_2to1$ccfResults %>%
-            topResultsPerCell() %>%
-            ungroup() %>%
-            mutate(`Comparison Type` = "Fadul 1-1 vs. Fadul 2-1")) %>%
-  group_by(`Comparison Type`) %>%
+```{r include=FALSE,eval=FALSE}
+kmComparison_dxData <- kmComparison$comparison_1to2$ccfResults %>%
+  topResultsPerCell() %>%
+  ungroup() %>%
   mutate(med_dx = median(dx),
          med_dy = median(dy)) %>%
   mutate(dx_threshMinus = med_dx - 20,
          dx_threshPlus = med_dx + 20,
          dy_threshMinus = med_dy - 20,
          dy_threshPlus = med_dy + 20) %>%
-  mutate(Classification = factor(ifelse(abs(dx - med_dx) <= 20 & abs(dy - med_dy) <= 20, "Congruent","Not Congruent"),levels = c("Not Congruent","Congruent"))) %>%
-  ggplot() +
-  geom_point(aes(x = dx,
-                 y = dy,
-                 colour = Classification), alpha = .5) +
-  geom_point(aes(x = med_dx,
-                 y = med_dy),
-             colour = "#7570b3",
-             size = 3,
-             shape = 4) +
-  scale_colour_manual(values = c("#a60b00","#1b03a3")) +
-  geom_rect(aes(xmin = dx_threshMinus,
-                xmax = dx_threshPlus,
-                ymin = dy_threshMinus,
-                ymax = dy_threshPlus),
-            colour = "#7570b3",
-            alpha = 0) +
-  theme_bw() +
-  coord_fixed() +
-  facet_wrap(~ `Comparison Type`,nrow = 1) +
-  theme(legend.position = "bottom")
+  mutate(Classification = factor(ifelse(abs(dx - med_dx) <= 20,"Congruent","Not Congruent"),
+                                 levels = c("Not Congruent","Congruent")))
+
+kmComparison_dyData <- kmComparison$comparison_1to2$ccfResults %>%
+  topResultsPerCell() %>%
+  ungroup() %>%
+  mutate(med_dx = median(dx),
+         med_dy = median(dy)) %>%
+  mutate(dx_threshMinus = med_dx - 20,
+         dx_threshPlus = med_dx + 20,
+         dy_threshMinus = med_dy - 20,
+         dy_threshPlus = med_dy + 20) %>%
+  mutate(Classification = factor(ifelse(abs(dy - med_dy) <= 20,"Congruent","Not Congruent"),
+                                 levels = c("Not Congruent","Congruent")))
+
+kmComparison_ccfData <- kmComparison$comparison_1to2$ccfResults %>%
+  topResultsPerCell() %>%
+  ungroup() %>%
+  mutate(ccf_thresh = .5) %>%
+  mutate(Classification = factor(ifelse(ccf >= .5,"Congruent","Not Congruent"),
+                                 levels = c("Not Congruent","Congruent")))
+
+kmComparison_thetaData <- kmComparison$comparison_1to2$ccfResults %>%
+  topResultsPerCell() %>%
+  ungroup() %>%
+  mutate(med_theta = median(theta)) %>%
+  mutate(theta_threshMinus = med_theta - 6,
+         theta_threshPlus = med_theta + 6) %>%
+  mutate(Classification = ifelse(abs(theta - med_theta) <= 6, "Congruent","Not Congruent")) %>%
+  mutate(Classification = factor(Classification,levels = c("Not Congruent","Congruent")))
+
+knmComparison_dxData <- knmComparison$comparison_1to2$ccfResults %>%
+  topResultsPerCell() %>%
+  ungroup() %>%
+  mutate(med_dx = median(dx),
+         med_dy = median(dy)) %>%
+  mutate(dx_threshMinus = med_dx - 20,
+         dx_threshPlus = med_dx + 20,
+         dy_threshMinus = med_dy - 20,
+         dy_threshPlus = med_dy + 20) %>%
+  mutate(Classification = factor(ifelse(abs(dx - med_dx) <= 20,"Congruent","Not Congruent"),
+                                 levels = c("Not Congruent","Congruent")))
+
+knmComparison_dyData <- knmComparison$comparison_1to2$ccfResults %>%
+  topResultsPerCell() %>%
+  ungroup() %>%
+  mutate(med_dx = median(dx),
+         med_dy = median(dy)) %>%
+  mutate(dx_threshMinus = med_dx - 20,
+         dx_threshPlus = med_dx + 20,
+         dy_threshMinus = med_dy - 20,
+         dy_threshPlus = med_dy + 20) %>%
+  mutate(Classification = factor(ifelse(abs(dy - med_dy) <= 20,"Congruent","Not Congruent"),
+                                 levels = c("Not Congruent","Congruent")))
+
+knmComparison_ccfData <- knmComparison$comparison_1to2$ccfResults %>%
+  topResultsPerCell() %>%
+  ungroup() %>%
+  mutate(ccf_thresh = .5) %>%
+  mutate(Classification = factor(ifelse(ccf >= .5,"Congruent","Not Congruent"),
+                                 levels = c("Not Congruent","Congruent")))
+
+knmComparison_thetaData <- knmComparison$comparison_1to2$ccfResults %>%
+  topResultsPerCell() %>%
+  ungroup() %>%
+  mutate(med_theta = median(theta)) %>%
+  mutate(theta_threshMinus = med_theta - 6,
+         theta_threshPlus = med_theta + 6) %>%
+  mutate(Classification = ifelse(abs(theta - med_theta) <= 6, "Congruent","Not Congruent")) %>%
+  mutate(Classification = factor(Classification,levels = c("Not Congruent","Congruent")))
 ```
+
+```{r eval=FALSE,include=FALSE}
+kmComparison_dxData %>%
+  ggplot() +
+  geom_histogram(aes(x = dx, 
+                     fill = Classification),
+                 alpha = .7,
+                 binwidth = 1,
+                 colour = "white") +
+  scale_fill_manual(values = c("#a60b00","#1b03a3")) +
+  geom_vline(aes(xintercept = med_dx),
+             colour = "#7570b3") +
+  geom_ribbon(mapping = aes(y = seq(0,3.5,length.out = 31),
+                            xmin = kmComparison_dxData$med_dx - 20.5,
+                            xmax = kmComparison_dxData$med_dx + 20.5),
+              fill = "#7570b3",
+              alpha = .3) +
+  theme_bw() +
+  scale_x_continuous(expression(paste("Estimated horizontal translation ",Delta,"x")), 
+                     breaks = seq(-100,100,by = 10),
+                     limits = c(-101,101)
+                     ) +
+  coord_fixed(expand = FALSE,
+              ratio = 15) +
+  scale_y_continuous(limits = c(0,3.5)) +
+  ylab("# Cell Pairs") +
+  theme(legend.position = c(1, 1), legend.justification = c(1, 1), legend.direction = "horizontal", legend.background = element_blank())
+
+knmComparison_dxData %>%
+  ggplot() +
+  geom_histogram(aes(x = dx, 
+                     fill = Classification),
+                 alpha = .7,
+                 binwidth = 1,
+                 colour = "white") +
+  scale_fill_manual(values = c("#a60b00","#1b03a3")) +
+  geom_vline(aes(xintercept = med_dx),
+             colour = "#7570b3") +
+  geom_ribbon(mapping = aes(y = seq(0,3.5,length.out = 32),
+                            xmin = knmComparison_dxData$med_dx - 20,
+                            xmax = knmComparison_dxData$med_dx + 20),
+              fill = "#7570b3",
+              alpha = .3) +
+  theme_bw() +
+  scale_x_continuous(expression(paste("Estimated horizontal translation ",Delta,"x")), 
+                     breaks = seq(-100,100,by = 10),
+                     limits = c(-101,101)
+                     ) +
+  coord_fixed(expand = FALSE,
+              ratio = 15) +
+  scale_y_continuous(limits = c(0,3.5)) +
+  ylab("# Cell Pairs") +
+  theme(legend.position = c(1, 1), legend.justification = c(1, 1), legend.direction = "horizontal", legend.background = element_blank())
+
+kmComparison_dyData %>% 
+  ggplot() +
+  geom_histogram(aes(x = dy, 
+                     fill = Classification),
+                 alpha = .7,
+                 binwidth = 1,
+                 colour = "white") +
+  scale_fill_manual(values = c("#a60b00","#1b03a3")) +
+  geom_vline(aes(xintercept = med_dy),
+             colour = "#7570b3") +
+  geom_ribbon(mapping = aes(y = seq(0,3.5,length.out = 31),
+                            xmin = kmComparison_dxData$med_dy - 20,
+                            xmax = kmComparison_dxData$med_dy + 20),
+              fill = "#7570b3",
+              alpha = .3) +
+  theme_bw() +
+  scale_x_continuous(expression(paste("Estimated horizontal translation ",Delta,"y")), 
+                     breaks = seq(-100,100,by = 10),
+                     limits = c(-101,101)
+                     ) +
+  coord_fixed(expand = FALSE,
+              ratio = 15) +
+  scale_y_continuous(limits = c(0,3.5)) +
+  ylab("# Cell Pairs") +
+  theme(legend.position = c(1, 1), 
+        legend.justification = c(1, 1), 
+        legend.direction = "horizontal", 
+        legend.background = element_blank())
+
+knmComparison_dyData %>% 
+  ggplot() +
+  geom_histogram(aes(x = dy, 
+                     fill = Classification),
+                 alpha = .7,
+                 binwidth = 1,
+                 colour = "white") +
+  scale_fill_manual(values = c("#a60b00","#1b03a3")) +
+  geom_vline(aes(xintercept = med_dy),
+             colour = "#7570b3") +
+  geom_ribbon(mapping = aes(y = seq(0,3.5,length.out = 32),
+                            xmin = knmComparison_dxData$med_dy - 20.5,
+                            xmax = knmComparison_dxData$med_dy + 20.5),
+              fill = "#7570b3",
+              alpha = .3) +
+  theme_bw() +
+  scale_x_continuous(expression(paste("Estimated horizontal translation ",Delta,"y")), 
+                     breaks = seq(-100,100,by = 10),
+                     limits = c(-101,101)
+                     ) +
+  coord_fixed(expand = FALSE,
+              ratio = 15) +
+  scale_y_continuous(limits = c(0,3.5)) +
+  ylab("# Cell Pairs") +
+  theme(legend.position = c(1, 1), 
+        legend.justification = c(1, 1), 
+        legend.direction = "horizontal", 
+        legend.background = element_blank())
+
+kmComparison_ccfData %>%
+  ggplot(aes(x = ccf,fill = Classification)) +
+  geom_histogram(colour = "white",binwidth = .01) +
+  scale_fill_manual(values = c("#a60b00","#1b03a3")) +
+  geom_vline(aes(xintercept = ccf_thresh),
+             colour = "#7570b3") +
+  geom_ribbon(mapping = aes(y = seq(-1,4,length.out = 31),
+                            xmin = ccf_thresh,
+                            xmax = 1),
+              fill = "#7570b3",
+              alpha = .3) +
+  theme_bw() +
+  scale_x_continuous(expression(paste("Estimated cross-correlation CCF"[max])), 
+                     breaks = seq(0,1,by = .1),
+                     limits = c(0,1)) +
+  coord_fixed(expand = FALSE,
+              ratio = .05) +
+  scale_y_continuous(limits = c(0,4)) +
+  ylab("# Cell Pairs") +
+  theme(legend.position = c(1, 1), 
+        legend.justification = c(1, 1), 
+        legend.direction = "horizontal", 
+        legend.background = element_blank())
+
+knmComparison_ccfData %>%
+  ggplot(aes(x = ccf,fill = Classification)) +
+  geom_histogram(colour = "white",binwidth = .01) +
+  scale_fill_manual(values = c("#a60b00","#1b03a3")) +
+  geom_vline(aes(xintercept = ccf_thresh),
+             colour = "#7570b3") +
+  geom_ribbon(mapping = aes(y = seq(0,4,length.out = 32),
+                            xmin = ccf_thresh,
+                            xmax = 1),
+              fill = "#7570b3",
+              alpha = .3) +
+  theme_bw() +
+  scale_x_continuous(expression(paste("Estimated cross-correlation CCF"[max])), 
+                     breaks = seq(0,1,by = .1),
+                     limits = c(0,1)
+                     ) +
+  coord_fixed(expand = FALSE,ratio = .05) +
+  scale_y_continuous(limits = c(0,4)) +
+  ylab("# Cell Pairs") +
+  theme(legend.position = c(1, 1), 
+        legend.justification = c(1, 1), 
+        legend.direction = "horizontal", 
+        legend.background = element_blank())
+
+kmComparison_thetaData %>%
+  ggplot() +
+  geom_bar(aes(x = theta, 
+               fill = Classification),
+           alpha = .7) +
+  scale_fill_manual(values = c("#a60b00","#1b03a3")) +
+  geom_vline(aes(xintercept = med_theta),
+             colour = "#7570b3") +
+  geom_ribbon(aes(y = seq(0,12,length.out = 31),
+                  xmin = kmComparison_thetaData$med_theta - 7.5,
+                  xmax = kmComparison_thetaData$med_theta + 7.5),
+              fill = "#7570b3",
+              alpha = .3) +
+  theme_bw() +
+  coord_fixed(expand = FALSE,
+              ratio = 1.1) +
+  scale_x_continuous(expression(paste("Estimated rotation angle ", theta)), 
+                     breaks = seq(-30,30,by = 3),
+                     limits = c(-32,32)) +
+  scale_y_continuous(limits = c(0,12),
+                     breaks = seq(0,12,by = 2)) +
+  ylab("# Cell Pairs") +
+  theme(legend.position = c(1, 1), 
+        legend.justification = c(1, 1),
+        legend.direction = "horizontal", 
+        legend.background = element_blank())
+
+knmComparison_thetaData %>%
+  ggplot() +
+  geom_bar(aes(x = theta, 
+               fill = Classification),
+           alpha = .7) +
+  scale_fill_manual(values = c("#a60b00","#1b03a3")) +
+  geom_vline(aes(xintercept = med_theta),
+             colour = "#7570b3") +
+  geom_ribbon(aes(y = seq(0,12,length.out = 32),
+                  xmin = knmComparison_thetaData$med_theta - 6,
+                  xmax = knmComparison_thetaData$med_theta + 6),
+              fill = "#7570b3",
+              alpha = .3) +
+  theme_bw() +
+  coord_fixed(expand = FALSE,
+              ratio = 1.1) +
+  scale_x_continuous(expression(paste("Estimated rotation angle ", theta)), 
+                     breaks = seq(-30,30,by = 3),
+                     limits = c(-32,32)) +
+  scale_y_continuous(limits = c(0,12),
+                     breaks = seq(0,12,by = 2)) +
+  ylab("# Cell Pairs") +
+  theme(legend.position = c(1, 1), 
+        legend.justification = c(1, 1),
+        legend.direction = "horizontal", 
+        legend.background = element_blank())
+```
+
+
+
 Turning our attention to the estimated rotation values, \jz{\autoref{fig:rotationVotes} shows the distribution of the $\theta_i$ values which produce the highest CCF for the comparisons of Fadul 1-1 vs. Fadul 1-2 and Fadul 1-1 vs. Fadul 2-1. A vertical line is drawn at the comparisons' respective $\theta_{\text{ref}}$ value and a threshold of $T_{\theta} = 6$ degrees is used to classify $\theta_i$ values as "congruent." 25 of 29 known match and 2 of 34 known non-match $\theta_i$ values are classified as congruent under these conditions.}
 
 ```{r echo = FALSE,cache = T,fig.align = 'left',fig.cap='\\label{fig:rotationVotes} Estimated rotation values for the comparison of Fadul 1-1 and Fadul 1-2 (left) and Fadul 1-1 and Fadul 2-1 (right). Values within the purple bands satisfy the congruency criterion of being within 6 degrees of the median rotation value. This threshold envelopes the obvious mode around -24 degrees consisting of 25 estimated translation values for the Fadul 1-1 vs. Fadul 1-2 matching pair. In contrast, no such mode is observed for the Fadul 1-1 vs. Fadul 2-1 non-match pair and consequently only 8 estimated rotation values are classified as "congruent".',fig.pos = 'h'}
