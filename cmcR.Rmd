@@ -865,9 +865,9 @@ knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1` <- knmCMCPlot_list$originalMethod
 
 ```
 
-```{r echo=FALSE,message=FALSE,error=FALSE,out.width='\\textwidth',cache = T,fig.cap='\\label{fig:originalMethod_sideBySide} CMC results under the original method of \\citet{song_proposed_2013} from comparing the matching pair Fadul 1-1 to Fadul 1-2 and the non-matching pair Fadul 1-1 to Fadul 2-1. In the right two plots, blue cells show how each CMC aligns in the other surface matrix while red cells show how the non-CMCs align to attain their CCF$_{\\max}$ value. Note that Fadul 1-1 is treated as the "reference" scan in both of these comparison, meaning it is divided into a grid of cells that are compared to larger regions in the other scans.',fig.pos = 'h'}
-knitr::include_graphics("images/correlationResults_sideBySide.PNG")
-```
+<!-- ```{r echo=FALSE,message=FALSE,error=FALSE,out.width='\\textwidth',cache = T,fig.cap='\\label{fig:originalMethod_sideBySide} CMC results under the original method of \\citet{song_proposed_2013} from comparing the matching pair Fadul 1-1 to Fadul 1-2 and the non-matching pair Fadul 1-1 to Fadul 2-1. In the right two plots, blue cells show how each CMC aligns in the other surface matrix while red cells show how the non-CMCs align to attain their CCF$_{\\max}$ value. Note that Fadul 1-1 is treated as the "reference" scan in both of these comparison, meaning it is divided into a grid of cells that are compared to larger regions in the other scans.',fig.pos = 'h'} -->
+<!-- knitr::include_graphics("images/correlationResults_sideBySide.PNG") -->
+<!-- ``` -->
 
 \begin{figure}
 \centering
@@ -1243,7 +1243,7 @@ knmComparison_thetaData %>%
 
 Turning our attention to the estimated rotation values, \jz{\autoref{fig:rotationVotes} shows the distribution of the $\theta_i$ values which produce the highest CCF for the comparisons of Fadul 1-1 vs. Fadul 1-2 and Fadul 1-1 vs. Fadul 2-1. A vertical line is drawn at the comparisons' respective $\theta_{\text{ref}}$ value and a threshold of $T_{\theta} = 6$ degrees is used to classify $\theta_i$ values as "congruent." 25 of 29 known match and 2 of 34 known non-match $\theta_i$ values are classified as congruent under these conditions.}
 
-```{r echo = FALSE,cache = T,fig.align = 'left',fig.cap='\\label{fig:rotationVotes} Estimated rotation values for the comparison of Fadul 1-1 and Fadul 1-2 (left) and Fadul 1-1 and Fadul 2-1 (right). Values within the purple bands satisfy the congruency criterion of being within 6 degrees of the median rotation value. This threshold envelopes the obvious mode around -24 degrees consisting of 25 estimated translation values for the Fadul 1-1 vs. Fadul 1-2 matching pair. In contrast, no such mode is observed for the Fadul 1-1 vs. Fadul 2-1 non-match pair and consequently only 8 estimated rotation values are classified as "congruent".',fig.pos = 'h'}
+```{r echo = FALSE,eval=FALSE,cache = T,fig.align = 'left',fig.cap='\\label{fig:rotationVotes} Estimated rotation values for the comparison of Fadul 1-1 and Fadul 1-2 (left) and Fadul 1-1 and Fadul 2-1 (right). Values within the purple bands satisfy the congruency criterion of being within 6 degrees of the median rotation value. This threshold envelopes the obvious mode around -24 degrees consisting of 25 estimated translation values for the Fadul 1-1 vs. Fadul 1-2 matching pair. In contrast, no such mode is observed for the Fadul 1-1 vs. Fadul 2-1 non-match pair and consequently only 8 estimated rotation values are classified as "congruent".',fig.pos = 'h'}
 bind_rows(kmComparison$comparison_1to2$ccfResults %>%
             topResultsPerCell() %>%
             ungroup() %>%
@@ -1287,23 +1287,28 @@ bind_rows(kmComparison$comparison_1to2$ccfResults %>%
 
 <!-- \svp{XXX do we want to discuss the sensitivity analysis here? XXX} -->
 
-\svp{The \jz{original method of \citet{song_proposed_2013}} has one major limitation, which is highlighted in \citet{tong_improved_2015}:}
+<!-- \svp{The \jz{original method of \citet{song_proposed_2013}} has one major limitation, which is highlighted in \citet{tong_improved_2015}:} -->
+The High CMC utilizes the behavior of the CCF$_{\max}$ values across various rotations more advantageously than the original method of \citet{song_proposed_2013}. 
+Additionally, comparisons are performed in both “directions” so that each surface matrix takes on the role of the surface matrix that is partitioned into a grid of cells.
 
-> some of the valid cell pairs may be mistakenly excluded from the CMC count because by chance their correlation yields a higher CCF value at a rotation angle outside the threshold range $T_\theta$.
 
 ### The High CMC method {#highCMCMethod}
 
-The High CMC method was proposed by \citet{tong_improved_2015} to address situations in which the \jz{original method of \citet{song_proposed_2013}} is excessively strict. 
-The proposed extension to the \jz{original method of \citet{song_proposed_2013}} of utilizes the behavior of the CCF$_{\max}$ values across various rotations more advantageously. 
-Additionally, comparisons are performed in both “directions” so that each surface matrix takes on the role of the surface matrix that is partitioned into a grid of cells.
+\jz{An analogy is useful for understanding the difference between the decision rules of the original method of \citet{song_proposed_2013} and the High CMC method. Consider the decision rules as a voting system by which each cell in the reference scan votes for what it considers to be the true registration phase (translations and rotation) of the overall scans. The "votes" of each cell are ranked based on the associated CCF$_{\max}$ value. The original method of \citet{song_proposed_2013} might be viewed as a single-choice voting system similar to the system used in U.S. presidential elections. That is, every cell is allowed to submit one vote corresponding to the registration phase with the highest CCF$_{\max}$ value. Some of these votes are discarded if the associated CCF$_{\max}$ are below the $T_{\text{CCF}}$ threshold. A consensus is determined by counting the number of votes that are close to the reference values $x_{\text{ref}}, y_{\text{ref}}, \theta_{\text{ref}}$ (which is dyadically defined based on the $T_x,T_y,T_{\theta}$ thresholds). By considering only the "top vote" of each cell, information is lost regarding other registration phases for which a cell might also rank highly. As \citet{tong_improved_2015} observe:}
 
-\citet{tong_improved_2015} propose \jz{building a "CMC-$\theta$" distribution by applying the translation and CCF$_{\max}$ similarity criteria from the original method of \citet{song_proposed_2013} at each $\theta$ valued considered.
-\citet{tong_improved_2015} consider this as counting the number of "congruent cells" per $\theta$ value.
-Thus, there may be more than one $\theta$ value for which a single cell/region pair is considered a CMC.
+> some of the valid cell pairs may be mistakenly excluded from the CMC count because by chance their correlation yields a higher CCF value at a rotation angle outside the threshold range $T_\theta$.
+
+\jz{The High CMC method lifts the single-choice restriction by allowing cells to cast a vote for the translation phase at every $\theta$ value for which it has a sufficiently large associated CCF$_{\max}$ value. 
+Under this system, each vote represents the translation phase that the cell considers to be the true translation phase of the overall scans conditional on a particular $\theta$ value.
+In this way, the High CMC method might be viewed as an approval voting system in which an individual may cast a vote for all of the candidates that they would like.
+For each $\theta$ value, the number of translation phase votes that are close to the $\theta$-specific reference values $x_{\text{ref},\theta}, y_{\text{ref},\theta}$ are counted (now defined based only on the $T_x,T_y$ thresholds).
+This yields what \citet{tong_improved_2015} refer to as a "CMC-$\theta$" distribution representing, as they consider it, the number of "congruent cells" per $\theta$ value. 
+Thus, there may be more than one $\theta$ value for which a single cell/region pair is considered congruent.
 While seemingly contradictory (as there should be only one "true" $\theta$ alignment value), \citet{tong_improved_2015} justify their method by the empirical observation:}
 
 > [i]f two images are truly matching, the CMC-$\theta$ distribution of matching image pairs should have a prominent peak located near the initial phase angle $\Theta_0$, while non-matching image pairs may have a relatively flat and random CMC-$\theta$ distribution pattern.
 
+\jz{The assumption underlying the High CMC method is that the number of cells classified as congruent should be larger near the true $\theta$ value (the "initial phase angle $\Theta_0$", as they call it) than for other $\theta$ values if the cartridge case pair is indeed a match.}
 These phenomena are illustrated in Figures \ref{fig:kmCMCPerTheta} and \ref{fig:knmCMCPerTheta}. 
 \autoref{fig:kmCMCPerTheta} shows the CMC counts per rotation value in both directions for the known match pair Fadul 1-1 and Fadul 1-2 from \citet{fadul_empirical_nodate}. 
 We can clearly see a CMC mode around $\theta = -24$ in one direction and $21$ in the other, which is to be expected for a known match pair. 
