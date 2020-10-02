@@ -853,29 +853,11 @@ kmCMCPlot_list <- cmcR::cmcPlot(fadul1.1,
                                 na.value = "gray90",
                                 type = "list")
 
-kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1`$layers <- kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1`$layers[-3]
-kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2`$layers <- kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2`$layers[-3]
-knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1`$layers <- knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1`$layers[-3]
-
 # kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1`$layers[[2]]$mapping$fill <- NULL
 
 # kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1`$layers[[2]]$mapping$colour <- "black"
 # 
 # kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1`$layers[[2]]$mapping$size <-
-
-
-kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1` <- kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1` +
-  ggplot2::theme(legend.position = "none")
-
-kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2` <- kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2` +
-  ggplot2::theme(legend.position = "none")
-
-knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1` <- knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1` +
-  ggplot2::theme(legend.position = "none")
-
-# kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1`
-# kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2`
-# knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1`
 ```
 
 <!-- ```{r echo=FALSE,message=FALSE,error=FALSE,out.width='\\textwidth',cache = T,fig.cap='\\label{fig:originalMethod_sideBySide} CMC results under the original method of \\citet{song_proposed_2013} from comparing the matching pair Fadul 1-1 to Fadul 1-2 and the non-matching pair Fadul 1-1 to Fadul 2-1. In the right two plots, blue cells show how each CMC aligns in the other surface matrix while red cells show how the non-CMCs align to attain their CCF$_{\\max}$ value. Note that Fadul 1-1 is treated as the "reference" scan in both of these comparison, meaning it is divided into a grid of cells that are compared to larger regions in the other scans.',fig.pos = 'h'} -->
@@ -1060,14 +1042,17 @@ kmComparison_dxData_plot <- kmComparison_dxData %>%
                      limits = c(-101,101)
                      ) +
   coord_fixed(expand = FALSE,
-              ratio = 15) +
+              ratio = 13) +
   scale_y_continuous(limits = c(0,3.5)) +
   ylab("# Cell Pairs") +
   theme(legend.position = c(1, 1),
         legend.justification = c(1, 1),
         legend.direction = "horizontal",
         legend.background = element_blank(),
-        axis.title = element_text(size = 15))
+        legend.text = element_text(size = 4),
+        axis.text = element_text(size = 14),         axis.title = element_text(size = 14), plot.margin=unit(c(.4,.4,.4,.4), "cm"))
+        # axis.text = element_text(size = 5),         axis.title = element_text(size = 6), plot.margin=unit(c(0,-.5,0,-.5), "cm"))
+
 
 pltLegend <- cowplot::get_legend(kmComparison_dxData_plot)
 
@@ -1095,11 +1080,13 @@ knmComparison_dxData_plot <- knmComparison_dxData %>%
                      limits = c(-101,101)
                      ) +
   coord_fixed(expand = FALSE,
-              ratio = 15) +
+              ratio = 13) +
   scale_y_continuous(limits = c(0,3.5)) +
   ylab("# Cell Pairs") +
   theme(legend.position = "none",
-        axis.title = element_text(size = 15))
+        axis.text = element_text(size = 14),         axis.title = element_text(size = 14), plot.margin=unit(c(.4,.4,.4,.4), "cm"))
+  # theme(legend.position = "none",
+  #       axis.text = element_text(size = 5),         axis.title = element_text(size = 6), plot.margin=unit(c(0,-.5,0,-.5), "cm"))
 
 kmComparison_dyData_plot <- kmComparison_dyData %>% 
   ggplot() +
@@ -1122,11 +1109,13 @@ kmComparison_dyData_plot <- kmComparison_dyData %>%
                      limits = c(-101,101)
                      ) +
   coord_fixed(expand = FALSE,
-              ratio = 15) +
+              ratio = 11.5) +
   scale_y_continuous(limits = c(0,3.5)) +
   ylab("# Cell Pairs") +
   theme(legend.position = "none",
-        axis.title = element_text(size = 15))
+        axis.text = element_text(size = 14),         axis.title = element_text(size = 14), plot.margin=unit(c(.4,.4,.4,.4), "cm"))
+  # theme(legend.position = "none",
+  #       axis.text = element_text(size = 5),         axis.title = element_text(size = 6), plot.margin=unit(c(0,-.5,0,-.5), "cm"))
 
 knmComparison_dyData_plot <- knmComparison_dyData %>% 
   ggplot() +
@@ -1149,11 +1138,13 @@ knmComparison_dyData_plot <- knmComparison_dyData %>%
                      limits = c(-101,101)
                      ) +
   coord_fixed(expand = FALSE,
-              ratio = 15) +
+              ratio = 11.5) +
   scale_y_continuous(limits = c(0,3.5)) +
   ylab("# Cell Pairs") +
   theme(legend.position = "none",
-        axis.title = element_text(size = 15))
+        axis.text = element_text(size = 14),         axis.title = element_text(size = 14), plot.margin=unit(c(.4,.4,.4,.4), "cm"))
+  # theme(legend.position = "none",
+  #       axis.text = element_text(size = 5),         axis.title = element_text(size = 6), plot.margin=unit(c(0,-.5,0,-.5), "cm"))
 
 kmComparison_ccfData_plot <- kmComparison_ccfData %>%
   ggplot(aes(x = ccf,fill = Classification)) +
@@ -1175,7 +1166,9 @@ kmComparison_ccfData_plot <- kmComparison_ccfData %>%
   scale_y_continuous(limits = c(0,4)) +
   ylab("# Cell Pairs") +
   theme(legend.position = "none",
-        axis.title = element_text(size = 15))
+        axis.text = element_text(size = 14),         axis.title = element_text(size = 14), plot.margin=unit(c(.4,.4,.4,.4), "cm"))
+  # theme(legend.position = "none",
+  #       axis.text = element_text(size = 5),         axis.title = element_text(size = 6), plot.margin=unit(c(0,-.5,0,-.5), "cm"))
 
 knmComparison_ccfData_plot <- knmComparison_ccfData %>%
   ggplot(aes(x = ccf,fill = Classification)) +
@@ -1197,7 +1190,9 @@ knmComparison_ccfData_plot <- knmComparison_ccfData %>%
   scale_y_continuous(limits = c(0,4)) +
   ylab("# Cell Pairs") +
   theme(legend.position = "none",
-        axis.title = element_text(size = 15))
+        axis.text = element_text(size = 14),         axis.title = element_text(size = 14), plot.margin=unit(c(.4,.4,.4,.4), "cm"))
+  # theme(legend.position = "none",
+  #       axis.text = element_text(size = 5),         axis.title = element_text(size = 6), plot.margin=unit(c(0,-.5,0,-.5), "cm"))
 
 kmComparison_thetaData_plot <- kmComparison_thetaData %>%
   ggplot() +
@@ -1214,7 +1209,7 @@ kmComparison_thetaData_plot <- kmComparison_thetaData %>%
               alpha = .3) +
   theme_bw() +
   coord_fixed(expand = FALSE,
-              ratio = 1.1) +
+              ratio = 1) +
   scale_x_continuous(expression(paste("Estimated rotation angle ", theta)), 
                      breaks = seq(-30,30,by = 15),
                      limits = c(-32,32)) +
@@ -1222,7 +1217,9 @@ kmComparison_thetaData_plot <- kmComparison_thetaData %>%
                      breaks = seq(0,12,by = 2)) +
   ylab("# Cell Pairs") +
   theme(legend.position = "none",
-        axis.title = element_text(size = 15))
+        axis.text = element_text(size = 14),         axis.title = element_text(size = 14), plot.margin=unit(c(.4,.4,.4,.4), "cm"))
+  # theme(legend.position = "none",
+  #       axis.text = element_text(size = 5),         axis.title = element_text(size = 6), plot.margin=unit(c(0,-.5,0,-.5), "cm"))
 
 knmComparison_thetaData_plot <- knmComparison_thetaData %>%
   ggplot() +
@@ -1239,7 +1236,7 @@ knmComparison_thetaData_plot <- knmComparison_thetaData %>%
               alpha = .3) +
   theme_bw() +
   coord_fixed(expand = FALSE,
-              ratio = 1.1) +
+              ratio = 1) +
   scale_x_continuous(expression(paste("Estimated rotation angle ", theta)), 
                      breaks = seq(-30,30,by = 15),
                      limits = c(-32,32)) +
@@ -1247,7 +1244,9 @@ knmComparison_thetaData_plot <- knmComparison_thetaData %>%
                      breaks = seq(0,12,by = 2)) +
   ylab("# Cell Pairs") +
   theme(legend.position = "none",
-        axis.title = element_text(size = 15))
+        axis.text = element_text(size = 14),         axis.title = element_text(size = 14), plot.margin=unit(c(.4,.4,.4,.4), "cm"))
+  # theme(legend.position = "none",
+  #       axis.text = element_text(size = 5),         axis.title = element_text(size = 6), plot.margin=unit(c(0,-.5,0,-.5), "cm"))
 ```
 
 ```{r eval=FALSE,include=FALSE}
@@ -1267,38 +1266,86 @@ knmComparison_thetaData_plot
 
 
 horizontalTranslation_label <- ggplot() +
-  annotate("text",x = 500,y = 300,size = 3,label = "  Horizontal \n Translation") +
+  annotate("text",x = 1,y = 1,size = 2,label = "  Horizontal \n Translation") +
   theme_void()
 
 verticalTranslation_label <- ggplot() +
-  annotate("text",x = 500,y = 300,size = 3,label = "  Vertical \n Translation") +
+  annotate("text",x = 1,y = 1,size = 2,label = "  Vertical \n Translation") +
   theme_void()
 
 rotation_label <- ggplot() +
-  annotate("text",x = 500,y = 300,size = 3,label = "Rotation") +
+  annotate("text",x = 1,y = 1,size = 2,label = "Rotation") +
   theme_void()
 
 ccf_label <- ggplot() +
-  annotate("text",x = 500,y = 300,size = 3,label = expression(paste("CCF"[max]))) +
+  annotate("text",x = 1,y = 1,size = 2,label = expression(paste("CCF"[max]))) +
   theme_void()
 
-cowplot::plot_grid(kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1`,
-                   kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2`,
-                   knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1`,
-                   horizontalTranslation_label,
-                   kmComparison_dxData_plot,
-                   knmComparison_dxData_plot,
-                   verticalTranslation_label,
-                   kmComparison_dyData_plot,
-                   knmComparison_dyData_plot,
-                   rotation_label,
-                   kmComparison_thetaData_plot,
-                   knmComparison_thetaData_plot,
-                   ccf_label,
-                   kmComparison_ccfData_plot,
-                   knmComparison_ccfData_plot,
-                   ncol = 3,
-                   byrow = TRUE)
+blank_label <- ggplot() +
+  annotate("text",x = 1,y = 1,size = 2,label = " ") +
+  theme_void() 
+
+
+kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1`$layers <- kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1`$layers[-3]
+kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2`$layers <- kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2`$layers[-3]
+knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1`$layers <- knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1`$layers[-3]
+
+kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1` <- kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1` +
+  ggplot2::theme(legend.position = "none",
+                 plot.margin=unit(c(0,-.5,0,-.5), "cm"))
+
+kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2` <- kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2` +
+  ggplot2::theme(legend.position = "none",
+                 plot.margin=unit(c(0,-.5,0,-.5), "cm"))
+
+knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1` <- knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1` +
+  ggplot2::theme(legend.position = "none",
+                 plot.margin=unit(c(0,-.5,0,-.5), "cm"))
+
+# kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1`
+# kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2`
+# knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1`
+
+gridExtra::grid.arrange(kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1`,
+                        kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2`,
+                        knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1`,
+                        horizontalTranslation_label,
+                        kmComparison_dxData_plot,
+                        knmComparison_dxData_plot,
+                        verticalTranslation_label,
+                        kmComparison_dyData_plot,
+                        knmComparison_dyData_plot,
+                        rotation_label,
+                        kmComparison_thetaData_plot,
+                        knmComparison_thetaData_plot,
+                        ccf_label,
+                        kmComparison_ccfData_plot,
+                        knmComparison_ccfData_plot,
+                        blank_label,
+                        blank_label,
+                        pltLegend,
+                        heights = unit(c(7,3,3,3,3,.5),units = "null"),
+                        widths = unit(c(1,1,1),"null")
+                        # ,layout_matrix = layoutMat
+                        )
+
+# cowplot::plot_grid(kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1`,
+#                    kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2`,
+#                    knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1`,
+#                    horizontalTranslation_label,
+#                    kmComparison_dxData_plot,
+#                    knmComparison_dxData_plot,
+#                    verticalTranslation_label,
+#                    kmComparison_dyData_plot,
+#                    knmComparison_dyData_plot,
+#                    rotation_label,
+#                    kmComparison_thetaData_plot,
+#                    knmComparison_thetaData_plot,
+#                    ccf_label,
+#                    kmComparison_ccfData_plot,
+#                    knmComparison_ccfData_plot,
+#                    ncol = 3,
+#                    byrow = TRUE)
 
 ```
 
