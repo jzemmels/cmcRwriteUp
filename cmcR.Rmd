@@ -864,11 +864,11 @@ kmCMCPlot_list <- cmcR::cmcPlot(fadul1.1,
 <!-- knitr::include_graphics("images/correlationResults_sideBySide.PNG") -->
 <!-- ``` -->
 
-\begin{figure}
-\centering
-\includegraphics[width=\textwidth]{images/originalMethod_sideBySide_secondDraft.png}
-\caption{\jz{Estimated phase alignment and CCF$_{\max}$ distributions for the comparison between the matching Fadul 1-1 vs. Fadul 1-2 and non-matching Fadul 1-1 vs. Fadul 2-1. Fadul 1-1 is treated as the "reference" scan, meaning it is split into a grid of cells and compared to regions in the other cartridge cases. The cells shown on Fadul 1-2 and Fadul 2-1 represent where each cell in Fadul 1-1 attains the highest CCF$_{\max}$ value. The distributions below the scans depict the actual $x,y,\theta$, and CCF$_{\max}$ values for each cell/region pair used in the comparison. For the first three rows, $x,y,$ and $\theta$ values within the blue ribbons are "congruent" in that they are within the allowed tolerance $(T_x = T_y = 20$ pixels, $T_\theta = 6$ degree) of the median alignment value. In the last row, CCF$_{\max}$ values above the allowed threshold $(T_{\text{CCF}} \geq .5$) are considered "congruent."}}
-\end{figure}
+<!-- \begin{figure} -->
+<!-- \centering -->
+<!-- \includegraphics[width=\textwidth]{images/originalMethod_sideBySide_secondDraft.png} -->
+<!-- \caption{\jz{Estimated phase alignment and CCF$_{\max}$ distributions for the comparison between the matching Fadul 1-1 vs. Fadul 1-2 and non-matching Fadul 1-1 vs. Fadul 2-1. Fadul 1-1 is treated as the "reference" scan, meaning it is split into a grid of cells and compared to regions in the other cartridge cases. The cells shown on Fadul 1-2 and Fadul 2-1 represent where each cell in Fadul 1-1 attains the highest CCF$_{\max}$ value. The distributions below the scans depict the actual $x,y,\theta$, and CCF$_{\max}$ values for each cell/region pair used in the comparison. For the first three rows, $x,y,$ and $\theta$ values within the blue ribbons are "congruent" in that they are within the allowed tolerance $(T_x = T_y = 20$ pixels, $T_\theta = 6$ degree) of the median alignment value. In the last row, CCF$_{\max}$ values above the allowed threshold $(T_{\text{CCF}} \geq .5$) are considered "congruent."}} -->
+<!-- \end{figure} -->
 
 \svp{The first step in the decision process is to obtain a consensus estimate of $x, y, \theta$; these estimated values are then used in the evaluation of the alignment of each cell/region pair.}
 \svp{The consensus set of $x, y, \theta$ is} referred to as the \dfn{registration phase} of the cell/region pairs \citep{song_proposed_2013}. 
@@ -1026,11 +1026,12 @@ kmComparison_dxData_plot <- kmComparison_dxData %>%
   geom_histogram(aes(x = dx, 
                      fill = Classification),
                  alpha = .7,
-                 binwidth = 1,
-                 colour = "white") +
+                 binwidth = 1
+                 # ,colour = "white"
+                 ) +
   scale_fill_manual(values = c("#a60b00","#1b03a3")) +
-  geom_vline(aes(xintercept = med_dx),
-             colour = "#7570b3") +
+  # geom_vline(aes(xintercept = med_dx),
+  #            colour = "#7570b3") +
   geom_ribbon(mapping = aes(y = seq(0,3.5,length.out = 31),
                             xmin = kmComparison_dxData$med_dx - 20.5,
                             xmax = kmComparison_dxData$med_dx + 20.5),
@@ -1042,17 +1043,22 @@ kmComparison_dxData_plot <- kmComparison_dxData %>%
                      limits = c(-101,101)
                      ) +
   coord_fixed(expand = FALSE,
-              ratio = 13) +
+              ratio = 11) +
   scale_y_continuous(limits = c(0,3.5)) +
   ylab("# Cell Pairs") +
   theme(legend.position = c(1, 1),
         legend.justification = c(1, 1),
         legend.direction = "horizontal",
         legend.background = element_blank(),
-        legend.text = element_text(size = 4),
-        axis.text = element_text(size = 14),         axis.title = element_text(size = 14), plot.margin=unit(c(.4,.4,.4,.4), "cm"))
-        # axis.text = element_text(size = 5),         axis.title = element_text(size = 6), plot.margin=unit(c(0,-.5,0,-.5), "cm"))
-
+        legend.text = element_text(size = 7),
+        legend.title = element_text(size = 7),
+        # axis.text = element_text(size = 14),         
+        # axis.title = element_text(size = 14), 
+        # plot.margin=unit(c(.4,.4,.4,.4), "cm"))
+        axis.text = element_text(size = 4),       
+        axis.title = element_text(size = 6), 
+        plot.margin=unit(c(0,-.5,0,-.5), "cm"),
+        legend.key.size = unit(0.3, "cm"))
 
 pltLegend <- cowplot::get_legend(kmComparison_dxData_plot)
 
@@ -1064,11 +1070,12 @@ knmComparison_dxData_plot <- knmComparison_dxData %>%
   geom_histogram(aes(x = dx, 
                      fill = Classification),
                  alpha = .7,
-                 binwidth = 1,
-                 colour = "white") +
+                 binwidth = 1
+                 # ,colour = "white"
+                 ) +
   scale_fill_manual(values = c("#a60b00","#1b03a3")) +
-  geom_vline(aes(xintercept = med_dx),
-             colour = "#7570b3") +
+  # geom_vline(aes(xintercept = med_dx),
+  #            colour = "#7570b3") +
   geom_ribbon(mapping = aes(y = seq(0,3.5,length.out = 32),
                             xmin = knmComparison_dxData$med_dx - 20,
                             xmax = knmComparison_dxData$med_dx + 20),
@@ -1080,24 +1087,27 @@ knmComparison_dxData_plot <- knmComparison_dxData %>%
                      limits = c(-101,101)
                      ) +
   coord_fixed(expand = FALSE,
-              ratio = 13) +
+              ratio = 11) +
   scale_y_continuous(limits = c(0,3.5)) +
   ylab("# Cell Pairs") +
-  theme(legend.position = "none",
-        axis.text = element_text(size = 14),         axis.title = element_text(size = 14), plot.margin=unit(c(.4,.4,.4,.4), "cm"))
   # theme(legend.position = "none",
-  #       axis.text = element_text(size = 5),         axis.title = element_text(size = 6), plot.margin=unit(c(0,-.5,0,-.5), "cm"))
+  #       axis.text = element_text(size = 14),         axis.title = element_text(size = 14), plot.margin=unit(c(.4,.4,.4,.4), "cm"))
+  theme(legend.position = "none",
+        axis.text = element_text(size = 4),       
+        axis.title = element_text(size = 6), 
+        plot.margin=unit(c(0,-.5,0,-.5), "cm"))
 
 kmComparison_dyData_plot <- kmComparison_dyData %>% 
   ggplot() +
   geom_histogram(aes(x = dy, 
                      fill = Classification),
                  alpha = .7,
-                 binwidth = 1,
-                 colour = "white") +
+                 binwidth = 1
+                 # ,colour = "white"
+                 ) +
   scale_fill_manual(values = c("#a60b00","#1b03a3")) +
-  geom_vline(aes(xintercept = med_dy),
-             colour = "#7570b3") +
+  # geom_vline(aes(xintercept = med_dy),
+  #            colour = "#7570b3") +
   geom_ribbon(mapping = aes(y = seq(0,3.5,length.out = 31),
                             xmin = kmComparison_dxData$med_dy - 20,
                             xmax = kmComparison_dxData$med_dy + 20),
@@ -1109,24 +1119,27 @@ kmComparison_dyData_plot <- kmComparison_dyData %>%
                      limits = c(-101,101)
                      ) +
   coord_fixed(expand = FALSE,
-              ratio = 11.5) +
+              ratio = 10) +
   scale_y_continuous(limits = c(0,3.5)) +
   ylab("# Cell Pairs") +
-  theme(legend.position = "none",
-        axis.text = element_text(size = 14),         axis.title = element_text(size = 14), plot.margin=unit(c(.4,.4,.4,.4), "cm"))
   # theme(legend.position = "none",
-  #       axis.text = element_text(size = 5),         axis.title = element_text(size = 6), plot.margin=unit(c(0,-.5,0,-.5), "cm"))
+  #       axis.text = element_text(size = 14),         axis.title = element_text(size = 14), plot.margin=unit(c(.4,.4,.4,.4), "cm"))
+  theme(legend.position = "none",
+        axis.text = element_text(size = 4),        
+        axis.title = element_text(size = 6),
+        plot.margin=unit(c(0,-.5,0,-.5), "cm"))
 
 knmComparison_dyData_plot <- knmComparison_dyData %>% 
   ggplot() +
   geom_histogram(aes(x = dy, 
                      fill = Classification),
                  alpha = .7,
-                 binwidth = 1,
-                 colour = "white") +
+                 binwidth = 1
+                 # ,colour = "white"
+                 ) +
   scale_fill_manual(values = c("#a60b00","#1b03a3")) +
-  geom_vline(aes(xintercept = med_dy),
-             colour = "#7570b3") +
+  # geom_vline(aes(xintercept = med_dy),
+  #            colour = "#7570b3") +
   geom_ribbon(mapping = aes(y = seq(0,3.5,length.out = 32),
                             xmin = knmComparison_dxData$med_dy - 20.5,
                             xmax = knmComparison_dxData$med_dy + 20.5),
@@ -1138,17 +1151,79 @@ knmComparison_dyData_plot <- knmComparison_dyData %>%
                      limits = c(-101,101)
                      ) +
   coord_fixed(expand = FALSE,
-              ratio = 11.5) +
+              ratio = 10) +
   scale_y_continuous(limits = c(0,3.5)) +
   ylab("# Cell Pairs") +
-  theme(legend.position = "none",
-        axis.text = element_text(size = 14),         axis.title = element_text(size = 14), plot.margin=unit(c(.4,.4,.4,.4), "cm"))
   # theme(legend.position = "none",
-  #       axis.text = element_text(size = 5),         axis.title = element_text(size = 6), plot.margin=unit(c(0,-.5,0,-.5), "cm"))
+  #       axis.text = element_text(size = 14),         axis.title = element_text(size = 14), plot.margin=unit(c(.4,.4,.4,.4), "cm"))
+  theme(legend.position = "none",
+        axis.text = element_text(size = 4),       
+        axis.title = element_text(size = 6),
+        plot.margin=unit(c(0,-.5,0,-.5), "cm"))
+
+kmComparison_thetaData_plot <- kmComparison_thetaData %>%
+  ggplot() +
+  geom_bar(aes(x = theta, 
+               fill = Classification),
+           alpha = .7) +
+  scale_fill_manual(values = c("#a60b00","#1b03a3")) +
+  # geom_vline(aes(xintercept = med_theta),
+  #            colour = "#7570b3") +
+  geom_ribbon(aes(y = seq(0,12,length.out = 31),
+                  xmin = kmComparison_thetaData$med_theta - 7.5,
+                  xmax = kmComparison_thetaData$med_theta + 7.5),
+              fill = "#7570b3",
+              alpha = .3) +
+  theme_bw() +
+  coord_fixed(expand = FALSE,
+              ratio = .95) +
+  scale_x_continuous(expression(paste("Estimated rotation angle ", theta)), 
+                     breaks = seq(-30,30,by = 15),
+                     limits = c(-32,32)) +
+  scale_y_continuous(limits = c(0,12),
+                     breaks = seq(0,12,by = 2)) +
+  ylab("# Cell Pairs") +
+  # theme(legend.position = "none",
+  #       axis.text = element_text(size = 14),         axis.title = element_text(size = 14), plot.margin=unit(c(.4,.4,.4,.4), "cm"))
+  theme(legend.position = "none",
+        axis.text = element_text(size = 4),         
+        axis.title = element_text(size = 6),
+        plot.margin=unit(c(0,-.5,0,-.5), "cm"))
+
+knmComparison_thetaData_plot <- knmComparison_thetaData %>%
+  ggplot() +
+  geom_bar(aes(x = theta, 
+               fill = Classification),
+           alpha = .7) +
+  scale_fill_manual(values = c("#a60b00","#1b03a3")) +
+  # geom_vline(aes(xintercept = med_theta),
+  #            colour = "#7570b3") +
+  geom_ribbon(aes(y = seq(0,12,length.out = 32),
+                  xmin = knmComparison_thetaData$med_theta - 6,
+                  xmax = knmComparison_thetaData$med_theta + 6),
+              fill = "#7570b3",
+              alpha = .3) +
+  theme_bw() +
+  coord_fixed(expand = FALSE,
+              ratio = .95) +
+  scale_x_continuous(expression(paste("Estimated rotation angle ", theta)), 
+                     breaks = seq(-30,30,by = 15),
+                     limits = c(-32,32)) +
+  scale_y_continuous(limits = c(0,12),
+                     breaks = seq(0,12,by = 2)) +
+  ylab("# Cell Pairs") +
+  # theme(legend.position = "none",
+  #       axis.text = element_text(size = 14),         axis.title = element_text(size = 14), plot.margin=unit(c(.4,.4,.4,.4), "cm"))
+  theme(legend.position = "none",
+        axis.text = element_text(size = 4),         
+        axis.title = element_text(size = 6), 
+        plot.margin=unit(c(0,-.5,0,-.5), "cm"))
 
 kmComparison_ccfData_plot <- kmComparison_ccfData %>%
   ggplot(aes(x = ccf,fill = Classification)) +
-  geom_histogram(colour = "white",binwidth = .01) +
+  geom_histogram(
+    # colour = "white",
+    binwidth = .01) +
   scale_fill_manual(values = c("#a60b00","#1b03a3")) +
   geom_vline(aes(xintercept = ccf_thresh),
              colour = "#7570b3") +
@@ -1162,17 +1237,21 @@ kmComparison_ccfData_plot <- kmComparison_ccfData %>%
                      breaks = seq(0,1,by = .5),
                      limits = c(0,1)) +
   coord_fixed(expand = FALSE,
-              ratio = .05) +
+              ratio = .045) +
   scale_y_continuous(limits = c(0,4)) +
   ylab("# Cell Pairs") +
-  theme(legend.position = "none",
-        axis.text = element_text(size = 14),         axis.title = element_text(size = 14), plot.margin=unit(c(.4,.4,.4,.4), "cm"))
   # theme(legend.position = "none",
-  #       axis.text = element_text(size = 5),         axis.title = element_text(size = 6), plot.margin=unit(c(0,-.5,0,-.5), "cm"))
+  #       axis.text = element_text(size = 14),         axis.title = element_text(size = 14), plot.margin=unit(c(.4,.4,.4,.4), "cm"))
+  theme(legend.position = "none",
+        axis.text = element_text(size = 4),         
+        axis.title = element_text(size = 6), 
+        plot.margin=unit(c(0,-.5,0,-.5), "cm"))
 
 knmComparison_ccfData_plot <- knmComparison_ccfData %>%
   ggplot(aes(x = ccf,fill = Classification)) +
-  geom_histogram(colour = "white",binwidth = .01) +
+  geom_histogram(
+    # colour = "white",
+    binwidth = .01) +
   scale_fill_manual(values = c("#a60b00","#1b03a3")) +
   geom_vline(aes(xintercept = ccf_thresh),
              colour = "#7570b3") +
@@ -1186,67 +1265,35 @@ knmComparison_ccfData_plot <- knmComparison_ccfData %>%
                      breaks = seq(0,1,by = .5),
                      limits = c(0,1)
                      ) +
-  coord_fixed(expand = FALSE,ratio = .05) +
+  coord_fixed(expand = FALSE,
+              ratio = .045) +
   scale_y_continuous(limits = c(0,4)) +
   ylab("# Cell Pairs") +
-  theme(legend.position = "none",
-        axis.text = element_text(size = 14),         axis.title = element_text(size = 14), plot.margin=unit(c(.4,.4,.4,.4), "cm"))
   # theme(legend.position = "none",
-  #       axis.text = element_text(size = 5),         axis.title = element_text(size = 6), plot.margin=unit(c(0,-.5,0,-.5), "cm"))
+  #       axis.text = element_text(size = 14),         axis.title = element_text(size = 14), plot.margin=unit(c(.4,.4,.4,.4), "cm"))
+  theme(legend.position = "none",
+        axis.text = element_text(size = 4),        
+        axis.title = element_text(size = 6), 
+        plot.margin=unit(c(0,-.5,0,-.5), "cm"))
 
-kmComparison_thetaData_plot <- kmComparison_thetaData %>%
-  ggplot() +
-  geom_bar(aes(x = theta, 
-               fill = Classification),
-           alpha = .7) +
-  scale_fill_manual(values = c("#a60b00","#1b03a3")) +
-  geom_vline(aes(xintercept = med_theta),
-             colour = "#7570b3") +
-  geom_ribbon(aes(y = seq(0,12,length.out = 31),
-                  xmin = kmComparison_thetaData$med_theta - 7.5,
-                  xmax = kmComparison_thetaData$med_theta + 7.5),
-              fill = "#7570b3",
-              alpha = .3) +
-  theme_bw() +
-  coord_fixed(expand = FALSE,
-              ratio = 1) +
-  scale_x_continuous(expression(paste("Estimated rotation angle ", theta)), 
-                     breaks = seq(-30,30,by = 15),
-                     limits = c(-32,32)) +
-  scale_y_continuous(limits = c(0,12),
-                     breaks = seq(0,12,by = 2)) +
-  ylab("# Cell Pairs") +
-  theme(legend.position = "none",
-        axis.text = element_text(size = 14),         axis.title = element_text(size = 14), plot.margin=unit(c(.4,.4,.4,.4), "cm"))
-  # theme(legend.position = "none",
-  #       axis.text = element_text(size = 5),         axis.title = element_text(size = 6), plot.margin=unit(c(0,-.5,0,-.5), "cm"))
+kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1`$layers <- kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1`$layers[-3]
+kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2`$layers <- kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2`$layers[-3]
+knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1`$layers <- knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1`$layers[-3]
 
-knmComparison_thetaData_plot <- knmComparison_thetaData %>%
-  ggplot() +
-  geom_bar(aes(x = theta, 
-               fill = Classification),
-           alpha = .7) +
-  scale_fill_manual(values = c("#a60b00","#1b03a3")) +
-  geom_vline(aes(xintercept = med_theta),
-             colour = "#7570b3") +
-  geom_ribbon(aes(y = seq(0,12,length.out = 32),
-                  xmin = knmComparison_thetaData$med_theta - 6,
-                  xmax = knmComparison_thetaData$med_theta + 6),
-              fill = "#7570b3",
-              alpha = .3) +
-  theme_bw() +
-  coord_fixed(expand = FALSE,
-              ratio = 1) +
-  scale_x_continuous(expression(paste("Estimated rotation angle ", theta)), 
-                     breaks = seq(-30,30,by = 15),
-                     limits = c(-32,32)) +
-  scale_y_continuous(limits = c(0,12),
-                     breaks = seq(0,12,by = 2)) +
-  ylab("# Cell Pairs") +
-  theme(legend.position = "none",
-        axis.text = element_text(size = 14),         axis.title = element_text(size = 14), plot.margin=unit(c(.4,.4,.4,.4), "cm"))
-  # theme(legend.position = "none",
-  #       axis.text = element_text(size = 5),         axis.title = element_text(size = 6), plot.margin=unit(c(0,-.5,0,-.5), "cm"))
+kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1` <- kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1` +
+  ggplot2::theme(legend.position = "none",
+                 plot.margin=unit(c(0,-.5,0,-.5), "cm")) +
+  coord_fixed(xlim = c(-300,3600), ylim = c(-100,3750))
+
+kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2` <- kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2` +
+  ggplot2::theme(legend.position = "none",
+                 plot.margin=unit(c(0,-.5,0,-.5), "cm")) +
+  coord_fixed(xlim = c(-300,3600), ylim = c(-100,3750))
+
+knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1` <- knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1` +
+  ggplot2::theme(legend.position = "none",
+                 plot.margin=unit(c(0,-.5,0,-.5), "cm")) +
+  coord_fixed(xlim = c(-300,3600), ylim = c(-100,3750))
 ```
 
 ```{r eval=FALSE,include=FALSE}
@@ -1258,10 +1305,38 @@ kmComparison_ccfData_plot
 knmComparison_ccfData_plot
 kmComparison_thetaData_plot
 knmComparison_thetaData_plot
+
+kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1` +
+  # ggplot2::theme(axis.title.x = ggplot2::element_text(),
+  #                axis.text.x = ggplot2::element_text(),
+  #                axis.title.y = ggplot2::element_text(),
+  #                axis.text.y =ggplot2::element_text(),
+  #                plot.title = ggplot2::element_text(hjust = .5,
+  #                                                   size = 11)) +
+  coord_fixed(xlim = c(-300,3600), ylim = c(-100,3750))
+
+kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2` +
+  # ggplot2::theme(axis.title.x = ggplot2::element_text(),
+  #                axis.text.x = ggplot2::element_text(),
+  #                axis.title.y = ggplot2::element_text(),
+  #                axis.text.y =ggplot2::element_text(),
+  #                plot.title = ggplot2::element_text(hjust = .5,
+  #                                                   size = 11)) +
+  coord_fixed(xlim = c(-300,3600), ylim = c(-100,3750))
+
+knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1` +
+  # ggplot2::theme(axis.title.x = ggplot2::element_text(),
+  #                axis.text.x = ggplot2::element_text(),
+  #                axis.title.y = ggplot2::element_text(),
+  #                axis.text.y =ggplot2::element_text(),
+  #                plot.title = ggplot2::element_text(hjust = .5,
+  #                                                   size = 11)) +
+  coord_fixed(xlim = c(-300,3600), ylim = c(-100,3750))
+
 ```
 
 
-```{r warning=FALSE,message=FALSE,echo=FALSE,out.width='\\textwidth'}
+```{r warning=FALSE,message=FALSE,echo=FALSE,out.width='\\textwidth',dpi = 1000,fig.cap = '\\jz{Estimated phase alignment and CCF$_{\\max}$ distributions for the comparison between the matching Fadul 1-1 vs. Fadul 1-2 and non-matching Fadul 1-1 vs. Fadul 2-1. Fadul 1-1 is treated as the "reference" scan, meaning it is split into a grid of cells and compared to regions in the other cartridge cases. The cells shown on Fadul 1-2 and Fadul 2-1 represent where each cell in Fadul 1-1 attains the highest CCF$_{\\max}$ value. The distributions below the scans depict the actual $x,y,\theta$, and CCF$_{\\max}$ values for each cell/region pair used in the comparison. For the first three rows, $x,y,$ and $\theta$ values within the blue ribbons are "congruent" in that they are within the allowed tolerance $(T_x = T_y = 20$ pixels, $T_\\theta = 6$ degree) of the median alignment value. In the last row, CCF$_{\\max}$ values above the allowed threshold $(T_{\\text{CCF}} \\geq .5$) are considered "congruent."}'}
 #problem with cowplot is that it's trying to force each square of the grid to be the same size -- not sure how to fix this
 
 
@@ -1285,23 +1360,6 @@ blank_label <- ggplot() +
   annotate("text",x = 1,y = 1,size = 2,label = " ") +
   theme_void() 
 
-
-kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1`$layers <- kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1`$layers[-3]
-kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2`$layers <- kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2`$layers[-3]
-knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1`$layers <- knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1`$layers[-3]
-
-kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1` <- kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1` +
-  ggplot2::theme(legend.position = "none",
-                 plot.margin=unit(c(0,-.5,0,-.5), "cm"))
-
-kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2` <- kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2` +
-  ggplot2::theme(legend.position = "none",
-                 plot.margin=unit(c(0,-.5,0,-.5), "cm"))
-
-knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1` <- knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1` +
-  ggplot2::theme(legend.position = "none",
-                 plot.margin=unit(c(0,-.5,0,-.5), "cm"))
-
 # kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1`
 # kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2`
 # knmCMCPlot_list$originalMethodCMCs$`Fadul 2-1`
@@ -1324,10 +1382,11 @@ gridExtra::grid.arrange(kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1`,
                         blank_label,
                         blank_label,
                         pltLegend,
-                        heights = unit(c(7,3,3,3,3,.5),units = "null"),
-                        widths = unit(c(1,1,1),"null")
+                        heights = unit(c(9,3,3,3,3,2),units = "null"),
+                        widths = unit(c(1,2,2),"null")
                         # ,layout_matrix = layoutMat
                         )
+
 
 # cowplot::plot_grid(kmCMCPlot_list$originalMethodCMCs$`Fadul 1-1`,
 #                    kmCMCPlot_list$originalMethodCMCs$`Fadul 1-2`,
