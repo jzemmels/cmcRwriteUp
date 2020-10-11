@@ -119,7 +119,7 @@ Unsurprisingly, \hh{this process is both} time \hh{ absorbing and computationall
 \hh{The failure to ensure computational reproducibility} not only imposes a general barrier to scientific progress; in this application, it also highlights the \hh{crucial need} of open-source, transparent methodology in high-stakes fields such as forensic analysis.
 
 <!-- \svp{XXX should we cite Fadul too, since it's the original source?}\hh{XXX yes, we should cite the original source} -->
-\svp{We will use the same data set which is referenced in \citet{song_3d_2014} and \citet{tong_improved_2015} to illustrate usage of the \pkg{cmcR} package. These 3d scans of cartridge cases are} available from the NIST Ballistics Toolmark Research Database \citep[NBTRD;][]{nbtrd}. The strings defined below refer to two cartridge case scans available on the NBTRD from \citet{fadul_empirical_nodate} and will be used \svp{throughout the remainder of this paper}.
+We will use the same data set which is referenced in \citet{song_3d_2014} and \citet{tong_improved_2015} to illustrate usage of the \pkg{cmcR} package. These 3d scans of cartridge cases are available from the NIST Ballistics Toolmark Research Database \citep[NBTRD;][]{nbtrd}. The strings defined below refer to two cartridge case scans available on the NBTRD from \citet{fadul_empirical_nodate} and will be used throughout the remainder of this paper.
 
 ```{r eval=FALSE,echo=TRUE}
 library(cmcR)
@@ -129,7 +129,11 @@ nrbtd_url <- "https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement/"
 
 fadul1.1_id <- "DownloadMeasurement/2d9cc51f-6f66-40a0-973a-a9292dbee36d"
 fadul1.2_id <- "DownloadMeasurement/cb296c98-39f5-46eb-abff-320a2f5568e8"
-# Should have the download code here.
+
+# Code to download breech face impressions:
+nrbtd_url <- "https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement/"
+download.file(file.path(nrbtd_url, fadul1.1_id), destfile = "data/fadul1-1.x3p", mode = "wb")
+download.file(file.path(nrbtd_url, fadul1.1_id), destfile = "data/fadul1-2.x3p", mode = "wb")
 ```
 
 
