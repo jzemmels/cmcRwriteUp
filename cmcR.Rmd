@@ -721,10 +721,10 @@ A truly matching pair of cartridge cases \svp{would have similar translation and
 
 \jz{\autoref{fig:originalMethod_sideBySide} shows the CMCs determined under the original method of \citet{song_proposed_2013} from comparing the matching pair Fadul 1-1 to Fadul 1-2 and the non-matching pair Fadul 1-1 to Fadul 2-1. 
 Fadul 1-1 was treated as the reference scan in both comparisons. 
-Descendants of the original method of \citet{song_proposed_2013} perform comparisons twice for a given pair so that each scan is treated as the reference scan (referred to as the two \dfn{comparison directions}). 
-Blue cells represent the 19 cells identified as CMCs between Fadul 1-1 and Fadul 1-2. 
-Red cells represent the alignment of non-CMCs at which they attain the highest CCF$_{\max}$ value. 
-The comparison between Fadul 1-1 and Fadul 1-2 yields 12 non-CMCs. 
+Descendants of the original method of \citet{song_proposed_2013} perform comparisons twice for a given pair so that each scan is treated as the reference scan (referred to as the two \dfn{comparison directions}). }
+\svp{The 19 CMCs in the comparison between Fadul 1-1 and 1-2 are shown in blue; in red, non-CMC cells}
+Blue cells represent the 19 cells identified as CMCs between Fadul 1-1 and Fadul 1-2; non-CMCs are shown in red at the location maximizing the cross-correlation function. }
+\jz{The comparison between Fadul 1-1 and Fadul 1-2 yields 12 non-CMCs. 
 The comparison between Fadul 1-1 and Fadul 2-1 yields 32 non-CMCs.}
 
 ```{r,echo=FALSE,cache = T}
