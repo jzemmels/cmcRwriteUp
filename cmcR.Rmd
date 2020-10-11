@@ -112,14 +112,14 @@ As a result, \hh{the findings described in these papers are not computationally 
 
 
 Here, we describe the process of implementing the Congruent Matching Cells (CMC) method for the comparison of marks on spent cartridge cases, using the descriptions from two published papers, \citet{song_3d_2014} and \citet{tong_improved_2015}. 
-Our package, \pkg{cmcR}, provides an open-source implementation of the CMC method\svp{, but i}t also serves as an example of the implementation barriers which occur when translating published descriptions of algorithms into detailed source code. 
+Our package, \pkg{cmcR}, provides an open-source implementation of the CMC method, but it also serves as an example of the implementation barriers which occur when translating textual descriptions of algorithms into detailed source code. 
 This process offers some insight into the necessary components which must be available for computational reproducibility. 
-Our experience shows that when faced with ambiguity in how a method is implemented, there are few options available apart from performing a brute-force search through combinations of decisions that may have been made to yield the results reported. 
-Unsurprisingly, it can become incredibly time intensive to implement \svp{the described results} and then sift through a wide variety of decision combinations. <!--This stymies scientific progress.-->
-\svp{This not only serves as a general barrier to scientific progress; in this application, it also highlights the importance of open-source, transparent methodology in high-stakes fields such as forensic analysis.}
+Our experience shows that when faced with ambiguity in how a method is implemented, there are only few options available to us apart from performing a brute-force search through combinations of decisions that may have been made to yield the results reported. 
+Unsurprisingly, \hh{this process is both} time \hh{ absorbing and computationally} intensive from implementation to sifting through a wide variety of decision combinations. <!--This stymies scientific progress.-->
+\hh{The failure to ensure computational reproducibility} not only imposes a general barrier to scientific progress; in this application, it also highlights the \hh{crucial need} of open-source, transparent methodology in high-stakes fields such as forensic analysis.
 
 <!-- \svp{XXX should we cite Fadul too, since it's the original source?}\hh{XXX yes, we should cite the original source} -->
-\svp{We will use the same data set which is referenced in \citet{song_3d_2014} and \citet{tong_improved_2015} to illustrate usage of the \pkg{cmcR} package. These 3d scans of cartridge cases are} available from the NIST Ballistics Toolmark Research Database \citep[NBTRD;][]{nbtrd}. The strings defined below refer to two cartridge case scans available on the NBTRD from \citet{fadul_empirical_nodate} and will be used \svp{throughout the remainder of this paper}.
+We will use the same data set which is referenced in \citet{song_3d_2014} and \citet{tong_improved_2015} to illustrate usage of the \pkg{cmcR} package. These 3d scans of cartridge cases are available from the NIST Ballistics Toolmark Research Database \citep[NBTRD;][]{nbtrd}. The strings defined below refer to two cartridge case scans available on the NBTRD from \citet{fadul_empirical_nodate} and will be used throughout the remainder of this paper.
 
 ```{r eval=FALSE,echo=TRUE}
 library(cmcR)
@@ -129,7 +129,11 @@ nrbtd_url <- "https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement/"
 
 fadul1.1_id <- "DownloadMeasurement/2d9cc51f-6f66-40a0-973a-a9292dbee36d"
 fadul1.2_id <- "DownloadMeasurement/cb296c98-39f5-46eb-abff-320a2f5568e8"
-# Should have the download code here.
+
+# Code to download breech face impressions:
+nrbtd_url <- "https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement/"
+download.file(file.path(nrbtd_url, fadul1.1_id), destfile = "data/fadul1-1.x3p", mode = "wb")
+download.file(file.path(nrbtd_url, fadul1.1_id), destfile = "data/fadul1-2.x3p", mode = "wb")
 ```
 
 
