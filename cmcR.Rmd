@@ -99,17 +99,17 @@ The fundamental reason that descriptions of data analysis procedures, combined w
 \hh{In this light, computational reproducibility } in forensic science, is \hh{all the more important because it fundamentally enables} discussions about algorithmic transparency and accountability~\citep{kwongAlgorithmSaysYou2017, desaiTrustVerifyGuide2017}. 
 Currently, subjective decisions are made by individual examiners -- \hh{human beings are} the ultimate closed-source, black-box system, and the operations which lead to a decision are largely opaque. 
 There is a push to \hh{complement} these subjective decisions with automatic algorithms that objectively assess evidence and can be explained during court testimony \citep{council_strengthening_2009}.
-While the goal is laudable, it is important that the community does not go only halfway, trading a subjective, human black box for objective, proprietary algorithms that are similarly opaque and unauditable.
+While objectivity is a laudable goal, it is important that the community does not go only halfway, trading a subjective, human black box for objective, proprietary algorithms that are similarly opaque and unauditable.
 As part of the shift towards objectivity in forensic science, automatic methods have already been developed to solve problems such as identifying matching glass shards \hh{citation?}, handwriting \hh{citation?}, shoe prints \hh{citation?}, and ballistic evidence \hh{cite xiaohui and eric}. 
-While \svp{some} researchers in the forensic science community have adopted computationally reproducible habits [cite CSAFE stuff], \svp{many of the algorithms described in the literature are not reproducible or open-source.}
+While some researchers in the forensic science community have adopted computationally reproducible habits [cite CSAFE stuff], many of the algorithms described in the literature are not reproducible or open-source.
 <!-- XXX Not sure if we should get into the fact that we have the opportunity to change things *before* they become too entrenched -->
 <!-- some areas of research still lack reproducible results; computational or otherwise. -->
-In this paper, we will demonstrate the ambiguities \svp{which are present} in written descriptions of algorithms by creating an open-source implementation of one well-known automatic forensic identification method. <!-- intentional buttering up before the punchline --> 
+In this paper, we will demonstrate the ambiguities present in textual descriptions of algorithms by creating an open-source implementation of one well-known automatic forensic identification method. <!-- intentional buttering up before the punchline --> 
 The Congruent Matching Cells (CMC) algorithm was developed at the National Institute of Standards and Technology (NIST) in 2012 to perform firearm evidence identification using identifiable markings left on spent cartridge cases from a firearm's barrel \citet{song_proposed_2013}. 
 Since then, the method and its numerous extensions \citep{tong_improved_2015,chen_convergence_2017,song_estimating_2018} have shown promise in being able to differentiate between matching and non-matching cartridge cases. 
-\svp{While NIST researchers and collaborators have been able to build on the foundation of the original algorithm, the code and data necessary to reproduce the results have not been made available to external researchers.}
-\svp{As a result, according to} the definitions given above, these results are not reproducible. 
-<!-- Various NIST researchers have been able to qualitatively reproduce results across publications [\citet{tong_improved_2015}, \citet{chen_convergence_2017}, \citet{song_estimating_2018}], but neither code nor preprocessed data for the CMC method or any of its extensions have been made publicly available.  -->
+While NIST researchers and collaborators have been able to build on the foundation of the original algorithm, the code and data necessary to reproduce the results have not been made available to external researchers.
+As a result, \hh{the findings described in these papers are not computationally reproducible for the research community at large.}
+
 
 Here, we describe the process of implementing the Congruent Matching Cells (CMC) method for the comparison of marks on spent cartridge cases, using the descriptions from two published papers, \citet{song_3d_2014} and \citet{tong_improved_2015}. 
 Our package, \pkg{cmcR}, provides an open-source implementation of the CMC method\svp{, but i}t also serves as an example of the implementation barriers which occur when translating published descriptions of algorithms into detailed source code. 
