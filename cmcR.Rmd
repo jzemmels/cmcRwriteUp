@@ -890,7 +890,7 @@ kmCMCPlot_list_comparison1to2 <- cmcR::cmcPlot(fadul1.1,
 <!-- \svp{The criteria proposed in \citet{song_proposed_2013} are fairly strict; the High CMC method described in \citet{tong_improved_2015} adjusts the procedure for determining consensus estimates and the subsequent decision rules.} -->
 \jz{The final step in any CMC method is to apply a set of criteria (i.e., a decision rule) to determine whether a consensus exists among these values. 
 Where the various proposed CMC methods principally differ is in these criteria. 
-For example, in the original method of \citet{song_proposed_2013}, the strength of the consensus is quantified by the number of cell/region pairs with "similar" registration phases (to be defined in [the description of the original method](\#originalMethod)). To overcome limitations of the original method, its descendants, including the High CMC method, apply more stringent criteria.}
+For example, in the original method of \citet{song_proposed_2013}, the strength of the consensus is quantified by the number of cell/region pairs with "similar" registration phases (to be defined in [the description of the original method](#originalMethod)). To overcome limitations of the original method, its descendants, including the High CMC method, apply more stringent criteria.}
 
 In this section, we describe two particular methods that are implemented in the \pkg{cmcR} package. These are the original method of \citet{song_proposed_2013} and the High CMC of \citet{tong_improved_2015}. In particular, we focus on how these two methods' decision rules differ.
 
