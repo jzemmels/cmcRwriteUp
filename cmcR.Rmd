@@ -139,15 +139,15 @@ download.file(file.path(nrbtd_url, fadul1.1_id), destfile = "data/fadul1-2.x3p",
 
 # Cartridge cases & breech face impressions {#cartridgeCases_bfImpressions}
 
-A \dfn{cartridge case} is \svp{the portion} of firearm ammunition that contains a projectile (e.g., bullet, shots, or slug) \svp{along with the explosive used to propel the projectile through the firearm}. 
-When a firearm is discharged, the projectile stored in the cartridge case is propelled down the barrel of the firearm\svp{, while the cartridge case} is forced towards the back of the barrel. 
-It strikes the back wall, known as the \dfn{breech face}, of the barrel \svp{with some force}.
-\svp{Due to manufacturing imperfections, the breech face of the barrel has a theoretically unique combination of markings, which are "stamped" onto the cartridge case as it impacts the breech face during the firing process}. 
-The markings left on \svp{the} cartridge case from the firearm's breech face are called \dfn{breech face impressions}.
+A \dfn{cartridge case} is the portion of firearm ammunition that encases a projectile (e.g., bullet, shots, or slug) along with the explosive used to propel the projectile through the firearm. 
+When a firearm is discharged, the projectile is propelled down the barrel of the firearm, while the cartridge case is forced towards the back of the barrel. 
+It strikes the back wall, known as the \dfn{breech face}, of the barrel with considerable force, \hh{thereby imprinting any markings on the breech face onto the cartridge case, creating} the so-called \dfn{breech face impressions}.
+\hh{These markings have been suggested to be unique to a firearm and are used in forensic examinations to determine whether two cartridge cases have been fired by the same handgun.}
 
-\svp{During a forensic examination, cartridge cases may be compared using a \dfn{comparison microscope}.} \svp{Comparison microscopes allow for the comparison of two separate objects using the same viewfinder, allowing forensic practitioners to compare two pieces of toolmark evidence.}
-Figures \ref{fig:ccPair_separated} and \ref{fig:ccPair_combined} \svp{show cartridge cases in unaligned and aligned states, as seen through a comparison microscope. }
-\svp{While there is some similarity in the markings on the two cartridge cases shown in \autoref{fig:ccPair_separated}, this correspondence is much clearer when the cartridge cases are aligned, as in \autoref{fig:ccPair_combined} \citep[Images from ][]{firearm_id_thompson}.}
+During a forensic examination, \hh{two pieces of ballistic evidence} are  placed under a \dfn{comparison microscope}. Comparison microscopes allow for a \hh{side-by-side} comparison of two objects within the same viewfinder, as seen in
+Figures \ref{fig:ccPair_separated} and \ref{fig:ccPair_combined}, which show two pairs of breech faces. In \autoref{fig:ccPair_separated} the pair is unaligned, in \autoref{fig:ccPair_combined} the cartridge cases are aligned. 
+The similarity in the markings between the two breech face impressions  is brought out very clearly when they are aligned.
+
 The degree to which these breech face markings align can be used to determine whether the two cartridge cases match; i.e., were fired from the same firearm. 
 These breech face impressions are considered to be analogous to a firearm's "fingerprint" left on a cartridge case \citep{firearm_id_thompson}.
 
