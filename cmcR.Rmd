@@ -1700,7 +1700,7 @@ gridExtra::grid.arrange(reference_label,
                         )
 ```
 
-```{r}
+```{r include=FALSE}
 theta_rescaled <- bind_rows(kmComparison$comparison_1to2$ccfResults) %>%
   select(theta) %>%
   distinct() %>%
@@ -1755,8 +1755,7 @@ highCMC_extremaData_comparison1to2 <- highCMC_congruentData_comparison1to2  %>%
   select(-c(cellNum,value)) %>%
   arrange(theta,parameter) %>%
   ungroup() %>%
-  mutate(name = rep(c("ymin","ymed","ymax"),times = 6),
-         theta = factor(theta,levels = c(-27,-24))) %>%
+  mutate(name = rep(c("ymin","ymed","ymax"),times = 6)) %>%
   pivot_wider(id_cols = c(parameter,theta,scaledValue),
               names_from = name,
               values_from = scaledValue)
@@ -1877,7 +1876,7 @@ highCMC_comparison1to2_congruentCells_lowCMC <- highCMC_congruentData_comparison
   summarise(Classification = ifelse(all(Classification == "Congruent"),"Congruent","Not Congruent"))
 ```
 
-```{r}
+```{r, include=FALSE}
 highCMC_comparison1to2_thetaNeg24 <- highCMC_congruentData_comparison1to2 %>%
   filter(cellNum < 90 & theta == -24) %>%
   left_join(theta_rescaled,by = "theta") %>%
@@ -1973,7 +1972,7 @@ highCMC_comparison1to2_theta30 <- highCMC_congruentData_comparison1to2_lowCMC %>
                               expression("CCF"[max])))
 ```
 
-```{r echo=FALSE,message=FALSE,warning=FALSE}
+```{r echo=FALSE,message=FALSE,warning=FALSE,fig.width='\\textwidth'}
 highCMC_comparison1to2_cmcTheta <- cmcR::cmcPerThetaBarPlot(kmComparison$comparison_1to2,
                          ccf_thresh = .5,
                          dx_thresh = 20,
@@ -2006,8 +2005,10 @@ ggplot(data.frame(a = 1)) +
   annotation_custom(ggplotGrob(highCMC_comparison1to2_cmcTheta),xmin = 6,xmax = 24,ymin = 1,ymax = 30) +
   annotation_custom(ggplotGrob(highCMC_comparison1to2_thetaNeg24),xmin = 1,xmax = 6,ymin = 3,ymax = 13) +
   annotation_custom(ggplotGrob(thetaNeg24_label),xmin = 1,xmax = 6,ymin = 9.5,ymax = 15) +
+  annotation_custom(pltLegend,xmin = 2.7,xmax = 7,ymin = 2,ymax = 3) +
   annotation_custom(ggplotGrob(highCMC_comparison1to2_theta30),xmin = 24,xmax = 29,ymin = 3,ymax = 13) +
   annotation_custom(ggplotGrob(theta30_label),xmin = 24,xmax = 29,ymin = 9.5,ymax = 15) +
+  annotation_custom(pltLegend,xmin = 22,xmax = 30,ymin = 2,ymax = 3) +
   geom_path(data = data.frame(x = 6:10,y = rep(8,times = 5)),
             aes(x = x, y = y), size = 1, arrow = arrow(length = unit(.02, "npc"), type = "closed")) +
   geom_path(data = data.frame(x = c(23,24.1),y = rep(8,times = 2)),
