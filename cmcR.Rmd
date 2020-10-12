@@ -215,7 +215,7 @@ Then, we examine the implementation of each sub-procedure in the \pkg{cmcR} pack
 ## Initial Data {#initialData}
 Cartridge case scans are commonly encoded as a \dfn{surface matrix}: a matrix of spatially-ordered elements or "pixels" whose values correspond to the height of the cartridge case surface at a particular location. \hh{XXXX x3p is a standard file format - we could cite both the ISO site and x3ptools as a way to work with them.}
 \autoref{fig:cartridgeCasePair} shows the surface matrices of a known match (KM) pair of cartridge cases from a study by \citet{fadul_empirical_nodate}. 
-A total of 40 cartridge cases were scanned with a lateral resolution of 6.25 microns (micrometers) per pixel. The surface matrices \svp{are approximately} $1200 \times 1200$ pixels in size \hh{corresponding to an area of about $3.8 \times 3.8 mm^2$}.
+A total of 40 cartridge cases were scanned with a lateral resolution of 6.25 microns (micrometers) per pixel. The surface matrices are approximately $1200 \times 1200$ pixels in size \hh{corresponding to an area of about $3.8 \times 3.8 mm^2$}.
 
 ```{r, fadul1-1Screenshot,include=FALSE}
 fadul1.1 <- x3ptools::read_x3p("data/fadul1-1.x3p")
@@ -372,7 +372,7 @@ In the different iterations of the CMC algorithm, there have been several minor 
 
 \begin{figure}
 \includegraphics[width=\linewidth]{images/preprocessing_flow.png}
-\caption{Each CMC implementation uses slightly different procedures. Where a procedure step is not discussed or explicitly not applied in the paper, the path traverses empty space.}\label{fig:preprocessing-schematic}
+\caption{\hh{Overview of the set of pre-rpocessing steps used in the CMC algorithms.} Where a procedure step is not discussed or explicitly not applied in the paper, the path traverses empty space.}\label{fig:preprocessing-schematic}
 \end{figure}
 
 The implementation in \citet{tong_fired_2014} describes the preprocessing steps very succinctly:
@@ -591,7 +591,8 @@ The scan on the left is divided into a grid of $k \times k$ cells.
 > The cell size must be experimentally optimized, not too small and not too large. Either condition may result in low correlation accuracy. For the initial tests of 9 mm caliber cartridge cases, good correlation results for breech face correlations were obtained using the cell sizes ranging from (0.25 × 0.25) to (0.5 × 0.5) $mm^2$. \citep{song_3d_2014}
 
 \begin{figure}
-\includegraphics[width=\linewidth]{images/cmc_flow.png}
+<!-- \includegraphics[width=\linewidth]{images/cmc_flow.png} -->
+\includegraphics[width=\linewidth]{images/cellbased.pdf}
 \caption{Each CMC implementation uses slightly different procedures to obtain a similarity score between two cartridge cases. Steps which are implemented with additional user-specified parameters are shaded purple; steps which are described but without sufficient detail are shaded grey.}\label{fig:cmc-schematic}
 \end{figure}
 
