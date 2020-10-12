@@ -191,8 +191,8 @@ The source code to the full `cmcR` package is accessible at https://github.com/C
 In this section, we examine the process of implementing the CMC method for automatic comparisons of 3D cartridge case scans. 
 At each step, we will compare the description in the published papers with the implementation in code, discussing the gaps in the method description and how we filled in those gaps during the creation of `cmcR`.
 
-All of the CMC methods can be broken down into three broad stages: preprocessing, cell-based similarity feature extraction, and application of a decision rule; these steps are illustrated in \autoref{fig:overview-flow}. 
-The advantage to treating these algorithms as modular is that we can implement the algorithms as a unified set of procedures, and then test new variations against the old in a coherent, unified framework.
+All of the CMC methods can be broken down into three broad stages: preprocessing, cell-based similarity feature extraction, and application of a decision rule as illustrated in \autoref{fig:overview-flow}. \hh{In the following sections we break each of these stages further into a set of modular steps.}
+\hh{One advantage of modularizing} these algorithms is that we can implement an algorithm as a  set of \hh{sequential} procedures. \hh{This allows us to} then test new variations against the old \hh{implementation} in a coherent, unified framework.
 
 \begin{figure}
 \centering
@@ -200,30 +200,22 @@ The advantage to treating these algorithms as modular is that we can implement t
 \caption{The stages of CMC methods. In the preprocessing stage, each scan is prepared for analysis, removing extraneous information and noise. Then, each scan is broken up into cells, which are numerically compared to cells in the other scan to determine an optimal alignment. Finally, each of the scores arising from the cells in the second stage are compared to a reference distribution to determine whether the scans originate from the same source or from different sources.\label{fig:overview-flow}}
 \end{figure}
 
-The primary difference between the original and high CMC methods is the decision rules utilized to separate matches and non-matches, but there are also several small differences in the preprocessing and comparison procedures.
 
-\jz{
-Current CMC literature lacks justification for changing these conditions, yet demonstrates that the same method applied under different conditions yields considerably different results. 
-The sensitivity of various methods to different conditions has also not been discussed in CMC literature.}
-<!-- \svp{} -->
-<!-- Such a discussion based on our implementation of the \jz{original method of \citet{song_proposed_2013}} and the High CMC method can be found [below](investigation)}. -->
+The primary difference between the original and high CMC methods \hh{lies in how} the decision rules are utilized to separate matches and non-matches. Beyond that there are also several small differences in the preprocessing and comparison procedures.
+
+Current CMC literature lacks justification for changing these procedures. However, different conditions yields considerably different results while applying the same method. 
+This sensitivity of various methods to different conditions has also not been discussed in CMC literature.
 
 
-<!-- \svp{XXX found where now? XXX} -->
+In this section, we discuss each stage of the CMC method
+using excerpts from the original papers.
+Then, we examine the implementation of each sub-procedure in the \pkg{cmcR} package, considering the differences between the textual description and its algorithmic translation.
 
-\svp{In this section, we discuss} each \jz{stage of the CMC method}
-\jz{using excerpts from the original papers.}
-<!-- A discussion of ambiguities in these descriptions will accompany.  -->
-<!-- Switch to active voice -->
-\svp{Then, we examine the implementation of each sub-procedure in the \pkg{cmcR} package, considering the differences between the text description and \jz{its algorithmic translation}.}
-
-<!-- actual code. XXX I don't like the use of actual here, but can't think of another way to get the point across... any ideas? XXX} -->
-<!-- Following this, the procedures as implemented in the \pkg{cmcR} package will be detailed and an exploration of the greater lessons learned while reconciling the methods' ambiguities will be provided.} -->
 
 ## Initial Data {#initialData}
-Cartridge case \svp{scans} are commonly \svp{encoded as} a \dfn{surface matrix}: a matrix of spatially-ordered elements or "pixels" whose values correspond to the height of the cartridge case surface at a particular location. 
+Cartridge case scans are commonly encoded as a \dfn{surface matrix}: a matrix of spatially-ordered elements or "pixels" whose values correspond to the height of the cartridge case surface at a particular location. \hh{XXXX x3p is a standard file format - we could cite both the ISO site and x3ptools as a way to work with them.}
 \autoref{fig:cartridgeCasePair} shows the surface matrices of a known match (KM) pair of cartridge cases from a study by \citet{fadul_empirical_nodate}. 
-A total of 40 cartridge cases were scanned with a lateral resolution of 6.25 microns (micrometers) per pixel. The surface matrices \svp{are approximately} $1200 \times 1200$ pixels in size.
+A total of 40 cartridge cases were scanned with a lateral resolution of 6.25 microns (micrometers) per pixel. The surface matrices \svp{are approximately} $1200 \times 1200$ pixels in size \hh{corresponding to an area of about $3.8 \times 3.8 mm^2$}.
 
 ```{r, fadul1-1Screenshot,include=FALSE}
 fadul1.1 <- x3ptools::read_x3p("data/fadul1-1.x3p")
