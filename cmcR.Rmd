@@ -215,7 +215,7 @@ Then, we examine the implementation of each sub-procedure in the \pkg{cmcR} pack
 ## Initial Data {#initialData}
 Cartridge case scans are commonly encoded as a \dfn{surface matrix}: a matrix of spatially-ordered elements or "pixels" whose values correspond to the height of the cartridge case surface at a particular location. \hh{XXXX x3p is a standard file format - we could cite both the ISO site and x3ptools as a way to work with them.}
 \autoref{fig:cartridgeCasePair} shows the surface matrices of a known match (KM) pair of cartridge cases from a study by \citet{fadul_empirical_nodate}. 
-A total of 40 cartridge cases were scanned with a lateral resolution of 6.25 microns (micrometers) per pixel. The surface matrices are approximately $1200 \times 1200$ pixels in size \hh{corresponding to an area of about $3.8 \times 3.8 mm^2$}.
+A total of 40 cartridge cases were scanned with a lateral resolution of 6.25 microns (micrometers) per pixel. The surface matrices are approximately $1200 \times 1200$ pixels in size \hh{corresponding to an area of about $3.8 \times 3.8$ mm$^2$}.
 
 ```{r, fadul1-1Screenshot,include=FALSE}
 fadul1.1 <- x3ptools::read_x3p("data/fadul1-1.x3p")
