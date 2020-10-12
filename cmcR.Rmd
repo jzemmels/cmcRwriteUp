@@ -149,8 +149,10 @@ When a firearm is discharged, the projectile is propelled down the barrel of the
 It strikes the back wall, known as the \dfn{breech face}, of the barrel with considerable force, \hh{thereby imprinting any markings on the breech face onto the cartridge case, creating} the so-called \dfn{breech face impressions}.
 \hh{These markings have been suggested to be unique to a firearm and are used in forensic examinations to determine whether two cartridge cases have been fired by the same handgun.}
 
-During a forensic examination, \hh{two pieces of ballistic evidence} are  placed under a \dfn{comparison microscope}. Comparison microscopes allow for a \hh{side-by-side} comparison of two objects within the same viewfinder, as seen in
-Figures \ref{fig:ccPair_separated} and \ref{fig:ccPair_combined}, which show two pairs of breech faces. In \autoref{fig:ccPair_separated} the pair is unaligned, in \autoref{fig:ccPair_combined} the cartridge cases are aligned. 
+During a forensic examination, \hh{two pieces of ballistic evidence} are  placed under a \dfn{comparison microscope}. Comparison microscopes allow for a \hh{side-by-side} comparison of two objects within the same viewfinder, as seen in \ref{fig:ccPair_combined}. \hh{A pair of breech face images is aligned along the thin black line in the middle of the images. }
+<!--  \hh{taking the first image out - we don't want to be side tracked.}
+Figures \ref{fig:ccPair_separated} and
+\ref{fig:ccPair_combined}, which show two pairs of breech faces. In \autoref{fig:ccPair_separated} the pair is unaligned, in \autoref{fig:ccPair_combined} the cartridge cases are aligned. 
 The similarity in the markings between the two breech face impressions  is brought out very clearly when they are aligned.
 
 The degree to which these breech face markings align can be used to determine whether the two cartridge cases match; i.e., were fired from the same firearm. 
@@ -159,46 +161,38 @@ These breech face impressions are considered to be analogous to a firearm's "fin
 ```{r ,echo=FALSE,fig.cap='\\label{fig:ccPair_separated} A cartridge case pair with visible breech face impressions under a microscrope. Forensic practitioners determine by visual comparison how similar these impressions are to conclude whether the pair is a match. It can be especially challenging to determine whether a marking is an \\emph{individual characteristic} caused by contact with the breech face of a particular firearm or a \\emph{subclass characteristic} shared across cartridge cases manufactured by the same manufacturer within a short time frame \\citep{firearmTraining}.',fig.align='center',fig.pos='htbp',out.width="\\textwidth"}
 knitr::include_graphics("images/cartridgeCasePair_separated.PNG")
 ```
+-->
 
-```{r ,echo=FALSE,fig.cap='\\label{fig:ccPair_combined} Cartridge case pair viewed side by side under a comparison microscope. A thin line can be seen separating the two views. The degree to which the markings on each cartridge case align is used to conclude a match.',fig.pos='htbp',out.width="\\textwidth"}
-knitr::include_graphics("images/cartridgeCasePair_comparison.PNG")
+The degree to which these breech face markings align can be used to determine whether the two cartridge cases match; i.e., were fired from the same firearm. 
+These breech face impressions are considered to be analogous to a firearm's "fingerprint" left on a cartridge case \citep{firearm_id_thompson}.
+
+```{r ,echo=FALSE,fig.cap='\\label{fig:ccPair_combined} A cartridge case pair with visible breech face impressions under a microscrope.  A thin line can be seen separating the two views. The degree to which the markings coincide is used to conclude whether the pair comes from the same source.',fig.pos='htbp',out.width="\\textwidth"}
+knitr::include_graphics("images/cartridgeCasePair_comparison_with_line.PNG")
 ```
 
-\svp{While \autoref{fig:ccPair_separated} and \autoref{fig:ccPair_combined} are from comparison microscopes used by firearms examiners in laboratory settings, digital microscopy is capable of higher precision measurements of surface topology.
-Using a 3D microscope, we can obtain extremely detailed scans of the cartridge case surfaces which can be used as input to an automated comparison algorithm, such as the CMC method originally proposed in \citet{song_proposed_2013}.}
+\autoref{fig:ccPair_combined} \hh{is an example of an image coming from} a comparison microscope used by firearms examiners in laboratory settings. Digital microscopy is capable of   precision measurements of surface topology \hh{at even higher resolutions}. Using a 3D microscope, we can obtain scans of breech face impressions \hh{at the micron level ($1 \mu m = 10^{-3} mm = 10^{-6} m$.) 
+These are the images} used as input to  automated comparison algorithms, such as the CMC method originally proposed in \citet{song_proposed_2013}.
 
 <!-- \svp{XXX Briefly describe the contributions of each paper in the sequence - need to transition from visual to algorithmic examination. The paragraph below is a start, but could flow a bit better. I've tried to write the paragraph above in a way that can lead directly into this discussion.} -->
 
-\svp{In this paper, we describe the implementation of a general CMC method which encompasses methods described in \citet{song_proposed_2013}, \citet{song_3d_2014}, and \citet{tong_improved_2015}.
-\citet{song_proposed_2013} lays out the conceptual framework for the original CMC method of \citet{song_proposed_2013} \jz{that was later implemented in \citet{song_3d_2014} and \cite{tong_fired_2014}}}.
-<!-- , which is referred to as the ``Top Vote" method in \jz{this paper};  -->
-<!-- \jz{XXX Everyone at NIST just calls the original CMC method "the original method" or something similar -- we decided to call it the "top-vote" to remove the ambiguity of what "original" refers to. XXX}\svp{I don't remember that decision. Might be worth revisiting it.} -->
-A subsequent improvement of the method presented in \citet{tong_improved_2015} and used in subsequent papers is referred to as the ``High CMC" method \citep{chen_convergence_2017}. Both implementations (and subsequent proposed improvements) can be used to correctly differentiate same and different-source cartridge cases from the test dataset \citep{fadul_empirical_nodate}.}
-<!-- \citet{song_proposed_2013} lays much of the conceptual framework for what would become the Congruent} \svp{(or Contiguous)}} \jz{Matching Cells algorithm.  -->
-<!-- For clarity, the initially proposed method is referred to as the "Top Vote" method in this paper.  -->
-<!-- An actual implementation of the Top Vote method applied to 2D optical images was described in  \citet{tong_fired_2014} and to 3D topographical scans in \citet{song_3d_2014}.  -->
-<!-- Results from both of these articles indicate that the method was able to correctly identify all 63 matching and 717 non-matching cartridge case pairs in the \citet{fadul_empirical_nodate} dataset.  -->
-<!-- The first extension of the Top Vote method was described by \citet{tong_improved_2015} who were also able to correctly identify matching and non-matching pairs in the \citet{fadul_empirical_nodate} dataset. -->
-<!-- While not given an official name in \citet{tong_improved_2015}, this method would later be referred to as the "High CMC" method in \citet{chen_convergence_2017} and is referred to as such in this paper.  -->
-<!-- Various extensions of the Top Vote algorithm have been proposed since [\citet{zhang_correlation_2016}, \citet{chen_convergence_2017}, \citet{tong_valid_2018}]. -->
-\jz{The \pkg{cmcR} package contains implementations designed for use with 3D topographical scans of the original method described in \citet{song_proposed_2013} and \citet{song_3d_2014} and the High CMC method described in \citet{tong_improved_2015}.}
+In the remainder of this paper, we describe the implementation of a general CMC method which encompasses methods described in \citet{song_proposed_2013}, \citet{song_3d_2014}, and \citet{tong_improved_2015}.
+\citet{song_proposed_2013} lays out the conceptual framework for the original CMC method  later implemented in \citet{song_3d_2014} and \cite{tong_fired_2014}.
 
-<!-- An implementation of the initially proposed CMC method from \citet{song_proposed_2013} applied to 3D topographical scans of cartridge case surfaces is described in \citet{song_3d_2014}. An extension to this initially proposed method known as the High CMC method is discussed in \citet{tong_improved_2015}.  -->
+A subsequent improvement of the method presented in \citet{tong_improved_2015} and used in subsequent papers is referred to as the ``High CMC" method \citep{chen_convergence_2017}. Both implementations (and subsequent proposed improvements) can be used to correctly differentiate same and different-source cartridge cases from the  dataset \citep{fadul_empirical_nodate}.
 
+The \pkg{cmcR} package contains implementations designed for use with 3D topographical scans of the original method described in \citet{song_proposed_2013} and \citet{song_3d_2014} and the High CMC method described in \citet{tong_improved_2015}.
 
-<!-- Transition -->
-\svp{In the next section, we examine the process of implementing the CMC method for automatic comparisons of 3D cartridge case scans. 
-At each step, we will compare the description in the published papers with the implementation in code, discussing the gaps in the method description and how we filled in those gaps during the creation of `cmcR`.}
-<!-- We have included pseudocode implementing each procedure in the} [Appendix](#appendix) \svp{so that any ambiguities in the prosaic description are easily resolved. -->
 The source code to the full `cmcR` package is accessible at https://github.com/CSAFE-ISU/cmcR.
 
-<!-- # Implementation {#implementation} -->
-
-<!-- \jz{XXX Order based on newly proposed structure: XXX} -->
 
 # The CMC method {#cmcMethod}
-\svp{All of the CMC methods can be broken down into three broad stages: preprocessing, cell-based similarity feature extraction, and application of a decision rule; these steps are illustrated in} \autoref{fig:overview-flow}. 
-\svp{The advantage to treating these algorithms as modular is that we can implement the algorithms as a unified set of procedures, and then test new variations against the old in a coherent, unified framework.}
+
+<!-- Transition -->
+In this section, we examine the process of implementing the CMC method for automatic comparisons of 3D cartridge case scans. 
+At each step, we will compare the description in the published papers with the implementation in code, discussing the gaps in the method description and how we filled in those gaps during the creation of `cmcR`.
+
+All of the CMC methods can be broken down into three broad stages: preprocessing, cell-based similarity feature extraction, and application of a decision rule; these steps are illustrated in \autoref{fig:overview-flow}. 
+The advantage to treating these algorithms as modular is that we can implement the algorithms as a unified set of procedures, and then test new variations against the old in a coherent, unified framework.
 
 \begin{figure}
 \centering
