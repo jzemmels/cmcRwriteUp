@@ -221,8 +221,10 @@ A total of 40 cartridge cases were scanned with a lateral resolution of 6.25 mic
 fadul1.1 <- x3ptools::read_x3p("data/fadul1-1.x3p")
 
 #apply low-pass filter to reduce noise in scan:
-surface1 <- fadul1.1$surface.matrix %>%
-  cmcR::preProcess_gaussFilter(res = 3.125e-06,wavelength = 16,filtertype = "lp")
+surface1 <- fadul1.1 %>%
+  cmcR::preProcess_gaussFilter(wavelength = 16,filtertype = "lp")
+
+surface1 <- surface1$surface.matrix
 
 params <- rgl::r3dDefaults
 
@@ -268,10 +270,12 @@ rgl.close()
 ```{r ,fadul1-2Screenshot,include=FALSE}
 fadul1.2 <- x3ptools::read_x3p("data/fadul1-2.x3p")
 
-surface2 <- fadul1.2$surface.matrix %>%
-  cmcR::preProcess_gaussFilter(res = 3.125e-06,wavelength = 16,filtertype = "lp")
+surface2 <- fadul1.2 %>%
+  cmcR::preProcess_gaussFilter(wavelength = 16,filtertype = "lp")
 #opens blank "canvas" upon which we can add lights, surfaces, etc.
 open3d(params = params)
+
+surface2 <- surface2$surface.matrix
 
 #removes any previously declared lights in scene
 rgl.pop("lights")
@@ -305,36 +309,26 @@ Only certain regions of a cartridge case contain identifying breech face impress
 Prior to applying the CMC comparison procedure, cartridge scans must undergo some preprocessing to remove sections of the cartridge case surface that do not come into contact with the breech face of the barrel.
 
 ```{r load-data, include = F, cache = T}
-# fadul1.1 <- cmcR::selectBFImpression_sample_x3p("data/fadul1-1.x3p",
-#                                                 gaussFilterWavelength = c(16,500))
-# fadul1.2 <- cmcR::selectBFImpression_sample_x3p("data/fadul1-2.x3p",
-#                                                 gaussFilterWavelength = c(16,500))
 
 fadul1.1 <- x3ptools::read_x3p("data/fadul1-1.x3p") %>%
-  cmcR::cropBFExterior(radiusOffset = -30,
-                 agg_function = median) %>%
-  cmcR::filterBFInterior(radiusOffset = 200) %>%
-  cmcR::levelByConditionalStatistic(statistic = "quantile",
-                              tau = .5,
-                              method = "fn") %>%
+  cmcR::preProcess_cropExterior(radiusOffset = -30,
+                                  agg_function = median) %>%
+  cmcR::preProcess_filterInterior(radiusOffset = 200) %>%
+  cmcR::preProcess_removeTrend(statistic = "quantile",
+                                 tau = .5,
+                                 method = "fn") %>%
+  cmcR::preProcess_gaussFilter() %>%
   x3ptools::sample_x3p()
-
-fadul1.1$surface.matrix <- cmcR::preProcess_gaussFilter(surfaceMat = fadul1.1$surface.matrix,
-                                                        res = fadul1.1$header.info$incrementY)
 
 fadul1.2 <- x3ptools::read_x3p("data/fadul1-2.x3p") %>%
-  cmcR::cropBFExterior(radiusOffset = -30,
-                 agg_function = median) %>%
-  cmcR::filterBFInterior(radiusOffset = 200) %>%
-  cmcR::levelByConditionalStatistic(statistic = "quantile",
-                              tau = .5,
-                              method = "fn") %>%
+  cmcR::preProcess_cropExterior(radiusOffset = -30,
+                                  agg_function = median) %>%
+  cmcR::preProcess_filterInterior(radiusOffset = 200) %>%
+  cmcR::preProcess_removeTrend(statistic = "quantile",
+                                 tau = .5,
+                                 method = "fn") %>%
+  cmcR::preProcess_gaussFilter() %>%
   x3ptools::sample_x3p()
-
-fadul1.2$surface.matrix <- cmcR::preProcess_gaussFilter(surfaceMat = fadul1.2$surface.matrix,
-                                                        res = fadul1.2$header.info$incrementY)
-
-
 ```
 
 ```{r cmc-ccf, include = F, cache = T}
@@ -343,7 +337,7 @@ kmComparison <- cmcR::cellCCF_bothDirections(x3p1 = fadul1.1,
                                              cellNumHoriz = 8,
                                              minObservedProp = .1,
                                              regionToCellProp = 9,
-                                             ccfMethod = "fftThenPairwise")
+                                             ccfMethod = "fft")
 
 kmCMC <- cmcR::cmcFilter_improved(kmComparison,
                                     ccf_thresh = .5,
@@ -430,26 +424,26 @@ Further, there are various parameters requiring specification to implement a Gau
 
 fadul1.1_original <- x3ptools::read_x3p("data/fadul1-1.x3p")
 
-fadul1.1_croppedExt <- cmcR::cropBFExterior(x3p = fadul1.1_original,
+fadul1.1_croppedExt <- cmcR::preProcess_cropExterior(x3p = fadul1.1_original,
                                             radiusOffset = -30,
                                             agg_function = median) 
 
-fadul1.1_croppedInt <- cmcR::filterBFInterior(fadul1.1_croppedExt,
-                                              radiusOffset = 200)
+fadul1.1_croppedInt <- cmcR::preProcess_filterInterior(fadul1.1_croppedExt,
+                                                         radiusOffset = 200)
 
-fadul1.1_medRemoved <-   cmcR::levelByConditionalStatistic(fadul1.1_croppedInt,
-                                                           statistic = "quantile",
-                                                           tau = .5,
-                                                           method = "fn")
+fadul1.1_medRemoved <-   cmcR::preProcess_removeTrend(fadul1.1_croppedInt,
+                                                        statistic = "quantile",
+                                                        tau = .5,
+                                                        method = "fn")
+
+
 
 fadul1.1_downsampled <- x3ptools::sample_x3p(fadul1.1_medRemoved,
                                              m = 2)
 
-fadul1.1_bpFiltered <- fadul1.1_downsampled
-fadul1.1_bpFiltered$surface.matrix <- cmcR::preProcess_gaussFilter(surfaceMat = fadul1.1_bpFiltered$surface.matrix,
-                                                                    res = fadul1.1_bpFiltered$header.info$incrementY,
-                                                                    wavelength = c(16,500),
-                                                                    filtertype = "bp")
+fadul1.1_bpFiltered<- cmcR::preProcess_gaussFilter(x3p = fadul1.1_downsampled,
+                                                   wavelength = c(16,500),
+                                                   filtertype = "bp")
 ```
 
 
@@ -651,7 +645,7 @@ The FFT does not tolerate missing values, and breech faces are not continuous su
 \svp{The entire matching procedure is performed twice: once with scan A partitioned and scan B as the target, and once with scan B partitioned and scan A as the target.}
 The correlation cell comparison procedure is implemented in the \code{cellCCF\_bothDirections} function. 
 
-```{r echo=TRUE,eval=FALSE}
+```{r echo = T,eval = F}
 kmComparison <- cellCCF_bothDirections(x3p1 = fadul1.1,
                                        x3p2 = fadul1.2,
                                        thetas = seq(-30,30,by = 3),
@@ -664,7 +658,7 @@ kmComparison <- cellCCF_bothDirections(x3p1 = fadul1.1,
 Although a grid of $8 \times 8$ cells were used, there were only 43 cell/region pairs that contained a sufficient proportion of non-missing values (10% in this example). 
 \svp{The features derived from the correlation cell procedure (CCF$_{max}$, $\Delta x$, $\Delta y$, $\theta$) are used as inputs to the methods for assessment of match strength.}
 
-```{r include=FALSE,eval=FALSE}
+```{r include = F,eval = F}
 kmComparison$comparison_1to2$ccfResults %>%
   topResultsPerCell() %>%
   head()
@@ -680,10 +674,10 @@ kmComparison$comparison_1to2$ccfResults %>%
                                              byrow = TRUE)) %>%
   mutate(`Cell index` = cellIndex,
          `Pairwise-complete corr.` = round(ccf,3),
-         `FFT-based corr.` = round(fft.ccf,3),
+         `FFT-based corr.` = round(fft_ccf,3),
          `Non-missing percent.` = round(100*nonMissingProportion,2)) %>%
-  select(-c(cellNum,cellID)) %>%
-  select(c(`Cell index`,`Pairwise-complete corr.`,`FFT-based corr.`,dx,dy,theta,`Non-missing percent.`)) %>%
+  select(-c(cellNum,cellRange)) %>%
+  select(c(`Cell index`,`Pairwise-complete corr.`,`FFT-based corr.`,x,y,theta,`Non-missing percent.`)) %>%
   filter(theta == -24) %>%
   arrange(`Cell index`) %>%
   head() %>%
@@ -727,16 +721,14 @@ Blue cells represent the 19 cells identified as CMCs between Fadul 1-1 and Fadul
 #                                                 gaussFilterWavelength = c(16,500))
 
 fadul2.1 <- x3ptools::read_x3p("data/fadul2-1.x3p") %>%
-  cropBFExterior(radiusOffset = -30,
+  preProcess_cropExterior(radiusOffset = -30,
                  agg_function = median) %>%
-  filterBFInterior(radiusOffset = 200) %>%
-  levelByConditionalStatistic(statistic = "quantile",
+  preProcess_filterInterior(radiusOffset = 200) %>%
+  preProcess_removeTrend(statistic = "quantile",
                               tau = .5,
                               method = "fn") %>%
+  cmcR::preProcess_gaussFilter() %>%
   x3ptools::sample_x3p()
-
-fadul2.1$surface.matrix <- cmcR::preProcess_gaussFilter(surfaceMat = fadul2.1$surface.matrix,
-                                                        res = fadul2.1$header.info$incrementY)
 
 knmComparison <- cmcR::cellCCF_bothDirections(x3p1 = fadul1.1,
                                               x3p2 = fadul2.1,
@@ -745,7 +737,7 @@ knmComparison <- cmcR::cellCCF_bothDirections(x3p1 = fadul1.1,
                                               cellNumHoriz = 8,
                                               minObservedProp = .1,
                                               regionToCellProp = 9,
-                                              ccfMethod = "fftThenPairwise")
+                                              ccfMethod = "fft")
 
 knmCMC <- cmcR::cmcFilter_improved(knmComparison,
                                    ccf_thresh = .5,
