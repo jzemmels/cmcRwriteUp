@@ -121,12 +121,15 @@ Unsurprisingly, \hh{this process is both} time \hh{ absorbing and computationall
 We will use the same data set which is referenced in \citet{song_3d_2014} and \citet{tong_improved_2015} to illustrate usage of the \pkg{cmcR} package. These 3d scans of cartridge cases are available from the NIST Ballistics Toolmark Research Database \citep[NBTRD;][]{nbtrd}. The strings defined below refer to two cartridge case scans available on the NBTRD from \citet{fadul_empirical_nodate} and will be used throughout the remainder of this paper.
 
 ```{r eval=FALSE,echo=TRUE}
+# SVP comment: Should do this in a tidy way with less code if possible...
 library(cmcR)
 
 nrbtd_url <- "https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement/"
 
 fadul1.1_id <- "DownloadMeasurement/2d9cc51f-6f66-40a0-973a-a9292dbee36d"
+# Same source comparison
 fadul1.2_id <- "DownloadMeasurement/cb296c98-39f5-46eb-abff-320a2f5568e8"
+# Different source comparison
 fadul2.2_id <- "DownloadMeasurement/8ae0b86d-210a-41fd-ad75-8212f9522f96"
 
 # Code to download breech face impressions:
@@ -403,7 +406,7 @@ In the different iterations of the CMC algorithm, there have been several minor 
 
 \begin{figure}
 \includegraphics[width=\linewidth]{images/preprocessing_flow.png}
-\caption{\hh{Overview of the set of pre-rpocessing steps used in the CMC algorithms.} Where a procedure step is not discussed or explicitly not applied in the paper, the path traverses empty space.}\label{fig:preprocessing-schematic}
+\caption{\hh{Overview of the set of pre-processing steps used in the CMC algorithms.} Where a procedure step is not discussed or explicitly not applied in the paper, the path traverses empty space.}\label{fig:preprocessing-schematic}
 \end{figure}
 
 The implementation in \citet{tong_fired_2014} describes the preprocessing steps very succinctly:
@@ -434,7 +437,6 @@ Further, there are various parameters requiring specification to implement a Gau
 
 ### Implementation of preprocessing procedures
 
-<!-- \svp{In order to reproducibly implement the preprocessing procedure, we modified a procedure from \citet{tai_submitted_2019} used to automatically process surface matrices.}  -->
 
 ```{r include = F,cache = T}
 fadul1.1_original <- x3ptools::read_x3p("data/fadul1-1.x3p")
@@ -593,7 +595,7 @@ The scan on the left is divided into a grid of $k \times k$ cells.
 <!-- \includegraphics[width=\linewidth]{images/cellbased.pdf} -->
 
 \begin{figure}
-<!-- \includegraphics[width=\linewidth]{images/cmc_flow.png} -->
+\includegraphics[width=\textwidth]{images/cmc_flow.png}
 \caption{Each CMC implementation uses slightly different procedures to obtain a similarity score between two cartridge cases. Steps which are implemented with additional user-specified parameters are shaded purple; steps which are described but without sufficient detail are shaded grey.}\label{fig:cmc-schematic}
 \end{figure}
 
@@ -651,6 +653,22 @@ The FFT does not tolerate missing values, and breech faces are not continuous su
 
 \svp{The entire matching procedure is performed twice: once with scan A partitioned and scan B as the target, and once with scan B partitioned and scan A as the target.}
 The correlation cell comparison procedure is implemented in the \code{cellCCF\_bothDirections} function. 
+
+\svp{This chunk of code is 1) too dense, and 2) not particularly useful. Either take each function/step and show it line-by-line as you discuss the procedure, or just show the full function and say that it does the following steps.
+}
+\svp{Something like this might work better:}
+
+\svp{The `comparison_allTogether` function consists of the following steps wrapped into a single convenience function. }
+
+- Divide up cells (`comparison_cellDivision`)
+- get Target regions (`comparison_getTargetRegions`)
+- Compute missing proportions (`comparison_calcPropMissing`)
+- Standardize heights (`comparison_standardizeHeights`)
+- Replace missing values (`comparison_replaceMissing`)
+- Compute CCF using FFT (`comparison_fft_ccf`)
+- Compute pairwise correlation directly (`comparison_cor`)
+
+\svp{This function is applied to each $\theta$ value in sequence, rotating the target scan relative to the reference scan. When implementing the High CMC method, both combinations of reference and target scan are examined (e.g. A-B and B-A).}
 
 ```{r echo=TRUE,eval=FALSE}
 comparison_allTogether <- function(reference,target,theta,numCells,maxMissingProp){
@@ -919,6 +937,8 @@ A discussion of how to actually determine thresholds is provided in the} [invest
 The \code{cmcFilter\_improved} function determines CMCs under both the \jz{original method of \citet{song_proposed_2013}} and the High CMC method for user-defined threshold values.
 In the event of a CMC$_{\max}$ count tie between more than one adjacent $\theta$ values, then the median of these $\theta$ values is used as the registration angle. 
 Different options exist to handle situations in which one direction fails the High CMC criterion while the other passes. See the \code{cmcFilter\_improved} documentation for more information.
+
+\svp{We should have a single function that can do both decisions, `decision_CMC`, with a method argument and an optional parameter `tau`. Also, it would be better to leverage `mutate` rather than having an argument for the column name... more flexible.}
 
 ```{r include=FALSE}
 kmCMCPlot <- cmcR::cmcPlot(referenceScan = fadul1.1,
