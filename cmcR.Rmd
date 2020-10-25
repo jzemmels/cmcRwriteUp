@@ -120,17 +120,15 @@ Unsurprisingly, \hh{this process is both} time \hh{ absorbing and computationall
 <!-- \svp{XXX should we cite Fadul too, since it's the original source?}\hh{XXX yes, we should cite the original source} -->
 We will use the same data set which is referenced in \citet{song_3d_2014} and \citet{tong_improved_2015} to illustrate usage of the \pkg{cmcR} package. These 3d scans of cartridge cases are available from the NIST Ballistics Toolmark Research Database \citep[NBTRD;][]{nbtrd}. The strings defined below refer to two cartridge case scans available on the NBTRD from \citet{fadul_empirical_nodate} and will be used throughout the remainder of this paper.
 
-```{r eval=FALSE,echo=TRUE}
+```{r eval=FALSE,echo=FALSE}
 # SVP comment: Should do this in a tidy way with less code if possible...
 library(cmcR)
-
-nrbtd_url <- "https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement/"
 
 fadul1.1_id <- "DownloadMeasurement/2d9cc51f-6f66-40a0-973a-a9292dbee36d"
 # Same source comparison
 fadul1.2_id <- "DownloadMeasurement/cb296c98-39f5-46eb-abff-320a2f5568e8"
 # Different source comparison
-fadul2.2_id <- "DownloadMeasurement/8ae0b86d-210a-41fd-ad75-8212f9522f96"
+fadul2.1_id <- "DownloadMeasurement/8ae0b86d-210a-41fd-ad75-8212f9522f96"
 
 # Code to download breech face impressions:
 nrbtd_url <- "https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement/"
@@ -140,6 +138,25 @@ download.file(
   file.path(nrbtd_url, fadul1.2_id), destfile = "data/fadul1-2.x3p", mode = "wb")
 download.file(
   file.path(nrbtd_url, fadul2.1_id), destfile = "data/fadul2-1.x3p", mode = "wb")
+```
+
+```{r eval=FALSE,echo=TRUE}
+library(cmcR)
+
+nrbtd_url <- "https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement/"
+
+x3p_ids <- c("DownloadMeasurement/2d9cc51f-6f66-40a0-973a-a9292dbee36d",
+             "DownloadMeasurement/cb296c98-39f5-46eb-abff-320a2f5568e8",
+             "DownloadMeasurement/8ae0b86d-210a-41fd-ad75-8212f9522f96")
+
+file_names <- c("fadul1-1.x3p","fadul1-2.x3p","fadul2-1.x3p")
+
+purrr::walk2(.x = x3p_ids,
+             .y = file_names,
+             .f = function(x3p_id,file_name){
+               download.file(url = file.path(nrbtd_url, x3p_id), 
+                             destfile = paste0("data/",file_name),mode = "wb")
+             })
 ```
 
 
