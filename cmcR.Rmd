@@ -333,67 +333,52 @@ fadul1.2 <- x3ptools::read_x3p("data/fadul1-2.x3p") %>%
 ```
 
 ```{r cmc-ccf, include = F, cache = T}
-comparison_allTogether <- function(reference,target,theta){
-  
-  reference %>%
-    comparison_cellDivision(numCells = 64) %>%
-    mutate(regionHeightValues = comparison_getTargetRegions(cellHeightValues = cellHeightValues,
-                                                            target_x3p = target,
-                                                            rotation = theta)) %>%
-    mutate(cellPropMissing = comparison_calcPropMissing(cellHeightValues),
-           regionPropMissing = comparison_calcPropMissing(regionHeightValues)) %>%
-    filter(cellPropMissing <= .85 & regionPropMissing <= .85) %>%
-    mutate(cellHeightValues = comparison_standardizeHeights(cellHeightValues),
-           regionHeightValues = comparison_standardizeHeights(regionHeightValues)) %>%
-    mutate(cellHeightValues_replaced = comparison_replaceMissing(cellHeightValues),
-           regionHeightValues_replaced = comparison_replaceMissing(regionHeightValues)) %>%
-    mutate(fft_ccf_df = comparison_fft_ccf(cellHeightValues = cellHeightValues_replaced,
-                                           regionHeightValues = regionHeightValues_replaced)) %>%
-    mutate(pairwiseCompCor = comparison_cor(cellHeightValues,regionHeightValues,fft_ccf_df)) %>%
-    tidyr::unnest(fft_ccf_df) %>%
-    select(cellIndex,x,y,fft_ccf,pairwiseCompCor) %>%
-    mutate(theta = theta)
-  
-}
-
 kmComparisonFeatures <- purrr::map_dfr(seq(-30,30,by = 3),
                                        ~ comparison_allTogether(reference = fadul1.1,
                                                                 target = fadul1.2,
+                                                                numCells = 64,
+                                                                maxMissingProp = .85,
                                                                 theta = .))
 
 kmComparisonFeatures_rev <- purrr::map_dfr(seq(-30,30,by = 3),
                                            ~ comparison_allTogether(reference = fadul1.2,
                                                                     target = fadul1.1,
+                                                                    numCells = 64,
+                                                                    maxMissingProp = .85,
                                                                     theta = .))
 
 kmComparison_cmcs <- kmComparisonFeatures %>%
-  decision_originalMethod_classifyCMCs(corColName = "pairwiseCompCor",
-                                       xThresh = 20,
-                                       yThresh = 20,
-                                       thetaThresh = 6,
-                                       corThresh = .5) %>%
-  decision_highCMC_classifyCMCs(corColName = "pairwiseCompCor",
-                                xThresh = 20,
-                                yThresh = 20,
-                                thetaThresh = 6,
-                                corThresh = .5,
-                                tau = 1)
+  left_join(decision_CMC(cellIndex = .$cellIndex,
+                         x = .$x,
+                         y = .$y,
+                         theta = .$theta,
+                         corr = .$pairwiseCompCor,
+                         xThresh = 20,
+                         thetaThresh = 6,
+                         corrThresh = .5,
+                         tau = 1),
+            by = c("cellIndex","theta"))
 
 kmComparison_cmcs_rev <- kmComparisonFeatures_rev %>%
-  decision_originalMethod_classifyCMCs(corColName = "pairwiseCompCor",
-                                       xThresh = 20,
-                                       yThresh = 20,
-                                       thetaThresh = 6,
-                                       corThresh = .5) %>%
-  decision_highCMC_classifyCMCs(corColName = "pairwiseCompCor",
-                                xThresh = 20,
-                                yThresh = 20,
-                                thetaThresh = 6,
-                                corThresh = .5,
-                                tau = 1)
+  left_join(decision_CMC(cellIndex = .$cellIndex,
+                         x = .$x,
+                         y = .$y,
+                         theta = .$theta,
+                         corr = .$pairwiseCompCor,
+                         xThresh = 20,
+                         thetaThresh = 6,
+                         corrThresh = .5,
+                         tau = 1),
+            by = c("cellIndex","theta"))
 
 kmComparison_combinedCMCs <- decision_combineCMCDirections(kmComparison_cmcs,
                                                            kmComparison_cmcs_rev)
+
+bind_rows(kmComparison_cmcs,
+          kmComparison_cmcs_rev) %>%
+  filter(highCMCClassif == "CMC") %>%
+  group_by(cellIndex) %>%
+  filter(pairwiseCompCor == max(pairwiseCompCor))
 ```
 
 ## Preprocessing procedures {#preProcessing}
@@ -671,29 +656,6 @@ The correlation cell comparison procedure is implemented in the \code{cellCCF\_b
 \svp{This function is applied to each $\theta$ value in sequence, rotating the target scan relative to the reference scan. When implementing the High CMC method, both combinations of reference and target scan are examined (e.g. A-B and B-A).}
 
 ```{r echo=TRUE,eval=FALSE}
-comparison_allTogether <- function(reference,target,theta,numCells,maxMissingProp){
-  
-  reference %>%
-    comparison_cellDivision(numCells) %>%
-    mutate(regionHeightValues = comparison_getTargetRegions(cellHeightValues = cellHeightValues,
-                                                            target_x3p = target,
-                                                            rotation = theta)) %>%
-    mutate(cellPropMissing = comparison_calcPropMissing(cellHeightValues),
-           regionPropMissing = comparison_calcPropMissing(regionHeightValues)) %>%
-    filter(cellPropMissing <= maxMissingProp & regionPropMissing <= maxMissingProp) %>%
-    mutate(cellHeightValues = comparison_standardizeHeights(cellHeightValues),
-           regionHeightValues = comparison_standardizeHeights(regionHeightValues)) %>%
-    mutate(cellHeightValues_replaced = comparison_replaceMissing(cellHeightValues),
-           regionHeightValues_replaced = comparison_replaceMissing(regionHeightValues)) %>%
-    mutate(fft_ccf_df = comparison_fft_ccf(cellHeightValues = cellHeightValues_replaced,
-                                           regionHeightValues = regionHeightValues_replaced)) %>%
-    mutate(pairwiseCompCor = comparison_cor(cellHeightValues,regionHeightValues,fft_ccf_df)) %>%
-    tidyr::unnest(fft_ccf_df) %>%
-    select(cellIndex,x,y,fft_ccf,pairwiseCompCor) %>%
-    mutate(theta = theta)
-  
-}
-
 kmComparisonFeatures <- purrr::map_dfr(seq(-30,30,by = 3),
                                        ~ comparison_allTogether(reference = fadul1.1,
                                                                 target = fadul1.2,
@@ -771,38 +733,40 @@ fadul2.1 <- x3ptools::read_x3p("data/fadul2-1.x3p") %>%
 knmComparisonFeatures <- purrr::map_dfr(seq(-30,30,by = 3),
                                         ~ comparison_allTogether(reference = fadul1.1,
                                                                  target = fadul2.1,
+                                                                 numCells = 64,
+                                                                 maxMissingProp = .85,
                                                                  theta = .))
 
 knmComparisonFeatures_rev <- purrr::map_dfr(seq(-30,30,by = 3),
                                             ~ comparison_allTogether(reference = fadul2.1,
                                                                      target = fadul1.1,
+                                                                     numCells = 64,
+                                                                     maxMissingProp = .85,
                                                                      theta = .))
 
 knmComparison_cmcs <- knmComparisonFeatures %>%
-  decision_originalMethod_classifyCMCs(corColName = "pairwiseCompCor",
-                                       xThresh = 20,
-                                       yThresh = 20,
-                                       thetaThresh = 6,
-                                       corThresh = .5) %>%
-  decision_highCMC_classifyCMCs(corColName = "pairwiseCompCor",
-                                xThresh = 20,
-                                yThresh = 20,
-                                thetaThresh = 6,
-                                corThresh = .5,
-                                tau = 1)
+  left_join(decision_CMC(cellIndex = .$cellIndex,
+                         x = .$x,
+                         y = .$y,
+                         theta = .$theta,
+                         corr = .$pairwiseCompCor,
+                         xThresh = 20,
+                         thetaThresh = 6,
+                         corrThresh = .5,
+                         tau = 1),
+            by = c("cellIndex","theta"))
 
 knmComparison_cmcs_rev <- knmComparisonFeatures_rev %>%
-  decision_originalMethod_classifyCMCs(corColName = "pairwiseCompCor",
-                                       xThresh = 20,
-                                       yThresh = 20,
-                                       thetaThresh = 6,
-                                       corThresh = .5) %>%
-  decision_highCMC_classifyCMCs(corColName = "pairwiseCompCor",
-                                xThresh = 20,
-                                yThresh = 20,
-                                thetaThresh = 6,
-                                corThresh = .5,
-                                tau = 1)
+  left_join(decision_CMC(cellIndex = .$cellIndex,
+                         x = .$x,
+                         y = .$y,
+                         theta = .$theta,
+                         corr = .$pairwiseCompCor,
+                         xThresh = 20,
+                         thetaThresh = 6,
+                         corrThresh = .5,
+                         tau = 1),
+            by = c("cellIndex","theta"))
 
 knmComparison_combinedCMCs <- decision_combineCMCDirections(knmComparison_cmcs,
                                                             knmComparison_cmcs_rev)
@@ -940,6 +904,32 @@ Different options exist to handle situations in which one direction fails the Hi
 
 \svp{We should have a single function that can do both decisions, `decision_CMC`, with a method argument and an optional parameter `tau`. Also, it would be better to leverage `mutate` rather than having an argument for the column name... more flexible.}
 
+```{r echo=TRUE,eval=FALSE}
+kmComparison_cmcs <- kmComparisonFeatures %>%
+  left_join(decision_CMC(cellIndex = .$cellIndex,
+                         x = .$x,
+                         y = .$y,
+                         theta = .$theta,
+                         corr = .$pairwiseCompCor,
+                         xThresh = 20,
+                         thetaThresh = 6,
+                         corrThresh = .5,
+                         tau = 1),
+            by = c("cellIndex","theta"))
+
+knmComparison_cmcs <- knmComparisonFeatures %>%
+  left_join(decision_CMC(cellIndex = .$cellIndex,
+                         x = .$x,
+                         y = .$y,
+                         theta = .$theta,
+                         corr = .$pairwiseCompCor,
+                         xThresh = 20,
+                         thetaThresh = 6,
+                         corrThresh = .5,
+                         tau = 1),
+            by = c("cellIndex","theta"))
+```
+
 ```{r include=FALSE}
 kmCMCPlot <- cmcR::cmcPlot(referenceScan = fadul1.1,
                             targetScan = fadul1.2,
@@ -1014,35 +1004,6 @@ km_highCMCCMCPlot_bothDirections <- ggplot(data.frame(a = 1)) +
   annotate("text",x = 6.6,y = 3,size = 5,label = "Fadul 1-2")
 ```
 
-
-```{r echo=TRUE,eval=FALSE}
-kmComparison_cmcs <- kmComparisonFeatures %>%
-  decision_originalMethod_classifyCMCs(corColName = "pairwiseCompCor",
-                                       xThresh = 20,
-                                       yThresh = 20,
-                                       thetaThresh = 6,
-                                       corThresh = .5) %>%
-  decision_highCMC_classifyCMCs(corColName = "pairwiseCompCor",
-                                xThresh = 20,
-                                yThresh = 20,
-                                thetaThresh = 6,
-                                corThresh = .5,
-                                tau = 1)
-
-knmComparison_cmcs <- knmComparisonFeatures %>%
-  decision_originalMethod_classifyCMCs(corColName = "pairwiseCompCor",
-                                       xThresh = 20,
-                                       yThresh = 20,
-                                       thetaThresh = 6,
-                                       corThresh = .5) %>%
-  decision_highCMC_classifyCMCs(corColName = "pairwiseCompCor",
-                                xThresh = 20,
-                                yThresh = 20,
-                                thetaThresh = 6,
-                                corThresh = .5,
-                                tau = 1)
-```
-
 ```{r cache = T,include=FALSE}
 knmCMCPlot <- cmcR::cmcPlot(referenceScan = fadul1.1,
                             targetScan = fadul2.1,
@@ -1104,14 +1065,14 @@ km_originalCMCPlot_bothDirections
 
 Similarly, CMCs and non-CMCs determined under the High CMC method are shown in \autoref{fig:highCMCPlot}.
 
-```{r,echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.cap='\\label{fig:highCMCPlot} Applying the High CMC method to the comparison of Fadul 1-1 and Fadul 1-2 results in 18 CMCs when Fadul 1-1 is treated as the reference (top) and 18 CMCs when Fadul 1-2 is treated as the reference (bottom). Although the individual comparisons do not yield considerably more CMCs than under the original method of \\citet{song_proposed_2013}, \\citet{tong_improved_2015} indicate that the High CMCs from both comparisons are combined as the final High CMC count (each cell is counted at most once). Combining the results means that the High CMC method tends to produce higher CMC counts than the original method of \\citet{song_proposed_2013}.',fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
+```{r,echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.cap='\\label{fig:highCMCPlot} Applying the High CMC method to the comparison of Fadul 1-1 and Fadul 1-2 results in 19 CMCs when Fadul 1-1 is treated as the reference (top) and 18 CMCs when Fadul 1-2 is treated as the reference (bottom). Although the individual comparisons do not yield considerably more CMCs than under the original method of \\citet{song_proposed_2013}, \\citet{tong_improved_2015} indicate that the High CMCs from both comparisons are combined as the final High CMC count (each cell is counted at most once). Combining the results means that the High CMC method tends to produce higher CMC counts than the original method of \\citet{song_proposed_2013}. In this example, the combined High CMC count is 24 CMCs.',fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
 
 km_highCMCCMCPlot_bothDirections
 ```
 
 In contrast, \autoref{fig:knmCMCPlot} shows the CMC results for a comparison between Fadul 1-1 and a known non-match scan, Fadul 2-1, under the same pre, inter, and post-processing conditions used for the known match comparison.
 
-```{r,echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.cap='\\label{fig:knmCMCPlot} Applying the High CMC method to the comparison between the non-match pair Fadul 1-1 and Fadul 2-1 results in 1 CMC under the original method of \\citet{song_proposed_2013} (shown below) and 0 CMCs under the High CMC method (not shown). The seemingly random behavior of the red cells, which indicate the translation/rotation at which each cell attained its highest CCF value in the target scan, validates our intuition that the cells in a non-match comparison should not exhibit an observable pattern. Random chance should be the prevailing factor in classifying non-match cells as CMCs.', fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
+```{r,echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.cap='\\label{fig:knmCMCPlot} Applying the High CMC method to the comparison between the non-match pair Fadul 1-1 and Fadul 2-1 results in 1 CMC under the original method of \\citet{song_proposed_2013} (shown above) and 0 CMCs under the High CMC method (not shown). The seemingly random behavior of the red cells, which indicate the translation/rotation at which each cell attained its highest CCF value in the target scan, validates our intuition that the cells in a non-match comparison should not exhibit an observable pattern. Random chance should be the prevailing factor in classifying non-match cells as CMCs.', fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
 
 knm_cmcPlot_bothDirections
 ```
