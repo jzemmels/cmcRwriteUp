@@ -404,9 +404,6 @@ kmComparison_cmcs_rev <- kmComparisonFeatures_rev %>%
                                               corrThresh = .5,
                                               tau = 1))
 
-kmComparison_combinedCMCs <- decision_combineCMCDirections(kmComparison_cmcs,
-                                                           kmComparison_cmcs_rev)
-
 bind_rows(kmComparison_cmcs,
           kmComparison_cmcs_rev) %>%
   filter(highCMCClassif == "CMC") %>%
@@ -982,9 +979,6 @@ knmComparison_cmcs_rev <- knmComparisonFeatures_rev %>%
                                               thetaThresh = 6,
                                               corrThresh = .5,
                                               tau = 1))
-
-knmComparison_combinedCMCs <- decision_combineCMCDirections(knmComparison_cmcs,
-                                                            knmComparison_cmcs_rev)
 ```
 
 ```{r echo=TRUE,eval=FALSE}
