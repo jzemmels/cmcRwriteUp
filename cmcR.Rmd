@@ -531,13 +531,16 @@ fadul1.1 <- x3ptools::x3p_read("data/fadul1-1.x3p") ## Could we include the code
 \svp{We begin with a 3D scan, which is optionally downsampled. 
 Typically, in the CMC literature,} every other row and column in the surface matrix \svp{is retained}, resulting in a matrix that is approximately 25% of the original scan dimension. 
 This downsampling is performed using the \code{x3p\_sample} function from the \pkg{x3ptools} package (default is every other row and column). 
-Step 1 in \autoref{fig:processingPipeline} shows an \jz{unprocessed surface matrix.}
+Step 1 in \autoref{fig:processingPipeline} shows an \jz{unprocessed surface matrix.} \hh{XXX can we get away from the surface matrix and call it a breech face scan? That's gettign away from how it's implemented towards what it is.}
+\hh{XXX minor thing, but let's call the things exactly how they are defined. It's not Step 1, its (1) in Figure 5.}
 
 ```{r, echo=TRUE,eval=FALSE}
 ## HH: Couple of questions: where do the -30 and the 200 come from?
-## Why is it cropExterior and filterInterior?
+## Why is it *crop*Exterior and *filter*Interior?
 ## It looks like both functions have the same parameterization
-## how about a preprocess_crop with a parameter area that is "interior" or "exterior"?
+## how about a function preProcess_crop with a parameter area that is "interior" or "exterior"?
+## is it that we are dealing with a radius? could the parameter be just offset?
+
 fadul1.1_cropped <- fadul1.1%>%
   cmcR::preProcess_crop(region = "exterior",
                         radiusOffset = -30) %>%
