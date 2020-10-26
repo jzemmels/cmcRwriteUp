@@ -554,10 +554,10 @@ The goal is to isolate the breech face impression region by removing (i.e., repl
 Upon labeling the different regions of the cartridge case scan, the centers and radii of the cartridge case primer and firing pin impression hole are estimated. 
 As seen in step 1 of \autoref{fig:processingPipeline}, the center of the firing pin impression hole might be offset from the center of the cartridge case.
 The estimation procedures systematically overestimate and underestimate the radii of the cartridge case primer and firing pin impression regions, respectively (e.g., the estimation procedure captures roll-off on on the exterior of the primer).
-The user-specified `radiusOffset` is added to the radius estimate to improve a radius estimate.
+The user-specified \code{radiusOffset} value is added to the radius estimate.
 While this step requires user input, the resulting surface matrix, like the one shown in step 2 of \autoref{fig:processingPipeline}, is reproducible assuming the same user-specified radii values are used. 
 This is in contrast to the non-reproducible, manual procedure referenced in other CMC papers to isolate the breech face impression region.
-The \code{preProcess\_crop} function is used to remove the exterior and firing pin impression region on the interior based on the `region` argument.}
+The \code{preProcess\_crop} function is used to remove the exterior and firing pin impression region on the interior based on the \code{region} argument.}
 
 ```{r, echo=TRUE,eval=FALSE}
 fadul1.1_deTrended <- fadul1.1_cropped %>%
