@@ -62,7 +62,7 @@ if(!dir.exists("derivatives")){
 knitr::opts_chunk$set(cache = T, dpi = 300, fig.width = 8, fig.height = 4, out.width = "\\textwidth", dpi = 300)
 library(cmcR) # remotes::install_github("CSAFE-ISU/cmcR")
 library(tidyverse)
-library(x3ptools)
+library(x3ptools) # remotes::install_github("heike/x3ptools")
 library(rgl)
 ```
 
@@ -231,14 +231,14 @@ Then, we examine the implementation of each sub-procedure in the \pkg{cmcR} pack
 
 
 ## Initial Data {#initialData}
-\jz{Cartridge case scans are commonly stored in the ISO standard x3p file format \citep{ISO25178-72}. An x3p consists of a single surface matrix representing the height value of the surface at a particular location and metadata concerning the parameters under which the scan was taken (size, resolution, author, etc.). The \pkg{x3ptools} package can be used to work with these x3p files in R \citep{x3ptools}.
-}
+Cartridge case scans are commonly stored in the ISO standard x3p file format \citep{ISO25178-72}. An x3p consists of a single surface matrix representing the height value of the surface at a particular location and metadata concerning the parameters under which the scan was taken (size, resolution, creator, microscope, and microscopy software versions etc.). The \pkg{x3ptools} package \citep{x3ptools} can be used to work with these x3p files in R \citep{x3ptools}.
+
 <!-- \hh{XXXX x3p is a standard file format - we could cite both the ISO site and x3ptools as a way to work with them.} -->
 \autoref{fig:cartridgeCasePair} shows the surface matrices of a known match (KM) pair of cartridge cases from a study by \citet{fadul_empirical_nodate}. 
 A total of 40 cartridge cases were scanned with a lateral resolution of 6.25 microns (micrometers) per pixel. The surface matrices are approximately $1200 \times 1200$ pixels in size \hh{corresponding to an area of about $3.8 \times 3.8$ mm$^2$}.
 
 ```{r, fadul1-1Screenshot,include=FALSE}
-fadul1.1 <- x3ptools::read_x3p("data/fadul1-1.x3p")
+fadul1.1 <- x3ptools::x3p_read("data/fadul1-1.x3p")
 
 #apply low-pass filter to reduce noise in scan:
 surface1 <- fadul1.1 %>%
@@ -288,7 +288,7 @@ rgl.close()
 
 
 ```{r ,fadul1-2Screenshot,include=FALSE}
-fadul1.2 <- x3ptools::read_x3p("data/fadul1-2.x3p")
+fadul1.2 <- x3ptools::x3p_read("data/fadul1-2.x3p")
 
 surface2 <- fadul1.2 %>%
   cmcR::preProcess_gaussFilter(wavelength = 16,filtertype = "lp")
@@ -330,7 +330,7 @@ Prior to applying the CMC comparison procedure, cartridge scans must undergo som
 
 ```{r load-data, include = F, cache = T}
 
-fadul1.1 <- x3ptools::read_x3p("data/fadul1-1.x3p") %>%
+fadul1.1 <- x3ptools::x3p_read("data/fadul1-1.x3p") %>%
   cmcR::preProcess_cropExterior(radiusOffset = -30,
                                   agg_function = median) %>%
   cmcR::preProcess_filterInterior(radiusOffset = 200) %>%
@@ -340,7 +340,7 @@ fadul1.1 <- x3ptools::read_x3p("data/fadul1-1.x3p") %>%
   cmcR::preProcess_gaussFilter() %>%
   x3ptools::sample_x3p()
 
-fadul1.2 <- x3ptools::read_x3p("data/fadul1-2.x3p") %>%
+fadul1.2 <- x3ptools::x3p_read("data/fadul1-2.x3p") %>%
   cmcR::preProcess_cropExterior(radiusOffset = -30,
                                   agg_function = median) %>%
   cmcR::preProcess_filterInterior(radiusOffset = 200) %>%
@@ -459,7 +459,7 @@ Modularizing the steps of the preprocessing procedures renders the overall prepr
 \autoref{fig:processingPipeline} shows how the \code{preProcess\_*} functions affect the surface matrix values of the Fadul 1-1 scan.}
 
 ```{r include = F,cache = T}
-fadul1.1_original <- x3ptools::read_x3p("data/fadul1-1.x3p")
+fadul1.1_original <- x3ptools::x3p_read("data/fadul1-1.x3p")
 
 fadul1.1_croppedExt <- cmcR::preProcess_cropExterior(x3p = fadul1.1_original,
                                             radiusOffset = -30,
@@ -525,7 +525,7 @@ gridExtra::grid.arrange(preProcessingPlot$`(1) Original`,
 Following each code chunk is an explanation of the functions used.}
 
 ```{r, echo=TRUE,eval=FALSE}
-fadul1.1 <- x3ptools::x3p_read("data/fadul1-1.x3p")
+fadul1.1 <- x3ptools::x3p_read("data/fadul1-1.x3p") ## Could we include the code in the figure?
 ```
 
 \svp{We begin with a 3D scan, which is optionally downsampled. 
@@ -534,8 +534,12 @@ This downsampling is performed using the \code{x3p\_sample} function from the \p
 Step 1 in \autoref{fig:processingPipeline} shows an \jz{unprocessed surface matrix.}
 
 ```{r, echo=TRUE,eval=FALSE}
+## HH: Couple of questions: where do the -30 and the 200 come from?
+## Why is it cropExterior and filterInterior?
+## It looks like both functions have the same parameterization
+## how about a preprocess_crop with a parameter area that is "interior" or "exterior"?
 fadul1.1_cropped <- fadul1.1 %>%
-  preProcess_cropExterior(radiusOffset = -30) %>%
+  preProcess_cropExterior(radiusOffset = -30) %>%  
   preProcess_filterInterior(radiusOffset = 200)
 ```
 
@@ -921,7 +925,7 @@ A discussion of how to actually determine thresholds is provided in the} [invest
 <!-- \svp{We should have a single function that can do both decisions, `decision_CMC`, with a method argument and an optional parameter `tau`. Also, it would be better to leverage `mutate` rather than having an argument for the column name... more flexible.} -->
 
 ```{r,echo=FALSE,cache = T}
-fadul2.1 <- x3ptools::read_x3p("data/fadul2-1.x3p") %>%
+fadul2.1 <- x3ptools::x3p_read("data/fadul2-1.x3p") %>%
   preProcess_cropExterior(radiusOffset = -30,
                  agg_function = median) %>%
   preProcess_filterInterior(radiusOffset = 200) %>%
