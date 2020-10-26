@@ -418,43 +418,42 @@ bind_rows(kmComparison_cmcs,
 
 <!-- First, raw 3D topographical cartridge case surface data need to be processed before applying the CMC method.  -->
 
-\svp{During the preprocessing stage, several sequential steps are used to prepare each cartridge case for analysis. 
-In the different iterations of the CMC algorithm, there have been several minor changes to the preprocessing steps; the different variations of the steps are shown in \autoref{fig:preprocessing-schematic}.
-}
+During the preprocessing stage, several sequential steps are used to prepare each cartridge case for analysis.  The goal of this process is to remove the edges and center of the scan which did not come into contact with the breech face, as well as any artifacts of the scan and microscope staging which do not accurately represent the breech face surface.
+The different iterations of the CMCM algorithm describe  different variations of these steps.
+
+A summary of these steps is shown in \autoref{fig:preprocessing-schematic}.
+
 
 \begin{figure}
 \includegraphics[width=\linewidth]{images/preprocessing_flow.png}
-\caption{\hh{Overview of the set of pre-processing steps used in the CMC algorithms.} Where a procedure step is not discussed or explicitly not applied in the paper, the path traverses empty space.}\label{fig:preprocessing-schematic}
+\caption{Overview of the set of pre-processing steps used in the CMC algorithms. Where a procedure step is not discussed or explicitly not applied in the paper, the path traverses empty space.}\label{fig:preprocessing-schematic}
 \end{figure}
 
-The implementation in \citet{tong_fired_2014} describes the preprocessing steps very succinctly:
+The implementation in \citet{tong_fired_2014} describes the preprocessing steps as:
 
 >  After trimming processing to remove unrelated correlations areas, the final image size is reduced to 700 × 700 pixel with an estimated pixel spacing of 5.0 $\mu$m. A Gaussian smoothing filter (standard deviation $\sigma$ = 1) was implemented first to remove high frequency noise.
 
-\svp{Complicating the issue, }the procedures used to process the surface matrices differ in \svp{each paper in} the CMC literature. \citet{song_3d_2014} outline the following preprocessing procedure:
+Complicating the issue \hh{of preprocessing the scans}, the procedures used to process the surface matrices differ in each paper in the CMC literature. \citet{song_3d_2014} outline the following preprocessing procedure:
 
-> Trim off the inside firing pin surface and other areas outside the breed face mark, so that only breech face impression data remain for correlation.
+> Trim off the inside firing pin surface and other areas outside the breed (sic) face mark, so that only breech face impression data remain for correlation.
 
 > Identify and remove dropouts or outliers.
 
 > Apply a band-pass Gaussian regression filter with 40 $\mu$m short cutoff length and 400 $\mu$m long cutoff length to remove low frequency components, including surface curvature, form error, waviness and high frequency components which mainly arise from the instrument noise.
 
-While not \svp{explicit} in \citet{song_3d_2014}, \citet{song_estimating_2018} indicates that the "trimming" of the unwanted regions of the scan is performed manually. 
-\svp{
-The goal of this process is to remove the edges and center of the scan which did not come into contact with the breech face, as well as any artifacts of the scan and microscope staging which do not accurately represent the breefch face surface.}
-<!-- These include a circular plateaued region in the center of the scan that is pushed aside by the firing pin during the firing process as well as clusters of observed values in the corners of the scan that are artifacts of the staging area in which the scan was captured.  -->
-\svp{
+While not explicitly mentioned in \citet{song_3d_2014}, \citet{song_estimating_2018} indicates that the "trimming" of the unwanted regions of the scan is performed manually. 
 No further information is given in the paper describing what criteria were used for this process; nor are the trimmed scans provided as intermediate data to make reproducibility possible. 
-}
-It is \svp{also} unclear how the dropouts and outliers are "removed" from the scan or how outliers are defined\svp{; many different methods for outlier detection and removal are used in surface metrology\citep{outlierdetection}. Most of the algorithms require the user to select thresholds or parameters; thus, without any details about how the outlier detection process was implemented, this portion of the paper is not reproducible.}
 
-\svp{We are not aware of} an open-source implementation of the multivariate band-pass Gaussian regression filter used in surface metrology \citep{ISO16610-71}. 
+It is also unclear how the dropouts and outliers are "removed" from the scan or how outliers are defined; many different methods for outlier detection and removal are used in surface metrology \citep{outlierdetection}. Most of these algorithms require the user to select thresholds or parameters; thus, without any details about how the outlier detection process was implemented, this portion of the paper is not reproducible.
+
+We are not aware of an open-source implementation of the multivariate band-pass Gaussian regression filter used in surface metrology \citep{ISO16610-71}. 
 Further, there are various parameters requiring specification to implement a Gaussian regression filter and it is not clear how these parameters were chosen \citep{brinkman_bodschwinna_2003}.
 
-\svp{As a result of these ambiguities, during our implementation of the preprocessing algorithm, we had to make several educated guesses in order to match the described procedure as closely as possible.}
+As a result of these ambiguities, during our implementation of the preprocessing algorithm, we had to make several educated guesses in order to match the described procedure as closely as possible.
 
 ### Implementation of preprocessing procedures
 
+\hh{XXX Joe, avoid passive voice when you are describing what you did. You need to emphasize that this is your work}
 \jz{The preprocessing procedures are implemented via the modularized functions of the form \code{preProcess\_*}.
 Modularizing the steps of the preprocessing procedures renders the overall preprocessing stage easier to understand and more conducive to experimentation.
 \autoref{fig:processingPipeline} shows how the \code{preProcess\_*} functions affect the surface matrix values of the Fadul 1-1 scan.}
@@ -485,7 +484,7 @@ fadul1.1_bpFiltered<- cmcR::preProcess_gaussFilter(x3p = fadul1.1_downsampled,
 ```
 
 
-```{r, echo = F,warning = F,message = F,cache = T,fig.cap='\\label{fig:processingPipeline} Illustration of \\pkg{cmcR} preprocessing pipeline designed to automate the manual cleaning in the CMC papers. \\svp{At each stage, the amount of variability in height across the scan decreases as extraneous sources of noise are removed.}',fig.align='center',fig.pos='htbp',out.width='\\textwidth', message = F, warning = F}
+```{r, echo = F,warning = F,message = F,cache = T,fig.cap='\\label{fig:processingPipeline} Illustration of the  preprocessing pipeline implemented in \\pkg{cmcR}. These steps are designed to automate the manual cleaning in the CMC papers. At each stage, the amount of variability in height across the scan decreases as extraneous sources of noise are removed.',fig.align='center',fig.pos='htbp',out.width='\\textwidth', message = F, warning = F}
 
 preProcessingPlot <- cmcR::x3pListPlot(list("(1) Original" = fadul1.1_original,
                                             "(2) Crop exterior/interior" = fadul1.1_croppedInt,
