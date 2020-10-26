@@ -331,9 +331,10 @@ Prior to applying the CMC comparison procedure, cartridge scans must undergo som
 ```{r load-data, include = F, cache = T}
 
 fadul1.1 <- x3ptools::x3p_read("data/fadul1-1.x3p") %>%
-  cmcR::preProcess_cropExterior(radiusOffset = -30,
-                                  agg_function = median) %>%
-  cmcR::preProcess_filterInterior(radiusOffset = 200) %>%
+  cmcR::preProcess_crop(region = "exterior",
+                        radiusOffset = -30) %>%
+  cmcR::preProcess_crop(region = "interior",
+                        radiusOffset = 200) %>%
   cmcR::preProcess_removeTrend(statistic = "quantile",
                                  tau = .5,
                                  method = "fn") %>%
@@ -341,9 +342,10 @@ fadul1.1 <- x3ptools::x3p_read("data/fadul1-1.x3p") %>%
   x3ptools::sample_x3p()
 
 fadul1.2 <- x3ptools::x3p_read("data/fadul1-2.x3p") %>%
-  cmcR::preProcess_cropExterior(radiusOffset = -30,
-                                  agg_function = median) %>%
-  cmcR::preProcess_filterInterior(radiusOffset = 200) %>%
+  cmcR::preProcess_crop(region = "exterior",
+                        radiusOffset = -30) %>%
+  cmcR::preProcess_crop(region = "interior",
+                        radiusOffset = 200) %>%
   cmcR::preProcess_removeTrend(statistic = "quantile",
                                  tau = .5,
                                  method = "fn") %>%
@@ -458,12 +460,13 @@ Modularizing the steps of the preprocessing procedures renders the overall prepr
 ```{r include = F,cache = T}
 fadul1.1_original <- x3ptools::x3p_read("data/fadul1-1.x3p")
 
-fadul1.1_croppedExt <- cmcR::preProcess_cropExterior(x3p = fadul1.1_original,
-                                            radiusOffset = -30,
-                                            agg_function = median) 
+fadul1.1_croppedExt <- cmcR::preProcess_crop(fadul1.1_original,
+                                             region = "exterior",
+                                             radiusOffset = -30)
 
-fadul1.1_croppedInt <- cmcR::preProcess_filterInterior(fadul1.1_croppedExt,
-                                                         radiusOffset = 200)
+fadul1.1_croppedInt <- cmcR::preProcess_crop(fadul1.1_croppedExt,
+                                             region = "interior",
+                                             radiusOffset = 200)
 
 fadul1.1_medRemoved <-   cmcR::preProcess_removeTrend(fadul1.1_croppedInt,
                                                         statistic = "quantile",
@@ -535,20 +538,23 @@ Step 1 in \autoref{fig:processingPipeline} shows an \jz{unprocessed surface matr
 ## Why is it cropExterior and filterInterior?
 ## It looks like both functions have the same parameterization
 ## how about a preprocess_crop with a parameter area that is "interior" or "exterior"?
-fadul1.1_cropped <- fadul1.1 %>%
-  preProcess_cropExterior(radiusOffset = -30) %>%  
-  preProcess_filterInterior(radiusOffset = 200)
+fadul1.1_cropped <- fadul1.1%>%
+  cmcR::preProcess_crop(region = "exterior",
+                        radiusOffset = -30) %>%
+  cmcR::preProcess_crop(region = "interior",
+                        radiusOffset = 200)
 ```
 
 \jz{After reading in the surface matrix, three major regions of the scan are identified via a labeling algorithm described in \citet{hesselink_concurrent_2001} and available in the \pkg{imager} package \citep{imager}. 
 These regions are the exterior of the cartridge case primer, the breech face impression region, and the firing pin impression hole in the center of the scan. 
 The goal is to isolate the breech face impression region by removing (i.e., replacing with \code{NA}) the pixels in the other two regions.
-Upon labeling the different regions of the cartridge case scan, the centers of the cartridge case primer and firing pin impression hole are estimated. 
-As seen in step 1 of \autoref{fig:processingPipeline}, the center of the firing pin impression hole might be offset from the center of the cartridge case. 
-With these centers identified, the user then specifies radii that they deem appropriate for removing the unwanted observations on the exterior of the breech face impression surface (including roll-off of the cartridge case primer) and the firing pin impression. 
+Upon labeling the different regions of the cartridge case scan, the centers and radii of the cartridge case primer and firing pin impression hole are estimated. 
+As seen in step 1 of \autoref{fig:processingPipeline}, the center of the firing pin impression hole might be offset from the center of the cartridge case.
+The estimation procedures systematically overestimate and underestimate the radii of the cartridge case primer and firing pin impression regions, respectively (e.g., the estimation procedure captures roll-off on on the exterior of the primer).
+The user-specified `radiusOffset` is added to the radius estimate to improve a radius estimate.
 While this step requires user input, the resulting surface matrix, like the one shown in step 2 of \autoref{fig:processingPipeline}, is reproducible assuming the same user-specified radii values are used. 
 This is in contrast to the non-reproducible, manual procedure referenced in other CMC papers to isolate the breech face impression region.
-The \code{preProcess\_cropExterior} and \code{preProcess\_filterInterior} functions remove the exterior and firing pin impression region on the interior, respectively.}
+The \code{preProcess\_crop} function is used to remove the exterior and firing pin impression region on the interior based on the `region` argument.}
 
 ```{r, echo=TRUE,eval=FALSE}
 fadul1.1_deTrended <- fadul1.1_cropped %>%
@@ -923,9 +929,10 @@ A discussion of how to actually determine thresholds is provided in the} [invest
 
 ```{r,echo=FALSE,cache = T}
 fadul2.1 <- x3ptools::x3p_read("data/fadul2-1.x3p") %>%
-  preProcess_cropExterior(radiusOffset = -30,
-                 agg_function = median) %>%
-  preProcess_filterInterior(radiusOffset = 200) %>%
+  cmcR::preProcess_crop(region = "exterior",
+                        radiusOffset = -30) %>%
+  cmcR::preProcess_crop(region = "interior",
+                        radiusOffset = 200) %>%
   preProcess_removeTrend(statistic = "quantile",
                               tau = .5,
                               method = "fn") %>%
