@@ -434,7 +434,7 @@ The implementation in \citet{tong_fired_2014} describes the preprocessing steps 
 
 Complicating the issue \hh{of preprocessing the scans}, the procedures used to process the surface matrices differ in each paper in the CMC literature. \citet{song_3d_2014} outline the following preprocessing procedure:
 
-> Trim off the inside firing pin surface and other areas outside the breed (sic) face mark, so that only breech face impression data remain for correlation.
+> Trim off the inside firing pin surface and other areas outside the breech face mark, so that only breech face impression data remain for correlation.
 
 > Identify and remove dropouts or outliers.
 
