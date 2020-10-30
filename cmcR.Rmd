@@ -66,56 +66,39 @@ library(x3ptools) # remotes::install_github("heike/x3ptools")
 library(rgl)
 ```
 
-<!-- # Couple of general comments  -->
-
-<!-- \hh{I noticed a few things during the spotlight on Monday that need to be addressed:} -->
-
-<!-- - \hh{color schemes need to be more consistent: in figures 9/10 red/black are used to indicate alignment/not aligned -->
-<!-- and purple orange are used to show height -->
-<!-- in the histograms, e.g. fig 11, purple orange are used to show same source/different source.} \jz{Yeah, I agree that it would be better to change this. I like the orange/purple divergent color scheme representing height, so maybe the histograms could be changed to something else? The black and red CMC plots were meant to look like they do in \cite{tong_estimating_2018}, but maybe those could be changed to same color scheme as the histograms (representative of "matching" and "non-matching").} -->
-<!-- - \hh{use annotate rather than geom_text for annotations e.g. in figures 6 and 7. geom\_text is repeated with the number of rows in a data set, annotation is only drawn once. That way the text doesn't look like it's bleeding} \jz{That's a really good point. I've fixed that in the cmcR function used to create the plot and have pushed the updated version.} -->
-<!-- - \hh{fig 10: use fadul 1-1 as the reference rather than fadul 2-1. That way the pictures are directy comparable.} \jz{Fadul 2-1 is used as the reference image to reflect the fact that it was partitioned into the grid of cells (instead of the other "direction" in which Fadul 1-1 was partitioned into a grid) to yield the 4 CMCs shown. I've added a better explanation for this, but it wouldn't be difficult to change to a different KNM scan if we wanted to.} -->
-<!-- - \hh{I noticed that known matches and known non matches have a different scale (height) in the histograms. I think we need to talk about whether that's the best strategy.} \jz{Yes, I'm not sure if plotting the density is the best way to visualize this (as is done in pretty much all of the CMC-related papers I've seen). We can brainstorm some ideas.} -->
-
-
-
 # Introduction {#intro}
-<!-- If you put a single carriage return between sentences, it makes it a lot easier for git to merge changes back together. -->
 \dfn{Research reproducibility}  refers to the ability to use the same procedures and materials as a previous study to arrive at the same results or conclusions. 
-Reproducibility is \hh{ indispensable} for results to be considered valid by the wider scientific community \citep{goodman_what_2016}. \hh{Unfortunately, we cannot take reproducibility for granted:}
+Reproducibility is indispensable for results to be considered valid by the wider scientific community \citep{goodman_what_2016}. Unfortunately, we cannot take reproducibility for granted:
  recent studies have raised concerns about reproducibility of scientific findings in various fields [\citet{king_replication_1995}, \citet{baker_1500_2016}, \citet{pasquier_if_2017}]. 
 Commonly identified reasons for this lack of reproducibility include (1) ambiguity in how procedures
-were implemented, (2) \hh{missing or incomplete} data, and (3) \hh{missing or incomplete} computer code to replicate all statistical analyses \citep{leek_is_2017}. 
+were implemented, (2) missing or incomplete data, and (3) missing or incomplete computer code to replicate all statistical analyses \citep{leek_is_2017}. 
 
-In computational research, \hh{reproducibility of results} is commonly translated to mean that the code and data used to produce published results be made publicly available \citep{peng_reproducible_2011}. \hh{However, current status quo is that }many papers describe the computational methods which were used in the data analysis in broad terms only. Computational reproducibility requires more details: 
+In computational research, reproducibility of results is commonly translated to mean that the code and data used to produce published results be made publicly available \citep{peng_reproducible_2011}. However, current status quo is that many papers describe the computational methods which were used in the data analysis in broad terms only. Computational reproducibility requires more details: 
 published results may be numerically sensitive to the particular implementation of a computational method, including such considerations as data processing decisions, parameter settings, and even the chosen programming language. 
 As such, peer-review and scientific progress in the truest sense requires that \emph{all} pre-processed data, code, and results be made openly available. 
 In recognition of the additional requirements of computational reproducibility,  some journals have adopted policies encouraging or requiring that authors provide code and data sufficient to reproduce the statistical analyses, with the goal of building a "culture of reproducibility" in their respective fields \citep{peng_reproducible_2009, peng_reproducible_2011, stodden_toward_2013}. 
 
-<!-- Keep the discussion general at first! All of this information applies not just to CMC, but to a broad swath of other applications -->
-The fundamental reason that descriptions of data analysis procedures, combined with the raw data, are not sufficient for reproducibility is that published procedures are described in words rather than algorithmically,  and in some cases, steps are performed manually \citep{song_estimating_2018} \hh{without providing the resulting intermediary outcomes}. If the written-language description of the method in the publication is the sole source of information about the algorithm, we trade computational reproducibility for readability. We generally do not describe the particular parameter settings used (or how those were derived) when we describe an algorithm in a publication. This is an understandable editorial decision, as the purpose of a publication is to demonstrate and justify the method rather than discuss the fine details and parameter settings. Because our publications generally do not contain sufficient detail to reproduce every part of the algorithm, it is necessary to supplement the paper with open code and intermediate forms of the data (after any manual steps have been performed \hh{or simply as check points for replications}). Especially in applications like forensic science or medicine, where results from computational methods may directly affect an individual's life, transparency in how a method or algorithm is implemented is necessary \citep{angwin_machine_2016, cino_deploying_2018}.
+The fundamental reason that descriptions of data analysis procedures, combined with the raw data, are not sufficient for reproducibility is that published procedures are described in words rather than algorithmically,  and in some cases, steps are performed manually \citep{song_estimating_2018} without providing the resulting intermediary outcomes. If the written-language description of the method in the publication is the sole source of information about the algorithm, we trade computational reproducibility for readability. We generally do not describe the particular parameter settings used (or how those were derived) when we describe an algorithm in a publication. This is an understandable editorial decision, as the purpose of a publication is to demonstrate and justify the method rather than discuss the fine details and parameter settings. Because our publications generally do not contain sufficient detail to reproduce every part of the algorithm, it is necessary to supplement the paper with open code and intermediate forms of the data (after any manual steps have been performed or simply as check points for replications). Especially in applications like forensic science or medicine, where results from computational methods may directly affect an individual's life, transparency in how a method or algorithm is implemented is necessary \citep{angwin_machine_2016, cino_deploying_2018}.
 
-\hh{In this light, computational reproducibility } in forensic science, is \hh{all the more important because it fundamentally enables} discussions about algorithmic transparency and accountability~\citep{kwongAlgorithmSaysYou2017, desaiTrustVerifyGuide2017}. 
-Currently, subjective decisions are made by individual examiners -- \hh{human beings are} the ultimate closed-source, black-box system, and the operations which lead to a decision are largely opaque. 
-There is a push to \hh{complement} these subjective decisions with automatic algorithms that objectively assess evidence and can be explained during court testimony \citep{council_strengthening_2009}.
+In this light, computational reproducibility  in forensic science, is all the more important because it fundamentally enables discussions about algorithmic transparency and accountability~\citep{kwongAlgorithmSaysYou2017, desaiTrustVerifyGuide2017}. 
+Currently, subjective decisions are made by individual examiners -- human beings are the ultimate closed-source, black-box system, and the operations which lead to a decision are largely opaque. 
+There is a push to complement these subjective decisions with automatic algorithms that objectively assess evidence and can be explained during court testimony \citep{council_strengthening_2009}.
 While objectivity is a laudable goal, it is important that the community does not go only halfway, trading a subjective, human black box for objective, proprietary algorithms that are similarly opaque and unauditable.
-As part of the shift towards objectivity in forensic science, automatic methods have already been developed to solve problems such as identifying matching glass shards \hh{citation?}, handwriting \hh{citation?}, shoe prints \hh{citation?}, and ballistic evidence \hh{cite xiaohui and eric}. 
+As part of the shift towards objectivity in forensic science, automatic methods have already been developed to solve problems such as identifying matching glass shards \citep{park2019}, handwriting \citep{crawford_handwriting_2020}, shoe prints \citep{park_algorithm_2020}, and ballistic evidence \citep{hare_automatic_2016,tai_fully_2018}. 
 While some researchers in the forensic science community have adopted computationally reproducible habits [cite CSAFE stuff], many of the algorithms described in the literature are not reproducible or open-source.
-<!-- XXX Not sure if we should get into the fact that we have the opportunity to change things *before* they become too entrenched -->
-<!-- some areas of research still lack reproducible results; computational or otherwise. -->
-In this paper, we will demonstrate the ambiguities present in textual descriptions of algorithms by creating an open-source implementation of one well-known automatic forensic identification method. <!-- intentional buttering up before the punchline --> 
+In this paper, we will demonstrate the ambiguities present in textual descriptions of algorithms by creating an open-source implementation of one well-known automatic forensic identification method.
 The Congruent Matching Cells (CMC) algorithm was developed at the National Institute of Standards and Technology (NIST) in 2012 to perform firearm evidence identification using identifiable markings left on spent cartridge cases from a firearm's barrel \citet{song_proposed_2013}. 
 Since then, the method and its numerous extensions \citep{tong_improved_2015,chen_convergence_2017,song_estimating_2018} have shown promise in being able to differentiate between matching and non-matching cartridge cases. 
 While NIST researchers and collaborators have been able to build on the foundation of the original algorithm, the code and data necessary to reproduce the results have not been made available to external researchers.
-As a result, \hh{the findings described in these papers are not computationally reproducible for the research community at large.}
+As a result, the findings described in these papers are not computationally reproducible for the research community at large.
 
 
 Here, we describe the process of implementing the Congruent Matching Cells (CMC) method for the comparison of marks on spent cartridge cases, using the descriptions from two published papers, \citet{song_3d_2014} and \citet{tong_improved_2015}. 
 Our package, \pkg{cmcR}, provides an open-source implementation of the CMC method, but it also serves as an example of the implementation barriers which occur when translating textual descriptions of algorithms into detailed source code. 
 This process offers some insight into the necessary components which must be available for computational reproducibility. 
 Our experience shows that when faced with ambiguity in how a method is implemented, there are only few options available to us apart from performing a brute-force search through combinations of decisions that may have been made to yield the results reported. 
-Unsurprisingly, \hh{this process is both} time \hh{ absorbing and computationally} intensive from implementation to sifting through a wide variety of decision combinations. <!--This stymies scientific progress.-->
-\hh{The failure to ensure computational reproducibility} not only imposes a general barrier to scientific progress; in this application, it also highlights the \hh{crucial need} of open-source, transparent methodology in high-stakes fields such as forensic analysis.
+Unsurprisingly, this process is both time absorbing and computationally intensive from implementation to sifting through a wide variety of decision combinations.
+The failure to ensure computational reproducibility not only imposes a general barrier to scientific progress; in this application, it also highlights the crucial need of open-source, transparent methodology in high-stakes fields such as forensic analysis.
 
 <!-- \svp{XXX should we cite Fadul too, since it's the original source?}\hh{XXX yes, we should cite the original source} -->
 We will use the same data set which is referenced in \citet{song_3d_2014} and \citet{tong_improved_2015} to illustrate usage of the \pkg{cmcR} package. These 3d scans of cartridge cases are available from the NIST Ballistics Toolmark Research Database \citep[NBTRD;][]{nbtrd}. The strings defined below refer to two cartridge case scans available on the NBTRD from \citet{fadul_empirical_nodate} and will be used throughout the remainder of this paper.
@@ -164,22 +147,10 @@ purrr::walk2(.x = x3p_ids,
 
 A \dfn{cartridge case} is the portion of firearm ammunition that encases a projectile (e.g., bullet, shots, or slug) along with the explosive used to propel the projectile through the firearm. 
 When a firearm is discharged, the projectile is propelled down the barrel of the firearm, while the cartridge case is forced towards the back of the barrel. 
-It strikes the back wall, known as the \dfn{breech face}, of the barrel with considerable force, \hh{thereby imprinting any markings on the breech face onto the cartridge case, creating} the so-called \dfn{breech face impressions}.
-\hh{These markings have been suggested to be unique to a firearm and are used in forensic examinations to determine whether two cartridge cases have been fired by the same handgun.}
+It strikes the back wall, known as the \dfn{breech face}, of the barrel with considerable force, thereby imprinting any markings on the breech face onto the cartridge case, creating the so-called \dfn{breech face impressions}.
+These markings have been suggested to be unique to a firearm and are used in forensic examinations to determine whether two cartridge cases have been fired by the same handgun.
 
-During a forensic examination, \hh{two pieces of ballistic evidence} are  placed under a \dfn{comparison microscope}. Comparison microscopes allow for a \hh{side-by-side} comparison of two objects within the same viewfinder, as seen in \ref{fig:ccPair_combined}. \hh{A pair of breech face images is aligned along the thin black line in the middle of the images. }
-<!--  \hh{taking the first image out - we don't want to be side tracked.}
-Figures \ref{fig:ccPair_separated} and
-\ref{fig:ccPair_combined}, which show two pairs of breech faces. In \autoref{fig:ccPair_separated} the pair is unaligned, in \autoref{fig:ccPair_combined} the cartridge cases are aligned. 
-The similarity in the markings between the two breech face impressions  is brought out very clearly when they are aligned.
-
-The degree to which these breech face markings align can be used to determine whether the two cartridge cases match; i.e., were fired from the same firearm. 
-These breech face impressions are considered to be analogous to a firearm's "fingerprint" left on a cartridge case \citep{firearm_id_thompson}.
-
-```{r ,echo=FALSE,fig.cap='\\label{fig:ccPair_separated} A cartridge case pair with visible breech face impressions under a microscrope. Forensic practitioners determine by visual comparison how similar these impressions are to conclude whether the pair is a match. It can be especially challenging to determine whether a marking is an \\emph{individual characteristic} caused by contact with the breech face of a particular firearm or a \\emph{subclass characteristic} shared across cartridge cases manufactured by the same manufacturer within a short time frame \\citep{firearmTraining}.',fig.align='center',fig.pos='htbp',out.width="\\textwidth"}
-knitr::include_graphics("images/cartridgeCasePair_separated.PNG")
-```
--->
+During a forensic examination, two pieces of ballistic evidence are  placed under a \dfn{comparison microscope}. Comparison microscopes allow for a side-by-side comparison of two objects within the same viewfinder, as seen in \ref{fig:ccPair_combined}. A pair of breech face images is aligned along the thin black line in the middle of the images.
 
 The degree to which these breech face markings align can be used to determine whether the two cartridge cases match; i.e., were fired from the same firearm. 
 These breech face impressions are considered to be analogous to a firearm's "fingerprint" left on a cartridge case \citep{firearm_id_thompson}.
@@ -188,15 +159,13 @@ These breech face impressions are considered to be analogous to a firearm's "fin
 knitr::include_graphics("images/cartridgeCasePair_comparison_with_line.PNG")
 ```
 
-\autoref{fig:ccPair_combined} \hh{is an example of an image coming from} a comparison microscope used by firearms examiners in laboratory settings. Digital microscopy is capable of   precision measurements of surface topology \hh{at even higher resolutions}. Using a 3D microscope, we can obtain scans of breech face impressions \hh{at the micron level ($1 \mu m = 10^{-3} mm = 10^{-6} m$.) 
-These are the images} used as input to  automated comparison algorithms, such as the CMC method originally proposed in \citet{song_proposed_2013}.
-
-<!-- \svp{XXX Briefly describe the contributions of each paper in the sequence - need to transition from visual to algorithmic examination. The paragraph below is a start, but could flow a bit better. I've tried to write the paragraph above in a way that can lead directly into this discussion.} -->
+\autoref{fig:ccPair_combined} is an example of an image coming from a comparison microscope used by firearms examiners in laboratory settings. Digital microscopy is capable of precision measurements of surface topology at even higher resolutions. Using a 3D microscope, we can obtain scans of breech face impressions at the micron level ($1 \mu m = 10^{-3} mm = 10^{-6} m$.) 
+These are the images used as input to automated comparison algorithms, such as the CMC method originally proposed in \citet{song_proposed_2013}.
 
 In the remainder of this paper, we describe the implementation of a general CMC method which encompasses methods described in \citet{song_proposed_2013}, \citet{song_3d_2014}, and \citet{tong_improved_2015}.
 \citet{song_proposed_2013} lays out the conceptual framework for the original CMC method  later implemented in \citet{song_3d_2014} and \cite{tong_fired_2014}.
 
-A subsequent improvement of the method presented in \citet{tong_improved_2015} and used in subsequent papers is referred to as the ``High CMC" method \citep{chen_convergence_2017}. Both implementations (and subsequent proposed improvements) can be used to correctly differentiate same and different-source cartridge cases from the  dataset \citep{fadul_empirical_nodate}.
+A subsequent improvement of the method presented in \citet{tong_improved_2015} and used in subsequent papers is referred to as the ``High CMC" method \citep{chen_convergence_2017}. Both implementations (and subsequent proposed improvements) can be used to correctly differentiate same and different-source cartridge cases from the dataset \citep{fadul_empirical_nodate}.
 
 The \pkg{cmcR} package contains implementations designed for use with 3D topographical scans of the original method described in \citet{song_proposed_2013} and \citet{song_3d_2014} and the High CMC method described in \citet{tong_improved_2015}.
 
