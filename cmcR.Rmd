@@ -231,7 +231,7 @@ Then, we examine the implementation of each sub-procedure in the \pkg{cmcR} pack
 
 
 ## Initial Data {#initialData}
-Cartridge case scans are commonly stored in the ISO standard x3p file format \citep{ISO25178-72}. An x3p consists of a single surface matrix representing the height value of the surface at a particular location and metadata concerning the parameters under which the scan was taken (size, resolution, creator, microscope, and microscopy software versions etc.). The \pkg{x3ptools} package \citep{x3ptools} can be used to work with these x3p files in R \citep{x3ptools}.
+Cartridge case scans are commonly stored in the ISO standard x3p file format \citep{ISO25178-72}. An x3p consists of a single surface matrix representing the height value of the breech face surface at a particular location and metadata concerning the parameters under which the scan was taken (size, resolution, creator, microscope, and microscopy software versions etc.). The \pkg{x3ptools} package \citep{x3ptools} can be used to work with these x3p files in R \citep{x3ptools}.
 
 <!-- \hh{XXXX x3p is a standard file format - we could cite both the ISO site and x3ptools as a way to work with them.} -->
 \autoref{fig:cartridgeCasePair} shows the surface matrices of a known match (KM) pair of cartridge cases from a study by \citet{fadul_empirical_nodate}. 
@@ -457,7 +457,7 @@ As a result of these ambiguities, during our implementation of the preprocessing
 Modularizing the steps of the preprocessing procedures renders the overall preprocessing stage easier to understand and more conducive to experimentation.
 \autoref{fig:processingPipeline} shows how the \code{preProcess\_*} functions affect the surface matrix values of the Fadul 1-1 scan.}
 
-```{r include = F,cache = T}
+```{r cache=FALSE, include=F}
 fadul1.1_original <- x3ptools::x3p_read("data/fadul1-1.x3p")
 
 fadul1.1_croppedExt <- cmcR::preProcess_crop(fadul1.1_original,
@@ -529,37 +529,30 @@ gridExtra::grid.arrange(preProcessingPlot$`(1) Original`,
 Following each code chunk is an explanation of the functions used.}
 
 ```{r, echo=TRUE,eval=FALSE}
-fadul1.1 <- x3ptools::x3p_read("data/fadul1-1.x3p") ## Could we include the code in the figure?
+fadul1.1 <- x3ptools::x3p_read("data/fadul1-1.x3p")
 ```
 
 \svp{We begin with a 3D scan, which is optionally downsampled. 
 Typically, in the CMC literature,} every other row and column in the surface matrix \svp{is retained}, resulting in a matrix that is approximately 25% of the original scan dimension. 
 This downsampling is performed using the \code{x3p\_sample} function from the \pkg{x3ptools} package (default is every other row and column). 
-Step 1 in \autoref{fig:processingPipeline} shows an \jz{unprocessed surface matrix.} \hh{XXX can we get away from the surface matrix and call it a breech face scan? That's gettign away from how it's implemented towards what it is.}
-\hh{XXX minor thing, but let's call the things exactly how they are defined. It's not Step 1, its (1) in Figure 5.}
+Step (1) in \autoref{fig:processingPipeline} shows an \jz{unprocessed breech face scan.} 
+
+<!-- \hh{XXX can we get away from the surface matrix and call it a breech face scan? That's gettign away from how it's implemented towards what it is.} -->
+
+<!-- \hh{XXX minor thing, but let's call the things exactly how they are defined. It's not Step 1, its (1) in Figure 5.} -->
 
 ```{r, echo=TRUE,eval=FALSE}
-## HH: Couple of questions: where do the -30 and the 200 come from?
-## Why is it *crop*Exterior and *filter*Interior?
-## It looks like both functions have the same parameterization
-## how about a function preProcess_crop with a parameter area that is "interior" or "exterior"?
-## is it that we are dealing with a radius? could the parameter be just offset?
-
 fadul1.1_cropped <- fadul1.1%>%
-  cmcR::preProcess_crop(region = "exterior",
-                        radiusOffset = -30) %>%
-  cmcR::preProcess_crop(region = "interior",
-                        radiusOffset = 200)
+  cmcR::preProcess_crop(region = "exterior") %>%
+  cmcR::preProcess_crop(region = "interior")
 ```
 
-\jz{After reading in the surface matrix, three major regions of the scan are identified via a labeling algorithm described in \citet{hesselink_concurrent_2001} and available in the \pkg{imager} package \citep{imager}. 
+\jz{After reading in the breech face scan, three major regions of the scan are identified via a labeling algorithm described in \citet{hesselink_concurrent_2001} and available in the \pkg{imager} package \citep{imager}. 
 These regions are the exterior of the cartridge case primer, the breech face impression region, and the firing pin impression hole in the center of the scan. 
 The goal is to isolate the breech face impression region by removing (i.e., replacing with \code{NA}) the pixels in the other two regions.
 Upon labeling the different regions of the cartridge case scan, the centers and radii of the cartridge case primer and firing pin impression hole are estimated. 
-As seen in step 1 of \autoref{fig:processingPipeline}, the center of the firing pin impression hole might be offset from the center of the cartridge case.
-The estimation procedures systematically overestimate and underestimate the radii of the cartridge case primer and firing pin impression regions, respectively (e.g., the estimation procedure captures roll-off on on the exterior of the primer).
-The user-specified \code{radiusOffset} value is added to the radius estimate.
-While this step requires user input, the resulting surface matrix, like the one shown in step 2 of \autoref{fig:processingPipeline}, is reproducible assuming the same user-specified radii values are used. 
+This estimation procedure may require some user input depending on how much of the exterior/interior the user wants removed.
+The resulting breech face scan, like the one shown in step (2) of \autoref{fig:processingPipeline}, is reproducible assuming the same user-specified settings are used (if they are used at all).
 This is in contrast to the non-reproducible, manual procedure referenced in other CMC papers to isolate the breech face impression region.
 The \code{preProcess\_crop} function is used to remove the exterior and firing pin impression region on the interior based on the \code{region} argument.}
 
@@ -571,13 +564,13 @@ fadul1.1_deTrended <- fadul1.1_cropped %>%
 ```
 
 
-In \jz{steps 1 and 2 of \autoref{fig:processingPipeline}} \svp{it is clear that there is a} \jz{southwest-to-northeast trend in height values. 
+In \jz{steps (1) and (2) of \autoref{fig:processingPipeline}} \svp{it is clear that there is a} \jz{southwest-to-northeast trend in height values. 
 Such a trend is observable in many cartridge case scans, yet does not occur consistently across cartridge cases fired from the same firearm. 
 Instead, a trend in the height values could be an artifact of the scanning process where cartridge cases are not precisely, horizontally leveled prior to taking the scan.}
 <!-- (XXX should we cite something about scanning SOP here? XXX).  -->
 \jz{Neglecting to remove such trends leads to very different results based on our implementation. 
 For example, two different-source cartridge cases with similar trends might be incorrectly deemed "congruent." }
-\svp{It is unclear how such trends in height values are dealt with in the CMC literature; certainly, a high-pass Gaussian filter will remove some structure, but it is not explicitly mentioned whether any leveling is performed manually as well.} In the \pkg{cmcR} package, the breech face impression regions obtained from step 2 are leveled using the \code{preProcess\_removeTrend}. The function estimates and subtracts the conditional median via the \code{rq} function of the \pkg{quantreg} package \citep{quantreg}. Step 3 of \autoref{fig:processingPipeline} shows a median-leveled surface matrix.
+\svp{It is unclear how such trends in height values are dealt with in the CMC literature; certainly, a high-pass Gaussian filter will remove some structure, but it is not explicitly mentioned whether any leveling is performed manually as well.} In the \pkg{cmcR} package, the breech face impression regions obtained from step (2) are leveled using the \code{preProcess\_removeTrend}. The function estimates and subtracts the conditional median via the \code{rq} function of the \pkg{quantreg} package \citep{quantreg}. Step (3) of \autoref{fig:processingPipeline} shows a median-leveled breech face scan.
 
 ```{r, echo=TRUE,eval=FALSE}
 fadul1.1_processed <- fadul1.1_deTrended %>%
@@ -587,7 +580,7 @@ fadul1.1_processed <- fadul1.1_deTrended %>%
 ```
 
 
-\svp{In the final preprocessing step,} a band-pass filter is applied to the processed surface matrix to reduce the effects of undesired frequencies in the comparison procedure. 
+\svp{In the final preprocessing step,} a band-pass filter is applied to the processed breech face scan to reduce the effects of undesired frequencies in the comparison procedure. 
 For example, low frequency (high wavelength) global structure may exist in a cartridge case scan due to manufacturing specifications \svp{(In forensics, this type of structure is referred to as a class characteristic -- it is shared by many objects of the same make and model)}.
 \jz{Such similarities are often used by forensic practitioners to initially pare down the possible pool of matching cartridge cases \citep{firearm_id_thompson}.}
 \svp{While this additional global structure may assist with matching cartridge cases, it may also artificially inflate the probability of making a false-positive identification. 
@@ -597,12 +590,12 @@ Their effects can be mitigated by applying a low-pass Gaussian filter that opera
 A band-pass Gaussian filter combines the effects of low and high-pass filters\svp{; we have chosen to implement it by applying a low pass filter and a high pass filter consecutively.} 
 <!-- \jz{and can be implemented} \svp{by applying the filters consecutively} \citep{gauss_filter_source} \jz{XXX I only say "can be" to emphasize that we chose one of the commonly agreed-upon ways to implement a band-pass filter XXX}.  -->
 \svp{There is considerable variation in the filters applied in the CMC literature; initially, low-pass and gausian band-pass regression filters were used, but the most recent papers use a band-pass filter.} 
-The current implementation for the low-pass filter involves constructing a Gaussian kernel based on a user-specified wavelength to attenuate and convolving the kernel with the surface matrix in the frequency domain \citep{computerVision}. 
-A high-pass filter of a particular wavelength is applied by subtracting-away the complementary low-pass filtered surface matrix. 
-The band-pass filtered surface matrix as returned by the \code{preProcess\_gaussFilter} function is shown in the fifth panel of \autoref{fig:processingPipeline}.
+The current implementation for the low-pass filter involves constructing a Gaussian kernel based on a user-specified wavelength to attenuate and convolving the kernel with the breech face scan in the frequency domain \citep{computerVision}. 
+A high-pass filter of a particular wavelength is applied by subtracting-away the complementary low-pass filtered breech face scan. 
+The band-pass filtered breech face scan as returned by the \code{preProcess\_gaussFilter} function is shown in the fifth panel of \autoref{fig:processingPipeline}.
 <!-- (\code{filterType = "bp"} and \code{wavelength = c(16,500)} default). -->
 
-<!-- In the \pkg{cmcR} package, breech face impression data are isolated using a comthebination of the Random Sample Consensus (RANSAC) robust iterative plane-fitting algorithm \citep{ransac}, the Hough Transform shape detection algorithm \citep{hough}, and cropping rows/columns of the surface matrix containing only \code{NA} values on the exterior of the breech face impression region.  -->
+<!-- In the \pkg{cmcR} package, breech face impression data are isolated using a comthebination of the Random Sample Consensus (RANSAC) robust iterative plane-fitting algorithm \citep{ransac}, the Hough Transform shape detection algorithm \citep{hough}, and cropping rows/columns of the breech face scan containing only \code{NA} values on the exterior of the breech face impression region.  -->
 <!-- The \pkg{cmcR} package does not yet use a Gaussian regression filter. -->
 <!-- A simpler Gaussian filter, a technique used by \citet{tong_fired_2014} and \citet{song_estimating_2018}, is currently implemented instead.  -->
 
@@ -641,8 +634,8 @@ cmcR::x3pListPlot(x3pList = list("Fadul 1-1" = fadul1.1,
 As described in \citet{song_proposed_2013}, breech face markings are not uniformly impressed upon a cartridge case during the firing process. 
 As such, only certain sections of the cartridge case have identifiable markings that make it possible to match to a firearm. 
 Calculating a similarity score between the entirety of two cartridge case surfaces might not highlight these valid correlation regions. 
-Instead, \citet{song_proposed_2013} proposes partitioning one surface matrix into a grid of "correlation cells," some of which will enclose the valid correlation regions of interest. 
-If a large \svp{proportion} of these correlation cells are deemed highly similar to regions in the other surface matrix, then there is evidence that the two cartridges cases match. 
+Instead, \citet{song_proposed_2013} proposes partitioning one breech face scan into a grid of "correlation cells," some of which will enclose the valid correlation regions of interest. 
+If a large \svp{proportion} of these correlation cells are deemed highly similar to regions in the other breech face scan, then there is evidence that the two cartridges cases match. 
 \svp{T}he number of highly similar cells can be used as a more \svp{robust} similarity metric, \svp{compared to a score derived from the entire cartridge case}.
 
 ```{r, echo=FALSE,fig.cap='\\label{fig:cmc_illustration} Illustration of comparing a "cell" in the reference cartridge case scan (left) to a larger region in a questioned cartridge case scan (right). Every cell in the reference cartridge case is similarly paired with a region in the questioned. To determine the rotation at which the two cartridge cases align, the cell/region pairs are compared for various rotations of the questioned cartridge case.',fig.align='center',fig.pos='htbp',out.width='.75\\textwidth'}
@@ -673,7 +666,7 @@ However, the scan on the right is rotated to determine the rotation at which the
 
 > CMC pairs are identified by three types of identification parameters: the correlation value CCF$_{\max}$, registration angle $\theta$ and translation distances $x$, $y$ with thresholds $T_{\text{CCF}}$, $T_\theta$ and $T_x, T_y$, respectively. The correlated cell pairs are considered as CMCs when their correlation value CCF$_{\max}$, $T_{\text{CCF}}$, and their registration angle $\theta$ and $x-y$ registration pattern are within the thresholds $T_\theta$, and $T_x, T_y$.
 
-Note that rotating an image or surface matrix by an arbitrary angle (other than a multiple of 90 degrees) requires interpolating new pixel locations. 
+Note that rotating an image or breech face scan by an arbitrary angle (other than a multiple of 90 degrees) requires interpolating new pixel locations. 
 A variety of interpolation schemes exist \citep{parker_comparison_1983} and \svp{there are no details provided in the} CMC literature \svp{indicating which interpolation algorithm was used}. \svp{In \pkg{cmcR}, s}urfaces matrices are rotated using a "nearest-neighbor" interpolation scheme \citep{imager}.
 
 <!-- \svp{XXX what do we use? Make it explicit so we're not being hypocritical XXX} \jz{XXX nearest-neighbor interpolation -- this is stated in the paragraph below describing the implementation XXX} -->
@@ -803,7 +796,7 @@ The consensus set of $x, y, \theta$ is} referred to as the \dfn{registration pha
 <!-- Blue cells represent the 19 cells identified as CMCs between Fadul 1-1 and Fadul 1-2; non-CMCs are shown in red at the location maximizing the cross-correlation function.  -->
 <!-- \svp{It is clear from \autoref{fig:originalMethod_sideBySide} that our initial expectations are correct: the cells in the same-source comparison are (mostly) ordered, with 12 non-CMCs, while the cells in the different-source comparison are distributed haphazardly and there are 32 non-CMCs.} -->
 
-<!-- ```{r echo=FALSE,message=FALSE,error=FALSE,out.width='\\textwidth',cache = T,fig.cap='\\label{fig:originalMethod_sideBySide} CMC results under the original method of \\citet{song_proposed_2013} from comparing the matching pair Fadul 1-1 to Fadul 1-2 and the non-matching pair Fadul 1-1 to Fadul 2-1. In the right two plots, blue cells show how each CMC aligns in the other surface matrix while red cells show how the non-CMCs align to attain their CCF$_{\\max}$ value. Note that Fadul 1-1 is treated as the "reference" scan in both of these comparison, meaning it is divided into a grid of cells that are compared to larger regions in the other scans.',fig.pos = 'h'} -->
+<!-- ```{r echo=FALSE,message=FALSE,error=FALSE,out.width='\\textwidth',cache = T,fig.cap='\\label{fig:originalMethod_sideBySide} CMC results under the original method of \\citet{song_proposed_2013} from comparing the matching pair Fadul 1-1 to Fadul 1-2 and the non-matching pair Fadul 1-1 to Fadul 2-1. In the right two plots, blue cells show how each CMC aligns in the other breech face scan while red cells show how the non-CMCs align to attain their CCF$_{\\max}$ value. Note that Fadul 1-1 is treated as the "reference" scan in both of these comparison, meaning it is divided into a grid of cells that are compared to larger regions in the other scans.',fig.pos = 'h'} -->
 <!-- knitr::include_graphics("images/correlationResults_sideBySide.PNG") -->
 <!-- ``` -->
 
@@ -871,7 +864,7 @@ There is little consensus on an optimal set of thresholds nor discussion on the 
 \end{table}
 
 The High CMC utilizes the behavior of the CCF$_{\max}$ values across various rotations more advantageously than the original method of \citet{song_proposed_2013}. 
-Additionally, comparisons are performed in both “directions” so that each surface matrix takes on the role of the surface matrix that is partitioned into a grid of cells.
+Additionally, comparisons are performed in both “directions” so that each breech face scan takes on the role of the scan that is partitioned into a grid of cells.
 
 
 ### The High CMC method {#highCMCMethod}
@@ -1052,9 +1045,9 @@ km_originalCMCPlot_bothDirections <- ggplot(data.frame(a = 1)) +
                   ylim = c(1,11),
                   expand = FALSE) +
   annotation_custom(ggplotGrob(km_originalCMC_reference_v_target),
-                    xmin = 1,xmax = 10,ymin = 6.15,ymax = 11) +
+                    xmin = 1,xmax = 10,ymin = 6.2,ymax = 11) +
   annotation_custom(ggplotGrob(km_originalCMC_target_v_reference),
-                    xmin = 1,xmax = 10,ymin = 2,ymax = 6.15) +
+                    xmin = 1,xmax = 10,ymin = 2,ymax = 6.2) +
   annotation_custom(kmLegend_originalCMC,
                     xmin = 1,xmax = 10,ymin = 1.45,ymax = 1.45) +
   annotate("text",x = 3.85,y = 8.15,size = 5,label = "Fadul 1-1") +
@@ -1085,9 +1078,9 @@ km_highCMCCMCPlot_bothDirections <- ggplot(data.frame(a = 1)) +
                   ylim = c(1,11),
                   expand = FALSE) +
   annotation_custom(ggplotGrob(km_highCMC_reference_v_target),
-                    xmin = 1,xmax = 10,ymin = 6.65,ymax = 11) +
+                    xmin = 1.1,xmax = 10,ymin = 6.55,ymax = 11) +
   annotation_custom(ggplotGrob(km_highCMC_target_v_reference),
-                    xmin = 1,xmax = 10,ymin = 2,ymax = 6.65) +
+                    xmin = 1,xmax = 10,ymin = 2,ymax = 6.55) +
   annotation_custom(kmLegend_highCMC,
                     xmin = 1,xmax = 10,ymin = 1.45,ymax = 1.45) +
   annotate("text",x = 3.65,y = 8.65,size = 5,label = "Fadul 1-1") +
