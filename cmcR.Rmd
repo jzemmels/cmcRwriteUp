@@ -486,10 +486,14 @@ fadul1.1_bpFiltered<- cmcR::preProcess_gaussFilter(x3p = fadul1.1_downsampled,
 
 ```{r, echo = F,warning = F,message = F,cache = T,fig.cap='\\label{fig:processingPipeline} Illustration of the  preprocessing pipeline implemented in \\pkg{cmcR}. These steps are designed to automate the manual cleaning in the CMC papers. At each stage, the amount of variability in height across the scan decreases as extraneous sources of noise are removed.',fig.align='center',fig.pos='htbp',out.width='\\textwidth', message = F, warning = F}
 
-preProcessingPlot <- cmcR::x3pListPlot(list("(1) Original" = fadul1.1_original,
-                                            "(2) Crop exterior/interior" = fadul1.1_croppedInt,
-                                            "(3) Level surface" = fadul1.1_medRemoved,
-                                            "(4) Band-pass filter" = fadul1.1_bpFiltered),
+preProcessingPlot <- cmcR::x3pListPlot(list(fadul1.1_original,
+                                            fadul1.1_croppedInt,
+                                            fadul1.1_medRemoved,
+                                            fadul1.1_bpFiltered) %>%
+                                         set_names(c("(1) Original \n x3p_read()",
+                                                    "(2) Crop exterior/interior \n preProcess_crop()",
+                                                    "(3) Level surface \n preProcess_removeTrend()",
+                                                    "(4) Band-pass filter \n preProcess_gaussFilter()")),
                                        type = "list",
                                        legend.quantiles = c(0,.5,1)) %>%
   map2(.x = .,
@@ -1030,7 +1034,7 @@ kmCMCPlot <- cmcR::cmcPlot(referenceScan = fadul1.1,
   map(~ . + theme(strip.text = element_blank()))
 
 kmLegend_originalCMC <- cowplot::get_legend(kmCMCPlot$originalMethodCMCs_reference_v_target +
-                                   theme(legend.direction = "vertical"))
+                                   theme(legend.direction = "horizontal"))
 
 km_originalCMC_reference_v_target <- kmCMCPlot$originalMethodCMCs_reference_v_target + 
   theme(legend.position = "none",
@@ -1045,23 +1049,25 @@ km_originalCMC_target_v_reference <- kmCMCPlot$originalMethodCMCs_target_v_refer
 km_originalCMCPlot_bothDirections <- ggplot(data.frame(a = 1)) +
   theme_void() +
   coord_cartesian(xlim = c(1,10),
-                  ylim = c(1,10),
+                  ylim = c(1,11),
                   expand = FALSE) +
   annotation_custom(ggplotGrob(km_originalCMC_reference_v_target),
-                    xmin = 1,xmax = 10,ymin = 5.15,ymax = 10) +
+                    xmin = 1,xmax = 10,ymin = 6.15,ymax = 11) +
   annotation_custom(ggplotGrob(km_originalCMC_target_v_reference),
-                    xmin = 1,xmax = 10,ymin = 1,ymax = 5.15) +
+                    xmin = 1,xmax = 10,ymin = 2,ymax = 6.15) +
   annotation_custom(kmLegend_originalCMC,
-                    xmin = 9,xmax = 9,ymin = 5.5,ymax = 5.5) +
-  annotate("text",x = 4.35,y = 7.15,size = 5,label = "Fadul 1-1") +
-  annotate("text",x = 4.35,y = 3,size = 5,label = "Fadul 1-1") +
-  annotate("text",x = 6.55,y = 7.15,size = 5,label = "Fadul 1-2") +
-  annotate("text",x = 6.55,y = 3,size = 5,label = "Fadul 1-2")
+                    xmin = 1,xmax = 10,ymin = 1.45,ymax = 1.45) +
+  annotate("text",x = 3.85,y = 8.15,size = 5,label = "Fadul 1-1") +
+  annotate("text",x = 3.85,y = 4,size = 5,label = "Fadul 1-1") +
+  annotate("text",x = 7.05,y = 8.15,size = 5,label = "Fadul 1-2") +
+  annotate("text",x = 7.05,y = 4,size = 5,label = "Fadul 1-2")
+
+km_originalCMCPlot_bothDirections
 ```
 
 ```{r include=FALSE}
 kmLegend_highCMC <- cowplot::get_legend(kmCMCPlot$highCMC_reference_v_target +
-                                   theme(legend.direction = "vertical"))
+                                   theme(legend.direction = "horizontal"))
 
 km_highCMC_reference_v_target <- kmCMCPlot$highCMC_reference_v_target + 
   theme(legend.position = "none",
@@ -1076,18 +1082,20 @@ km_highCMC_target_v_reference <- kmCMCPlot$highCMC_target_v_reference +
 km_highCMCCMCPlot_bothDirections <- ggplot(data.frame(a = 1)) +
   theme_void() +
   coord_cartesian(xlim = c(1,10),
-                  ylim = c(1,10),
+                  ylim = c(1,11),
                   expand = FALSE) +
   annotation_custom(ggplotGrob(km_highCMC_reference_v_target),
-                    xmin = 1,xmax = 10,ymin = 5.55,ymax = 10) +
+                    xmin = 1,xmax = 10,ymin = 6.65,ymax = 11) +
   annotation_custom(ggplotGrob(km_highCMC_target_v_reference),
-                    xmin = 1,xmax = 10,ymin = 1,ymax = 5.55) +
+                    xmin = 1,xmax = 10,ymin = 2,ymax = 6.65) +
   annotation_custom(kmLegend_highCMC,
-                    xmin = 9,xmax = 9,ymin = 5.5,ymax = 5.5) +
-  annotate("text",x = 4.25,y = 7.5,size = 5,label = "Fadul 1-1") +
-  annotate("text",x = 4.25,y = 3,size = 5,label = "Fadul 1-1") +
-  annotate("text",x = 6.6,y = 7.5,size = 5,label = "Fadul 1-2") +
-  annotate("text",x = 6.6,y = 3,size = 5,label = "Fadul 1-2")
+                    xmin = 1,xmax = 10,ymin = 1.45,ymax = 1.45) +
+  annotate("text",x = 3.65,y = 8.65,size = 5,label = "Fadul 1-1") +
+  annotate("text",x = 3.65,y = 4,size = 5,label = "Fadul 1-1") +
+  annotate("text",x = 7.25,y = 8.65,size = 5,label = "Fadul 1-2") +
+  annotate("text",x = 7.25,y = 4,size = 5,label = "Fadul 1-2")
+
+km_highCMCCMCPlot_bothDirections
 ```
 
 ```{r cache = T,include=FALSE}
@@ -1111,7 +1119,7 @@ knmCMCPlot <- cmcR::cmcPlot(referenceScan = fadul1.1,
   map(~ . + theme(strip.text = element_blank()))
 
 knmLegend <- cowplot::get_legend(knmCMCPlot$originalMethodCMCs_reference_v_target +
-                                   theme(legend.direction = "vertical"))
+                                   theme(legend.direction = "horizontal"))
 
 knm_reference_v_target <- knmCMCPlot$originalMethodCMCs_reference_v_target + 
   theme(legend.position = "none",
@@ -1126,18 +1134,18 @@ knm_target_v_reference <- knmCMCPlot$originalMethodCMCs_target_v_reference +
 knm_cmcPlot_bothDirections <- ggplot(data.frame(a = 1)) +
   theme_void() +
   coord_cartesian(xlim = c(1,10),
-                  ylim = c(1,10),
+                  ylim = c(1,11),
                   expand = FALSE) +
   annotation_custom(ggplotGrob(knm_reference_v_target),
-                    xmin = 1,xmax = 10,ymin = 5.5,ymax = 10) +
+                    xmin = 1,xmax = 10,ymin = 6.5,ymax = 11) +
   annotation_custom(ggplotGrob(knm_target_v_reference),
-                    xmin = 1,xmax = 10,ymin = 1,ymax = 5.5) +
+                    xmin = 1,xmax = 10,ymin = 2,ymax = 6.5) +
   annotation_custom(knmLegend,
-                    xmin = 9,xmax = 9,ymin = 5.5,ymax = 5.5) +
-  annotate("text",x = 4.45,y = 7.65,size = 5,label = "Fadul 1-1") +
-  annotate("text",x = 4.25,y = 3,size = 5,label = "Fadul 1-1") +
-  annotate("text",x = 6.75,y = 7.65,size = 5,label = "Fadul 2-1") +
-  annotate("text",x = 6.75,y = 3.25,size = 5,label = "Fadul 2-1")
+                    xmin = 1,xmax = 10,ymin = 1.45,ymax = 1.45) +
+  annotate("text",x = 3.75,y = 8.65,size = 5,label = "Fadul 1-1") +
+  annotate("text",x = 3.75,y = 4,size = 5,label = "Fadul 1-1") +
+  annotate("text",x = 7.45,y = 8.65,size = 5,label = "Fadul 2-1") +
+  annotate("text",x = 7.45,y = 4,size = 5,label = "Fadul 2-1")
 ```
 
 The \code{cmcPlot} function can be used to visualize CMCs and non-CMCs. 
@@ -1147,7 +1155,7 @@ The top row shows 17 CMCs in blue and 10 non-CMCs in red when Fadul 1-1 is treat
 The bottom row shows the 18 CMCs and 14 non-CMCs when the roles are reversed.
 There is no discussion in \citet{song_proposed_2013} about how to combine the results from these two comparison directions, but \citet{tong_improved_2015} propose using the minimum of the two CMC counts (17 in this example).}
 
-```{r,echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.cap='\\label{fig:topVoteCMCPlot} CMC results for the comparison between Fadul 1-1 and Fadul 1-2 using the original method of \\citet{song_proposed_2013}. The first row shows the 17 CMCs when Fadul 1-1 is treated as the ``reference" cartridge case to which Fadul 1-2 (the ``target") is compared. The second row shows the 18 CMCs when the roles are reversed. Red cells on the indicate where cells \\emph{not} identified as congruent achieve the maximum pairwise-complete correlation across all rotations of the target scan. It is not discussed in the CMC literature whether the results from both comparison directions are combined for the original method of \\citet{song_proposed_2013}.',fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
+```{r,echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.cap='\\label{fig:topVoteCMCPlot} CMC results for the comparison between Fadul 1-1 and Fadul 1-2 using the original method of \\citet{song_proposed_2013}. The first row shows the 17 CMCs when Fadul 1-1 is treated as the ``reference" cartridge case to which Fadul 1-2 (the ``target") is compared. The second row shows the 18 CMCs when the roles are reversed. Red cells on the indicate where cells \\emph{not} identified as congruent achieve the maximum pairwise-complete correlation across all rotations of the target scan. It is not discussed in the CMC literature whether the results from both comparison directions are combined for the original method of \\citet{song_proposed_2013}.',fig.align='center',fig.pos='htbp',fig.width=4.75}
 
 km_originalCMCPlot_bothDirections
 ```
@@ -1157,7 +1165,7 @@ Similarly, CMCs and non-CMCs determined under the High CMC method are shown in \
 There are 5 cells classified as CMCs when treating Fadul 1-2 as the reference scan that are not classified as CMCs when treating Fadul 1-1 as the reference.
 Thus, combining the results from both directions yields 24 CMCs. }
 
-```{r,echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.cap='\\label{fig:highCMCPlot} Applying the High CMC method to the comparison of Fadul 1-1 and Fadul 1-2 results in 19 CMCs when Fadul 1-1 is treated as the reference (top) and 18 CMCs when Fadul 1-2 is treated as the reference (bottom). Although the individual comparisons do not yield considerably more CMCs than under the original method of \\citet{song_proposed_2013}, \\citet{tong_improved_2015} indicate that the High CMCs from both comparisons are combined as the final High CMC count (each cell is counted at most once). Combining the results means that the High CMC method tends to produce higher CMC counts than the original method of \\citet{song_proposed_2013}. In this example, the combined High CMC count is 24 CMCs.',fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
+```{r,echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.cap='\\label{fig:highCMCPlot} Applying the High CMC method to the comparison of Fadul 1-1 and Fadul 1-2 results in 19 CMCs when Fadul 1-1 is treated as the reference (top) and 18 CMCs when Fadul 1-2 is treated as the reference (bottom). Although the individual comparisons do not yield considerably more CMCs than under the original method of \\citet{song_proposed_2013}, \\citet{tong_improved_2015} indicate that the High CMCs from both comparisons are combined as the final High CMC count (each cell is counted at most once). Combining the results means that the High CMC method tends to produce higher CMC counts than the original method of \\citet{song_proposed_2013}. In this example, the combined High CMC count is 24 CMCs.',fig.align='center',fig.pos='htbp',fig.width=4.75}
 
 km_highCMCCMCPlot_bothDirections
 ```
@@ -1166,7 +1174,7 @@ In contrast, \autoref{fig:knmCMCPlot} shows the CMC results for a comparison bet
 \jz{Only 1 cell was classified as a CMC treating Fadul 1-1 as the reference scan under the original method of \citet{song_proposed_2013}. 0 cells were classified as CMCs in the other direction.
 While not shown, this pair failed the High CMC criterion (in both comparison directions, no less) and thus were assigned 0 CMCs under the High CMC method.}
 
-```{r,echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.cap='\\label{fig:knmCMCPlot} Applying the High CMC method to the comparison between the non-match pair Fadul 1-1 and Fadul 2-1 results in 1 CMC under the original method of \\citet{song_proposed_2013} (shown above) and 0 CMCs under the High CMC method (not shown). The seemingly random behavior of the red cells, which indicate the translation/rotation at which each cell attained its highest CCF value in the target scan, validates our intuition that the cells in a non-match comparison should not exhibit an observable pattern. Random chance should be the prevailing factor in classifying non-match cells as CMCs.', fig.align='center',fig.pos='htbp',out.width='\\textwidth'}
+```{r,echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.cap='\\label{fig:knmCMCPlot} Applying the High CMC method to the comparison between the non-match pair Fadul 1-1 and Fadul 2-1 results in 1 CMC under the original method of \\citet{song_proposed_2013} (shown above) and 0 CMCs under the High CMC method (not shown). The seemingly random behavior of the red cells, which indicate the translation/rotation at which each cell attained its highest CCF value in the target scan, validates our intuition that the cells in a non-match comparison should not exhibit an observable pattern. Random chance should be the prevailing factor in classifying non-match cells as CMCs.', fig.align='center',fig.pos='htbp',fig.width=4.75}
 
 knm_cmcPlot_bothDirections
 ```
