@@ -120,7 +120,7 @@ fadul2.1_id <- "DownloadMeasurement/8ae0b86d-210a-41fd-ad75-8212f9522f96"
 #actually the National Ballistics Toolmark Research Database (so their URL
 #is mistaken)
 
-nbtrd_url <- "https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement/"
+nbtrd_url <- "https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement"
 download.file(
   file.path(nbtrd_url , fadul1.1_id), destfile = "data/fadul1-1.x3p", mode = "wb")
 download.file(
@@ -132,7 +132,7 @@ download.file(
 ```{r eval=FALSE,echo=TRUE}
 library(cmcR)
 
-nbtrd_url <- "https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement/"
+nbtrd_url <- "https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement"
 
 x3p_ids <- c("DownloadMeasurement/2d9cc51f-6f66-40a0-973a-a9292dbee36d",
              "DownloadMeasurement/cb296c98-39f5-46eb-abff-320a2f5568e8",
@@ -1392,7 +1392,7 @@ We consider 5 parameter settings that, based on our experimentation, have a demo
 \end{itemize}
 To understand the generalizability of a particular set of parameters to "out-of-sample" data, choosing parameter settings resulting in an AUC equal to 1 (perfect identification) is not enough. Instead, we use the variance ratio to identify an optimal set of thresholds. \autoref{fig:cmc_sensitivityScatter} shows the value of the variance ratio under various settings of these 5 parameters. We can see that using the High CMC method on breech face scans for which the trend was removed yields better variance ratio values. Conditional on these settings, choosing thresholds $T_x = 10 = T_y$, $T_\theta = 3$, and $T_{\text{CCF}} \in [.35,5]$ yields the largest variance ratios. These are similar thresholds to those chosen in other CMC papers.
 
-```{r ,echo=FALSE, fig.cap='\\label{fig:cmc_sensitivityScatter} We desire parameters that yield a high variance ratio. Parameters are currently determined by experimentation in the CMC literature and differ between papers. The scatterplots below show the behavior of the variance ratio under various parameter settings. Based on the variance ratio statistic, the optimal set of parameter settings include using the High CMC method applied to de-trended breech face scans using translation thresholds $T_{x} = 10 = T_y$, rotation threshold $T_{\\theta} = 3$, and CCF threshold $T_{CCF} \\in [.35,.5]$. Removal of the trend during preprocessing, which is not explicitly discussed in the CMC literature, has a major impact on the effectiveness of the CMC method.',fig.align='left',fig.pos='htbp',out.width='\\textwidth'}
+```{r ,echo=FALSE, fig.cap='\\label{fig:cmc_sensitivityScatter} We desire parameters that yield a high variance ratio. Parameters are currently determined by experimentation in the CMC literature and differ between papers. These scatterplots show the behavior of the variance ratio under various parameter settings. Based on the variance ratio statistic, the optimal set of parameter settings include using the High CMC method applied to de-trended breech face scans using translation thresholds $T_{x} = 10 = T_y$, rotation threshold $T_{\\theta} = 3$, and CCF threshold $T_{CCF} \\in [.35,.5]$. Removal of the trend during preprocessing, which is not explicitly discussed in the CMC literature, has a major impact on the effectiveness of the CMC method.',fig.align='left',fig.pos='htbp',out.width='\\textwidth'}
 
 cmcs_aucsDistinct <- cmcs_aucs %>%
   select(ccf_thresh,dx_thresh,theta_thresh,missingTheta_decision,compareInitialAndHighThetas,topVoteCMC_AUC,highCMC_AUC) %>%
@@ -1537,6 +1537,10 @@ bind_rows(pcpData_leveling,
                                  ticks.colour = "black"))
 ```
 
+There are other connections that we can draw from \autoref{fig:cmc_sensitivityScatter} and what we have discussed previously as patterns in the CMC literature that make reproducibility impossible. 
+In particular, \autoref{fig:cmc_sensitivityScatter} illustrates both the dangers of providing a written-word description of an algorithm and the benefits of breaking a method up into modularized steps to uncover flaws or sensitivities.
+We will expand upon these two points below.
+
 ## The dangers of prosaic algorithm descriptions
 
 \jz{It should also be noted that the success of the High CMC method hinges largely on selecting processing conditions such that no non-match pairs pass the High CMC criteria. 
@@ -1545,16 +1549,16 @@ Recall from the section on the REF that ambiguity in the original description le
 Namely, how cartridge case pairs for which only one comparison direction passes the High CMC criteria should be dealt with.
 The \code{missingTheta\_decision} argument of the \code{cmcFilter\_improved} function controls how CMCs are assigned if only one direction passes the High CMC criteria. 
 Additionally, the \code{compareInitialAndHighThetas} argument dictates whether a comparison of the $\theta_{\text{ref}}$ value determined under the original method of \citet{song_proposed_2013} to agree with the modal $\theta_{\text{mode}}$ value determined under the High CMC method. 
-\autoref{fig:highCMC_comparison_sensitivity} demonstrates how results change under 4 combinations of these two arguments with $T_{\Delta x} = T_{\Delta y} = 20$, $T_{\text{CCF}} = .5$, and $T_{\theta} = 6$ degrees.
+\autoref{fig:cmc_sensitivityScatter} demonstrates how results change under 4 combinations of these two arguments with $T_{\Delta x} = T_{\Delta y} = 20$, $T_{\text{CCF}} = .5$, and $T_{\theta} = 6$ degrees.
 In particular, considering \code{missingTheta\_decision = "replace"} vs. \code{"fail"}, which treats passing the High CMC criteria in one direction as a pass or fail in both, respectively. 
 We also consider \code{compareInitialAndHighThetas = TRUE} vs. \code{FALSE}, which changes whether the $\theta_{\text{ref},1-2}, \theta_{\text{ref},2-1}$ and $\theta_{\text{mode},1-2}, \theta_{\text{mode},2-1}$ values are compared.
 We can clearly see a second mode for the least restrictive argument specifications of \code{missingTheta\_decision = "replace"} and \code{compareInitialAndHighThetas = FALSE}.
 These large false-positive CMC counts are associated with cartridge case pairs that pass the High CMC criteria.
-The bimodal behavior of the non-match CMC distribution observed in \autoref{fig:highCMC_comparison_sensitivity} is similar to that of Figure 8 in \citet{chen_convergence_2017} where the High CMC method was applied to cartridge case data from \citet{laPorte_validation_2011}.}
+The bimodal behavior of the non-match CMC distribution observed in \autoref{fig:cmc_sensitivityScatter} is similar to that of Figure 8 in \citet{chen_convergence_2017} where the High CMC method was applied to cartridge case data from \citet{laPorte_validation_2011}.}
 
 \jz{This illustrates how a prosaic description of an algorithm is generally insufficient to properly implement the method. As is the case with the High CMC method, unintentional ambiguities in written-language descriptions lead to different interpretations of the method. Even precise algorithmic descriptions typically gloss-over the usage of particular programming languages, functions, or parameter settings. Algorithms that theoretically should be consistent across implementations may in-practice yield numerical inconsistencies due to factors that would require the authors' careful consideration to make consistent. For example, how different programming languages handle various datatypes (floating-point, complex numbers, etc.) or how random seeds are used to initialize pseudorandom number generators. Because of this, anything short of providing the code and data used to produce published results renders computational reproduction challenging if not impossible.}
 
-```{r ,echo=FALSE, fig.cap='\\label{fig:highCMC_comparison_sensitivity} High CMC count relative frequencies for various interpretations on the High CMC method description given in \\citet{tong_improved_2015} with $T_{\\Delta x} = T_{\\Delta y} = 20$, $T_{\\text{CCF}} = .5$, and $T_{\\theta} = 6$ degrees. In particlar, compares CMC results for different the 4 combinations of \\code{missingTheta\\_decision = "fail"} or \\code{"replace"} and \\code{compareInitialAndHighThetas = TRUE} or \\code{FALSE} (see \\@sec:highMethod for details). Different interpretations of the High CMC method description lead to different results, particularly with respect to the behavior of the non-match CMC count distribution. Additionally, as evidenced by the stillness of the matching CMC count distribution, this illustrates how the High CMC criteria functions essentially as a preliminary classification rule for non-matches vs. matches.',fig.align='left',fig.pos='htbp',out.width='\\textwidth'}
+```{r ,echo=FALSE,eval=FALSE, fig.cap='\\label{fig:highCMC_comparison_sensitivity} High CMC count relative frequencies for various interpretations on the High CMC method description given in \\citet{tong_improved_2015} with $T_{\\Delta x} = T_{\\Delta y} = 20$, $T_{\\text{CCF}} = .5$, and $T_{\\theta} = 6$ degrees. In particlar, compares CMC results for different the 4 combinations of \\code{missingTheta\\_decision = "fail"} or \\code{"replace"} and \\code{compareInitialAndHighThetas = TRUE} or \\code{FALSE} (see \\@sec:highMethod for details). Different interpretations of the High CMC method description lead to different results, particularly with respect to the behavior of the non-match CMC count distribution. Additionally, as evidenced by the stillness of the matching CMC count distribution, this illustrates how the High CMC criteria functions essentially as a preliminary classification rule for non-matches vs. matches.',fig.align='left',fig.pos='htbp',out.width='\\textwidth'}
 
 highCMC_comparison_labels <- cmcs_aucs %>%
   ungroup() %>%
@@ -1609,7 +1613,7 @@ For example, consider a change to the procedure described in section REF in whic
 Recall that this step is performed in our implementation due to the trends in height values exhibited frequently yet inconsistently across cartridge cases fired from the same firearm. 
 No explicit reference is given for how these trends are handled in the CMC literature.}
 
-\jz{\autoref{fig:highCMC_noLeveling_sensitivity} shows the results of the High CMC methods under the exact same processing conditions as in \autoref{fig:highCMC_sensitivity} except that the surface matrices were not leveled prior to applying the bandpass Gaussian filter. 
+\autoref{fig:cmc_sensitivityScatter} shows the results for both decision rules except that the surface matrices were not leveled prior to applying the bandpass Gaussian filter. 
 These 6 plots are analogous to other threshold combinations considered for this sensitivity analysis (the data for which are available [wherever we put the data]). 
 They illustrate that the High CMC method becomes considerably less effective at differentiating matches from non-matches when surface matrices' trends aren't removed. 
 In particular, non-matching cartridge case pairs with similar trends may be assigned more "false-positive" CMCs while, conversely, matching pairs with dissimilar trends are assigned fewer CMCs.}
@@ -1621,7 +1625,7 @@ Researchers such as the authors of the various CMC methods already have some for
 However, there has yet to be a consolidation of the various procedures used into an "optimal" processing pipeline. 
 Perhaps a more principled approach cast as an optimization problem is required rather than an experimental approach.}
 
-```{r,echo=FALSE, fig.cap='\\label{fig:highCMC_noLeveling_sensitivity} High CMC count relative frequencies for various $T_{\\Delta x}, T_{\\Delta y}$, and $T_{\\text{CCF}}$ values and $T_{\\theta} = 6$ degrees, \\code{missingTheta\\_decision = "fail"}, and \\code{compareInitialAndHighThetas = TRUE} where the breech face impression surfaces were not leveled during preprocessing. Compared to \\autoref{fig:highCMC_sensitivity}, this demonstrates that High CMC method becomes less effective if this processing step is skipped. Modularization of the processing procedures into a "pipeline" is useful for uncovering such sensitivites.',fig.align='left',fig.pos='htbp',out.width='\\textwidth'}
+```{r,echo=FALSE,eval=FALSE, fig.cap='\\label{fig:highCMC_noLeveling_sensitivity} High CMC count relative frequencies for various $T_{\\Delta x}, T_{\\Delta y}$, and $T_{\\text{CCF}}$ values and $T_{\\theta} = 6$ degrees, \\code{missingTheta\\_decision = "fail"}, and \\code{compareInitialAndHighThetas = TRUE} where the breech face impression surfaces were not leveled during preprocessing. Compared to \\autoref{fig:highCMC_sensitivity}, this demonstrates that High CMC method becomes less effective if this processing step is skipped. Modularization of the processing procedures into a "pipeline" is useful for uncovering such sensitivites.',fig.align='left',fig.pos='htbp',out.width='\\textwidth'}
 cmcs_noLeveling_varRatios <-  cmcs_downSampled_noLeveling %>%
   pivot_longer(cols = c(originalMethodCMCs,highCMCs),names_to = "cmcType",values_to = "cmcCount") %>%
   group_by(theta_thresh,ccf_thresh,dx_thresh,missingTheta_decision,compareInitialAndHighThetas,cmcType,type) %>%
