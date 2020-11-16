@@ -117,7 +117,7 @@ fadul2.1_id <- "DownloadMeasurement/8ae0b86d-210a-41fd-ad75-8212f9522f96"
 #Code to download breech face impressions: 
 
 # Aside: while the URL says "NRBTD", it's
-#actually the National Ballistics Toolmark Research Database (so their URL
+#actually the NIST Ballistics Toolmark Research Database (so their URL
 #is mistaken)
 
 nbtrd_url <- "https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement"
@@ -995,75 +995,91 @@ kmCMCPlot <- cmcR::cmcPlot(referenceScan = fadul1.1,
                             targetScan = fadul1.2,
                             reference_v_target_CMCs = kmComparison_cmcs,
                             target_v_reference_CMCs = kmComparison_cmcs_rev,
-                            type = "faceted",
-                            x3pNames = c("Fadul 1-1","Fadul 2-1"),
+                            type = "list",
+                            x3pNames = c("Fadul 1-1","Fadul 1-2"),
                             legend.quantiles = c(0,.01,.2,.5,.8,.99,1),
                             cell.colors = c("#a60b00","#1b03a3"),
                             cell.alpha = .15,
-                            na.value = "gray80") %>%
-  map(~ . + theme(strip.text = element_blank()))
+                            na.value = "grey100")
 
-kmLegend_originalCMC <- cowplot::get_legend(kmCMCPlot$originalMethodCMCs_reference_v_target +
+kmLegend_originalCMC <- cowplot::get_legend(kmCMCPlot$originalMethodCMCs_reference_v_target$`Fadul 1-1` +
                                    theme(legend.direction = "horizontal"))
 
-km_originalCMC_reference_v_target <- kmCMCPlot$originalMethodCMCs_reference_v_target + 
-  theme(legend.position = "none",
-        plot.margin=unit(c(-.05,-.5,-.05,-.5), "cm"),
-        plot.title = element_blank())
+kmLegend_highCMC <- cowplot::get_legend(kmCMCPlot$highCMC_reference_v_target$`Fadul 1-1` +
+                                   theme(legend.direction = "horizontal"))
 
-km_originalCMC_target_v_reference <- kmCMCPlot$originalMethodCMCs_target_v_reference + 
-  theme(legend.position = "none",
-        plot.margin=unit(c(-.05,-.5,-.05,-.5), "cm"),
-        plot.title = element_blank())
+kmCMCPlot <- kmCMCPlot %>%
+  map(function(pltList){
+    map(pltList, 
+        ~ . + theme(strip.text = element_blank(),
+                    legend.position = "none",
+                    plot.margin=unit(c(-.05,-.5,-.05,-.5), "cm"),
+                    plot.title = element_blank()))
+  })
+
+# km_originalCMC_reference_v_target <- kmCMCPlot$originalMethodCMCs_reference_v_target + 
+#   theme(legend.position = "none",
+#         plot.margin=unit(c(-.05,-.5,-.05,-.5), "cm"),
+#         plot.title = element_blank())
+# 
+# km_originalCMC_target_v_reference <- kmCMCPlot$originalMethodCMCs_target_v_reference + 
+#   theme(legend.position = "none",
+#         plot.margin=unit(c(-.05,-.5,-.05,-.5), "cm"),
+#         plot.title = element_blank())
 
 km_originalCMCPlot_bothDirections <- ggplot(data.frame(a = 1)) +
   theme_void() +
   coord_cartesian(xlim = c(1,10),
                   ylim = c(1,11),
                   expand = FALSE) +
-  annotation_custom(ggplotGrob(km_originalCMC_reference_v_target),
-                    xmin = 1,xmax = 10,ymin = 6.2,ymax = 11) +
-  annotation_custom(ggplotGrob(km_originalCMC_target_v_reference),
-                    xmin = 1,xmax = 10,ymin = 2,ymax = 6.2) +
+  annotation_custom(ggplotGrob(kmCMCPlot$originalMethodCMCs_reference_v_target$`Fadul 1-1`),
+                    xmin = 2.5,xmax = 5,ymin = 6.1,ymax = 10.5) +
+  annotation_custom(ggplotGrob(kmCMCPlot$originalMethodCMCs_reference_v_target$`Fadul 1-2`),
+                    xmin = 4,xmax = 10.5,ymin = 6.1,ymax = 11) +
+  annotation_custom(ggplotGrob(kmCMCPlot$originalMethodCMCs_target_v_reference$`Fadul 1-2`),
+                    xmin = 2.5,xmax = 5,ymin = 2,ymax = 6) +
+  annotation_custom(ggplotGrob(kmCMCPlot$originalMethodCMCs_target_v_reference$`Fadul 1-1`),
+                    xmin = 4,xmax = 10.5,ymin = 1.75,ymax = 6) +
   annotation_custom(kmLegend_originalCMC,
                     xmin = 1,xmax = 10,ymin = 1.45,ymax = 1.45) +
-  annotate("text",x = 3.85,y = 8.15,size = 5,label = "Fadul 1-1") +
-  annotate("text",x = 3.85,y = 4,size = 5,label = "Fadul 1-1") +
-  annotate("text",x = 7.05,y = 8.15,size = 5,label = "Fadul 1-2") +
-  annotate("text",x = 7.05,y = 4,size = 5,label = "Fadul 1-2")
+  annotate("text",x = 3.75,y = 8,size = 4.5,label = "Fadul 1-1") +
+  annotate("text",x = 3.7,y = 3.75,size = 4.5,label = "Fadul 1-2") +
+  annotate("text",x = 7.2,y = 8,size = 4.5,label = "Fadul 1-2") +
+  annotate("text",x = 7.3,y = 3.75,size = 4.5,label = "Fadul 1-1")
 ```
 
 ```{r include=FALSE}
-kmLegend_highCMC <- cowplot::get_legend(kmCMCPlot$highCMC_reference_v_target +
-                                   theme(legend.direction = "horizontal"))
 
-km_highCMC_reference_v_target <- kmCMCPlot$highCMC_reference_v_target + 
-  theme(legend.position = "none",
-        plot.margin=unit(c(-.05,-.5,-.05,-.5), "cm"),
-        plot.title = element_blank())
 
-km_highCMC_target_v_reference <- kmCMCPlot$highCMC_target_v_reference + 
-  theme(legend.position = "none",
-        plot.margin=unit(c(-.05,-.5,-.05,-.5), "cm"),
-        plot.title = element_blank())
+# km_highCMC_reference_v_target <- kmCMCPlot$highCMC_reference_v_target + 
+#   theme(legend.position = "none",
+#         plot.margin=unit(c(-.05,-.5,-.05,-.5), "cm"),
+#         plot.title = element_blank())
+# 
+# km_highCMC_target_v_reference <- kmCMCPlot$highCMC_target_v_reference + 
+#   theme(legend.position = "none",
+#         plot.margin=unit(c(-.05,-.5,-.05,-.5), "cm"),
+#         plot.title = element_blank())
 
 km_highCMCCMCPlot_bothDirections <- ggplot(data.frame(a = 1)) +
   theme_void() +
   coord_cartesian(xlim = c(1,10),
                   ylim = c(1,11),
                   expand = FALSE) +
-  annotation_custom(ggplotGrob(km_highCMC_reference_v_target),
-                    xmin = 1.1,xmax = 10,ymin = 6.55,ymax = 11) +
-  annotation_custom(ggplotGrob(km_highCMC_target_v_reference),
-                    xmin = 1,xmax = 10,ymin = 2,ymax = 6.55) +
+  annotation_custom(ggplotGrob(kmCMCPlot$highCMC_reference_v_target$`Fadul 1-1`),
+                    xmin = 2.5,xmax = 5,ymin = 6.5,ymax = 11) +
+  annotation_custom(ggplotGrob(kmCMCPlot$highCMC_reference_v_target$`Fadul 1-2`),
+                    xmin = 4.25,xmax = 10.5,ymin = 6.5,ymax = 11) +
+  annotation_custom(ggplotGrob(kmCMCPlot$highCMC_target_v_reference$`Fadul 1-2`),
+                    xmin = 2.5,xmax = 5,ymin = 2,ymax = 6.5) +
+  annotation_custom(ggplotGrob(kmCMCPlot$highCMC_target_v_reference$`Fadul 1-1`),
+                    xmin = 4,xmax = 10.5,ymin = 2,ymax = 6.5) +
   annotation_custom(kmLegend_highCMC,
                     xmin = 1,xmax = 10,ymin = 1.45,ymax = 1.45) +
-  annotate("text",x = 3.65,y = 8.65,size = 5,label = "Fadul 1-1") +
-  annotate("text",x = 3.65,y = 4,size = 5,label = "Fadul 1-1") +
-  annotate("text",x = 7.25,y = 8.65,size = 5,label = "Fadul 1-2") +
-  annotate("text",x = 7.25,y = 4,size = 5,label = "Fadul 1-2")
-
-km_highCMCCMCPlot_bothDirections
+  annotate("text",x = 3.75,y = 8.6,size = 4.5,label = "Fadul 1-1") +
+  annotate("text",x = 3.75,y = 4.2,size = 4.5,label = "Fadul 1-2") +
+  annotate("text",x = 7.25,y = 8.55,size = 4.5,label = "Fadul 1-2") +
+  annotate("text",x = 7.25,y = 4.1,size = 4.5,label = "Fadul 1-1")
 ```
 
 ```{r cache = T,include=FALSE}
@@ -1071,7 +1087,7 @@ knmCMCPlot <- cmcR::cmcPlot(referenceScan = fadul1.1,
                             targetScan = fadul2.1,
                             reference_v_target_CMCs = knmComparison_cmcs,
                             target_v_reference_CMCs = knmComparison_cmcs_rev,
-                            type = "faceted",
+                            type = "list",
                             x3pNames = c("Fadul 1-1","Fadul 2-1"),
                             legend.quantiles = c(0,.01,.2,.5,.8,.99,1),
                             height.colors = colorspace::desaturate(c('#7f3b08','#b35806',
@@ -1083,37 +1099,41 @@ knmCMCPlot <- cmcR::cmcPlot(referenceScan = fadul1.1,
                                                                    amount = .75),
                             cell.colors = c("#a60b00","#1b03a3"),
                             cell.alpha = .15,
-                            na.value = "gray80") %>%
-  map(~ . + theme(strip.text = element_blank()))
+                            na.value = "grey100")
 
-knmLegend <- cowplot::get_legend(knmCMCPlot$originalMethodCMCs_reference_v_target +
+knmLegend <- cowplot::get_legend(knmCMCPlot$originalMethodCMCs_reference_v_target$`Fadul 1-1` +
                                    theme(legend.direction = "horizontal"))
 
-knm_reference_v_target <- knmCMCPlot$originalMethodCMCs_reference_v_target + 
-  theme(legend.position = "none",
-        plot.margin=unit(c(-.05,-.5,-.05,-.5), "cm"),
-        plot.title = element_blank())
-
-knm_target_v_reference <- knmCMCPlot$originalMethodCMCs_target_v_reference + 
-  theme(legend.position = "none",
-        plot.margin=unit(c(-.05,-.5,-.05,-.5), "cm"),
-        plot.title = element_blank())
+knmCMCPlot <- knmCMCPlot %>%
+  map(function(pltList){
+    map(pltList, 
+        ~ . + theme(strip.text = element_blank(),
+                    legend.position = "none",
+                    plot.margin=unit(c(-.05,-.5,-.05,-.5), "cm"),
+                    plot.title = element_blank()))
+  })
 
 knm_cmcPlot_bothDirections <- ggplot(data.frame(a = 1)) +
   theme_void() +
   coord_cartesian(xlim = c(1,10),
                   ylim = c(1,11),
                   expand = FALSE) +
-  annotation_custom(ggplotGrob(knm_reference_v_target),
-                    xmin = 1,xmax = 10,ymin = 6.5,ymax = 11) +
-  annotation_custom(ggplotGrob(knm_target_v_reference),
-                    xmin = 1,xmax = 10,ymin = 2,ymax = 6.5) +
+  annotation_custom(ggplotGrob(knmCMCPlot$originalMethodCMCs_reference_v_target$`Fadul 1-1`),
+                    xmin = 2.5,xmax = 5,ymin = 6.6,ymax = 11) +
+  annotation_custom(ggplotGrob(knmCMCPlot$originalMethodCMCs_reference_v_target$`Fadul 2-1`),
+                    xmin = 4,xmax = 10.5,ymin = 6.5,ymax = 11) +
+  annotation_custom(ggplotGrob(knmCMCPlot$originalMethodCMCs_target_v_reference$`Fadul 2-1`),
+                    xmin = 2.5,xmax = 5,ymin = 2,ymax = 6.5) +
+  annotation_custom(ggplotGrob(knmCMCPlot$originalMethodCMCs_target_v_reference$`Fadul 1-1`),
+                    xmin = 4,xmax = 10.5,ymin = 1.75,ymax = 6.5) +
   annotation_custom(knmLegend,
                     xmin = 1,xmax = 10,ymin = 1.45,ymax = 1.45) +
-  annotate("text",x = 3.75,y = 8.65,size = 5,label = "Fadul 1-1") +
-  annotate("text",x = 3.75,y = 4,size = 5,label = "Fadul 1-1") +
-  annotate("text",x = 7.45,y = 8.65,size = 5,label = "Fadul 2-1") +
-  annotate("text",x = 7.45,y = 4,size = 5,label = "Fadul 2-1")
+  annotate("text",x = 3.75,y = 8.6,size = 4.5,label = "Fadul 1-1") +
+  annotate("text",x = 3.75,y = 4.2,size = 4.5,label = "Fadul 2-1") +
+  annotate("text",x = 7.45,y = 8.75,size = 4.5,label = "Fadul 2-1") +
+  annotate("text",x = 7.35,y = 4,size = 4.5,label = "Fadul 1-1")
+
+# knm_cmcPlot_bothDirections
 ```
 
 The \code{cmcPlot} function can be used to visualize CMCs and non-CMCs. 
@@ -1247,7 +1267,7 @@ cmcCountData %>%
   theme_bw() + 
   theme(legend.position = "bottom",
         strip.text = element_text(size = 7)) +
-  xlab("Original Method CMC Count") +
+  xlab("CMC Count") +
   ylab("Relative Frequency")
 ```
 
@@ -1260,7 +1280,7 @@ We consider five parameter settings that, based on our experimentation, have a d
 \item choice of congruency thresholds: translation $T_x, T_y$, rotation $T_\theta$, and CCF $T_{\text{CCF}}$.
 \end{itemize}
 To understand the generalizability of a particular set of parameters to "out-of-sample" data, choosing parameter settings resulting in an AUC equal to 1 (perfect identification) is not enough. 
-Instead, we use the variance ratio to identify an promising range of thresholds. \autoref{fig:cmc_sensitivityScatter} shows the value of the variance ratio under various settings of these 5 parameters. 
+Instead, we use the variance ratio to identify a promising range of thresholds. \autoref{fig:cmc_sensitivityScatter} shows the value of the variance ratio under various settings of these 5 parameters. 
 We can see that using the High CMC method on breech face scans for which the trend was removed yields better variance ratio values. 
 Conditional on these settings, choosing thresholds $T_x, T_y \in [15,20]$, $T_\theta = 6$, and $T_{\text{CCF}} \in [.4,5]$ yields arguably the most promising variance ratios. 
 These are similar thresholds to those chosen in other CMC papers.
