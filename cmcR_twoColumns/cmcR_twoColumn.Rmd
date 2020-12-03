@@ -153,11 +153,9 @@ It strikes the back wall, known as the \textit{breech face}, of the barrel with 
 face onto the cartridge case, creating the so-called \textit{breech face impressions}. 
 These markings are considered  unique to a firearm and are used in forensic examinations to determine whether two cartridge cases have been fired by the same firearm.
 
-% During a forensic examination, two pieces of ballistic evidence are
-% placed under a \textit{comparison microscope}. Comparison microscopes allow
-% for a side-by-side comparison of two objects within the same viewfinder,
-% as seen in \autoref{fig:ccPair_combined}. A pair of breech face images is
-% aligned along the thin black line in the middle of the images.
+% During a forensic examination, two pieces of ballistic evidence are placed under a \textit{comparison microscope}. 
+%Comparison microscopes allow for a side-by-side comparison of two objects within the same viewfinder, as seen in \autoref{fig:ccPair_combined}. 
+%A pair of breech face images is aligned along the thin black line in the middle of the images.
 
 % The degree to which these breech face markings align can be used to
 % determine whether the two cartridge cases match; i.e., were fired from
@@ -166,7 +164,7 @@ These markings are considered  unique to a firearm and are used in forensic exam
 % \citep{firearm_id_thompson}.
 
 \begin{Figure}
-\includegraphics[width=\textwidth]{images/cartridgeCasePair_comparison_with_line} \captionof{figure}{\label{fig:ccPair_combined} A cartridge case pair with visible breech face impressions under a microscrope.  A thin line can be seen separating the two views. The degree to which the markings coincide is used to conclude whether the pair comes from the same source \citep{firearm_id_thompson}.}
+\includegraphics[width=\textwidth]{images/cartridgeCasePair_comparison_with_line} \captionof{figure}{\label{fig:ccPair_combined} A cartridge case pair with visible breech face impressions under a microscope.  A thin line can be seen separating the two views. The degree to which the markings coincide is used to conclude whether the pair comes from the same source \citep{firearm_id_thompson}.}
 \end{Figure}
 
 \autoref{fig:ccPair_combined} is an example of an image from a comparison microscope used by firearms examiners in laboratory settings.
@@ -585,7 +583,7 @@ vertically. The index at which the CCF attains a maximum represents the
 
 \begin{quote}
 CMC pairs are identified by three types of identification parameters: the correlation value CCF\(_{\max}\), registration angle \(\theta\) and translation distances \(x\), \(y\) with thresholds \(T_{\text{CCF}}\), \(T_\theta\) and \(T_x, T_y\), respectively. 
-The correlated cell pairs are considered as CMCs when their correlation value CCF\(_{\max}\), \(T_{\text{CCF}}\), and their registration angle \(\theta\) and \(x-y\) registration pattern are within the thresholds \(T_\theta\), and \(T_x, T_y\).
+The correlated cell pairs are considered as CMCs when their correlation value CCF\(_{\max}\) $\geq$ \(T_{\text{CCF}}\), and their registration angle \(\theta\) and \(x-y\) registration pattern are within the thresholds \(T_\theta\), and \(T_x, T_y\).
 \end{quote}
 
 % Note that rotating an image or breech face scan by an arbitrary angle
@@ -638,7 +636,7 @@ The Cross-Correlation Theorem provides an equivalence between the CCF definition
 % The Fast Fourier Transform (FFT) algorithm can be used to reduce the computational load considerably.
 
 % No computational shortcut comes without some tradeoffs, though, and this FFT-based CCF calculation is no different. 
-The FFT does not tolerate missing values and breech faces are not continuous surfaces.\footnote{the white regions in \autoref{fig:cmc_illustration} in the Appendix correspond to missing values.}
+The FFT does not tolerate missing values and breech faces are not continuous surfaces.\footnote{The white regions in \autoref{fig:cmc_illustration} in the Appendix correspond to missing values.}
 % - the white regions in \autoref{fig:cmc_illustration} correspond to missing values.}}
 As such, it is necessary to replace these missing values to calculate the CCF. 
 While it is unclear how the CCF is implemented in the CMC papers (it is not even defined mathematically), the \textbf{cmcR} package replaces missing values with the overall mean value to calculate the FFT-based CCF. 
@@ -686,7 +684,7 @@ kmComparisonFeatures <- purrr::map_dfr(seq(-30,30,by = 3),
 \item \texttt{comparison\_cor}: Compute pairwise complete correlation between a reference cell and a target region based on estimated translation values.
 \end{itemize}
 
-\autoref{fig:comparisonCode} shows the \texttt{comparison\_allTogether} functions applied for each $\theta$ value in sequence, rotating the target scan relative to the reference scan. When implementing the High CMC method, both combinations of reference and target scan are examined (e.g. A-B and B-A). The result of \texttt{comparison\_allTogether} is a data frame containing similarity features (CCF$_{\max}$, $x$, $y$, $\theta$) that are used as inputs to the methods for assessment of match strength.\footnote{Example output is shown in \autoref{tab:cellCCF} in the Appendix.}
+\autoref{fig:comparisonCode} shows the \texttt{comparison\_allTogether} function applied for each $\theta$ value in sequence, rotating the target scan relative to the reference scan. When implementing the High CMC method, both combinations of reference and target scan are examined (e.g. A-B and B-A). The result of \texttt{comparison\_allTogether} is a data frame containing similarity features (CCF$_{\max}$, $x$, $y$, $\theta$) used as inputs to the methods for assessment of match strength.\footnote{Example output is shown in \autoref{tab:cellCCF} in the Appendix.}
 
 % \autoref{tab:cellCCF} shows several rows of the data frame output of the \texttt{comparison\_allTogether} function. 
 % Although a grid of \(8 \times 8\) cells were used, there were 27 cell/region pairs that contained a sufficient proportion of non-missing values.
@@ -1081,7 +1079,7 @@ Then for each set of thresholds we calculate
 r = \frac{\sum_{i=1}^2 \left(\overline{\text{CMC}}_{i} - \overline{\text{CMC}}\right)^2}{\sum_{i=1}^2 \frac{1}{n_i - 1}\sum_{j=1}^{n_i} \left(\text{CMC}_{i,j} - \overline{\text{CMC}}_i\right)^2}
 \]
 {\jz{where $\overline{\text{CMC}}_i$ denotes the within-group CMC count average and $\overline{\text{CMC}}$ denotes the grand CMC count average. 
-Greater separation between and less variance within the match and non-match CMC count distributions will yield larger $r$ values. 
+Greater separation between and less variability within the match and non-match CMC count distributions will yield larger $r$ values. 
 As such, larger values of $r$ are preferred.}}
 
 % {\jz{As an example, \autoref{fig:decisionRuleSensitivity_comparison} compares the CMC results using the original method of \citet{song_proposed_2013} vs. the High CMC method where $T_{\Delta x} = 20 = T_{\Delta y}$ pixels, $T_{\text{CCF}} = .5$, and $T_{\theta} = 6$ degrees. 
@@ -1150,7 +1148,7 @@ ggsave(filename = "derivatives/varRatios.png",plot = plt,
 ```
 
 \begin{Figure}
-\includegraphics[width=\textwidth]{derivatives/varRatios.png} \captionof{figure}{\label{fig:varRatios} We desire parameter settings that yield large variance ratio values. Based on our implementation, using the High CMC method on de-trended cartridge cases with $T_x, T_y \in [15,20]$ and $T_{\text{CCF}} \in [.4,.5]$ yields promising results. $T_\theta = 6$ is used here.}
+\includegraphics[width=\textwidth]{derivatives/varRatios.png} \captionof{figure}{\label{fig:varRatios} We desire parameter settings that yield large variance ratio values. Based on our implementation, using the High CMC method on de-trended cartridge cases with $T_x, T_y \in [15,20]$ and $T_{\text{CCF}} \in [.4,.5]$ yields promising results. $T_\theta = 6$ degrees is used here.}
 \end{Figure}
 
 % {\jz{There are other conclusions that we can draw from \autoref{fig:cmc_sensitivityScatter} that connect to what we have discussed previously as patterns in the CMC literature that make reproducibility impossible. 
@@ -1399,8 +1397,8 @@ knmComparison_cmcs_rev <- knmComparisonFeatures_rev %>%
 ```
 
 ```{r include=FALSE}
-kmCMCPlot <- cmcR::cmcPlot(referenceScan = fadul1.1,
-                            targetScan = fadul1.2,
+kmCMCPlot <- cmcR::cmcPlot(reference = fadul1.1,
+                            target = fadul1.2,
                             reference_v_target_CMCs = kmComparison_cmcs,
                             target_v_reference_CMCs = kmComparison_cmcs_rev,
                             type = "list",
@@ -1491,8 +1489,8 @@ km_highCMCCMCPlot_bothDirections <- ggplot(data.frame(a = 1)) +
 ```
 
 ```{r cache = T,include=FALSE}
-knmCMCPlot <- cmcR::cmcPlot(referenceScan = fadul1.1,
-                            targetScan = fadul2.1,
+knmCMCPlot <- cmcR::cmcPlot(reference = fadul1.1,
+                            target = fadul2.1,
                             reference_v_target_CMCs = knmComparison_cmcs,
                             target_v_reference_CMCs = knmComparison_cmcs_rev,
                             type = "list",
