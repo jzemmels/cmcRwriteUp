@@ -208,7 +208,7 @@ All CMC methods can be broken down into three broad stages: preprocessing, cell-
 
 Cartridge case scans are commonly stored in the ISO standard x3p file format \citep{ISO25178-72}. 
 An x3p consists of a surface matrix representing the height values of the breech face surface and metadata concerning the parameters under which the scan was taken (size, resolution, creator, etc.). 
-The \textbf{x3ptools} package \citep{x3ptools} can be used to work with these x3p files in R.\footnote{\autoref{fig:cartridgeCasePair} shows two unprocessed, known match cartridge case scans.}
+The \textbf{x3ptools} package \citep{x3ptools} can be used to work with these x3p files in R.\footnote{\autoref{fig:cartridgeCasePair} in the Appendix shows two unprocessed, known match cartridge case scans.}
 
 % \autoref{fig:cartridgeCasePair} shows the surface matrices of a known match (KM) pair of cartridge cases from a study by \citet{fadul_empirical_nodate}.
 % A total of 40 cartridge cases were scanned with a lateral resolution of 6.25 microns per pixel. 
@@ -395,7 +395,7 @@ The goal of the preprocessing stage is to remove the edges and center of the sca
 %During the preprocessing stage, several sequential steps are used to prepare each cartridge case for analysis. 
 %The goal of this process is to remove the edges and center of the scan that did not come into contact with the breech face, as well as any artifacts of the scan and microscope staging which do not accurately represent the breech face surface.
 The various proposed CMC algorithms describe different variations of these steps. 
-In particular, the preprocessing steps differ considerably across CMC papers.\footnote{A summary of these steps is shown in \autoref{fig:preprocessing-schematic} in the Appendix.}
+In particular, the preprocessing steps differ considerably across CMC papers.\footnote{These steps are illustrated in \autoref{fig:preprocessing-schematic} and \autoref{fig:processingPipeline} in the Appendix.}
 % The implementation in \citet{tong_fired_2014} describes the preprocessing steps as:
 \citet{song_3d_2014} outline the following preprocessing procedure:
 
@@ -433,7 +433,7 @@ As a result of these ambiguities, during our implementation of the
 preprocessing algorithm, we had to make several educated guesses in
 order to match the described procedure as closely as possible.
 
-\subsubsection{Implementation of preprocessing procedures}{sec:preProcessImplement}
+\subsubsection{Implementation of preprocessing procedures}\label{sec:preProcessImplement}
 
 The preprocessing procedures are implemented via the modularized functions of the form \texttt{preProcess\_*}.
 Modularizing the steps of the preprocessing procedures renders the overall preprocessing stage easier to understand and more conducive to experimentation.
