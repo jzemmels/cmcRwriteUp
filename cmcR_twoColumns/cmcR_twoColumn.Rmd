@@ -371,7 +371,7 @@ fadul1.1_bpFiltered<- cmcR::preProcess_gaussFilter(x3p = fadul1.1_downsampled,
                                                    filtertype = "bp")
 ```
 
-```{r, eval=FALSE,echo = F,warning = F,message = F,cache = T,fig.cap='\\label{fig:processingPipeline} Illustration of the  preprocessing pipeline implemented in \\textbf{cmcR}. These steps are designed to automate the manual cleaning in the CMC papers. At each stage, the amount of variability in height across the scan decreases as extraneous sources of noise are removed.',fig.align='center',fig.pos='htbp',out.width='\\textwidth', message = F, warning = F}
+```{r, eval=FALSE,echo = F,warning = F,message = F,cache = T,dpi = 300,fig.cap='\\label{fig:processingPipeline} Illustration of the preprocessing pipeline implemented in \\textbf{cmcR}. These steps are designed to automate the manual cleaning in the CMC papers. At each stage, the amount of variability in height across the scan decreases as extraneous sources of noise are removed.',fig.align='center',fig.pos='htbp',out.width='\\textwidth', message = F, warning = F}
 
 preProcessingPlot <- cmcR::x3pListPlot(list(fadul1.1_original,
                                             fadul1.1_croppedInt,
@@ -405,15 +405,14 @@ preProcessingPlot <- cmcR::x3pListPlot(list(fadul1.1_original,
                               na.value = "gray80") +
          ggplot2::labs(fill = expression("Height ["*mu*"m]")))
 
-gridExtra::grid.arrange(preProcessingPlot$`(1) Original`,
-                        preProcessingPlot$`(2) Crop exterior/interior`,
-                        preProcessingPlot$`(3) Level surface`,
-                        preProcessingPlot$`(4) Band-pass filter`,
-                        widths = unit(c(1,1,1,1),units = "null"))
+library(patchwork)
+plt <- {preProcessingPlot$`(1) Original` | preProcessingPlot$`(2) Crop exterior/interior` | preProcessingPlot$`(3) Level surface` | preProcessingPlot$`(4) Band-pass filter`}
+
+ggsave(filename = "derivatives/preProcessingDiagram.png",plt,dpi = 300,width = 9)
 ```
 
 \begin{figure*}[htbp]
-\includegraphics[width=\textwidth]{images/preProcessingDiagram.png} \captionof{figure}{\label{fig:processingPipeline} Illustration of the  preprocessing pipeline implemented in \textbf{cmcR}. These steps are designed to automate the manual cleaning in the CMC papers. At each stage, the amount of variability in height across the scan decreases as extraneous sources of noise are removed.}
+\includegraphics[width=\textwidth]{derivatives/preProcessingDiagram.png} \captionof{figure}{\label{fig:processingPipeline} Illustration of the preprocessing pipeline implemented in \textbf{cmcR}. These steps are designed to automate the manual cleaning in the CMC papers. At each stage, the amount of variability in height across the scan decreases as extraneous sources of noise are removed.}
 \end{figure*}
 
 The preprocessing procedures are implemented via the modularized \texttt{preProcess\_*} functions.
@@ -484,29 +483,6 @@ The \texttt{comparison\_allTogether} wrapper function performs the following ste
 
 % When implementing the High CMC method, both combinations of reference and target scan are examined (e.g. A-B and B-A). 
 The result of \texttt{comparison\_allTogether} is a data frame containing similarity features (CCF$_{\max}$, $x$, $y$, $\theta$) used as inputs to the methods for assessment of match strength (example output is shown in \autoref{tab:cellCCF} in the Appendix).
-
-```{r echo=FALSE,warning=F,message=F,eval=TRUE,cache = T}
-kmComparisonFeatures %>%
-  mutate(`Cell index` = cellIndex,
-         `Pairwise-complete corr.` = round(pairwiseCompCor,3),
-         `FFT-based corr.` = round(fft_ccf,3)) %>%
-  select(c(`Cell index`,`Pairwise-complete corr.`,`FFT-based corr.`,x,y,theta)) %>%
-  filter(theta == -24) %>%
-  arrange(`Cell index`) %>%
-  head() %>%
-  knitr::kable(caption = "\\label{tab:cellCCF} Example of output from correlation cell comparison procedure between Fadul 1-1 and Fadul 1-2 rotated by -24 degrees. Due to the large proportion of missing values that are replaced to compute the FFT-based correlation, the pairwise-complete correlation is most often greater than the FFT-based correlation.",
-               format = "latex",
-               align = c("|c","c","c","r","r","r|"),
-               col.names = c("Cell Index",
-                             "Pairwise-comp. corr.",
-                             "FFT-based corr.",
-                             "$\\Delta$x",
-                             "$\\Delta$y",
-                             "$\\theta$"),
-               escape = FALSE) %>%
-  kableExtra::kable_styling(latex_options = "hold_position",
-                            position = "center")
-```
 
 \subsubsection*{Decision Rule}
 
@@ -707,12 +683,12 @@ km_originalCMCPlot_bothDirections <- ggplot(data.frame(a = 1)) +
   annotate("text",x = 7.15,y = 8,size = 4.5,label = "Fadul 1-2") +
   annotate("text",x = 7.2,y = 3.55,size = 4.5,label = "Fadul 1-1")
 
-ggsave("images/originalMethodCMCs.png",km_originalCMCPlot_bothDirections)
+ggsave("derivatives/originalMethodCMCs.png",km_originalCMCPlot_bothDirections,dpi = 300)
 ```
 
 \begin{Figure}
 \centering
-\includegraphics[width = \textwidth]{images/originalMethodCMCs.png} \captionof{figure}{\label{fig:topVoteCMCPlot} The first row shows the 17 CMCs when Fadul 1-1 is treated as the "reference" cartridge case to which Fadul 1-2 (the "target") is compared. The second row shows the 18 CMCs when the roles are reversed. Red cells indicate where cells \emph{not} identified as congruent achieve the maximum pairwise-complete correlation across all rotations of the target scan. It is not discussed in the CMC literature whether the results from both comparison directions are combined for the original method of \citet{song_proposed_2013}.}
+\includegraphics[width = \textwidth]{derivatives/originalMethodCMCs.png} \captionof{figure}{\label{fig:topVoteCMCPlot} The first row shows the 17 CMCs when Fadul 1-1 is treated as the "reference" cartridge case to which Fadul 1-2 (the "target") is compared. The second row shows the 18 CMCs when the roles are reversed. Red cells indicate where cells \emph{not} identified as congruent achieve the maximum pairwise-complete correlation across all rotations of the target scan. It is not discussed in the CMC literature whether the results from both comparison directions are combined for the original method of \citet{song_proposed_2013}.}
 \end{Figure}
 
 \subsubsection*{Ambiguities in algorithmic descriptions}\label{sec:ambiguities}
@@ -779,9 +755,9 @@ We can see that removing the trend during preprocessing yields considerably bett
 Conditional on this, choosing threshold $T_x, T_y \geq 15$, $T_\theta = 6$, and $T_{\text{CCF}} \in [.4,.5]$ yields the most promising variance ratios.
 %We can see that using the High CMC method on breech face scans for which the trend was removed yields better variance ratio values. 
 %Conditional on these settings, choosing thresholds \(T_x, T_y \in [15,20]\), \(T_\theta = 6\), and \(T_{\text{CCF}} \in [.4,5]\) yields the most promising variance ratios. 
-These are similar thresholds to those chosen in other CMC papers (see \autoref{fig:cmc_sensitivityScatter} in the Appendix for variance ratios for both $\theta = 3, 6$ degrees under both decision rules available in the \textbf{cmcR} package.)
+These are similar thresholds to those chosen in other CMC papers (see \autoref{fig:cmc_sensitivityScatter} in the Appendix for variance ratios for both $T_\theta = 3, 6$ degrees under both decision rules available in the \textbf{cmcR} package.)
 
-```{r, include = FALSE,cache = T}
+```{r, include = FALSE,cache = T,eval=FALSE}
 
 load("data/cmcCountData.RData")
 
@@ -818,41 +794,7 @@ plt <- cmcCountData %>%
                                  ticks.colour = "black",
                                  barheight = .4))
 
-ggsave(filename = "derivatives/varRatios.png",plot = plt,
-       width = 6.77,height = 6.77,units = "cm")
-
-# cmcCountData %>%
-#   mutate(trendRemoved = factor(trendRemoved,levels = c(TRUE,FALSE)),
-#          decisionRule = factor(decisionRule,levels = c("originalMethodCMCs","highCMCs"))) %>%
-#   filter(thetaThresh == 6 & decisionRule == "originalMethodCMCs") %>%
-#   ggplot(aes(x = transThresh,
-#              y = varRatio,
-#              colour = corThresh)) +
-#   geom_point(size = 1) +
-#   scale_colour_gradient(low = "#BDDBBD",
-#                         high = "#0F390F",
-#                         breaks = seq(.35,.6,by = .05)) +
-#   facet_grid(cols = vars(trendRemoved),
-#              labeller = labeller(decisionRule = c("High CMC","Original Method") %>% set_names(c("highCMCs","originalMethodCMCs")),
-#                                  thetaThresh = c("Theta Thresh.: 3","Theta Thresh.: 6") %>% setNames(c(3,6)),
-#                                  trendRemoved = c("Trend Removed","Trend Not Removed") %>% setNames(c(TRUE,FALSE)))) +
-#   xlab("Translation Threshold") +
-#   ylab("Variance Ratio") +
-#   theme_bw() +
-#   theme(legend.position = "bottom",
-#         axis.text = element_text(size = 5),
-#         axis.title = element_text(size = 7),
-#         legend.text = element_text(size = 5),
-#         legend.title = element_text(size = 6),
-#         strip.text.x =  element_text(size = 6),
-#         strip.text.y = element_text(size = 5)) +
-#   guides(colour = guide_colorbar(title = "CCF Threshold",
-#                                  barwidth =  8,
-#                                  title.hjust = -1,
-#                                  title.vjust = .95,
-#                                  frame.colour = "black",
-#                                  ticks.colour = "black",
-#                                  barheight = .4))
+ggsave(filename = "derivatives/varRatios.png",plot = plt,width = 6.77,height = 6.77,units = "cm",dpi = 300)
 ```
 
 \begin{Figure}
