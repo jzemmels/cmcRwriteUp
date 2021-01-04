@@ -79,26 +79,26 @@ published results may be numerically sensitive to the particular implementation 
 As such, peer-review and scientific progress in the truest sense requires that \emph{all} pre-processed data, code, and results be made openly available. 
 In recognition of the additional requirements of computational reproducibility,  some journals have adopted policies encouraging or requiring that authors provide code and data sufficient to reproduce the statistical analyses, with the goal of building a "culture of reproducibility" in their respective fields \citep{peng_reproducible_2009, peng_reproducible_2011, stodden_toward_2013}. 
 
-The fundamental reason that descriptions of data analysis procedures, combined with the raw data, are not sufficient for reproducibility is that published procedures are described in words rather than algorithmically,  and in some cases, steps are performed manually \citep{song_estimating_2018} without providing the resulting intermediary outcomes. If the written-language description of the method in the publication is the sole source of information about the algorithm, we trade computational reproducibility for readability. We generally do not describe the particular parameter settings used (or how those were derived) when we describe an algorithm in a publication. This is an understandable editorial decision, as the purpose of a publication is to demonstrate and justify the method rather than discuss the fine details and parameter settings. Because our publications generally do not contain sufficient detail to reproduce every part of the algorithm, it is necessary to supplement the paper with open code and intermediate forms of the data (after any manual steps have been performed or simply as check points for replications). Especially in applications like forensic science or medicine, where results from computational methods may directly affect an individual's life, transparency in how a method or algorithm is implemented is necessary \citep{angwin_machine_2016, cino_deploying_2018}.
+The fundamental reason that descriptions of data analysis procedures, combined with the raw data, are not sufficient for reproducibility is that published procedures are described in words rather than algorithmically,  and in some cases, steps are performed manually <!--\citep{song_estimating_2018}--> without providing the resulting intermediary outcomes. If the written-language description of the method in the publication is the sole source of information about the algorithm, we trade computational reproducibility for readability. We generally do not describe the particular parameter settings used (or how those were derived) when we describe an algorithm in a publication. This is an understandable editorial decision, as the purpose of a publication is to demonstrate and justify the method rather than discuss the fine details and parameter settings. Because publications generally do not contain sufficient detail to reproduce every part of the algorithm, it is necessary to supplement the paper with open code and intermediate forms of the data (after any manual steps have been performed or simply as check points for replications). Especially in applications like forensic science or medicine, where results from computational methods may directly affect an individual's life, transparency in how a method or algorithm is implemented is necessary \citep{angwin_machine_2016, cino_deploying_2018}.
 
 In this light, computational reproducibility  in forensic science, is all the more important because it fundamentally enables discussions about algorithmic transparency and accountability \citep{kwongAlgorithmSaysYou2017, desaiTrustVerifyGuide2017}. 
 Currently, subjective decisions are made by individual examiners -- human beings are the ultimate closed-source, black-box system, and the operations which lead to a decision are largely opaque. 
-There is a push to complement these subjective decisions with automatic algorithms that objectively assess evidence and can be explained during court testimony \citep{council_strengthening_2009}.
-While objectivity is a laudable goal, it is important that the community does not go only halfway, trading a subjective, human black box for objective, proprietary algorithms that are similarly opaque and unauditable.
-As part of the shift towards objectivity in forensic science, automatic methods have already been developed to solve problems such as identifying matching glass shards \citep{park2019}, handwriting \citep{crawford_handwriting_2020}, shoe prints \citep{park_algorithm_2020}, and ballistic evidence \citep{hare_automatic_2016,tai_fully_2018}. 
-While some researchers in the forensic science community have adopted computationally reproducible habits, many of the algorithms described in the literature are not reproducible or open-source.
+\hh{The \citet{council_strengthening_2009} has pushed to} complement these subjective decisions with automatic algorithms that objectively assess evidence and can be explained during court testimony.
+\hh{It furthermore} is \hh{of the utmost importantance} that the community does not go only halfway, trading a subjective, human black box for objective, proprietary algorithms that are similarly opaque and unauditable.
+As part of the shift towards objectivity in forensic science, automatic methods have  been developed to solve problems such as identifying matching glass shards \citep{park2019}, handwriting \citep{crawford_handwriting_2020}, shoe prints \citep{park_algorithm_2020}, and ballistic evidence \citep{hare_automatic_2016,tai_fully_2018}. 
+However, many of the algorithms described in the literature are not reproducible or open-source.
 In this paper, we will demonstrate the ambiguities present in textual descriptions of algorithms by creating an open-source implementation of one well-known automatic forensic identification method.
 The Congruent Matching Cells (CMC) algorithm was developed at the National Institute of Standards and Technology (NIST) in 2012 to perform firearm evidence identification using identifiable markings left on spent cartridge cases from a firearm's barrel \citep{song_proposed_2013}. 
 Since then, the method and its numerous extensions \citep{tong_improved_2015,chen_convergence_2017,song_estimating_2018} have shown promise in being able to differentiate between matching and non-matching cartridge cases. 
 While NIST researchers and collaborators have been able to build on the foundation of the original algorithm, the code and data necessary to reproduce the results have not been made available to external researchers.
-As a result, the findings described in these papers are not computationally reproducible for the research community at large.
+As a result, the findings described in those papers are not computationally reproducible for the research community at large.
 
 
 Here, we describe the process of implementing the Congruent Matching Cells (CMC) method for the comparison of marks on spent cartridge cases, using the descriptions from two published papers, \citet{song_3d_2014} and \citet{tong_improved_2015}. 
 Our R package \citep{R}, \pkg{cmcR}, provides an open-source implementation of the CMC method, but it also serves as an example of the implementation barriers which occur when translating textual descriptions of algorithms into detailed source code. 
 This process offers some insight into the necessary components which must be available for computational reproducibility. 
-Our experience shows that when faced with ambiguity in how a method is implemented, there are only few options available to us apart from performing a brute-force search through combinations of decisions that may have yielded the results reported. 
-Unsurprisingly, this process is both time absorbing and computationally intensive from implementation to sifting through a wide variety of decision combinations.
+Our experience shows that when faced with ambiguity in how a method is implemented, there are only few options available to us apart from performing  brute-force searches through combinations of decisions that may have yielded the results reported. 
+Unsurprisingly, the process is both time absorbing and computationally intensive from implementation to sifting through a wide variety of decision combinations.
 The failure to ensure computational reproducibility not only imposes a general barrier to scientific progress; in this application, it also highlights the crucial need of open-source, transparent methodology in high-stakes fields such as forensic analysis.
 
 <!-- \svp{XXX should we cite Fadul too, since it's the original source?}\hh{XXX yes, we should cite the original source} -->
@@ -149,6 +149,17 @@ purrr::walk2(.x = x3p_ids,
 ```
 
 
+\hh{XXX this section ended a bit abruptly - I pulled up the 'structure of the remainder of the paper' paragraph.}
+
+
+In the remainder of this paper, we \hh{first describe some of the background of forensic comparisons of breech face impressions, we then follow with a description of}  the implementation of a general CMC method which encompasses methods \hh{discussed} in \citet{song_proposed_2013}, \citet{song_3d_2014}, and \citet{tong_improved_2015}.
+\citet{song_proposed_2013} lays out the conceptual framework for the original CMC method  later implemented in \citet{song_3d_2014} and \cite{tong_fired_2014}. An improvement of the method presented in \citet{tong_improved_2015} and used in subsequent papers is referred to as the ``High CMC" method \citep{chen_convergence_2017}. Both implementations (and further proposed improvements) have been shown to correctly differentiate same and different-source cartridge cases from the \citet{fadul_empirical_nodate} data set.
+
+The \pkg{cmcR} package contains implementations designed for use with 3D topographical scans of the original method described in \citet{song_proposed_2013} and \citet{song_3d_2014} and the High CMC method described in \citet{tong_improved_2015}. The source code to the full `cmcR` package is accessible at https://github.com/CSAFE-ISU/cmcR.
+
+
+
+
 # Cartridge cases & breech face impressions {#cartridgeCases_bfImpressions}
 
 A \dfn{cartridge case} is the portion of firearm ammunition that encases a projectile (e.g., bullet, shots, or slug) along with the explosive used to propel the projectile through the firearm. 
@@ -156,20 +167,15 @@ When a firearm is discharged, the projectile is propelled down the barrel of the
 It strikes the back wall, known as the \dfn{breech face}, of the barrel with considerable force, thereby imprinting any markings on the breech face onto the cartridge case, creating the so-called \dfn{breech face impressions}.
 These markings have been suggested to be unique to a firearm and are used in forensic examinations to determine whether two cartridge cases have been fired by the same handgun.
 
-During a forensic examination, two pieces of ballistic evidence are  placed under a \dfn{comparison microscope}. Comparison microscopes allow for a side-by-side comparison of two objects within the same viewfinder, as seen in \ref{fig:ccPair_combined}. A pair of breech face images is aligned along the thin black line in the middle of the images. The degree to which these breech face markings align can be used to determine whether the two cartridge cases match; i.e., were fired from the same firearm. 
-These breech face impressions are considered to be analogous to a firearm's "fingerprint" left on a cartridge case \citep{firearm_id_thompson}.
+During a forensic examination, two pieces of ballistic evidence are  placed under a \dfn{comparison microscope}. Comparison microscopes allow for a side-by-side comparison of two objects within the same viewfinder, as seen in \ref{fig:ccPair_combined}. A pair of breech face images is aligned along the thin black line in the middle of the images. The degree to which these breech face markings \hh{can be aligned is} used to determine whether the two cartridge cases \hh{came from the same source}; i.e., were fired from the same firearm. 
+These breech face impressions are considered to be a firearm's unique "fingerprint" left on a cartridge case \citep{firearm_id_thompson}.
 
 ```{r ,echo=FALSE,fig.cap='\\label{fig:ccPair_combined} A cartridge case pair with visible breech face impressions under a microscrope.  A thin line can be seen separating the two views. The degree to which the markings coincide is used to conclude whether the pair comes from the same source.',fig.pos='htbp',out.width="\\textwidth"}
 knitr::include_graphics("images/cartridgeCasePair_comparison_with_line.PNG")
 ```
 
-\autoref{fig:ccPair_combined} is an example of an image coming from a comparison microscope used by firearms examiners in laboratory settings. Digital microscopy is capable of precision measurements of surface topology at even higher resolutions. Using a 3D microscope, we can obtain scans of breech face impressions at the micron level ($1 \mu m = 10^{-3} mm = 10^{-6} m$.) 
-These are the images used as input to automated comparison algorithms, such as the CMC method originally proposed in \citet{song_proposed_2013}.
-
-In the remainder of this paper, we describe the implementation of a general CMC method which encompasses methods described in \citet{song_proposed_2013}, \citet{song_3d_2014}, and \citet{tong_improved_2015}.
-\citet{song_proposed_2013} lays out the conceptual framework for the original CMC method  later implemented in \citet{song_3d_2014} and \cite{tong_fired_2014}. An improvement of the method presented in \citet{tong_improved_2015} and used in subsequent papers is referred to as the ``High CMC" method \citep{chen_convergence_2017}. Both implementations (and further proposed improvements) have been shown to correctly differentiate same and different-source cartridge cases from the \citet{fadul_empirical_nodate} data set.
-
-The \pkg{cmcR} package contains implementations designed for use with 3D topographical scans of the original method described in \citet{song_proposed_2013} and \citet{song_3d_2014} and the High CMC method described in \citet{tong_improved_2015}. The source code to the full `cmcR` package is accessible at https://github.com/CSAFE-ISU/cmcR.
+\autoref{fig:ccPair_combined} is an example of an image coming from a comparison microscope used by firearms examiners in laboratory settings. Digital microscopy is capable of precision measurements of surface topology at even higher resolutions. Using a 3D microscope, we can obtain scans of breech face impressions at the micron level ($1 \mu m = 10^{-3} mm = 10^{-6} m$). 
+These \hh{3d topological scans are} used as input to automated comparison algorithms, such as the CMC method originally proposed in \citet{song_proposed_2013}.
 
 
 # The CMC method {#cmcMethod}
@@ -178,7 +184,7 @@ The \pkg{cmcR} package contains implementations designed for use with 3D topogra
 In this section, we examine the process of implementing the CMC method for automatic comparisons of 3D cartridge case scans. 
 At each step, we will compare the description in the published papers with the implementation in code, discussing the gaps in the method description and how we filled in those gaps during the creation of `cmcR`.
 
-All of the CMC methods can be broken down into three broad stages: preprocessing, cell-based similarity feature extraction, and application of a decision rule as illustrated in \autoref{fig:overview-flow}.
+All of the CMC methods can be broken down into three broad stages: (1) preprocessing, (2) cell-based similarity feature extraction, and (3) application of a decision rule as illustrated in \autoref{fig:overview-flow}.
 In the following sections we break each of these stages further into a set of modular steps.
 One advantage of modularizing these algorithms is that we can implement an algorithm as a  set of sequential procedures.
 This allows us to then test new variations against the old implementation in a coherent, unified framework.
@@ -201,7 +207,7 @@ Then, we examine the implementation of each sub-procedure in the \pkg{cmcR} pack
 
 
 ## Initial Data {#initialData}
-Cartridge case scans are commonly stored in the ISO standard x3p file format \citep{ISO25178-72}. An x3p consists of a single surface matrix representing the height value of the breech face surface and metadata concerning the parameters under which the scan was taken (size, resolution, creator, microscope, and microscopy software versions etc.). The \pkg{x3ptools} package \citep{x3ptools} can be used to work with these x3p files in R.
+Cartridge case scans are commonly stored in the ISO standard x3p file format \citep{ISO25178-72}.  x3p is a \hh{container format which} consists of a single surface matrix representing the height value of the breech face surface and metadata concerning the parameters under which the scan was taken (size, resolution, creator, microscope, and microscopy software versions etc.). The \pkg{x3ptools} package \citep{x3ptools} \hh{provides elementary functionality to work with the format in R}.
 
 <!-- \hh{XXXX x3p is a standard file format - we could cite both the ISO site and x3ptools as a way to work with them.} -->
 \autoref{fig:cartridgeCasePair} shows the surface matrices of a known match (KM) pair of cartridge cases from a study by \citet{fadul_empirical_nodate}. 
