@@ -149,8 +149,6 @@ purrr::walk2(.x = x3p_ids,
 ```
 
 
-\hh{XXX this section ended a bit abruptly - I pulled up the 'structure of the remainder of the paper' paragraph.}
-
 
 In the remainder of this paper, we \hh{first describe some of the background of forensic comparisons of breech face impressions, we then follow with a description of}  the implementation of a general CMC method which encompasses methods \hh{discussed} in \citet{song_proposed_2013}, \citet{song_3d_2014}, and \citet{tong_improved_2015}.
 \citet{song_proposed_2013} lays out the conceptual framework for the original CMC method  later implemented in \citet{song_3d_2014} and \cite{tong_fired_2014}. An improvement of the method presented in \citet{tong_improved_2015} and used in subsequent papers is referred to as the ``High CMC" method \citep{chen_convergence_2017}. Both implementations (and further proposed improvements) have been shown to correctly differentiate same and different-source cartridge cases from the \citet{fadul_empirical_nodate} data set.
@@ -301,7 +299,7 @@ knitr::include_graphics(c("derivatives/fadul1-1.png","derivatives/fadul1-2.png")
 ```
 
 Only certain regions of a cartridge case contain identifying breech face impression markings. 
-\citet{song_proposed_2013} refers to these as "valid correlation regions" that are used to determine whether two cartridge cases match. 
+\citet{song_proposed_2013} refers to these as "valid correlation regions" that are used to determine whether two cartridge cases match. \hh{XXX how are these valid correlation regions defined? If they are not defined in detail, we should remark on that.}
 Prior to applying the CMC comparison procedure, cartridge scans must undergo some preprocessing to remove sections of the cartridge case surface that do not come into contact with the breech face of the barrel.
 
 ```{r load-data, include = F, cache = T}
@@ -393,7 +391,9 @@ bind_rows(kmComparison_cmcs,
 
 <!-- First, raw 3D topographical cartridge case surface data need to be processed before applying the CMC method.  -->
 
-During the preprocessing stage, several sequential steps are used to prepare each cartridge case for analysis.  The goal of this process is to remove the edges and center of the scan which did not come into contact with the breech face, as well as any artifacts of the scan and microscope staging which do not accurately represent the breech face surface.
+During the preprocessing stage, \hh{a series of} sequential steps is used to prepare each cartridge case for analysis.  The goal of this process is to remove the edges and center of the scan which did not come into contact with \hh{XXX  a minimal (specify a number?) amount of}  the breech face, as well as any artifacts of the scan and microscope staging which do not accurately represent the breech face surface.
+
+
 The different iterations of the CMC algorithm describe  different variations of these steps.
 A summary of these steps is shown in \autoref{fig:preprocessing-schematic}.
 
@@ -403,7 +403,7 @@ A summary of these steps is shown in \autoref{fig:preprocessing-schematic}.
 \caption{Overview of the set of pre-processing steps used in the CMC algorithms. Where a procedure step is not discussed or explicitly not applied in the paper, the path traverses empty space.}\label{fig:preprocessing-schematic}
 \end{figure}
 
-The implementation in \citet{tong_fired_2014} describes the preprocessing steps as:
+The implementation in \citet{tong_fired_2014} describes the preprocessing steps \hh{(for the 2d images)} as:
 
 >  After trimming processing [sic] to remove unrelated correlations areas, the final image size is reduced to 700 × 700 pixel with an estimated pixel spacing of 5.0 $\mu$m. A Gaussian smoothing filter (standard deviation $\sigma$ = 1) was implemented first to remove high frequency noise.
 
