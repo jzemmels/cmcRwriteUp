@@ -418,7 +418,7 @@ Complicating the issue \hh{of preprocessing the scans}, the procedures used to p
 While not explicitly mentioned in \citet{song_3d_2014}, \citet{song_estimating_2018} indicates that the "trimming" of the unwanted regions of the scan is performed manually. 
 No further information is given in the paper describing what criteria were used for this process; nor are the trimmed scans provided as intermediate data to make reproducibility possible. 
 
-It is also unclear how the dropouts and outliers are "removed" from the scan or how outliers are defined; many different methods for outlier detection and removal are used in surface metrology \citep{outlierdetection}. Most of these algorithms require the user to select thresholds or parameters; thus, without any details about how the outlier detection process was implemented, this portion of the paper is not reproducible.
+It is also unclear how the dropouts and outliers are "removed" from the scan or \hh{even} how outliers are defined; many different methods for outlier detection and removal are used in surface metrology \citep{outlierdetection}. Most of these algorithms require the user to select thresholds or parameters; thus, without any details about how the outlier detection process was implemented, this portion of the paper is not reproducible.
 
 We are not aware of an open-source implementation of the multivariate band-pass Gaussian regression filter used in surface metrology \citep{ISO16610-71}. 
 Further, there are various parameters requiring specification to implement a Gaussian regression filter and it is not clear how these parameters were chosen \citep{brinkman_bodschwinna_2003}.
@@ -428,9 +428,9 @@ As a result of these ambiguities, during our implementation of the preprocessing
 ### Implementation of preprocessing procedures
 
 <!-- \hh{XXX Joe, avoid passive voice when you are describing what you did. You need to emphasize that this is your work} -->
-\jz{The preprocessing procedures are implemented via the modularized functions of the form \code{preProcess\_*}.
-Modularizing the steps of the preprocessing procedures renders the overall preprocessing stage easier to understand and more conducive to experimentation.
-\autoref{fig:processingPipeline} shows how the \code{preProcess\_*} functions affect the surface matrix values of the Fadul 1-1 scan.}
+The preprocessing procedures are implemented via the modularized functions of the form \code{preProcess\_*}.
+Modularizing the steps of the preprocessing procedures renders the overall preprocessing stage easier to understand and \hh{allows for} experimentation.
+\autoref{fig:processingPipeline} shows how the \code{preProcess\_*} functions affect the surface matrix values of the Fadul 1-1 scan.
 
 ```{r cache=FALSE, include=F}
 fadul1.1_original <- x3ptools::x3p_read("data/fadul1-1.x3p")
@@ -500,36 +500,38 @@ gridExtra::grid.arrange(preProcessingPlot$`(1) Original`,
                         widths = unit(c(1,1,1,1),units = "null"))
 ```
 
-\jz{We demonstrate usage of the \code{preProcess\_*} functions on the Fadul 1-1 scan. 
-Following each code chunk is an explanation of the functions used.}
+We demonstrate usage of the \code{preProcess\_*} functions on the Fadul 1-1 scan. 
+Each code chunk is followed up with an explanation of the functions used.
 
 ```{r, echo=TRUE,eval=FALSE}
 fadul1.1 <- x3ptools::x3p_read("data/fadul1-1.x3p")
 ```
 
-\svp{We begin with a 3D scan, which is optionally downsampled. 
-Typically, in the CMC literature,} every other row and column in the surface matrix \svp{is retained}, resulting in a matrix that is approximately 25% of the original scan dimension. 
-This downsampling is performed using the \code{x3p\_sample} function from the \pkg{x3ptools} package (default is every other row and column). 
-Step (1) in \autoref{fig:processingPipeline} shows an \jz{unprocessed breech face scan.} 
+We begin with a 3D scan, which is optionally downsampled. 
+Typically, in the CMC literature, every other row and column in the surface matrix is retained, resulting in a matrix that is approximately 25% of the original scan dimension. 
+This downsampling is performed using the \code{x3p\_sample} function from the \pkg{x3ptools} package (default is every other row and column). \hh{XXX what is the resolution at that point?}
+Step (1) in \autoref{fig:processingPipeline} shows an unprocessed breech face scan.
 
 <!-- \hh{XXX can we get away from the surface matrix and call it a breech face scan? That's gettign away from how it's implemented towards what it is.} -->
 
 <!-- \hh{XXX minor thing, but let's call the things exactly how they are defined. It's not Step 1, its (1) in Figure 5.} -->
 
 ```{r, echo=TRUE,eval=FALSE}
+# Step (2)
 fadul1.1_cropped <- fadul1.1%>%
   cmcR::preProcess_crop(region = "exterior") %>%
   cmcR::preProcess_crop(region = "interior")
 ```
 
-\jz{After reading in the breech face scan, three major regions of the scan are identified via a labeling algorithm described in \citet{hesselink_concurrent_2001} and available in the \pkg{imager} package \citep{imager}. 
-These regions are the exterior of the cartridge case primer, the breech face impression region, and the firing pin impression hole in the center of the scan. 
+Three major regions of the scan are identified as described in \citet{hesselink_concurrent_2001} and available in the \pkg{imager} package \citep{imager}. 
+These regions are the \hh{circle capturing the} exterior of the cartridge case primer, the breech face impression region, and the \hh{circle around the} firing pin impression hole in the center of the scan. 
+
 The goal is to isolate the breech face impression region by removing (i.e., replacing with \code{NA}) the pixels in the other two regions.
 Upon labeling the different regions of the cartridge case scan, the centers and radii of the cartridge case primer and firing pin impression hole are estimated. 
 This estimation procedure may require some user input depending on how much of the exterior/interior the user wants removed.
 The resulting breech face scan, like the one shown in step (2) of \autoref{fig:processingPipeline}, is reproducible assuming the same user-specified settings are used (if they are used at all).
-This is in contrast to the non-reproducible, manual procedure referenced in other CMC papers to isolate the breech face impression region.
-The \code{preProcess\_crop} function removes the exterior and firing pin impression region on the interior based on the \code{region} argument.}
+<!--This is in contrast to the non-reproducible, manual procedure referenced in other CMC papers to isolate the breech face impression region.-->
+The \code{preProcess\_crop} function removes the exterior and firing pin impression region on the interior based on the \code{region} argument.
 
 ```{r, echo=TRUE,eval=FALSE}
 fadul1.1_deTrended <- fadul1.1_cropped %>%
@@ -539,13 +541,13 @@ fadul1.1_deTrended <- fadul1.1_cropped %>%
 ```
 
 
-We then remove any large-scale trend that exists in the breech face scan height values. In \jz{steps (1) and (2) of \autoref{fig:processingPipeline}} \svp{it is clear that there is a} \jz{southwest-to-northeast trend in height values. 
-Such a trend is observable in many cartridge case scans, yet does not occur consistently across cartridge cases fired from the same firearm. 
-Instead, a trend in the height values could be an artifact of the scanning process where cartridge cases are not precisely, horizontally leveled prior to taking the scan.}
+\hh{In Step 3} any existing large-scale trend  in the breech face scan height values \hh{are removed}. In steps (1) and (2) of \autoref{fig:processingPipeline} it is clear that there is a southwest-to-northeast trend in height values. 
+Such a trend is observable in many cartridge case scans, yet does not occur consistently across cartridge cases fired from the same firearm. \hh{This indicates that a trend in height values is  likely to be an} 
+ artifact of the scanning process \hh{resulting from }  cartridge cases  not being precisely, horizontally leveled prior to taking the scan.
 <!-- (XXX should we cite something about scanning SOP here? XXX).  -->
-\jz{Neglecting to remove such trends leads to very different results based on our implementation. 
-For example, two different-source cartridge cases with similar trends might be incorrectly deemed "congruent." }
-\svp{\jz{For authors that use something other than a Gaussian regression filter, i}t is unclear how such trends in height values are dealt with; certainly, a high-pass Gaussian filter will remove some structure, but it is not explicitly mentioned whether any leveling is performed manually as well.} The \code{preProcess\_removeTrend} functions levels the breech face impression regions obtained from step (2). The function estimates and subtracts the conditional median via the \code{rq} function of the \pkg{quantreg} package \citep{quantreg}. Step (3) of \autoref{fig:processingPipeline} shows a median-leveled breech face scan.
+Neglecting to remove these trends leads to very different results based on our implementation. 
+\hh{In an extreme situation,} two different-source cartridge cases with similar trends might be incorrectly deemed "congruent." 
+For authors that use something other than a Gaussian regression filter, it is unclear how such trends in height values are dealt with; certainly, a high-pass Gaussian filter will remove some structure, but \hh{XXX which papers?} do not explicitly mentioned whether any leveling is performed manually as well. The \code{preProcess\_removeTrend} functions levels the breech face impression regions obtained from step (2). The function estimates and subtracts the conditional median via \hh{a quantile regression as implemented in} the \code{rq} function of the \pkg{quantreg} package \citep{quantreg}. Step (3) of \autoref{fig:processingPipeline} shows a median-leveled breech face scan.
 
 ```{r, echo=TRUE,eval=FALSE}
 fadul1.1_processed <- fadul1.1_deTrended %>%
