@@ -561,18 +561,18 @@ fadul1.1_processed <- fadul1.1_deTrended %>%
 
 
 In the final preprocessing step, a band-pass filter is applied to the processed breech face scan to reduce the effects of undesired frequencies in the comparison procedure. 
-For example, low frequency (high wavelength) global structure may exist in a cartridge case scan due to manufacturing specifications. In forensics, this type of structure is referred to as a class characteristic -- it is shared by many objects of the same make and model.
-Such similarities are often used by forensic practitioners to initially pare down the possible pool of matching cartridge cases \citep{firearm_id_thompson}.
-While this additional global structure may assist with matching cartridge cases, it may also artificially inflate the probability of making a false-positive identification. 
-The goal of this analysis is to match scans based on individualizing characteristics, and so we remove the global structure using a high-pass Gaussian filter. Similarly, high frequency (low wavelength) noise and outliers persist in cartridge case scans due to, for example, imperfections in the scanning process. 
-Such observations may also reduce the accuracy of our identifications. 
-Their effects can be mitigated by applying a low-pass Gaussian filter that operates as a local, moving average. 
-A band-pass Gaussian filter combines the effects of low and high-pass filters; we have chosen to implement it by applying a low pass filter and a high pass filter consecutively. 
+For example, low frequency (high wavelength) global structure may exist in a cartridge case scan due to manufacturing specifications. In forensics, this type of structure is referred to as a class \hh{or subclass} characteristic -- it is shared by many objects of the same make and model. \hh{Class characteristics are}
+ used by forensic practitioners to initially pare down the possible pool of matching cartridge cases \citep{firearm_id_thompson}. 
+While this additional global structure may assist with matching cartridge cases, it can also artificially inflate the probability of making a false-positive identification. 
+The goal of \hh{comparing breech-face scans is to answer the question of source. Same-sourceness can only be determined by matching individual} characteristics,  so the global structure \hh{is removed by} using a high-pass Gaussian filter. Similarly, \hh{a low-pass filter is used to remove} noise and outliers from cartridge case scans due to, for example, imperfections in the scanning process. 
+<!--Such observations may also reduce the accuracy of our identifications. 
+Their effects can be mitigated by applying a low-pass Gaussian filter that operates as a local, moving average. -->
+A band-pass Gaussian filter combines the effects of low and high-pass filters; \hh{this is the default choice in `cmcR`}. 
 <!-- \jz{and can be implemented} \svp{by applying the filters consecutively} \citep{gauss_filter_source} \jz{XXX I only say "can be" to emphasize that we chose one of the commonly agreed-upon ways to implement a band-pass filter XXX}.  -->
-There is considerable variation in the filters applied in the CMC literature; initially, low-pass and Gaussian band-pass regression filters were used, but the most recent papers use a band-pass filter.
+<!--There is considerable variation in the filters applied in the CMC literature; initially, low-pass and Gaussian band-pass regression filters were used, but the most recent papers use a band-pass filter.
 The current implementation for the low-pass filter involves constructing a Gaussian kernel based on a user-specified wavelength to attenuate and convolving the kernel with the breech face scan in the frequency domain \citep{computerVision}. 
 \hh{XXX the next sentence needs some work: 'a particular wavelength' is oddly specific - is it any particular wavelength? Can we find a replacement for 'subtracting-away'? Do we need the sentence at all? XXX}
-A high-pass filter of a particular wavelength is applied by subtracting-away the complementary low-pass filtered breech face scan. 
+A high-pass filter of a particular wavelength is applied by subtracting-away the complementary low-pass filtered breech face scan. -->
 The band-pass filtered breech face scan as returned by the \code{preProcess\_gaussFilter} function is shown in the fourth panel of \autoref{fig:processingPipeline}.
 <!-- (\code{filterType = "bp"} and \code{wavelength = c(16,500)} default). -->
 
