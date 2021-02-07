@@ -298,9 +298,10 @@ rgl.close()
 knitr::include_graphics(c("derivatives/fadul1-1.png","derivatives/fadul1-2.png"))
 ```
 
-Only certain regions of a cartridge case contain identifying breech face impression markings. 
-\citet{song_proposed_2013} refers to these as "valid correlation regions" that are used to determine whether two cartridge cases match. \hh{XXX how are these valid correlation regions defined? If they are not defined in detail, we should remark on that.}
-Prior to applying the CMC comparison procedure, cartridge scans must undergo some preprocessing to remove sections of the cartridge case surface that do not come into contact with the breech face of the barrel.
+Only certain regions of a cartridge case contain identifying breech face impression markings.
+\citet{song_proposed_2013} defines "valid correlation regions" as regions where "the individual characteristics of the ballistics signature are found that can be used effectively for ballistics identification."
+<!-- \hh{XXX how are these valid correlation regions defined? If they are not defined in detail, we should remark on that.} -->
+Prior to applying the CMC comparison procedure, cartridge scans must undergo some preprocessing to \jz{emphasize these valid correlation regions}.
 
 ```{r load-data, include = F, cache = T}
 
@@ -510,7 +511,9 @@ fadul1.1 <- x3ptools::x3p_read("data/fadul1-1.x3p")
 
 We begin with a 3D scan, which is optionally downsampled. 
 Typically, in the CMC literature, every other row and column in the surface matrix is retained, resulting in a matrix that is approximately 25% of the original scan dimension. 
-This downsampling is performed using the \code{x3p\_sample} function from the \pkg{x3ptools} package (default is every other row and column). \hh{XXX what is the resolution at that point?}
+This downsampling is performed using the \code{x3p\_sample} function from the \pkg{x3ptools} package (default is every other row and column).
+\jz{The \citet{fadul_empirical_nodate} were initially scanned at a resolution of 3.125 $\mu$m per pixel, so downsampling reduces the resolution to 6.25 $\mu$m per pixel.}
+<!-- \hh{XXX what is the resolution at that point?} -->
 Step (1) in \autoref{fig:processingPipeline} shows an unprocessed breech face scan.
 
 <!-- \hh{XXX can we get away from the surface matrix and call it a breech face scan? That's gettign away from how it's implemented towards what it is.} -->
@@ -549,7 +552,9 @@ Such a trend is observable in many cartridge case scans, yet does not occur cons
 <!-- (XXX should we cite something about scanning SOP here? XXX).  -->
 Neglecting to remove these trends leads to very different results based on our implementation. 
 \hh{In an extreme situation,} two different-source cartridge cases with similar trends might be incorrectly deemed "congruent." 
-For authors that use something other than a Gaussian regression filter, it is unclear how such trends in height values are dealt with; certainly, a high-pass Gaussian filter will remove some structure, but \hh{XXX which papers?} do not explicitly mentioned whether any leveling is performed manually as well. The \code{preProcess\_removeTrend} functions levels the breech face impression regions obtained from step (2). The function estimates and subtracts the conditional median via \hh{a quantile regression as implemented in} the \code{rq} function of the \pkg{quantreg} package \citep{quantreg}. Step (3) of \autoref{fig:processingPipeline} shows a median-leveled breech face scan.
+For authors that use something other than a Gaussian regression filter, it is unclear how such trends in height values are dealt with; certainly, a high-pass Gaussian filter will remove some structure, but \jz{it is not discussed in the CMC literature}
+<!-- \hh{XXX which papers?} -->
+whether any leveling is performed manually as well. The \code{preProcess\_removeTrend} functions levels the breech face impression regions obtained from step (2). The function estimates and subtracts the conditional median via \hh{a quantile regression as implemented in} the \code{rq} function of the \pkg{quantreg} package \citep{quantreg}. Step (3) of \autoref{fig:processingPipeline} shows a median-leveled breech face scan.
 
 ```{r, echo=TRUE,eval=FALSE}
 # Step (4)
