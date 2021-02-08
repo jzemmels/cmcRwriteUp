@@ -588,10 +588,10 @@ The band-pass filtered breech face scan as returned by the \code{preProcess\_gau
 <!-- In order to perform the comparison procedure, \code{NA}-valued pixels must be replaced with a non-\code{NA} value.  -->
 <!-- The convention adopted in the \pkg{cmcR} package is to use the average pixel value as a replacement.  -->
 <!-- \svp{XXX Do we know that they did or did not use a similar consensus in the CMC method? XXX} \jz{XXX No, we don't XXX} -->
-There is currently no determination or removal of outliers in the \pkg{cmcR} package's preprocessing procedures, \svp{in part because the CMC literature contains limited details on outlier removal. We instead rely on the low-pass portion of the Gaussian filter to reduce the effects of any high-frequency noise.}
+There is currently no determination or removal of outliers in the \pkg{cmcR} package's preprocessing procedures, in part because the CMC literature contains limited details on outlier removal. We instead rely on the low-pass portion of the Gaussian filter to reduce the effects of any high-frequency noise.
 
 <!-- To illustrate the usage of the \pkg{cmcR} package, we will consider a comparison between the KM cartridge case pair shown in \autoref{fig:cartridgeCasePair}. -->
-\jz{\autoref{fig:processedScans} displays the processed Fadul 1-1 and Fadul 1-2 scans}; \svp{the second matrix is processed using the same function arguments}. \jz{Similarity features are extracted from a processed cartridge case pair in the cell-based comparison procedure.}
+\autoref{fig:processedScans} displays the processed Fadul 1-1 and Fadul 1-2 scans; the second matrix is processed using the same parameters. Similarity features are extracted from a processed cartridge case pair in the cell-based comparison procedure.
 
 <!-- \svp{XXX Joe - please parenthetically indicate each argument name in the text above, along with its default value XXX} -->
 
