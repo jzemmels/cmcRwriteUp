@@ -303,7 +303,7 @@ knitr::include_graphics(c("derivatives/fadul1-1.png","derivatives/fadul1-2.png")
 Only certain regions of a cartridge case contain identifying breech face impression markings.
 \citet{song_proposed_2013} defines "valid correlation regions" as regions where "the individual characteristics of the ballistics signature are found that can be used effectively for ballistics identification."
 <!-- \hh{XXX how are these valid correlation regions defined? If they are not defined in detail, we should remark on that.} -->
-Prior to applying the CMC comparison procedure, cartridge scans must undergo some preprocessing to \jz{emphasize these valid correlation regions}.
+Prior to applying the CMC comparison procedure, cartridge scans must undergo some preprocessing to \hh{identify} these valid correlation regions.
 
 ```{r load-data, include = F, cache = T}
 
@@ -628,7 +628,7 @@ Instead,-->
 \hh{These cells are compared individually to their best-matching counterpart on the other scan.} If a large \svp{proportion} of these correlation cells are highly similar to \hh{their counterparts on}  the other breech face scan, \hh{this is considered as} evidence that the \hh{markings on the} two cartridge cases \hh{were made by the same source}. \hh{The number of highly similar cells is defined as the }
  \dfn{CMC count} \citep{song_proposed_2013} \hh{of the breech-face comparison}. \hh{The CMC count is considered to be a more} \svp{robust} similarity metric \hh{than a cross-correlation score based on} the entire cartridge case.
 
-```{r, echo=FALSE,fig.cap='\\label{fig:cmc_illustration} Illustration of comparing a "cell" in the reference cartridge case scan (left) to a larger region in a questioned cartridge case scan (right). Every \\hh{one of the} cells in the reference cartridge case is similarly paired with a region in the questioned \\hh{cartridge case}.  To determine the rotation at which the two cartridge cases align, the cell/region pairs are compared for various rotations of the questioned cartridge case.',fig.align='center',fig.pos='htbp',out.width='.75\\textwidth'}
+```{r, echo=FALSE,fig.cap='\\label{fig:cmc_illustration} Illustration of comparing a cell in the reference cartridge case scan (left) to a larger region in a questioned cartridge case scan (right). Every \\hh{one of the} cells in the reference cartridge case is similarly paired with a region in the questioned \\hh{cartridge case}.  To determine the rotation at which the two cartridge cases align, the cell/region pairs are compared for various rotations of the questioned cartridge case.',fig.align='center',fig.pos='htbp',out.width='.75\\textwidth'}
 
 knitr::include_graphics("images/cmc_illustration.PNG")
 ```
@@ -645,12 +645,12 @@ The cell size (and thus, the corresponding number of cells) is optimized experim
 
 \begin{figure}
 \includegraphics[width=\textwidth]{images/cmc_flow.png}
-\caption{Each CMC implementation uses slightly different procedures to obtain a similarity score between two cartridge cases. Steps which are implemented with additional user-specified parameters are shaded purple; steps which are described but without sufficient detail are shaded grey.}\label{fig:cmc-schematic}
+\caption{Each CMC implementation uses a slightly different procedure to obtain a similarity score between two cartridge cases. Steps which are implemented with additional user-specified parameters are shaded purple; steps which are described but without sufficient detail are shaded grey.}\label{fig:cmc-schematic}
 \end{figure}
 
-\svp{\autoref{fig:cmc-schematic} shows the steps of the correlation cell comparison process in each of the papers as well as the \pkg{cmcR} implementation.} Each cell is paired with an associated larger region in the other scan. 
+\autoref{fig:cmc-schematic} shows the steps of the correlation cell comparison process in each of the papers as well as the \pkg{cmcR} implementation. Each cell is paired with an associated larger region in the other scan. 
 The absolute location of each cell and region in their respective surface matrices remain constant. 
-However, the scan on the right is rotated to determine the rotation at which the two scans are the most "similar," which is quantified using the \dfn{cross-correlation function} (CCF). 
+However, the scan on the right is rotated to determine the rotation at which the two scans are the most "similar", as quantified by the \dfn{cross-correlation function} (CCF). 
 
 For two real-valued, $M \times N$ matrices $A$ and $B$, the cross-correlation function, denoted $(A \star B)$ can be defined as
 $$
