@@ -855,12 +855,14 @@ Let $x_i, y_i, \theta_i$ denote the translation and rotation parameters which pr
 \item CCF$_{\max,i} \geq T_{\text{CCF}}$.
 \end{enumerate}
 
-\hh{XXX note for the conclusion: how are these thresholds determined? Rather than using pre-set cutoffs, a joint density of the parameters could be determined and used in the assessment of similarity. XXX}
-
 \citet{song_3d_2014} indicate that these thresholds need to be determined experimentally. 
 There is little consensus on an optimal set of thresholds and no discussion of the sensitivity of proposed methods to different threshold choices across CMC papers.
-\jz{As such, there is little known about the effectiveness of the any CMC method to "out-of-bag" samples.
-\autoref{tab:thresholdTable} summarizes the thresholds used in various CMC papers.}
+As such, there is little known about the effectiveness of the any CMC method to "out-of-bag" samples.
+
+\hh{XXX Note for the conclusion: Rather than using these rather heuristic and pre-set cutoffs, a joint density of the parameters could be determined and used in the assessment of similarity. XXX}
+
+
+\autoref{tab:thresholdTable} summarizes the thresholds used in various CMC papers.
 
 \begin{table}[ht]
     \centering
@@ -869,17 +871,17 @@ There is little consensus on an optimal set of thresholds and no discussion of t
         Paper & Translation (pix.) & Rotation (deg.) & CCF$_{\max}$ \\
         \hline
         \cellcolor{lightgray}{\citet{song_3d_2014}} & \cellcolor{lightgray}{20} & 
-        \cellcolor{lightgray}{6} & \cellcolor{lightgray}{.6} \\
+        \cellcolor{lightgray}{6} & \cellcolor{lightgray}{.60} \\
         
         \citet{tong_fired_2014} & 30 & 3 & .25 \\
         
         \cellcolor{lightgray}{\citet{tong_improved_2015}} & \cellcolor{lightgray}{15} & 
         \cellcolor{lightgray}{3} & \cellcolor{lightgray}{.55} \\
         
-        \citet{chen_convergence_2017} & 20 & 3 & .4 \\
+        \citet{chen_convergence_2017} & 20 & 3 & .40 \\
         
         \cellcolor{lightgray}{\citet{song_estimating_2018}} & \cellcolor{lightgray}{20} & 
-        \cellcolor{lightgray}{6} & \cellcolor{lightgray}{.5}\\
+        \cellcolor{lightgray}{6} & \cellcolor{lightgray}{.50}\\
         \hline
     \end{tabular}
     \caption{Each CMC implementation uses slightly different translation, rotation, and CCF$_{\max}$ thresholds to classify matches. There is currently no principled approach to determining these thresholds. Instead, thresholds seem to be chosen by authors through experimentation and selecting thresholds that provide promising results.}
