@@ -153,7 +153,7 @@ purrr::walk2(.x = x3p_ids,
 In the remainder of this paper, we \hh{first describe some of the background of forensic comparisons of breech face impressions, we then follow with a description of}  the implementation of a general CMC method which encompasses methods \hh{discussed} in \citet{song_proposed_2013}, \citet{song_3d_2014}, and \citet{tong_improved_2015}.
 \citet{song_proposed_2013} lays out the conceptual framework for the original CMC method  later implemented in \citet{song_3d_2014} and \cite{tong_fired_2014}. An improvement of the method presented in \citet{tong_improved_2015} and used in subsequent papers is referred to as the ``High CMC" method \citep{chen_convergence_2017}. Both implementations (and further proposed improvements) have been shown to correctly differentiate same and different-source cartridge cases from the \citet{fadul_empirical_nodate} data set.
 
-The \pkg{cmcR} package contains implementations designed for use with 3D topographical scans of the original method described in \citet{song_proposed_2013} and \citet{song_3d_2014} and the High CMC method described in \citet{tong_improved_2015}. The source code to the full `cmcR` package is accessible at https://github.com/CSAFE-ISU/cmcR.
+The \pkg{cmcR} package contains implementations designed for use with 3D topographical scans of the original method described in \citet{song_proposed_2013} and \citet{song_3d_2014} and the High CMC method described in \citet{tong_improved_2015}. The source code to the full \pkg{cmcR} package is accessible at https://github.com/CSAFE-ISU/cmcR.
 
 
 
@@ -180,7 +180,7 @@ These \hh{3d topological scans are} used as input to automated comparison algori
 
 <!-- Transition -->
 In this section, we examine the process of implementing the CMC method for automatic comparisons of 3D cartridge case scans. 
-At each step, we will compare the description in the published papers with the implementation in code, discussing the gaps in the method description and how we filled in those gaps during the creation of `cmcR`.
+At each step, we will compare the description in the published papers with the implementation in code, discussing the gaps in the method description and how we filled in those gaps during the creation of \pkg{cmcR}.
 
 All of the CMC methods can be broken down into three broad stages: (1) preprocessing, (2) cell-based similarity feature extraction, and (3) application of a decision rule as illustrated in \autoref{fig:overview-flow}.
 In the following sections we break each of these stages further into a set of modular steps.
@@ -572,7 +572,7 @@ While this additional global structure may assist with matching cartridge cases,
 The goal of \hh{comparing breech-face scans is to answer the question of source. Same-sourceness can only be determined by matching individual} characteristics,  so the global structure \hh{is removed by} using a high-pass Gaussian filter. Similarly, \hh{a low-pass filter is used to remove} noise and outliers from cartridge case scans due to, for example, imperfections in the scanning process. 
 <!--Such observations may also reduce the accuracy of our identifications. 
 Their effects can be mitigated by applying a low-pass Gaussian filter that operates as a local, moving average. -->
-A band-pass Gaussian filter combines the effects of low and high-pass filters; \hh{this is the default choice in `cmcR`}. 
+A band-pass Gaussian filter combines the effects of low and high-pass filters; \hh{this is the default choice in \pkg{cmcR}}. 
 <!-- \jz{and can be implemented} \svp{by applying the filters consecutively} \citep{gauss_filter_source} \jz{XXX I only say "can be" to emphasize that we chose one of the commonly agreed-upon ways to implement a band-pass filter XXX}.  -->
 <!--There is considerable variation in the filters applied in the CMC literature; initially, low-pass and Gaussian band-pass regression filters were used, but the most recent papers use a band-pass filter.
 The current implementation for the low-pass filter involves constructing a Gaussian kernel based on a user-specified wavelength to attenuate and convolving the kernel with the breech face scan in the frequency domain \citep{computerVision}. 
