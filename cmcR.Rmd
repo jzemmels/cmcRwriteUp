@@ -22,19 +22,21 @@ author:
 abstract: > 
   Scientific research is driven by our ability to use existing methods, procedures, and materials from previous studies and further this research by adding to it. As the need for computationally-intensive methods to analyze large amount of data grows, the criteria needed to achieve reproducibility, specifically computational reproducibility, have become more sophisticated. In general, prosaic descriptions of algorithms, are not detailed or precise enough to ensure a complete reproducibility of a method. Results may be sensitive to conditions not commonly specified in written-word descriptions such as implicit parameter settings or the programming language used. To achieve true computational reproducibility, it is necessary to provide all intermediate data and code used to produce published results. In this paper, we consider a class of algorithms developed at the National Institute of Standards and Technology (NIST) to perform firearm evidence identification on cartridge case evidence known as the \dfn{Congruent Matching Cells} (CMC) methods. To date, only textual descriptions of these algorithms have been published. We introduce the first open-source implementation of the Congruent Matching Cells methods in the R package \pkg{cmcR} and use it to illustrate problems that arise when only computationally ambiguous descriptions of algorithms are provided.
 preamble: | 
+  \usepackage[table]{xcolor}
   \usepackage[utf8]{inputenc}
   \usepackage[T1]{fontenc}
   \usepackage{amsmath,amssymb,array}
   \usepackage{booktabs}
   \usepackage{subfig}
   \usepackage{nameref}
-  \usepackage{color}
 output: rticles::rjournal_article
 ---
 
 \newcommand{\hh}[1]{{\textcolor{orange}{#1}}}
 \newcommand{\svp}[1]{{\textcolor{blue}{#1}}}
 \newcommand{\jz}[1]{{\textcolor{purple}{#1}}}
+
+\definecolor{lightgray}{gray}{0.9}
 
 ```{r ,localDataDir, include=FALSE}
 if(!dir.exists("data")){
@@ -66,6 +68,8 @@ library(x3ptools) # remotes::install_github("heike/x3ptools")
 library(rgl)
 library(ggpcp)
 ```
+
+\hh{XXX could we please cut back on the phrase 'discussed in the CMC literature'? It's  terribly vague - right now there's only a handful of CMC papers. let's not make all of that 'literature'. The phrase also sounds all-inclusive and that's not true by definition for future work, so let's not undermine ourselves by repeating this phrase over and over.  }
 
 # Introduction {#intro}
 \dfn{Research reproducibility}  refers to the ability to use the same procedures and materials as a previous study to arrive at the same results or conclusions. 
@@ -197,7 +201,7 @@ This allows us to then test new variations against the old implementation in a c
 The primary difference between the original and high CMC methods \hh{lies in how} the decision rules are utilized to separate matches and non-matches. Beyond that there are also several small differences in the preprocessing and comparison procedures.
 Current CMC literature lacks justification for changing these procedures. 
 At the same time, different conditions have been shown to yield very different results; even when applying the same decision rule. 
-This sensitivity of various methods to different conditions has also not been discussed in CMC literature.
+This sensitivity of various methods to different conditions has also not been discussed \hh{appropriately}.
 
 
 In this section, we discuss each stage of the CMC method using excerpts from the original papers.
@@ -301,7 +305,7 @@ knitr::include_graphics(c("derivatives/fadul1-1.png","derivatives/fadul1-2.png")
 Only certain regions of a cartridge case contain identifying breech face impression markings.
 \citet{song_proposed_2013} defines "valid correlation regions" as regions where "the individual characteristics of the ballistics signature are found that can be used effectively for ballistics identification."
 <!-- \hh{XXX how are these valid correlation regions defined? If they are not defined in detail, we should remark on that.} -->
-Prior to applying the CMC comparison procedure, cartridge scans must undergo some preprocessing to \jz{emphasize these valid correlation regions}.
+Prior to applying the CMC comparison procedure, cartridge scans must undergo some preprocessing to \hh{identify} these valid correlation regions.
 
 ```{r load-data, include = F, cache = T}
 
@@ -388,6 +392,8 @@ bind_rows(kmComparison_cmcs,
   filter(pairwiseCompCor == max(pairwiseCompCor))
 ```
 
+
+
 ## Preprocessing procedures {#preProcessing}
 
 <!-- First, raw 3D topographical cartridge case surface data need to be processed before applying the CMC method.  -->
@@ -408,7 +414,7 @@ The implementation in \citet{tong_fired_2014} describes the preprocessing steps 
 
 >  After trimming processing [sic] to remove unrelated correlations areas, the final image size is reduced to 700 × 700 pixel with an estimated pixel spacing of 5.0 $\mu$m. A Gaussian smoothing filter (standard deviation $\sigma$ = 1) was implemented first to remove high frequency noise.
 
-Complicating the issue \hh{of preprocessing the scans}, the procedures used to process the surface matrices differ in each paper in the CMC literature. \citet{song_3d_2014} outline the following preprocessing procedure:
+Complicating the issue \hh{of preprocessing the scans}, the procedures used to process the surface matrices differ in each \hh{of the} paper\hh{s discussed here}. \citet{song_3d_2014} outline the following preprocessing procedure:
 
 > Trim off the inside firing pin surface and other areas outside the breech face mark, so that only breech face impression data remain for correlation.
 
@@ -417,9 +423,9 @@ Complicating the issue \hh{of preprocessing the scans}, the procedures used to p
 > Apply a band-pass Gaussian regression filter with 40 $\mu$m short cutoff length and 400 $\mu$m long cutoff length to remove low frequency components, including surface curvature, form error, waviness and high frequency components which mainly arise from the instrument noise.
 
 While not explicitly mentioned in \citet{song_3d_2014}, \citet{song_estimating_2018} indicates that the "trimming" of the unwanted regions of the scan is performed manually. 
-No further information is given in the paper describing what criteria were used for this process; nor are the trimmed scans provided as intermediate data to make reproducibility possible. 
+No further information is given in the paper describing what criteria were used for this process; nor are the trimmed scans provided as intermediate data for the sake of reproducibility. 
 
-It is also unclear how the dropouts and outliers are "removed" from the scan or \hh{even} how outliers are defined; many different methods for outlier detection and removal are used in surface metrology \citep{outlierdetection}. Most of these algorithms require the user to select thresholds or parameters; thus, without any details about how the outlier detection process was implemented, this portion of the paper is not reproducible.
+It is also unclear how the dropouts and outliers are "removed" from the scan or even how outliers are defined; many different methods for outlier detection and removal are used in surface metrology \citep{outlierdetection}. Most of these algorithms require the user to select thresholds or parameters; thus, without any details about how the outlier detection process was implemented, this portion of the paper \hh{XXX which paper exactly?} is not reproducible.
 
 We are not aware of an open-source implementation of the multivariate band-pass Gaussian regression filter used in surface metrology \citep{ISO16610-71}. 
 Further, there are various parameters requiring specification to implement a Gaussian regression filter and it is not clear how these parameters were chosen \citep{brinkman_bodschwinna_2003}.
@@ -429,9 +435,9 @@ As a result of these ambiguities, during our implementation of the preprocessing
 ### Implementation of preprocessing procedures
 
 <!-- \hh{XXX Joe, avoid passive voice when you are describing what you did. You need to emphasize that this is your work} -->
-The preprocessing procedures are implemented via the modularized functions of the form \code{preProcess\_*}.
-Modularizing the steps of the preprocessing procedures renders the overall preprocessing stage easier to understand and \hh{allows for} experimentation.
-\autoref{fig:processingPipeline} shows how the \code{preProcess\_*} functions affect the surface matrix values of the Fadul 1-1 scan.
+The preprocessing procedures are implemented via modularized functions of the form \code{preProcess\_*}.
+Modularizing the steps of the preprocessing procedures makes the overall process easier to understand and \hh{allow for} experimentation.
+\autoref{fig:processingPipeline} shows \hh{an overview of the preprocessing framework for the Fadul 1-1 breech face from reading the scan (left) to an analysis-ready region (right)}.
 
 ```{r cache=FALSE, include=F}
 fadul1.1_original <- x3ptools::x3p_read("data/fadul1-1.x3p")
@@ -460,7 +466,7 @@ fadul1.1_bpFiltered<- cmcR::preProcess_gaussFilter(x3p = fadul1.1_downsampled,
 ```
 
 
-```{r, echo = F,warning = F,message = F,cache = T,fig.cap='\\label{fig:processingPipeline} Illustration of the  preprocessing pipeline implemented in \\pkg{cmcR}. These steps are designed to automate the manual cleaning in the CMC papers. At each stage, the amount of variability in height across the scan decreases as extraneous sources of noise are removed.',fig.align='center',fig.pos='htbp',out.width='\\textwidth', message = F, warning = F}
+```{r, echo = F,warning = F,message = F,cache = T,fig.cap='\\label{fig:processingPipeline} Illustration of the  preprocessing pipeline implemented in \\pkg{cmcR}.  At each stage, the amount of variability in height across the scan decreases as extraneous sources of noise are removed.',fig.align='center',fig.pos='htbp',out.width='\\textwidth', message = F, warning = F}
 
 preProcessingPlot <- cmcR::x3pListPlot(list(fadul1.1_original,
                                             fadul1.1_croppedInt,
@@ -509,10 +515,9 @@ Each code chunk is followed up with an explanation of the functions used.
 fadul1.1 <- x3ptools::x3p_read("data/fadul1-1.x3p")
 ```
 
-We begin with a 3D scan, which is optionally downsampled. 
-Typically, in the CMC literature, every other row and column in the surface matrix is retained, resulting in a matrix that is approximately 25% of the original scan dimension. 
-This downsampling is performed using the \code{x3p\_sample} function from the \pkg{x3ptools} package (default is every other row and column).
-\jz{The \citet{fadul_empirical_nodate} were initially scanned at a resolution of 3.125 $\mu$m per pixel, so downsampling reduces the resolution to 6.25 $\mu$m per pixel.}
+We begin with a 3D scan.
+Typically, in the CMC literature, \hh{scans are downsampled to about 25\% of their size by only retaining} every other row and column in the surface matrix. <!--is retained, resulting in a matrix that is approximately 25% of the original scan dimension. -->
+The \hh{breech faces in} \citet{fadul_empirical_nodate} were initially scanned at a resolution of 3.125 $\mu$m per pixel. Downsampling reduces the resolution to 6.25 $\mu$m per pixel.
 <!-- \hh{XXX what is the resolution at that point?} -->
 Step (1) in \autoref{fig:processingPipeline} shows an unprocessed breech face scan.
 
@@ -552,9 +557,10 @@ Such a trend is observable in many cartridge case scans, yet does not occur cons
 <!-- (XXX should we cite something about scanning SOP here? XXX).  -->
 Neglecting to remove these trends leads to very different results based on our implementation. 
 \hh{In an extreme situation,} two different-source cartridge cases with similar trends might be incorrectly deemed "congruent." 
-For authors that use something other than a Gaussian regression filter, it is unclear how such trends in height values are dealt with; certainly, a high-pass Gaussian filter will remove some structure, but \jz{it is not discussed in the CMC literature}
+<!--For authors that use something other than a Gaussian regression filter, it is unclear how such trends in height values are dealt with; certainly, a high-pass Gaussian filter will remove some structure, but \jz{it is not discussed in the CMC literature}-->
 <!-- \hh{XXX which papers?} -->
-whether any leveling is performed manually as well. The \code{preProcess\_removeTrend} functions levels the breech face impression regions obtained from step (2). The function estimates and subtracts the conditional median via \hh{a quantile regression as implemented in} the \code{rq} function of the \pkg{quantreg} package \citep{quantreg}. Step (3) of \autoref{fig:processingPipeline} shows a median-leveled breech face scan.
+<!--whether any leveling is performed manually as well.--> 
+The \code{preProcess\_removeTrend} functions levels the breech face impression regions obtained from step (2). The function estimates and subtracts the conditional median via \hh{a quantile regression as implemented in} the \code{rq} function of the \pkg{quantreg} package \citep{quantreg}. Step (3) of \autoref{fig:processingPipeline} shows a median-leveled breech face scan.
 
 ```{r, echo=TRUE,eval=FALSE}
 # Step (4)
@@ -588,10 +594,10 @@ The band-pass filtered breech face scan as returned by the \code{preProcess\_gau
 <!-- In order to perform the comparison procedure, \code{NA}-valued pixels must be replaced with a non-\code{NA} value.  -->
 <!-- The convention adopted in the \pkg{cmcR} package is to use the average pixel value as a replacement.  -->
 <!-- \svp{XXX Do we know that they did or did not use a similar consensus in the CMC method? XXX} \jz{XXX No, we don't XXX} -->
-There is currently no determination or removal of outliers in the \pkg{cmcR} package's preprocessing procedures, \svp{in part because the CMC literature contains limited details on outlier removal. We instead rely on the low-pass portion of the Gaussian filter to reduce the effects of any high-frequency noise.}
+There is currently no determination or removal of outliers in the \pkg{cmcR} package's preprocessing procedures. <!--, in part because \hh{in the available } contains limited details on outlier removal.--> Instead, we rely on the low-pass portion of the Gaussian filter to reduce the effects of any high-frequency noise.
 
 <!-- To illustrate the usage of the \pkg{cmcR} package, we will consider a comparison between the KM cartridge case pair shown in \autoref{fig:cartridgeCasePair}. -->
-\jz{\autoref{fig:processedScans} displays the processed Fadul 1-1 and Fadul 1-2 scans}; \svp{the second matrix is processed using the same function arguments}. \jz{Similarity features are extracted from a processed cartridge case pair in the cell-based comparison procedure.}
+\autoref{fig:processedScans} displays the processed Fadul 1-1 and Fadul 1-2 scans; the second matrix is processed using the same parameters. Similarity features are extracted from a processed cartridge case pair in the cell-based comparison procedure.
 
 <!-- \svp{XXX Joe - please parenthetically indicate each argument name in the text above, along with its default value XXX} -->
 
@@ -618,52 +624,57 @@ cmcR::x3pListPlot(x3pList = list("Fadul 1-1" = fadul1.1,
 <!-- \svp{XXX Need to quote directly from the relevant papers. Ideally, from the papers with implementations and not just theory.} -->
 
 As described in \citet{song_proposed_2013}, breech face markings are not uniformly impressed upon a cartridge case during the firing process. 
-As such, only certain sections of the cartridge case have identifiable markings that make it possible to match to a firearm. 
-Calculating a similarity score between the entirety of two cartridge case surfaces might not highlight these valid correlation regions. 
-Instead, \citet{song_proposed_2013} proposes partitioning one breech face scan into a grid of "correlation cells," some of which will enclose the valid correlation regions of interest. 
-If a large \svp{proportion} of these correlation cells are deemed highly similar to regions in the other breech face scan, then there is evidence that the two cartridge cases match. \citet{song_proposed_2013} propose the
-the number of highly similar cells, the \dfn{CMC count}, as a more \svp{robust} similarity metric, \svp{compared to a score derived from the entire cartridge case}.
+As such, only certain sections of the cartridge case <!--have identifiable markings that make it possible to match to a firearm. --> \hh{are used in a comparison.}
+<!--\hh{XXX That's just speculation} Calculating a similarity score between the entirety of two cartridge case surfaces might not highlight these valid correlation regions. 
+Instead,--> 
+\hh{In the CMC method as proposed by} \citet{song_proposed_2013} \hh{two scans are compared by} partitioning one breech face scan into a grid of \hh{so-called} "correlation cells". <!--some of which will enclose the valid correlation regions of interest. -->
+\hh{These cells are compared individually to their best-matching counterpart on the other scan.} If a large \svp{proportion} of these correlation cells are highly similar to \hh{their counterparts on}  the other breech face scan, \hh{this is considered as} evidence that the \hh{markings on the} two cartridge cases \hh{were made by the same source}. \hh{The number of highly similar cells is defined as the }
+ \dfn{CMC count} \citep{song_proposed_2013} \hh{of the breech-face comparison}. \hh{The CMC count is considered to be a more} \svp{robust} similarity metric \hh{than a cross-correlation score based on} the entire cartridge case.
 
-```{r, echo=FALSE,fig.cap='\\label{fig:cmc_illustration} Illustration of comparing a "cell" in the reference cartridge case scan (left) to a larger region in a questioned cartridge case scan (right). Every cell in the reference cartridge case is similarly paired with a region in the questioned. To determine the rotation at which the two cartridge cases align, the cell/region pairs are compared for various rotations of the questioned cartridge case.',fig.align='center',fig.pos='htbp',out.width='.75\\textwidth'}
+```{r, echo=FALSE,fig.cap='\\label{fig:cmc_illustration} Illustration of comparing a cell in the reference cartridge case scan (left) to a larger region in a questioned cartridge case scan (right). Every \\hh{one of the} cells in the reference cartridge case is similarly paired with a region in the questioned \\hh{cartridge case}.  To determine the rotation at which the two cartridge cases align, the cell/region pairs are compared for various rotations of the questioned cartridge case.',fig.align='center',fig.pos='htbp',out.width='.75\\textwidth'}
 
 knitr::include_graphics("images/cmc_illustration.PNG")
 ```
 
 \autoref{fig:cmc_illustration} illustrates the cell-based comparison procedure between two cartridge case scans. 
-The scan on the left is divided into a grid of $k \times k$ cells. 
-\svp{The cell size (and thus, the corresponding number of cells) is optimized experimentally:}
+The scan on the left  \hh{serves as the reference; it is} divided into a grid of $k \times k$ cells. 
+The cell size (and thus, the corresponding number of cells) is optimized experimentally:
 
 > The cell size must be experimentally optimized, not too small and not too large. Either condition may result in low correlation accuracy. For the initial tests of 9 mm caliber cartridge cases, good correlation results for breech face correlations were obtained using the cell sizes ranging from (0.25 × 0.25) to (0.5 × 0.5) $mm^2$. \citep{song_3d_2014}
+
+\hh{XXX note for the conclusion: how does a different resolution affect the correlations? }
 
 <!-- \includegraphics[width=\linewidth]{images/cellbased.pdf} -->
 
 \begin{figure}
 \includegraphics[width=\textwidth]{images/cmc_flow.png}
-\caption{Each CMC implementation uses slightly different procedures to obtain a similarity score between two cartridge cases. Steps which are implemented with additional user-specified parameters are shaded purple; steps which are described but without sufficient detail are shaded grey.}\label{fig:cmc-schematic}
+\caption{Each CMC implementation uses a slightly different procedure to obtain a similarity score between two cartridge cases. Steps which are implemented with additional user-specified parameters are shaded purple; steps which are described but without sufficient detail are shaded grey.}\label{fig:cmc-schematic}
 \end{figure}
 
-\svp{\autoref{fig:cmc-schematic} shows the steps of the correlation cell comparison process in each of the papers as well as the \pkg{cmcR} implementation.} Each cell is paired with an associated larger region in the other scan. 
+\autoref{fig:cmc-schematic} shows the steps of the correlation cell comparison process in each of the papers as well as the \pkg{cmcR} implementation. Each cell is paired with an associated larger region in the other scan. 
 The absolute location of each cell and region in their respective surface matrices remain constant. 
-However, the scan on the right is rotated to determine the rotation at which the two scans are the most "similar," which is quantified using the \dfn{cross-correlation function} (CCF). 
+However, the scan on the right is rotated to determine the rotation at which the two scans are the most "similar", as quantified by the \dfn{cross-correlation function} (CCF). 
 
-For two real-valued, $M \times N$ matrices $A$ and $B$, the cross-correlation function, denoted $(A \star B)$ can be defined as
+For two real-valued, $M \times N$ matrices $A$ and $B$, the cross-correlation function, denoted $(A \star B)$ \hh{is} defined as 
 $$
-(A \star B)[m,n] = \sum_{i} \sum_{j} A[i,j] B[(i + m), (j + n)].
+(A \star B)[m,n] = \sum_{i} \sum_{j} A[i,j] B[(i + m), (j + n)],
 $$
-By this definition, the resulting CCF is a matrix whose $[m,n]$th element quantifies the similarity between matrices $A$ and $B$ for a translation of matrix $B$ by $m$ pixels horizontally and $n$ pixel vertically.
-The index at which the CCF attains a maximum represents the \svp{optimal translation} needed to align $B$ with $A$.
-\jz{The CCF as defined need not be bounded between $-1$ and $1$. However, it is common to normalize the CCF for interpretability, and} \svp{this} \jz{is the convention adopted by the \pkg{cmcR} package.}
+\hh{where indices $i,j$ and $m,n$ are suitably defined. } \hh{XXX could you please include actual boundaries for these indices?}
+By this definition, the $[m,n]$th element of the resulting CCF matrix \hh{XXX dimensions?}   quantifies the similarity between matrices $A$ and $B$ for a translation of matrix $B$ by $m$ pixels horizontally and $n$ pixel vertically.
+The index at which the CCF attains a maximum represents the optimal translation needed to align $B$ with $A$.
+The CCF as defined need not be bounded between $-1$ and $1$. However, it is common to normalize the CCF for interpretability, and this is the convention adopted by the \pkg{cmcR} package.
+
 Prior to calculating the CCF, the matrices $A$ and $B$ are standardized through subtraction of their respective means and division by their respective standard deviations. 
 This is referred to as the \dfn{Areal Cross-Correlation Function} (ACCF) in some CMC papers \citep{ott_applying_2017}.
-Calculation of the CCF for breech face scans based on the definition above is inhibitingly slow.
+\hh{A direct c}alculation of the CCF for breech face scans based on the definition above is inhibitingly slow.
 While computationally feasible alternatives exist, \citet{song_proposed_2013} and other CMC papers do not specify the algorithm used to calculate the CCF.
 
 \svp{In \citet{song_3d_2014}, the comparison process is described with characteristic brevity:}
 
 > CMC pairs are identified by three types of identification parameters: the correlation value CCF$_{\max}$, registration angle $\theta$ and translation distances $x$, $y$ with thresholds $T_{\text{CCF}}$, $T_\theta$ and $T_x, T_y$, respectively. The correlated cell pairs are considered as CMCs when their correlation value CCF$_{\max}$, $T_{\text{CCF}}$, and their registration angle $\theta$ and $x-y$ registration pattern are within the thresholds $T_\theta$, and $T_x, T_y$.
 
-Note that rotating an image or breech face scan by an arbitrary angle (other than a multiple of 90 degrees) requires interpolating new pixel locations. 
-A variety of interpolation schemes exist \citep{parker_comparison_1983} and \svp{there are no details provided in the} CMC literature \svp{indicating which interpolation algorithm was used}. \svp{In \pkg{cmcR}, s}urfaces matrices are rotated using a "nearest-neighbor" interpolation scheme \citep{imager}.
+Note, that rotating an image or breech face scan by an arbitrary angle (other than a multiple of 90 degrees) requires interpolating new pixel locations. 
+A variety of interpolation schemes exist \citep{parker_comparison_1983}, but there are no details provided in the \hh{papers under consideration} indicating which interpolation algorithm was used. In \pkg{cmcR}, surfaces matrices are rotated using a "nearest-neighbor" interpolation scheme \citep{imager}.
 
 <!-- \svp{XXX what do we use? Make it explicit so we're not being hypocritical XXX} \jz{XXX nearest-neighbor interpolation -- this is stated in the paragraph below describing the implementation XXX} -->
 
@@ -673,30 +684,30 @@ In the next section, we discuss our implementation of the cell-based comparison 
 
 ### Implementation of the correlation cell comparison procedure
 
-\jz{The steps of the cell-based comparison procedure are implemented via the \code{comparison\_*} functions.
-Similar to the \code{preProcess\_*} functions, the \code{comparison\_*} functions can be chained together through a sequence of pipes.}
+\hh{All of} the steps \hh{dealing with } cell-based comparisons are implemented \hh{as functions of the form } \code{comparison\_*}.
+Similar to the \code{preProcess\_*} functions, the \code{comparison\_*} functions can be chained together through a sequence of pipes.
 
-\svp{Published implementations of the CMC algorithm do not describe precisely how the CCF is calculated. 
-In image processing, it is common to use an implementation based on the Fast Fourier Transform} \citep{Brown92asurvey}. 
-\svp{This implementation leverages the Cross-Correlation Theorem, which states that for matrices $A$ and $B$,}
+Published implementations of the CMC algorithm do not describe precisely how the CCF is calculated. 
+In image processing, it is common to use an implementation based on the Fast Fourier Transform \citep{Brown92asurvey}. 
+This implementation leverages the Cross-Correlation Theorem, which states that for matrices $A$ and $B$, \hh{XXX write out the statement in a concise statement ahead of the math XXX}
 $$
 (A \star B )[m,n]= \mathcal{F}^{-1}\left(\overline{\mathcal{F}(A)} \odot \mathcal{F}(B)\right)[m,n]
 $$
 where $\mathcal{F}$ and $\mathcal{F}^{-1}$ denote the discrete Fourier and inverse discrete Fourier transforms, respectively, and $\overline{\mathcal{F}(A)}$ denotes the complex conjugate \citep{fft_brigham}. 
-Note that the multiplication on the right-hand side is pointwise (Hadamard) multiplication. 
+Note that the multiplication on the right-hand side is a pointwise (Hadamard) multiplication. 
 This result allows us to trade the moving sum computations from the definition of the CCF for two forward Fourier transformation, a pointwise product, and an inverse Fourier transformation. 
 The Fast Fourier Transform (FFT) algorithm can be used to reduce the computational load considerably.
 
-\svp{No computational shortcut comes without some tradeoffs, though, and this FFT-based CCF calculation is no different. 
-The FFT does not tolerate missing values, and breech faces are not continuous surfaces - the white regions in \autoref{fig:cmc_illustration} correspond to missing values.}
-\svp{While it is unclear how the CCF is implemented in the CMC papers (it is not even defined mathematically), the \pkg{cmcR} package adopts the following conventions:}
+No computational shortcut comes without some tradeoffs, though, and this FFT-based CCF calculation is no different. 
+The FFT does not tolerate missing values, and breech faces are not continuous surfaces -- all of the white regions in \autoref{fig:cmc_illustration} correspond to missing values.
+While it is unclear how the CCF is implemented in the CMC papers (it is not even defined mathematically), the \pkg{cmcR} package adopts the following conventions:
 
-- \svp{Missing values are replaced with the overall mean value when the FFT-based CCF is computed \jz{(via the \code{comparison\_replaceMissing} function)}.} 
-- \svp{The optimal translation is determined using the FFT-based CCF \jz{(via the \code{comparison\_fft\_ccf} function)}. Replacing the missing values with the overall mean leads to a deflated CCF value, but produces an accurate estimate of the optimal translation.}
-- \svp{Using the optimal translation determined from the FFT-based CCF, we compute the pairwise complete CCF directly, avoiding any distortion of the CCF computation based on compensation for missing values \jz{(via the \code{comparison\_cor} function)}.}
+- Missing values are replaced with the overall mean value when the FFT-based CCF is computed (using function \code{comparison\_replaceMissing}).
+- The optimal translation is determined using the FFT-based CCF (using  \code{comparison\_fft\_ccf}). Replacing the missing values with the overall mean leads to a deflated CCF value, but produces an accurate estimate of the optimal translation.
+- Based on the optimal translation determined from the FFT-based CCF, we compute the pairwise complete CCF directly, avoiding any distortion of the CCF computation based on compensation for missing values (using function \code{comparison\_cor})..
 
-\jz{Only cells with a minimum proportion of non-missing pixels are }\svp{assessed}. \jz{The minimum threshold differs across CMC papers \citep{chen_convergence_2017,song_estimating_2018}}\svp{, as shown in \autoref{fig:cmc-schematic}, and is referenced but not specified in several other papers \citep{tong_fired_2014,song_3d_2014,chu_validation_2013}.}
-\jz{The \code{comparison\_calcPropMissing} function computes the proportion of a matrix that is missing (\code{NA}-valued).}
+Only cells with a minimum proportion of non-missing pixels are assessed. This minimum threshold differs across CMC papers \citep{chen_convergence_2017,song_estimating_2018}, as shown in \autoref{fig:cmc-schematic}, and is referenced but not specified in several other papers \citep{tong_fired_2014,song_3d_2014,chu_validation_2013}.
+The \code{comparison\_calcPropMissing} function computes the proportion of a matrix that is missing (\code{NA}-valued).
 <!-- \svp{XXX what proportion do we use? If it's variable, we should say that we have implemented this as a parameter setting for compatibility with the other algorithms} -->
 
 <!-- \svp{The entire matching procedure is performed twice: once with scan A partitioned and scan B as the target, and once with scan B partitioned and scan A as the target.} -->
@@ -706,7 +717,7 @@ The FFT does not tolerate missing values, and breech faces are not continuous su
 <!-- } -->
 <!-- \svp{Something like this might work better:} -->
 
-\jz{The code below demonstrates how the \code{comparison\_allTogether} function can be used to perform the entire cell-based comparison procedure in one call. The comparison procedure is performed twice: once with Fadul 1-1 considered the "reference" scan divided into cells that are compared to the "target" scan Fadul 1-2 and again with the roles reversed.}
+The code below demonstrates how the \code{comparison\_allTogether} function can be used to perform the entire cell-based comparison procedure in one call. The comparison procedure is performed twice: once with Fadul 1-1 considered the "reference" scan divided into cells that are compared to the "target" scan Fadul 1-2 and again with the roles reversed.
 
 ```{r echo=TRUE,eval=FALSE}
 kmComparisonFeatures <- purrr::map_dfr(seq(-30,30,by = 3),
@@ -738,7 +749,7 @@ kmComparisonFeatures_rev <- purrr::map_dfr(seq(-30,30,by = 3),
 \svp{As shown above, \jz{this sequence of} function\jz{s are} applied \jz{for} each $\theta$ value in sequence, rotating the target scan relative to the reference scan. When implementing the High CMC method, both combinations of reference and target scan are examined (e.g. A-B and B-A).}
 
 \autoref{tab:cellCCF} shows several rows of the data frame output of the \code{comparison\_allTogether} function.
-Although a grid of $8 \times 8$ cells were used, there were 27 cell/region pairs that contained a sufficient proportion of non-missing values (15% in this example). 
+Although a grid of $8 \times 8$ cells was used, there were 27 cell/region pairs that contained a sufficient proportion of non-missing values (15% in this example). 
 \svp{The features derived from the correlation cell procedure (CCF$_{max}$, $\Delta x$, $\Delta y$, $\theta$) are used as inputs to the methods for assessment of match strength.}
 
 ```{r echo=FALSE,warning=F,message=F,eval=TRUE,cache = T}
@@ -760,8 +771,9 @@ kmComparisonFeatures %>%
                              "$\\Delta$y",
                              "$\\theta$"),
                escape = FALSE) %>%
-  kableExtra::kable_styling(latex_options = "hold_position",
-                            position = "center")
+  kableExtra::kable_styling(latex_options = "striped", 
+                            position = "center", stripe_index=c(2,4,6),
+                            stripe_color="lightgray")
 ```
 
 ## Decision Rule
