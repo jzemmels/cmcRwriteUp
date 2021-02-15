@@ -29,6 +29,7 @@ preamble: |
   \usepackage{booktabs}
   \usepackage{subfig}
   \usepackage{nameref}
+header-includes: \definecolor{lightgray}{HTML}{D3D3D3}
 output: rticles::rjournal_article
 ---
 
@@ -36,7 +37,6 @@ output: rticles::rjournal_article
 \newcommand{\svp}[1]{{\textcolor{blue}{#1}}}
 \newcommand{\jz}[1]{{\textcolor{purple}{#1}}}
 
-\definecolor{lightgray}{gray}{0.9}
 
 ```{r ,localDataDir, include=FALSE}
 if(!dir.exists("data")){
@@ -702,12 +702,13 @@ No computational shortcut comes without some tradeoffs, though, and this FFT-bas
 The FFT does not tolerate missing values, and breech faces are not continuous surfaces -- all of the white regions in \autoref{fig:cmc_illustration} correspond to missing values.
 While it is unclear how the CCF is implemented in the CMC papers (it is not even defined mathematically), the \pkg{cmcR} package adopts the following conventions:
 
+- Only cells with a minimum proportion of non-missing pixels are assessed. This minimum threshold differs across CMC papers \citep{chen_convergence_2017,song_estimating_2018}, as shown in \autoref{fig:cmc-schematic}, and is referenced but not specified in several other papers \citep{tong_fired_2014,song_3d_2014,chu_validation_2013}.
+The \code{comparison\_calcPropMissing} function computes the proportion of a matrix that is missing (\code{NA}-valued).
 - Missing values are replaced with the overall mean value when the FFT-based CCF is computed (using function \code{comparison\_replaceMissing}).
 - The optimal translation is determined using the FFT-based CCF (using  \code{comparison\_fft\_ccf}). Replacing the missing values with the overall mean leads to a deflated CCF value, but produces an accurate estimate of the optimal translation.
 - Based on the optimal translation determined from the FFT-based CCF, we compute the pairwise complete CCF directly, avoiding any distortion of the CCF computation based on compensation for missing values (using function \code{comparison\_cor})..
 
-Only cells with a minimum proportion of non-missing pixels are assessed. This minimum threshold differs across CMC papers \citep{chen_convergence_2017,song_estimating_2018}, as shown in \autoref{fig:cmc-schematic}, and is referenced but not specified in several other papers \citep{tong_fired_2014,song_3d_2014,chu_validation_2013}.
-The \code{comparison\_calcPropMissing} function computes the proportion of a matrix that is missing (\code{NA}-valued).
+
 <!-- \svp{XXX what proportion do we use? If it's variable, we should say that we have implemented this as a parameter setting for compatibility with the other algorithms} -->
 
 <!-- \svp{The entire matching procedure is performed twice: once with scan A partitioned and scan B as the target, and once with scan B partitioned and scan A as the target.} -->
@@ -735,22 +736,22 @@ kmComparisonFeatures_rev <- purrr::map_dfr(seq(-30,30,by = 3),
                                                                     theta = .))
 ```
 
-\svp{The \code{comparison\_allTogether} function consists of the following steps wrapped into a single convenience function:}
+The \code{comparison\_allTogether} function consists of the following steps wrapped into a single convenience function:
 
 - Divide the reference scan into cells (`comparison_cellDivision`)
 - Extract from the target scan the regions associated with each reference cell
   (`comparison_getTargetRegions`)
-- Compute missing proportions (`comparison_calcPropMissing`)
-- Standardize height values (`comparison_standardizeHeights`)
+- Compute missing proportions (`comparison_calcPropMissing`) \hh{and filter out cells with a proportion of missing values above the threshold}
+- Standardize height values (`comparison_standardizeHeights`) 
 - Replace missing values (`comparison_replaceMissing`)
 - Compute CCF and estimated translations using FFT (`comparison_fft_ccf`)
 - Compute pairwise-complete correlation between a reference cell and a matrix of the same size extracted from the associated target region (`comparison_cor`)
 
-\svp{As shown above, \jz{this sequence of} function\jz{s are} applied \jz{for} each $\theta$ value in sequence, rotating the target scan relative to the reference scan. When implementing the High CMC method, both combinations of reference and target scan are examined (e.g. A-B and B-A).}
+This sequence of functions are applied for \hh{a sequence of angles} $\theta$ rotating the target scan relative to the reference scan. When implementing the  High CMC method \citep{tong_improved_2015}, both combinations of reference and target scan are examined (e.g. A-B and B-A).
 
 \autoref{tab:cellCCF} shows several rows of the data frame output of the \code{comparison\_allTogether} function.
-Although a grid of $8 \times 8$ cells was used, there were 27 cell/region pairs that contained a sufficient proportion of non-missing values (15% in this example). 
-\svp{The features derived from the correlation cell procedure (CCF$_{max}$, $\Delta x$, $\Delta y$, $\theta$) are used as inputs to the methods for assessment of match strength.}
+Although a grid of $8 \times 8$ cells was used, there were \hh{only} 27 \hh{XXX I am getting 47 cells - is the 27 a typo? XXX} cell/region pairs that contained a sufficient proportion of non-missing values (15% in this example). 
+The features derived from the correlation cell procedure (CCF$_{max}$, $\Delta x$, $\Delta y$, $\theta$) are used as inputs to the methods for assessing the similarity between scans.
 
 ```{r echo=FALSE,warning=F,message=F,eval=TRUE,cache = T}
 kmComparisonFeatures %>%
@@ -760,7 +761,7 @@ kmComparisonFeatures %>%
   select(c(`Cell index`,`Pairwise-complete corr.`,`FFT-based corr.`,x,y,theta)) %>%
   filter(theta == -24) %>%
   arrange(`Cell index`) %>%
-  head() %>%
+  head(5) %>%
   knitr::kable(caption = "\\label{tab:cellCCF} Example of output from correlation cell comparison procedure between Fadul 1-1 and Fadul 1-2 rotated by -24 degrees. Due to the large proportion of missing values that are replaced to compute the FFT-based correlation, the pairwise-complete correlation is most often greater than the FFT-based correlation.",
                format = "latex",
                align = c("|c","c","c","r","r","r|"),
@@ -770,24 +771,26 @@ kmComparisonFeatures %>%
                              "$\\Delta$x",
                              "$\\Delta$y",
                              "$\\theta$"),
-               escape = FALSE) %>%
+               escape = FALSE, 
+               booktabs = TRUE) %>%
   kableExtra::kable_styling(latex_options = "striped", 
-                            position = "center", stripe_index=c(2,4,6),
+                            position = "center", 
                             stripe_color="lightgray")
 ```
 
 ## Decision Rule
 
-\svp{Using the thetas, translation vectors, and CCFs produced by the correlation cell procedure, the CMC literature describes various methods for aggregating this information into a consensus decision about the similarity of the two cartridge cases.} 
+the CMC literature describes various methods for aggregating the available information of rotation angles $\theta$, translations $(\delta x, \delta y)$, and cross-correlation values into a consensus decision about the similarity of the two cartridge cases.
 
 As stated in \citet{song_3d_2014}, 
 
 > [t]he qualifications of CMCs require not only high correlation values CCF$_{\max} \geq T_{\text{CCF}}$, but also similar registration angles $\theta$ (within the threshold $T_{\theta}$) and similar $x - y$ registration pattern (within the thresholds $T_x$, $T_y$).
 
-A truly matching pair of cartridge cases \svp{would have similar translation and rotation values for each cell, estimated by maximizing the cell-wise CCF; a nonmatching pair of cartridge cases would have a variety of different translation and rotation values showing no particular pattern.}
-\svp{\jz{Based on this observation, t}he first step in \jz{any CMC} decision process is to obtain a consensus estimate of $x, y, \theta$; these estimated values are then used in the evaluation of the alignment of each cell/region pair.
-The consensus set of $x, y, \theta$ is} referred to as the \dfn{registration phase} of the cell/region pairs \citep{song_proposed_2013}.
-\jz{Where the various CMC decision rules principally differ is in how they identify a "consensus" among the estimated $x,y, \theta$ values.}
+A truly matching pair of cartridge cases has similar translation and rotation values for each cell, while a nonmatching pair of cartridge cases exhibits a variety of different translation and rotation values without showing a particular pattern.
+
+The first step in any CMC decision process is therefore to obtain a consensus estimate of $x, y, \theta$; these estimated values are then used in the evaluation of the alignment of each cell/region pair.
+The consensus set of $x, y, \theta$ is referred to as the \dfn{registration phase} of the cell/region pairs \citep{song_proposed_2013}.
+Where the various CMC decision rules principally differ is in how they identify a "consensus" among the estimated $x,y, \theta$ values.
 
 <!-- \svp{XXX Add a figure (and reference) here showing CMCs from the original method as in figure 15, 16, for matching and nonmatching cartridges. So e.g. A | A' B, 3 across, with blue and red squares on A' and B showing the cells from A aligned.} -->
 
@@ -815,13 +818,13 @@ The consensus set of $x, y, \theta$ is} referred to as the \dfn{registration pha
 <!-- For example, in the original method of \citet{song_proposed_2013}, the strength of the consensus is quantified by the number of cell/region pairs with "similar" registration phases (to be defined in [the description of the original method](\#originalMethod)). \jz{To overcome limitations of the original method, its descendants, including the High CMC method, apply more stringent criteria.} -->
 
 
-In this section, we describe two \jz{decision rules} that are implemented in the \pkg{cmcR} package. These are the decision rules used in the original method of \citet{song_proposed_2013} and the High CMC of \citet{tong_improved_2015}.
+In this section, we describe the two decision rules implemented in the \pkg{cmcR} package:  the  original method \citep{song_proposed_2013} and the High CMC method \citep{tong_improved_2015}.
 
 ### The original method of \citet{song_proposed_2013} {#originalMethod}
 
-\jz{This section briefly describes the decision rule of the original method of \citet{song_proposed_2013}. For a thorough explanation of the procedure, refer to the} [CMC Decision Rule Description](https://csafe-isu.github.io/cmcR/articles/decisionRuleDescription.html) \jz{vignette in the \pkg{cmcR} package.}
+This section briefly describes the decision rule of the original method of \citet{song_proposed_2013}. For a thorough explanation of the procedure, refer to the [CMC Decision Rule Description](https://csafe-isu.github.io/cmcR/articles/decisionRuleDescription.html)  vignette in the \pkg{cmcR} package.
 
-\jz{An actual implementation of the original method of \citet{song_proposed_2013} is described in \citet{song_3d_2014}. The decision rule} \citet{song_3d_2014} describe using \jz{is based on}
+\citet{song_proposed_2013} describes the original method conceptually, an actionable description is found in \citet{song_3d_2014}:
 
 > a virtual reference with three reference registration parameters $\theta_{\text{ref}}$, $x_{\text{ref}}$ and $y_{\text{ref}}$ generated by the median values of the collective $\theta$, and $x$-, $y$-translation values of all cell pairs.
 
@@ -845,19 +848,22 @@ There is little consensus on an optimal set of thresholds and no discussion of t
 
 \begin{table}[ht]
     \centering
-    \begin{tabular}{|l|r|r|r|}
+    \begin{tabular}{|lrrr|}
       \hline
         Paper & Translation (pix.) & Rotation (deg.) & CCF$_{\max}$ \\
         \hline
-        \citet{song_3d_2014} & 20 & 6 & .6 \\
-        \hline
+        \cellcolor{lightgray}{\citet{song_3d_2014}} & \cellcolor{lightgray}{20} & 
+        \cellcolor{lightgray}{6} & \cellcolor{lightgray}{.6} \\
+        
         \citet{tong_fired_2014} & 30 & 3 & .25 \\
-        \hline
-        \citet{tong_improved_2015} & 15 & 3 & .55 \\
-        \hline
+        
+        \cellcolor{lightgray}{\citet{tong_improved_2015}} & \cellcolor{lightgray}{15} & 
+        \cellcolor{lightgray}{3} & \cellcolor{lightgray}{.55} \\
+        
         \citet{chen_convergence_2017} & 20 & 3 & .4 \\
-        \hline
-        \citet{song_estimating_2018} & 20 & 6 & .5\\
+        
+        \cellcolor{lightgray}{\citet{song_estimating_2018}} & \cellcolor{lightgray}{20} & 
+        \cellcolor{lightgray}{6} & \cellcolor{lightgray}{.5}\\
         \hline
     \end{tabular}
     \caption{Each CMC implementation uses slightly different translation, rotation, and CCF$_{\max}$ thresholds to classify matches. There is currently no principled approach to determining these thresholds in the CMC literature. Instead, thresholds seem to be chosen by authors through experimentation and selecting thresholds that provide promising results.}
