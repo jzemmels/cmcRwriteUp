@@ -102,7 +102,7 @@ The fundamental reason that descriptions of data analysis procedures, combined w
 In this light, computational reproducibility  in forensic science, is all the more important because it fundamentally enables discussions about algorithmic transparency and accountability \citep{kwongAlgorithmSaysYou2017, desaiTrustVerifyGuide2017}. 
 Currently, subjective decisions are made by individual examiners -- human beings are the ultimate closed-source, black-box system, and the operations which lead to a decision are largely opaque. 
 \hh{The \citet{council_strengthening_2009} has pushed to} complement these subjective decisions with automatic algorithms that objectively assess evidence and can be explained during court testimony.
-\hh{It furthermore} is \hh{of the utmost importantance} that the community does not go only halfway, trading a subjective, human black box for objective, proprietary algorithms that are similarly opaque and unauditable.
+\hh{It furthermore} is \hh{of the utmost importance} that the community does not go only halfway, trading a subjective, human black box for objective, proprietary algorithms that are similarly opaque and unauditable.
 As part of the shift towards objectivity in forensic science, automatic methods have  been developed to solve problems such as identifying matching glass shards \citep{park2019}, handwriting \citep{crawford_handwriting_2020}, shoe prints \citep{park_algorithm_2020}, and ballistic evidence \citep{hare_automatic_2016,tai_fully_2018}. 
 However, many of the algorithms described in the literature are not reproducible or open-source.
 In this paper, we will demonstrate the ambiguities present in textual descriptions of algorithms by creating an open-source implementation of one well-known automatic forensic identification method.
@@ -795,13 +795,19 @@ kmComparisonFeatures %>%
 
 ## Decision Rule
 
-the CMC literature describes various methods for aggregating the available information of rotation angles $\theta$, translations $(\delta x, \delta y)$, and cross-correlation values into a consensus decision about the similarity of the two cartridge cases.
+\hh{XXX This whole section would benefit from a bit of tightening. I do not thing that we need the first quote. there's a sentence at the end of the original method that is repeated in the sentence right after it. 
+I also think we could summarize the quote in the original method as 'calculate the median'.}
+
+
+\hh{For each cell on the reference scan, a whole set of rotation angles $\theta$, translations $(\delta x, \delta y)$, and cross-correlation values are calculated. These sets need to be aggregated in a single consensus decision. Here, we describe the two methods implemented in `cmcR`: the original decision rule described in  \citet{song_3d_2014} and the High CMC method proposed in \citep{tong_improved_2015}. }
+
+<!-- the CMC literature describes various methods for aggregating the available information of rotation angles $\theta$, translations $(\delta x, \delta y)$, and cross-correlation values into a consensus decision about the similarity of the two cartridge cases. -->
 
 As stated in \citet{song_3d_2014}, 
 
 > [t]he qualifications of CMCs require not only high correlation values CCF$_{\max} \geq T_{\text{CCF}}$, but also similar registration angles $\theta$ (within the threshold $T_{\theta}$) and similar $x - y$ registration pattern (within the thresholds $T_x$, $T_y$).
 
-A truly matching pair of cartridge cases has similar translation and rotation values for each cell, while a nonmatching pair of cartridge cases exhibits a variety of different translation and rotation values without showing a particular pattern.
+A truly matching pair of cartridge cases has similar translation and rotation values for each cell, while a non-matching pair of cartridge cases exhibits a variety of different translation and rotation values without showing a particular pattern.
 
 The first step in any CMC decision process is therefore to obtain a consensus estimate of $x, y, \theta$; these estimated values are then used in the evaluation of the alignment of each cell/region pair.
 The consensus set of $x, y, \theta$ is referred to as the \dfn{registration phase} of the cell/region pairs \citep{song_proposed_2013}.
@@ -833,7 +839,7 @@ Where the various CMC decision rules principally differ is in how they identify 
 <!-- For example, in the original method of \citet{song_proposed_2013}, the strength of the consensus is quantified by the number of cell/region pairs with "similar" registration phases (to be defined in [the description of the original method](\#originalMethod)). \jz{To overcome limitations of the original method, its descendants, including the High CMC method, apply more stringent criteria.} -->
 
 
-In this section, we describe the two decision rules implemented in the \pkg{cmcR} package:  the  original method \citep{song_proposed_2013} and the High CMC method \citep{tong_improved_2015}.
+<!--In this section, we describe the two decision rules implemented in the \pkg{cmcR} package the  original method \citep{song_proposed_2013} and the High CMC method \citep{tong_improved_2015}.-->
 
 ### The original method of \citet{song_proposed_2013} {#originalMethod}
 
@@ -860,6 +866,8 @@ There is little consensus on an optimal set of thresholds and no discussion of t
 As such, there is little known about the effectiveness of the any CMC method to "out-of-bag" samples.
 
 \hh{XXX Note for the conclusion: Rather than using these rather heuristic and pre-set cutoffs, a joint density of the parameters could be determined and used in the assessment of similarity. XXX}
+
+\hh{XXX On another note: the grid space for theta is not defined, but determines the outcome. XXX}
 
 
 \autoref{tab:thresholdTable} summarizes the thresholds used in various CMC papers.
@@ -889,12 +897,16 @@ As such, there is little known about the effectiveness of the any CMC method to 
 \end{table}
 
 The High CMC utilizes the behavior of the CCF$_{\max}$ values across various rotations more advantageously than the original method of \citet{song_proposed_2013}. 
-Additionally, comparisons are performed in both “directions” so that each breech face scan takes on the role of the reference scan that is partitioned into a grid of cells.
+\hh{XXX I'm not sure that I agree with the 'advantageously'. In a truly principled approach, parameters would be chosen based on the performance on a training data set (as done here), but then validated based on the performance of the algorithm on a testing or hold-out data set.}
+\hh{XXX could you find a different adjective that describes the difference more accurately?}
+
+Additionally, comparisons are performed in both directions, i.e. each scan takes on the role of the reference scan that is partitioned into a grid of cells.
 
 
 ### The High CMC method {#highCMCMethod}
 
-For the High CMC method, comparisons are performed in both "directions" so that each breech face scan takes on the role of the reference scan that is partitioned into a grid of cells.
+
+For the High CMC method, comparisons are performed in both directions so that each breech face scan takes on the role of the reference scan that is partitioned into a grid of cells.
 The CMCs under the original method of \citet{song_proposed_2013} are calculated in each direction and their minimum is used as an "original CMC number."
 However, as \citet{tong_improved_2015} observe, some truly matching cell pairs "may be mistakenly excluded from the CMC count" because they attain the largest CCF value at a rotation value outside the range allowed by $T_\theta$ "by chance."
 
