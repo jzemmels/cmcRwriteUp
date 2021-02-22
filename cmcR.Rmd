@@ -919,7 +919,7 @@ However, as \citet{tong_improved_2015} claim, some truly matching cell pairs "ma
 <!-- rotation angle outside the threshold range \(T_\theta\). -->
 <!-- \end{quote} -->
 
-The original method of \citet{song_proposed_2013} only considers the alignment phase at which each cell attains a maximum CCF, it is \hh{XXXX not? I would think the method IS sensitive to these } not sensitive to these  excluded cell pairs. To combat this, \citet{tong_improved_2015} instead consider the number of cells with "sufficiently large" CCF values and translation phases close to reference values for each $\theta$.
+The original method of \citet{song_proposed_2013} only considers the alignment phase \hh{what counts as the alignment phase? That hasn't been mentioned before} at which each cell attains a maximum CCF, it is \hh{XXXX not? I would think the method IS sensitive to these } not sensitive to these  excluded cell pairs. To combat this, \citet{tong_improved_2015} instead consider the number of cells with "sufficiently large" CCF values and translation phases close to reference values for each $\theta$.
 
 \hh{Can you summarize the math below in plain words first? - I'm also a bit confused as to what to do with the previous sentence... 'considering' is not a very actionable plan.}
 Let $(x_{i,\theta}, y_{i,\theta})'$ be the translation phase of cell $i$ associated with rotation $\theta \in \Theta$ and $CCF_{i,\theta}$ be the associated CCF value. Also let $(x_{ref,\theta}, y_{ref,\theta})' \equiv \text{median}\left(\{(x_{i,\theta}, y_{i,\theta})' : i = 1,...,n\}\right)$. \hh{XXX How is $n$ determined? Are these values all related to one cell or is this set determined across all cells?}
