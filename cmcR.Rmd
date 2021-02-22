@@ -799,7 +799,7 @@ kmComparisonFeatures %>%
 I also think we could summarize the quote in the original method as 'calculate the median'.}
 
 
-\hh{For each cell on the reference scan, a whole set of rotation angles $\theta$, translations $(\Delta x, \Delta y)$, and cross-correlation values are calculated. These sets need to be aggregated in a single consensus decision. Here, we describe the two methods implemented in `cmcR`: the original decision rule described in  \citet{song_3d_2014} and the High CMC method proposed in \citep{tong_improved_2015}. }
+\hh{For each cell on the reference scan, a set of rotation angles $\theta$ with associated translations $(\Delta x, \Delta y)$ and cross-correlation values are calculated. These sets need to be aggregated into a single consensus decision. Here, we describe the two methods implemented in the `cmcR` package: the original decision rule described in  \citet{song_3d_2014} and the High CMC method proposed in \citep{tong_improved_2015}. }
 
 <!-- the CMC literature describes various methods for aggregating the available information of rotation angles $\theta$, translations $(\delta x, \delta y)$, and cross-correlation values into a consensus decision about the similarity of the two cartridge cases. -->
 
