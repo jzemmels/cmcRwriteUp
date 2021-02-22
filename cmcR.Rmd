@@ -908,7 +908,7 @@ The High CMC utilizes the behavior of the CCF$_{\max}$ values across various rot
 
 For the High CMC method, comparisons \hh{between two scans} are performed in both directions, i.e. each scan takes on the role of the reference scan that is partitioned into a grid of cells.
 The CMCs under the original method of \citet{song_proposed_2013} are calculated in each direction and their minimum is used as an "original CMC number." \hh{XXX Is that what actually happens? The minimum was not mentioned earlier. If the minimum is used in the original method to determine the CMC count, a comparison of A to B and B to A happens implicitly, so the emphasis on the comparison in both directions for the High CMC method is a bit odd then.}
-\jz{XXX Yes, that is what actually happens in the High CMC method. We have no idea if the comparisons are performed in both directions for the original method. \citet{tong_improved_2015} was the first to explicitly mention peforming comparisons in both directions.}
+\jz{XXX Yes, that is what actually happens in the High CMC method. \hh{XXX that is not how I read the above sentence. The above sentence suggests that the original method uses the minimum.} We have no idea if the comparisons are performed in both directions for the original method. \citet{tong_improved_2015} was the first to explicitly mention peforming comparisons in both directions.}
 
 However, as \citet{tong_improved_2015} claim, some truly matching cell pairs "may be mistakenly excluded from the CMC count" because they attain the largest CCF value at a rotation value outside the range allowed by $T_\theta$ "by chance."
 
