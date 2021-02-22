@@ -546,7 +546,7 @@ fadul1.1_cropped <- fadul1.1%>%
   cmcR::preProcess_crop(region = "interior")
 ```
 
-Three major regions of the scan are identified as described in \citet{hesselink_concurrent_2001} and available in the \pkg{imager} package \citep{imager}. 
+Three major regions of the scan are identified via a labeling algorithm as described in \citet{hesselink_concurrent_2001} and available in the \pkg{imager} package \citep{imager}. 
 These regions are the \hh{circle capturing the} exterior of the cartridge case primer, the breech face impression region, and the \hh{circle around the} firing pin impression hole in the center of the scan. 
 
 The goal is to isolate the breech face impression region by removing (i.e., replacing with \code{NA}) the pixels in the other two regions.
