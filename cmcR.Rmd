@@ -764,8 +764,10 @@ The \code{comparison\_allTogether} function consists of the following steps wrap
 
 This sequence of functions are applied for \hh{a sequence of angles} $\theta$ rotating the target scan relative to the reference scan. When implementing the  High CMC method \citep{tong_improved_2015}, both combinations of reference and target scan are examined (e.g. A-B and B-A).
 
-\autoref{tab:cellCCF} shows several rows of the data frame output of the \code{comparison\_allTogether} function.
-Although a grid of $8 \times 8$ cells was used, there were \hh{only} 27 \hh{XXX I am getting 47 cells - is the 27 a typo? XXX} cell/region pairs that contained a sufficient proportion of non-missing values (15% in this example). 
+\autoref{tab:cellCCF} shows several rows of the data frame output of the \code{comparison\_allTogether} function \jz{for the comparison of Fadul 1-1 vs. Fadul 1-2 considering Fadul 1-1 as the reference scan}.
+Although a grid of $8 \times 8$ cells was used, there were \hh{only} 26 
+<!-- \hh{XXX I am getting 47 cells - is the 27 a typo? XXX} \jz{XXX No, I don't think so. I'm basing 26 (not 27 - that was a typo, it seems) off of considering length(unique(kmComparisonFeatures$cellIndex))}  -->
+cell/region pairs that contained a sufficient proportion of non-missing values (15% in this example). 
 The features derived from the correlation cell procedure (CCF$_{max}$, $\Delta x$, $\Delta y$, $\theta$) are used as inputs to the methods for assessing the similarity between scans.
 
 ```{r echo=FALSE,warning=F,message=F,eval=TRUE,cache = T}
@@ -803,9 +805,9 @@ I also think we could summarize the quote in the original method as 'calculate t
 
 <!-- the CMC literature describes various methods for aggregating the available information of rotation angles $\theta$, translations $(\delta x, \delta y)$, and cross-correlation values into a consensus decision about the similarity of the two cartridge cases. -->
 
-As stated in \citet{song_3d_2014}, 
+<!-- As stated in \citet{song_3d_2014},  -->
 
-> [t]he qualifications of CMCs require not only high correlation values CCF$_{\max} \geq T_{\text{CCF}}$, but also similar registration angles $\theta$ (within the threshold $T_{\theta}$) and similar $x - y$ registration pattern (within the thresholds $T_x$, $T_y$).
+<!-- > [t]he qualifications of CMCs require not only high correlation values CCF$_{\max} \geq T_{\text{CCF}}$, but also similar registration angles $\theta$ (within the threshold $T_{\theta}$) and similar $x - y$ registration pattern (within the thresholds $T_x$, $T_y$). -->
 
 A truly matching pair of cartridge cases has similar translation and rotation values for each cell, while a non-matching pair of cartridge cases exhibits a variety of different translation and rotation values without showing a particular pattern.
 
@@ -853,7 +855,7 @@ That is, a consensus is determined by finding the median registration phase valu
 Then, the distances between the consensus registration values and the cell comparison values are assessed to determine whether they are within a specified distance of the consensus.
 This consensus assessment introduces threshold parameters $T_{x}, T_{y}, T_\theta, T_{\text{CCF}}$.
 
-Let $x_i, y_i, \theta_i$ denote the translation and rotation parameters which produce the highest CCF for the alignment of cell/region pair $i$. A cell/region pair $i$ is declared a match if all of the following conditions hold:
+Let $x_i, y_i, \theta_i$ denote the translation and rotation parameters which produce the highest CCF for the alignment of cell/region pair $i$, $i = 1,...,n$ where $n$ is the total number of cell/region pairs containing a sufficient proportion of non-missing values. A cell/region pair $i$ is declared a match if all of the following conditions hold:
 \begin{enumerate}
 \item $|x_i - x_{\text{ref}}| \leq T_{x}$ \\
 \item $|y_i - y_{\text{ref}}| \leq T_{y}$ \\
@@ -896,18 +898,19 @@ As such, there is little known about the effectiveness of the any CMC method to 
     \label{tab:thresholdTable}
 \end{table}
 
-The High CMC utilizes the behavior of the CCF$_{\max}$ values across various rotations more advantageously than the original method of \citet{song_proposed_2013}. 
-\hh{XXX I'm not sure that I agree with the 'advantageously'. In a truly principled approach, parameters would be chosen based on the performance on a training data set (as done here), but then validated based on the performance of the algorithm on a testing or hold-out data set.}
-\hh{XXX could you find a different adjective that describes the difference more accurately?}
+The High CMC utilizes the behavior of the CCF$_{\max}$ values across various rotations more \jz{carefully} than the original method of \citet{song_proposed_2013}. 
+<!-- \hh{XXX I'm not sure that I agree with the 'advantageously'. In a truly principled approach, parameters would be chosen based on the performance on a training data set (as done here), but then validated based on the performance of the algorithm on a testing or hold-out data set.} -->
+<!-- \hh{XXX could you find a different adjective that describes the difference more accurately?} -->
 
-Additionally, comparisons are performed in both directions, i.e. each scan takes on the role of the reference scan that is partitioned into a grid of cells.
+<!-- Additionally, comparisons are performed in both directions, i.e. each scan takes on the role of the reference scan that is partitioned into a grid of cells. -->
 
 
 ### The High CMC method {#highCMCMethod}
 
 
 For the High CMC method, comparisons \hh{between two scans} are performed in both directions, i.e. each scan takes on the role of the reference scan that is partitioned into a grid of cells.
-The CMCs under the original method of \citet{song_proposed_2013} are calculated in each direction and their minimum is used as an "original CMC number." \hh{Is that what actually happens? The minimum was not mentioned earlier. If the minimum is used in the original method to determine the CMC count, a comparison of A to B and B to A happens implicitly, so the emphasis on the comparison in both directions for the High CMC method is a bit odd then.}
+The CMCs under the original method of \citet{song_proposed_2013} are calculated in each direction and their minimum is used as an "original CMC number." \hh{XXX Is that what actually happens? The minimum was not mentioned earlier. If the minimum is used in the original method to determine the CMC count, a comparison of A to B and B to A happens implicitly, so the emphasis on the comparison in both directions for the High CMC method is a bit odd then.}
+\jz{XXX Yes, that is what actually happens in the High CMC method. We have no idea if the comparisons are performed in both directions for the original method. \citet{tong_improved_2015} was the first to explicitly mention peforming comparisons in both directions.}
 
 However, as \citet{tong_improved_2015} claim, some truly matching cell pairs "may be mistakenly excluded from the CMC count" because they attain the largest CCF value at a rotation value outside the range allowed by $T_\theta$ "by chance."
 
@@ -919,14 +922,19 @@ However, as \citet{tong_improved_2015} claim, some truly matching cell pairs "ma
 <!-- rotation angle outside the threshold range \(T_\theta\). -->
 <!-- \end{quote} -->
 
-The original method of \citet{song_proposed_2013} only considers the alignment phase \hh{what counts as the alignment phase? That hasn't been mentioned before} at which each cell attains a maximum CCF, it is \hh{XXXX not? I would think the method IS sensitive to these } not sensitive to these  excluded cell pairs. To combat this, \citet{tong_improved_2015} instead consider the number of cells with "sufficiently large" CCF values and translation phases close to reference values for each $\theta$.
+The original method of \citet{song_proposed_2013} only considers the $(x,y,\theta)$ phase values 
+<!-- \hh{what counts as the alignment phase? That hasn't been mentioned before}  -->
+at which each cell attains a maximum CCF, it is \hh{XXXX not? I would think the method IS sensitive to these } \jz{XXX "sensitive to" like how a drug-sniffing dog is sensitive to the scent of narcotics - in the sense that the original method does not identify these mistakenly excluded pairs when they exist (at least this is what the NIST folks have argued for in  \citet{tong_improved_2015} and \citet{chen_convergence_2017}).} not sensitive to these  excluded cell pairs. To combat this, \citet{tong_improved_2015} instead consider the number of cells with "sufficiently large" CCF values and translation phases close to reference values for each $\theta$.
 
 \hh{Can you summarize the math below in plain words first? - I'm also a bit confused as to what to do with the previous sentence... 'considering' is not a very actionable plan.}
-Let $(x_{i,\theta}, y_{i,\theta})'$ be the translation phase of cell $i$ associated with rotation $\theta \in \Theta$ and $CCF_{i,\theta}$ be the associated CCF value. Also let $(x_{ref,\theta}, y_{ref,\theta})' \equiv \text{median}\left(\{(x_{i,\theta}, y_{i,\theta})' : i = 1,...,n\}\right)$. \hh{XXX How is $n$ determined? Are these values all related to one cell or is this set determined across all cells?}
+\jz{I've been unable to come up with a concise, plain-word explanation for how the High CMC method works. Susan and I came up with the voting system analogy to describe the method, but that seems to have been commented-out at some point. Also, I'm not sure what you mean by "actionable plan." I use the word "consider" in the sense that this is the information they attempt to leverage to make classifications.}
+Let $(x_{i,\theta}, y_{i,\theta})'$ be the translation phase of cell $i$ associated with rotation $\theta \in \Theta$ and $CCF_{i,\theta}$ be the associated CCF value. Also let $(x_{ref,\theta}, y_{ref,\theta})' \equiv \text{median}\left(\{(x_{i,\theta}, y_{i,\theta})' : i = 1,...,n_{\theta}\}\right)$ where $n_\theta$ is the total number of cell/region pairs containing a sufficient proportion of non-missing values at $\theta$ (which may change across $\Theta$ because the observations captured by a particular region change as the target scan is rotated). 
+<!-- \hh{XXX How is $n$ determined? Are these values all related to one cell or is this set determined across all cells?} -->
 
-Cell $i$ \hh{XXX what is the domain of this $i$? - is that the same one as above?} is considered a "potential" CMC at $\theta$, if 
+\jz{The cell of cell/region pair} $i$ \hh{XXX what is the domain of this $i$? - is that the same one as above?} \jz{XXX I added an explanation of $i$ in the original method description above} is considered a "potential" CMC at $\theta$, if 
 \begin{itemize}
-\item $|x_{ref,\theta} - x_{ref,\theta}| \leq T_x$, \hh{is the first item indexed wrongly? I believe it should be $x_{i, \theta}$.}
+\item $|x_{i,\theta} - x_{ref,\theta}| \leq T_x$,
+<!-- \hh{is the first item indexed wrongly? I believe it should be $x_{i, \theta}$.} -->
 
 \item $|y_{i,\theta} - y_{ref,\theta}| \leq T_y$,
 
@@ -935,6 +943,7 @@ Cell $i$ \hh{XXX what is the domain of this $i$? - is that the same one as above
 
 
 \hh{XXX generally, definitions should go first - if we need a $\theta$ distribution, define it at the top. If not, let's cut that. If the CMC-$\theta$ distribution actually exhibits the described performance, it would be good as diagnostic. From what I have seen in the actual data, I am not that convinced.  XXX}
+\jz{XXX The CMC-$\theta$ distribution is what \citet{tong_improved_2015} construct to decide whether a cartridge case pair should be assigned the High CMC count or the minimum of the Original Method CMC counts, so it's important to explaining how the method works. I don't think there's a good way to define it without first defining the "potential" CMCs, which is done in the previous statement and 3 bullet points. Like I said, I haven't thought of a good, plain-word explanation for the High CMC method.}
 In counting the number of potential CMCs for each $\theta$, we obtain what \citet{tong_improved_2015} refer to as a "CMC-$\theta$" distribution on $\Theta$.
 \citet{tong_improved_2015} assert that for a truly matching cartridge case pair, this CMC-$\theta$ distribution should exhibit a "prominent peak" near the true rotation value at which the pair aligns.
 In contrast, truly non-matching pairs should exhibit a "relatively flat and random CMC-$\theta$ distribution pattern."
@@ -1206,7 +1215,7 @@ The top row shows 17 CMCs in blue and 10 non-CMCs in red when Fadul 1-1 is treat
 The bottom row shows the 18 CMCs and 14 non-CMCs when the roles are reversed.
 There is no discussion in \citet{song_proposed_2013} about combining the results from these two comparison directions, but \citet{tong_improved_2015} propose using the minimum of the two CMC counts (17 in this example).}
 
-```{r,echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.cap='\\label{fig:topVoteCMCPlot} CMC results for the comparison between Fadul 1-1 and Fadul 1-2 using the original method of \\citet{song_proposed_2013}. The first row shows the 17 CMCs when Fadul 1-1 is treated as the ``reference" cartridge case to which Fadul 1-2 (the ``target") is compared. The second row shows the 18 CMCs when the roles are reversed. Red cells indicate where cells \\emph{not} identified as congruent achieve the maximum pairwise-complete correlation across all rotations of the target scan. It is not clear whether the results from both comparison directions are combined for the original method of \\citet{song_proposed_2013}.',fig.align='center',fig.pos='htbp',fig.width=4.95}
+```{r,echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.cap='\\label{fig:topVoteCMCPlot} CMC results for the comparison between Fadul 1-1 and Fadul 1-2 using the original method of \\citet{song_proposed_2013}. The first row shows the 16 CMCs when Fadul 1-1 is treated as the ``reference" cartridge case to which Fadul 1-2 (the ``target") is compared. The second row shows the 15 CMCs when the roles are reversed. Red cells indicate where cells \\emph{not} identified as congruent achieve the maximum pairwise-complete correlation across all rotations of the target scan. It is not clear whether the results from both comparison directions are combined for the original method of \\citet{song_proposed_2013}.',fig.align='center',fig.pos='htbp',fig.width=4.95}
 
 km_originalCMCPlot_bothDirections
 ```
@@ -1216,7 +1225,7 @@ Similarly, CMCs and non-CMCs determined under the High CMC method are shown in \
 There are 5 cells classified as CMCs when treating Fadul 1-2 as the reference scan that are not classified as CMCs when treating Fadul 1-1 as the reference.
 Thus, combining the results from both directions yields 24 CMCs. }
 
-```{r,echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.cap='\\label{fig:highCMCPlot} Applying the High CMC method to the comparison of Fadul 1-1 and Fadul 1-2 results in 19 CMCs when Fadul 1-1 is treated as the reference (top) and 18 CMCs when Fadul 1-2 is treated as the reference (bottom). Although the individual comparisons do not yield considerably more CMCs than under the original method of \\citet{song_proposed_2013}, \\citet{tong_improved_2015} indicate that the High CMCs from both comparisons are combined as the final High CMC count (each cell is counted at most once). Combining the results means that the High CMC method tends to produce higher CMC counts than the original method of \\citet{song_proposed_2013}. In this example, the combined High CMC count is 24 CMCs.',fig.align='center',fig.pos='htbp',fig.width=4.95}
+```{r,echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.cap='\\label{fig:highCMCPlot} Applying the High CMC method to the comparison of Fadul 1-1 and Fadul 1-2 results in 17 CMCs when Fadul 1-1 is treated as the reference (top) and 18 CMCs when Fadul 1-2 is treated as the reference (bottom). Although the individual comparisons do not yield considerably more CMCs than under the original method of \\citet{song_proposed_2013}, \\citet{tong_improved_2015} indicate that the High CMCs from both comparisons are combined as the final High CMC count (each cell is counted at most once). Combining the results means that the High CMC method tends to produce higher CMC counts than the original method of \\citet{song_proposed_2013}. In this example, the combined High CMC count is 24 CMCs.',fig.align='center',fig.pos='htbp',fig.width=4.95}
 
 km_highCMCCMCPlot_bothDirections
 ```
