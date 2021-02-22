@@ -907,7 +907,7 @@ Additionally, comparisons are performed in both directions, i.e. each scan takes
 
 
 For the High CMC method, comparisons \hh{between two scans} are performed in both directions, i.e. each scan takes on the role of the reference scan that is partitioned into a grid of cells.
-The CMCs under the original method of \citet{song_proposed_2013} are calculated in each direction and their minimum is used as an "original CMC number." \hh{Is that what actually happens? The minimum was not mentioned earlier. }
+The CMCs under the original method of \citet{song_proposed_2013} are calculated in each direction and their minimum is used as an "original CMC number." \hh{Is that what actually happens? The minimum was not mentioned earlier. If the minimum is used in the original method to determine the CMC count, a comparison of A to B and B to A happens implicitly, so the emphasis on the comparison in both directions for the High CMC method is a bit odd then.}
 
 However, as \citet{tong_improved_2015} claim, some truly matching cell pairs "may be mistakenly excluded from the CMC count" because they attain the largest CCF value at a rotation value outside the range allowed by $T_\theta$ "by chance."
 
