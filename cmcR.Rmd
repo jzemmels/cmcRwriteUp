@@ -869,6 +869,8 @@ As such, there is little known about the effectiveness of the any CMC method to 
 
 \hh{XXX On another note: the grid space for theta is not defined, but determines the outcome. XXX}
 
+\hh{XXX Another note: this method is not necessarily symmetric, i.e. a comparison of scan A to B can result in a different CMC count than a comparison of B to A.  XXX}
+
 
 \autoref{tab:thresholdTable} summarizes the thresholds used in various CMC papers.
 
