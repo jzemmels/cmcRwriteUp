@@ -931,15 +931,13 @@ For the High CMC method, comparisons \hh{between two scans} are performed in bot
 at which each cell attains a maximum CCF, it is \hh{XXXX not? I would think the method IS sensitive to these } \jz{XXX "sensitive to" like how a drug-sniffing dog is sensitive to the scent of narcotics - in the sense that the original method does not identify these mistakenly excluded pairs when they exist (at least this is what the NIST folks have argued for in  \citet{tong_improved_2015} and \citet{chen_convergence_2017}).} not sensitive to these  excluded cell pairs.-->
 To combat this, \citet{tong_improved_2015} \hh{introduce consensus  values across all cell-region pairs for each rotation angle $\theta$ and calcluate a $\theta$ dependent CMC count as the sum of matches observed. A match is defined, as previously if a cell-region pair $i$ fulfills the following three conditions: } 
 
-\begin{itemize}
-\item $|x_{i,\theta} - x_{ref,\theta}| \leq T_x$,
-<!-- \hh{is the first item indexed wrongly? I believe it should be $x_{i, \theta}$.} -->
+\begin{eqnarray}\label{eqn:high-cmc}
+|x_{i,\theta} - x_{ref,\theta}| &\leq& T_x \\ \nonumber
+|y_{i,\theta} - y_{ref,\theta}| &\leq& T_y \\ \nonumber
+\text{CCF}_{i,\theta} &\geq& T_{\text{CCF}}.
+\end{eqnarray}
 
-\item $|y_{i,\theta} - y_{ref,\theta}| \leq T_y$,
-
-\item and CCF$_{i,\theta} \geq T_{\text{CCF}}$.
-\end{itemize}
-
+\hh{The $\theta$-dependent CMC count,  CMC$_\theta$, is then defined as the sum of matching cell-region pairs.}
 <!--
 
 instead consider the number of cells with "sufficiently large" CCF values and translation phases close to reference values for each $\theta$.
@@ -969,8 +967,10 @@ In counting the number of potential CMCs for each $\theta$, we obtain what \cite
 \citet{tong_improved_2015} assert that for a truly matching cartridge case pair, the relationship between $\theta$ and CMC$_\theta$ should exhibit a "prominent peak" near the true rotation value at which the pair aligns.
 In contrast, truly non-matching pairs should exhibit a "relatively flat and random [...] pattern."
 
-\hh{A preliminary CMC count is then obtained as the $CMC_\theta$, for which  XXXX}
-Let $N_\theta$ be the number of potential CMCs at a particular $\theta \in \Theta$ and let $N \equiv \max_\theta\{N_\theta\}$. To determine whether a "prominent peak" exists in the CMC-$\theta$ distribution, \citet{tong_improved_2015} calculate the "angular range" $R \equiv$ range$\left(\{\theta : N_\theta \geq N - \tau\}\right)$ for some user-defined $\tau$. The $\theta$ values in this set are referred as the "high CMC" $\theta$ values as they have a relatively high number of associated potential CMCs. \citet{tong_improved_2015} propose the following:
+
+To determine whether a "prominent peak" exists in the relationship between $\theta$ and CMC$_\theta$, \citet{tong_improved_2015} calculate the "angular range" $R$ defined as \hh{XXX in words first: } $R(\tau) := \left(\{\theta : CMC_\theta \geq N - \tau\}\right)$ for some user-defined $\tau$, where $N_\theta$ is defined as the number of cell-region pairs fulfilling the conditions of \autoref{eqn:high-cmc} and $N$ is defined as their maximum, $N = \max_\theta N_\theta$. The $\theta$ values in this set are referred as the "high CMC" $\theta$ values as they have a relatively high number of associated potential CMCs. \citet{tong_improved_2015} propose the following:
+
+Let  be the number of potential CMCs at a particular $\theta \in \Theta$ and let $N \equiv \max_\theta\{N_\theta\}$. 
 
 > Conduct both forward and backward correlations at each rotation and record the registration based on CCF$_{\max}$, $x$, and $y$ for each cell at each rotation. These data will be used in the next two steps separately.
 
