@@ -710,7 +710,7 @@ $$
 $$
 where $\mathcal{F}$ and $\mathcal{F}^{-1}$ denote the discrete Fourier and inverse discrete Fourier transforms, respectively, and $\overline{\mathcal{F}(A)}$ denotes the complex conjugate \citep{fft_brigham}. 
 <!-- Note that the multiplication on the right-hand side is a pointwise (Hadamard) multiplication.  -->
-\jz{Because the product on the right-hand side is pointwise, t}his result allows us to trade the moving sum computations from the definition of the CCF for two forward Fourier transformation, a pointwise product, and an inverse Fourier transformation. 
+Because the product on the right-hand side is calculated pointwise, this result allows us to trade the moving sum computations from the definition of the CCF for two forward Fourier transformation, a pointwise product, and an inverse Fourier transformation. 
 The Fast Fourier Transform (FFT) algorithm can be used to reduce the computational load considerably.
 
 No computational shortcut comes without some tradeoffs, though, and this FFT-based CCF calculation is no different. 
@@ -846,7 +846,8 @@ Where the various CMC decision rules principally differ is in how they identify 
 
 This section briefly describes the decision rule of the original method of \citet{song_proposed_2013}. For a thorough explanation of the procedure, refer to the [CMC Decision Rule Description](https://csafe-isu.github.io/cmcR/articles/decisionRuleDescription.html)  vignette in the \pkg{cmcR} package.
 
-\hh{XXX for each cell-region pair only the values $(x_i, y_i$ \theta_i)$ are considered, where the cross-correlation reaches its maximum.}
+
+Let $x_i, y_i, \theta_i$ denote the translation and rotation parameters which produce the highest CCF for the alignment of cell-region pair $i$, $i = 1,...,n$ where $n$ is the total number of cell-region pairs containing a sufficient proportion of non-missing values.
 
 
 \citet{song_proposed_2013} <!--describes the original method conceptually, an actionable description is found in \citet{song_3d_2014}:
@@ -856,13 +857,14 @@ This section briefly describes the decision rule of the original method of \cite
 That is,--> \hh{propose the median as} a consensus $(x_{\text{ref}}, y_{\text{ref}}, \theta_{\text{ref}})$ <!--is determined by finding the median registration phase values,--> across the cell-region pairs for a particular cartridge case pair comparison.
 Then, the distances between the consensus values and the values for each cell comparison are assessed to determine whether the values are within a specified distance of the consensus, as determined by three threshold parameters $T_{x}, T_{y}, T_\theta, T_{\text{CCF}}$.
 
-Let $x_i, y_i, \theta_i$ denote the translation and rotation parameters which produce the highest CCF for the alignment of cell-region pair $i$, $i = 1,...,n$ where $n$ is the total number of cell-region pairs containing a sufficient proportion of non-missing values. A cell-region pair $i$ is declared a match if all of the following conditions hold:
-\begin{enumerate}
-\item $|x_i - x_{\text{ref}}| \leq T_{x}$ \\
-\item $|y_i - y_{\text{ref}}| \leq T_{y}$ \\
-\item $|\theta_i - \theta_{\text{ref}}| \leq T_{\theta}$ \\
-\item CCF$_{\max,i} \geq T_{\text{CCF}}$.
-\end{enumerate}
+A cell-region pair $i$ is declared a match if all of the following conditions hold:
+
+\begin{eqnarray}\label{eq:original}
+|x_i - x_{\text{ref}}| &\leq& T_{x} \\ \nonumber
+|y_i - y_{\text{ref}}| &\leq& T_{y} \\ \nonumber
+|\theta_i - \theta_{\text{ref}}| &\leq& T_{\theta} \\ \nonumber
+\text{CCF}_{\max,i} &\geq& T_{\text{CCF}}.
+\end{eqnarray}
 
 \hh{The CMC count is then defined as the number of matching cell-region pairs (out of $n$). }
 
@@ -883,7 +885,8 @@ As such, there is little known about the effectiveness of the any CMC method to 
     \centering
     \begin{tabular}{|lrrr|}
       \hline
-        Paper & Translation (pix.) & Rotation (deg.) & CCF$_{\max}$ \\
+        Paper & Translation $T_x, T_y$ & Rotation $\theta$ & CCF$_{\max}$ \\
+              & (in pixels) & (in degrees) \\
         \hline
         \cellcolor{lightgray}{\citet{song_3d_2014}} & \cellcolor{lightgray}{20} & 
         \cellcolor{lightgray}{6} & \cellcolor{lightgray}{.60} \\
@@ -903,7 +906,11 @@ As such, there is little known about the effectiveness of the any CMC method to 
     \label{tab:thresholdTable}
 \end{table}
 
-The High CMC utilizes the behavior of the CCF$_{\max}$ values across various rotations more \jz{carefully} \hh{XXX don't agree with that either. Can we leave out the judgment?} than the original method of \citet{song_proposed_2013}. 
+
+
+Unlike the Original CMC method,  the High CMC method considers multiple rotations for each cell-region pair. 
+
+<!--utilizes the behavior of the CCF$_{\max}$ values across various rotations more \jz{carefully} \hh{XXX don't agree with that either. Can we leave out the judgment?} than the original method of \citet{song_proposed_2013}. 
 <!-- \hh{XXX I'm not sure that I agree with the 'advantageously'. In a truly principled approach, parameters would be chosen based on the performance on a training data set (as done here), but then validated based on the performance of the algorithm on a testing or hold-out data set.} -->
 <!-- \hh{XXX could you find a different adjective that describes the difference more accurately?} -->
 
@@ -968,7 +975,7 @@ In counting the number of potential CMCs for each $\theta$, we obtain what \cite
 In contrast, truly non-matching pairs should exhibit a "relatively flat and random [...] pattern."
 
 
-To determine whether a "prominent peak" exists in the relationship between $\theta$ and CMC$_\theta$, \citet{tong_improved_2015} introduce the "angular range" $R (\tau)$ as an interval of rotation angles covering high CMC$_\theta$ values.  For that, another threshold value $\tau$ is introduced and the range is determined as the interval of angles defined between  $\arg \min_\theta CMC_\theta > CMC_{\text{max}} - \tau$ and 
+To determine whether a "prominent peak" exists in the relationship between $\theta$ and CMC$_\theta$, \citet{tong_improved_2015} introduce the "angular range" $R (\tau)$ as an interval of rotation angles covering high CMC$_\theta$ values.  Here, $\tau$ represents another threshold value that determines the angular range as the interval of angles  between  $\arg \min_\theta CMC_\theta > CMC_{\text{max}} - \tau$ and 
  and $\arg \max_\theta CMC_\theta < CMC_{\text{max}} - \tau$, where $CMC_{\text{max}}$ is defined as the maximum of CMC$_\theta$ counts across all rotation angles $\theta$. \citet{tong_improved_2015} suggest a value for $\tau$ of 1 and further determine:
 
 
