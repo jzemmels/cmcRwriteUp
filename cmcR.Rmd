@@ -645,7 +645,7 @@ Instead,-->
 \hh{These cells are compared individually to their best-matching counterpart on the other scan.} If a large \svp{proportion} of these correlation cells are highly similar to \hh{their counterparts on}  the other breech face scan, \hh{this is considered as} evidence that the \hh{markings on the} two cartridge cases \hh{were made by the same source}. \hh{The number of highly similar cells is defined as the }
  \dfn{CMC count} \citep{song_proposed_2013} \hh{of the breech-face comparison}. \hh{The CMC count is considered to be a more} \svp{robust} similarity metric \hh{than a cross-correlation score based on} the entire cartridge case.
 
-```{r, echo=FALSE,fig.cap='\\label{fig:cmc_illustration} Illustration of comparing a cell in the reference cartridge case scan (left) to a larger region in a questioned cartridge case scan (right). Every \\hh{one of the} cells in the reference cartridge case is similarly paired with a region in the questioned \\hh{cartridge case}.  To determine the rotation at which the two cartridge cases align, the cell/region pairs are compared for various rotations of the questioned cartridge case.',fig.align='center',fig.pos='htbp',out.width='.75\\textwidth'}
+```{r, echo=FALSE,fig.cap='\\label{fig:cmc_illustration} Illustration of comparing a cell in the reference cartridge case scan (left) to a larger region in a questioned cartridge case scan (right). Every \\hh{one of the} cells in the reference cartridge case is similarly paired with a region in the questioned \\hh{cartridge case}.  To determine the rotation at which the two cartridge cases align, the cell-region pairs are compared for various rotations of the questioned cartridge case.',fig.align='center',fig.pos='htbp',out.width='.75\\textwidth'}
 
 knitr::include_graphics("images/cmc_illustration.PNG")
 ```
@@ -767,7 +767,7 @@ This sequence of functions are applied for \hh{a sequence of angles} $\theta$ ro
 \autoref{tab:cellCCF} shows several rows of the data frame output of the \code{comparison\_allTogether} function \jz{for the comparison of Fadul 1-1 vs. Fadul 1-2 considering Fadul 1-1 as the reference scan}.
 Although a grid of $8 \times 8$ cells was used, there were \hh{only} 26 
 <!-- \hh{XXX I am getting 47 cells - is the 27 a typo? XXX} \jz{XXX No, I don't think so. I'm basing 26 (not 27 - that was a typo, it seems) off of considering length(unique(kmComparisonFeatures$cellIndex))}  -->
-cell/region pairs that contained a sufficient proportion of non-missing values (15% in this example). 
+cell-region pairs that contained a sufficient proportion of non-missing values (15% in this example). 
 The features derived from the correlation cell procedure (CCF$_{max}$, $\Delta x$, $\Delta y$, $\theta$) are used as inputs to the methods for assessing the similarity between scans.
 
 ```{r echo=FALSE,warning=F,message=F,eval=TRUE,cache = T}
@@ -830,14 +830,14 @@ Where the various CMC decision rules principally differ is in how they identify 
 <!-- \begin{figure} -->
 <!-- \centering -->
 <!-- \includegraphics[width=\textwidth]{images/originalMethod_sideBySide_secondDraft.png} -->
-<!-- \caption{\jz{Estimated phase alignment and CCF$_{\max}$ distributions for the comparison between the matching Fadul 1-1 vs. Fadul 1-2 and non-matching Fadul 1-1 vs. Fadul 2-1. Fadul 1-1 is treated as the "reference" scan, meaning it is split into a grid of cells and compared to regions in the other cartridge cases. The cells shown on Fadul 1-2 and Fadul 2-1 represent where each cell in Fadul 1-1 attains the highest CCF$_{\max}$ value. The distributions below the scans depict the actual $x,y,\theta$, and CCF$_{\max}$ values for each cell/region pair used in the comparison. For the first three rows, $x,y,$ and $\theta$ values within the blue ribbons are "congruent" in that they are within the allowed tolerance $(T_x = T_y = 20$ pixels, $T_\theta = 6$ degree) of the median alignment value. In the last row, CCF$_{\max}$ values above the allowed threshold $(T_{\text{CCF}} \geq .5$) are considered "congruent."}} -->
+<!-- \caption{\jz{Estimated phase alignment and CCF$_{\max}$ distributions for the comparison between the matching Fadul 1-1 vs. Fadul 1-2 and non-matching Fadul 1-1 vs. Fadul 2-1. Fadul 1-1 is treated as the "reference" scan, meaning it is split into a grid of cells and compared to regions in the other cartridge cases. The cells shown on Fadul 1-2 and Fadul 2-1 represent where each cell in Fadul 1-1 attains the highest CCF$_{\max}$ value. The distributions below the scans depict the actual $x,y,\theta$, and CCF$_{\max}$ values for each cell-region pair used in the comparison. For the first three rows, $x,y,$ and $\theta$ values within the blue ribbons are "congruent" in that they are within the allowed tolerance $(T_x = T_y = 20$ pixels, $T_\theta = 6$ degree) of the median alignment value. In the last row, CCF$_{\max}$ values above the allowed threshold $(T_{\text{CCF}} \geq .5$) are considered "congruent."}} -->
 <!-- \end{figure} -->
 
 <!-- \svp{Both methods enforce decision criteria on the CCF, translation in x, translation in y, and rotation angle $\theta$ to determine which cells are declared to be sufficiently similar; then, the total number of similar cells is used to evaluate the cartridge cases as whole units.} -->
 <!-- \svp{The criteria proposed in \citet{song_proposed_2013} are fairly strict; the High CMC method described in \citet{tong_improved_2015} adjusts the procedure for determining consensus estimates and the subsequent decision rules.} -->
 <!-- The final step in any CMC method is to apply a set of criteria (i.e., a decision rule) to determine whether a consensus exists among these values.  -->
 <!-- Where the various proposed CMC methods principally differ is in these criteria.  -->
-<!-- For example, in the original method of \citet{song_proposed_2013}, the strength of the consensus is quantified by the number of cell/region pairs with "similar" registration phases (to be defined in [the description of the original method](\#originalMethod)). \jz{To overcome limitations of the original method, its descendants, including the High CMC method, apply more stringent criteria.} -->
+<!-- For example, in the original method of \citet{song_proposed_2013}, the strength of the consensus is quantified by the number of cell-region pairs with "similar" registration phases (to be defined in [the description of the original method](\#originalMethod)). \jz{To overcome limitations of the original method, its descendants, including the High CMC method, apply more stringent criteria.} -->
 
 
 <!--In this section, we describe the two decision rules implemented in the \pkg{cmcR} package the  original method \citep{song_proposed_2013} and the High CMC method \citep{tong_improved_2015}.-->
@@ -853,10 +853,10 @@ This section briefly describes the decision rule of the original method of \cite
 
 > a virtual reference with three reference registration parameters $\theta_{\text{ref}}$, $x_{\text{ref}}$ and $y_{\text{ref}}$ generated by the median values of the collective $\theta$, and $x$-, $y$-translation values of all cell pairs.
 
-That is,--> \hh{propose the median as} a consensus $(x_{\text{ref}}, y_{\text{ref}}, \theta_{\text{ref}})$ <!--is determined by finding the median registration phase values,--> across the cell/region pairs for a particular cartridge case pair comparison.
+That is,--> \hh{propose the median as} a consensus $(x_{\text{ref}}, y_{\text{ref}}, \theta_{\text{ref}})$ <!--is determined by finding the median registration phase values,--> across the cell-region pairs for a particular cartridge case pair comparison.
 Then, the distances between the consensus values and the values for each cell comparison are assessed to determine whether the values are within a specified distance of the consensus, as determined by three threshold parameters $T_{x}, T_{y}, T_\theta, T_{\text{CCF}}$.
 
-Let $x_i, y_i, \theta_i$ denote the translation and rotation parameters which produce the highest CCF for the alignment of cell/region pair $i$, $i = 1,...,n$ where $n$ is the total number of cell/region pairs containing a sufficient proportion of non-missing values. A cell/region pair $i$ is declared a match if all of the following conditions hold:
+Let $x_i, y_i, \theta_i$ denote the translation and rotation parameters which produce the highest CCF for the alignment of cell-region pair $i$, $i = 1,...,n$ where $n$ is the total number of cell-region pairs containing a sufficient proportion of non-missing values. A cell-region pair $i$ is declared a match if all of the following conditions hold:
 \begin{enumerate}
 \item $|x_i - x_{\text{ref}}| \leq T_{x}$ \\
 \item $|y_i - y_{\text{ref}}| \leq T_{y}$ \\
@@ -944,10 +944,10 @@ instead consider the number of cells with "sufficiently large" CCF values and tr
 
 \hh{Can you summarize the math below in plain words first? - I'm also a bit confused as to what to do with the previous sentence... 'considering' is not a very actionable plan.}
 \jz{I've been unable to come up with a concise, plain-word explanation for how the High CMC method works. Susan and I came up with the voting system analogy to describe the method, but that seems to have been commented-out at some point. Also, I'm not sure what you mean by "actionable plan." I use the word "consider" in the sense that this is the information they attempt to leverage to make classifications.}
-Let $(x_{i,\theta}, y_{i,\theta})'$ be the translation phase of cell $i$ associated with rotation $\theta \in \Theta$ and $CCF_{i,\theta}$ be the associated CCF value. Also let $(x_{ref,\theta}, y_{ref,\theta})' \equiv \text{median}\left(\{(x_{i,\theta}, y_{i,\theta})' : i = 1,...,n_{\theta}\}\right)$ where $n_\theta$ is the total number of cell/region pairs containing a sufficient proportion of non-missing values at $\theta$ (which may change across $\Theta$ because the observations captured by a particular region change as the target scan is rotated). 
+Let $(x_{i,\theta}, y_{i,\theta})'$ be the translation phase of cell $i$ associated with rotation $\theta \in \Theta$ and $CCF_{i,\theta}$ be the associated CCF value. Also let $(x_{ref,\theta}, y_{ref,\theta})' \equiv \text{median}\left(\{(x_{i,\theta}, y_{i,\theta})' : i = 1,...,n_{\theta}\}\right)$ where $n_\theta$ is the total number of cell-region pairs containing a sufficient proportion of non-missing values at $\theta$ (which may change across $\Theta$ because the observations captured by a particular region change as the target scan is rotated). 
 <!-- \hh{XXX How is $n$ determined? Are these values all related to one cell or is this set determined across all cells?} -->
 <!--
-\jz{The cell of cell/region pair} $i$ \hh{XXX what is the domain of this $i$? - is that the same one as above?} \jz{XXX I added an explanation of $i$ in the original method description above} is considered a "potential" CMC at $\theta$, if 
+\jz{The cell of cell-region pair} $i$ \hh{XXX what is the domain of this $i$? - is that the same one as above?} \jz{XXX I added an explanation of $i$ in the original method description above} is considered a "potential" CMC at $\theta$, if 
 \begin{itemize}
 \item $|x_{i,\theta} - x_{ref,\theta}| \leq T_x$,
 <!-- \hh{is the first item indexed wrongly? I believe it should be $x_{i, \theta}$.} 
@@ -968,7 +968,12 @@ In counting the number of potential CMCs for each $\theta$, we obtain what \cite
 In contrast, truly non-matching pairs should exhibit a "relatively flat and random [...] pattern."
 
 
-To determine whether a "prominent peak" exists in the relationship between $\theta$ and CMC$_\theta$, \citet{tong_improved_2015} calculate the "angular range" $R$ defined as \hh{XXX in words first: } $R(\tau) := \left(\{\theta : CMC_\theta \geq N - \tau\}\right)$ for some user-defined $\tau$, where $N_\theta$ is defined as the number of cell-region pairs fulfilling the conditions of \autoref{eqn:high-cmc} and $N$ is defined as their maximum, $N = \max_\theta N_\theta$. The $\theta$ values in this set are referred as the "high CMC" $\theta$ values as they have a relatively high number of associated potential CMCs. \citet{tong_improved_2015} propose the following:
+To determine whether a "prominent peak" exists in the relationship between $\theta$ and CMC$_\theta$, \citet{tong_improved_2015} introduce the "angular range" $R (\tau)$ as an interval of rotation angles covering high CMC$_\theta$ values.  For that, another threshold value $\tau$ is introduced and the range is determined as the interval of angles defined between  $\arg \min_\theta CMC_\theta > CMC_{\text{max}} - \tau$ and 
+ and $\arg \max_\theta CMC_\theta < CMC_{\text{max}} - \tau$, where $CMC_{\text{max}}$ is defined as the maximum of CMC$_\theta$ counts across all rotation angles $\theta$. \citet{tong_improved_2015} suggest a value for $\tau$ of 1 and further determine:
+
+
+<!--
+$R(\tau) := \left(\{\theta : CMC_\theta \geq N - \tau\}\right)$ for some user-defined $\tau$, where $N_\theta$ is defined as the number of cell-region pairs fulfilling the conditions of \autoref{eqn:high-cmc} and $N$ is defined as their maximum, $N = \max_\theta N_\theta$. The $\theta$ values in this set are referred as the "high CMC" $\theta$ values as they have a relatively high number of associated potential CMCs. \citet{tong_improved_2015} propose the following:
 
 Let  be the number of potential CMCs at a particular $\theta \in \Theta$ and let $N \equiv \max_\theta\{N_\theta\}$. 
 
@@ -976,18 +981,22 @@ Let  be the number of potential CMCs at a particular $\theta \in \Theta$ and let
 
 > At every rotation angle, each cell in the reference image finds a registration position in the compared image with a maximum CCF value. By selecting the registration with the maximum CCF value for each cell, the two CMC numbers determined by the four thresholds can be obtained based on the original algorithm [\citet{tong_fired_2014}]. The lower CMC number is used as the initial result.
 
-> Build CMC-$\theta$ distributions using the data generated in step 1, by counting the number of cells that have congruent positions at each individual rotation angle. Calculate the angular range of “high CMCs” using both the forward and backward CMC-$\theta$ distributions, as illustrated in Figs. 2 and 3.
+> Build CMC-$\theta$ distributions using the data generated in step 1, by counting the number of cells that have congruent positions at each individual rotation angle. Calculate the angular range of “high CMCs” using both the forward and backward CMC-$\theta$ distributions, as illustrated in Figs. 2 and 3. -->
 
-> If the angular range of the “high CMCs” is within the range $T_\theta$, identify the CMCs for each rotation angle in this range and combine them to give the number of CMCs for this comparison in place of the original CMC number. In this step, if the range is narrower than $T_\theta$, the nearby angles are included to make the range equal to $T_\theta$; CMCs with same index in each rotation are only counted once.
+> If the angular range of the “high CMCs” is within the range $T_\theta$, identify the CMCs for each rotation angle in this range and combine them to give the number of CMCs for this comparison in place of the original CMC number. 
 
-\jz{If the angular range is within $T_\theta$, we say that the cartridge case pair "passes" the High CMC criteria. Otherwise, the pair "fails" the High CMC criteria and the original CMC number is used.}
+<!--In this step, if the range is narrower than $T_\theta$, the nearby angles are included to make the range equal to $T_\theta$; CMCs with same index in each rotation are only counted once.-->
 
-The "prominent peak" observation upon which the High CMC method is based does seem to hold for many known match and known non-match pairs in our experience.
-However, we've observed that the behavior of the CMC-$\theta$ distributions depend heavily on the preprocessing procedures used and thresholds set. 
+\jz{If the angular range is outside the range of  $T_\theta$, we say that the cartridge case pair "fails" the High CMC criteria and the original CMC number is used.}
+
+
+\hh{Using this definition,  the High CMC method  returns for any comparison of breech face scans a CMC count equal to or higher to the Original method for both known matches and known non-matches.}
+
+<!-- The "prominent peak" observation upon which the High CMC method is based does seem to hold for many known match and known non-match pairs in our experience.-->
+<!--However, we've observed that the behavior of the CMC-$\theta$ distributions depend heavily on the preprocessing procedures used and thresholds set. 
 In particular, the CMC-$\theta$ distributions for some KNM pairs exhibit the prominent peak behavior for a wide range of threshold values making them difficult to distinguish from KM pairs.
+-->
 
-
-\hh{The CMC count under the High CMC method is then defined as the maximum of the described method and the CMC count of the original method. This way, the High CMC method  returns for any comparison of breech face scans a CMC count equal to or higher to the Original method.}
 
 \hh{XXX Note on symmetry?}
 
@@ -1314,7 +1323,7 @@ These factors include sensitivity to the choice of congruency thresholds, to the
 
 ## Communicating a method's sensitivity to processing conditions
 
-\jz{One of these influential factors is the choice of $T_x, T_y, T_\theta, T_{\text{CCF}}$ thresholds use to declare a particular cell/region pair "congruent." 
+\jz{One of these influential factors is the choice of $T_x, T_y, T_\theta, T_{\text{CCF}}$ thresholds use to declare a particular cell-region pair "congruent." 
 Many combinations of these thresholds yield perfect separation between the matching and non-matching CMC count distributions. 
 As such, some other diagnostic must be used to compare different sets of thresholds.
 Considering that ground-truth is known for the Fadul data set, we will obtain a group of known match CMC counts and a group of known non-match CMC counts for each set of thresholds. 
