@@ -878,6 +878,7 @@ As such, there is little known about the effectiveness of the any CMC method to 
 
 \hh{XXX Another note: this method is not necessarily symmetric, i.e. a comparison of scan A to B can result in a different CMC count than a comparison of B to A.  XXX}
 
+\hh{XXX \autoref{tab:thresholdTable} shows the different correlations - those are vast differences! 0.25 or 0.6? it's unbelievable that they get away with that.  XXX}
 
 \autoref{tab:thresholdTable} summarizes the thresholds used in various CMC papers.
 
@@ -1011,11 +1012,12 @@ In particular, the CMC-$\theta$ distributions for some KNM pairs exhibit the pro
 
 <!-- \svp{XXX this is a bit abrupt, can you transition into the implementation a bit more gently? Make the point that the parameters described above are included as parameters, and thus, we defer the determination of what the values of those parameters should be until the next section?} -->
 
-\jz{In this section, we demonstrate our implementation of the decision rules applied in the original method of \citet{song_proposed_2013} and the High CMC method of \citet{tong_improved_2015}.
-For illustrative purposes, we consider a particular set of thresholds: $T_x = T_y = 20$,  $T_{\theta} = 6$, and $T_{\text{CCF}} = .5$ values.
-A discussion of how to actually determine thresholds is provided in the} [investigation](#investigation) \jz{section}.
+In this section, we demonstrate the implementation of the decision rules in `cmcR` for both the original method \citep{song_proposed_2013} and the High CMC method  \citep{tong_improved_2015}.
+For illustrative purposes, let us consider a particular set of thresholds: $T_x = T_y = 20$,  $T_{\theta} = 6$, and $T_{\text{CCF}} = .5$ values.
+<!--A discussion of how to actually determine thresholds is provided in the [investigation](#investigation) section.-->
 
-\jz{The steps of the decision rule stage are implemented via the \code{decision\_*} functions. In particular, the \code{decision\_CMC} function applies both the decision rule of the original method of \citet{song_proposed_2013} and the High CMC method depending on whether the user provides a value for $\tau$, the constant used to define "high" CMC values in the CMC-$\theta$ distribution. The code below demonstrates how the \code{decision\_CMC} can be used within a \code{mutate} call to add columns to the \code{kmComparisonFeatures} data frame. We also compute the CMCs under both decision rules for the \code{kmComparisonFeatures\_rev} data frame consisting of the similarity features for the comparison in which Fadul 1-2 is the reference scan. All 3 stages of the CMC method are also repeated for the comparison between the non-match pair Fadul 1-1 and Fadul 2-1 (not shown to avoid redundancy).}
+Decision rules in `cmcR` are implemented as functions of the form \code{decision\_*}. In particular, the \code{decision\_CMC} function applies both the decision rule of the original method of \citet{song_proposed_2013} and the High CMC method depending on whether  a value for $\tau$ is provided.
+The code below demonstrates the use of \code{decision\_CMC} on the features \code{kmComparisonFeatures}, extracted from the comparison of scans Fadul 1-1 and Fadul 1-2. \code{kmComparisonFeatures\_rev} contains the features from a comparison of Fadul 1-2 and Fadul 1-1. Addiionally, we also compute the CMCs under both decision rules for the comparison between the non-match pair Fadul 1-1 and Fadul 2-1 (not shown to avoid redundancy).
 
 <!-- \svp{We should have a single function that can do both decisions, `decision_CMC`, with a method argument and an optional parameter `tau`. Also, it would be better to leverage `mutate` rather than having an argument for the column name... more flexible.} -->
 
@@ -1258,7 +1260,7 @@ The top row shows 16 CMCs in blue and 10 non-CMCs in red when Fadul 1-1 is treat
 The bottom row shows the 15 CMCs and 15 non-CMCs when the roles are reversed.
 There is no discussion in \citet{song_proposed_2013} about combining the results from these two comparison directions, but \citet{tong_improved_2015} propose using the minimum of the two CMC counts (15 in this example).}
 
-```{r,echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.cap='\\label{fig:topVoteCMCPlot} CMC results for the comparison between Fadul 1-1 and Fadul 1-2 using the original method of \\citet{song_proposed_2013}. The first row shows the 16 CMCs when Fadul 1-1 is treated as the ``reference" cartridge case to which Fadul 1-2 (the ``target") is compared. The second row shows the 15 CMCs when the roles are reversed. Red cells indicate where cells \\emph{not} identified as congruent achieve the maximum pairwise-complete correlation across all rotations of the target scan. It is not clear whether the results from both comparison directions are combined for the original method of \\citet{song_proposed_2013}.',fig.align='center',fig.pos='htbp',fig.width=4.95}
+```{r,echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.cap='\\label{fig:topVoteCMCPlot} CMC results for the comparison between Fadul 1-1 and Fadul 1-2 using the original method of \\citet{song_proposed_2013}. The two plots in the top row show the 16 CMCs when Fadul 1-1 is treated as the ``reference" cartridge case to which Fadul 1-2 (the ``target") is compared. The second row shows the 15 CMCs when the roles are reversed. Red cells indicate where cells \\emph{not} identified as congruent achieve the maximum pairwise-complete correlation across all rotations of the target scan. ',fig.align='center',fig.pos='htbp',fig.width=4.95}
 
 library(patchwork)
 
