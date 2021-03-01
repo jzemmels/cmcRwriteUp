@@ -1253,7 +1253,7 @@ knm_cmcPlot_bothDirections <- ggplot(data.frame(a = 1)) +
 # knm_cmcPlot_bothDirections
 ```
 
-The \code{cmcPlot} function can be used to visualize CMCs and non-CMCs. 
+\hh{We can use the} \code{cmcPlot} function to visualize CMCs and non-CMCs. \hh{XXX figures 9-11 hav a sizing issue. Can you please resize the plots such that the text in the patches stays well within the patch (more space between text in different pacthes than the indices in a patch, that's one of the cognitive grouping rules that help with processing visuals correctly). Editing rules for all journal ask for text in images to not be too much smaller than the text surrounding them, so make sure to hit that balance properly, thanks! XXX}
 \jz{\autoref{fig:topVoteCMCPlot} shows the CMCs and non-CMCs determined under the original method of \citet{song_proposed_2013} in blue and red, respectively.
 The non-CMCs are visualized where they attain the maximum CCF value in the target scan.
 The top row shows 16 CMCs in blue and 10 non-CMCs in red when Fadul 1-1 is treated as the reference and Fadul 1-2 the target.
