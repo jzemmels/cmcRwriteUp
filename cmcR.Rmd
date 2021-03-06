@@ -171,7 +171,7 @@ purrr::walk2(.x = x3p_ids,
 In the remainder of this paper, we \hh{first describe some of the background of forensic comparisons of breech face impressions, we then follow with a description of}  the implementation of a general CMC method which encompasses methods \hh{discussed} in \citet{song_proposed_2013}, \citet{song_3d_2014}, and \citet{tong_improved_2015}.
 \citet{song_proposed_2013} lays out the conceptual framework for the original CMC method  later implemented in \citet{song_3d_2014} and \cite{tong_fired_2014}. An improvement of the method presented in \citet{tong_improved_2015} and used in subsequent papers is referred to as the ``High CMC" method \citep{chen_convergence_2017}. Both implementations (and further proposed improvements) have been shown to correctly differentiate same and different-source cartridge cases from the \citet{fadul_empirical_nodate} data set.
 
-The \pkg{cmcR} package contains implementations designed for use with 3D topographical scans of the original method described in \citet{song_proposed_2013} and \citet{song_3d_2014} and the High CMC method described in \citet{tong_improved_2015}. The source code to the full \pkg{cmcR} package is accessible at https://github.com/CSAFE-ISU/cmcR.
+The \pkg{cmcR} package contains implementations designed for use with 3D topographical scans of the original method described in \citet{song_proposed_2013} (which we will refer to as the original method) and \citet{song_3d_2014} and the High CMC method described in \citet{tong_improved_2015} (which we will refer to as the High CMC method). The source code to the full \pkg{cmcR} package is accessible at https://github.com/CSAFE-ISU/cmcR.
 
 
 
@@ -842,9 +842,9 @@ Where the various CMC decision rules principally differ is in how they identify 
 
 <!--In this section, we describe the two decision rules implemented in the \pkg{cmcR} package the  original method \citep{song_proposed_2013} and the High CMC method \citep{tong_improved_2015}.-->
 
-### The original method of \citet{song_proposed_2013} {#originalMethod}
+### The Original CMC Method {#originalMethod}
 
-This section briefly describes the decision rule of the original method of \citet{song_proposed_2013}. For a thorough explanation of the procedure, refer to the [CMC Decision Rule Description](https://csafe-isu.github.io/cmcR/articles/decisionRuleDescription.html)  vignette in the \pkg{cmcR} package.
+This section briefly describes the decision rule used in the first CMC paper \citep{song_proposed_2013}. For a thorough explanation of the procedure, refer to the [CMC Decision Rule Description](https://csafe-isu.github.io/cmcR/articles/decisionRuleDescription.html)  vignette in the \pkg{cmcR} package.
 
 
 Let $x_i, y_i, \theta_i$ denote the translation and rotation parameters which produce the highest CCF for the alignment of cell-region pair $i$, $i = 1,...,n$ where $n$ is the total number of cell-region pairs containing a sufficient proportion of non-missing values.
@@ -1012,11 +1012,11 @@ In particular, the CMC-$\theta$ distributions for some KNM pairs exhibit the pro
 
 <!-- \svp{XXX this is a bit abrupt, can you transition into the implementation a bit more gently? Make the point that the parameters described above are included as parameters, and thus, we defer the determination of what the values of those parameters should be until the next section?} -->
 
-In this section, we demonstrate the implementation of the decision rules in `cmcR` for both the original method \citep{song_proposed_2013} and the High CMC method  \citep{tong_improved_2015}.
+In this section, we demonstrate the implementation of the decision rules in `cmcR` for both the original method and the High CMC method.
 For illustrative purposes, let us consider a particular set of thresholds: $T_x = T_y = 20$,  $T_{\theta} = 6$, and $T_{\text{CCF}} = .5$ values.
 <!--A discussion of how to actually determine thresholds is provided in the [investigation](#investigation) section.-->
 
-Decision rules in `cmcR` are implemented as functions of the form \code{decision\_*}. In particular, the \code{decision\_CMC} function applies both the decision rule of the original method of \citet{song_proposed_2013} and the High CMC method depending on whether  a value for $\tau$ is provided.
+Decision rules in `cmcR` are implemented as functions of the form \code{decision\_*}. In particular, the \code{decision\_CMC} function applies both the decision rule of the original method and the High CMC method depending on whether  a value for $\tau$ is provided.
 The code below demonstrates the use of \code{decision\_CMC} on the features \code{kmComparisonFeatures}, extracted from the comparison of scans Fadul 1-1 and Fadul 1-2. \code{kmComparisonFeatures\_rev} contains the features from a comparison of Fadul 1-2 and Fadul 1-1. Addiionally, we also compute the CMCs under both decision rules for the comparison between the non-match pair Fadul 1-1 and Fadul 2-1 (not shown to avoid redundancy).
 
 <!-- \svp{We should have a single function that can do both decisions, `decision_CMC`, with a method argument and an optional parameter `tau`. Also, it would be better to leverage `mutate` rather than having an argument for the column name... more flexible.} -->
@@ -1254,13 +1254,13 @@ knm_cmcPlot_bothDirections <- ggplot(data.frame(a = 1)) +
 ```
 
 \hh{We can use the} \code{cmcPlot} function to visualize CMCs and non-CMCs. \hh{XXX figures 9-11 have a sizing issue. Can you please resize the plots such that the text in the patches stays well within the patch (more space between text in different patches than between the indices in the same patch, that's one of the cognitive grouping rules that help with processing visuals correctly). Editing rules for all journal ask for text in images to not be too much smaller than the text surrounding them, so make sure to hit that balance properly, thanks! XXX}
-\autoref{fig:topVoteCMCPlot} shows  congruent matching cells (CMCs) and non-congruent matching cells (non-CMCs) determined under the original method \citep{song_proposed_2013} in blue and red, respectively.
+\autoref{fig:topVoteCMCPlot} shows  congruent matching cells (CMCs) and non-congruent matching cells (non-CMCs) determined under the original method in blue and red, respectively.
 The (red) non-CMC patches are located in the position where the maximum CCF value in the target scan is attained.
 The top row shows 16 CMCs in blue and 10 non-CMCs in red when Fadul 1-1 is treated as the reference and Fadul 1-2 the target.
-The bottom row shows the 15 CMCs and 15 non-CMCs when the roles are reversed.
+The bottom row shows the 15 CMCs and 15 non-CMCs when the roles are reversed. \svp{This should be indicated in the figure somehow. Can we add some text at the top right that says "target" and "reference"?}
 There is no discussion in \citet{song_proposed_2013} about combining the results from these two comparison directions, but \citet{tong_improved_2015} propose using the minimum of the two CMC counts (15 in this example).
 
-```{r,echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.cap='\\label{fig:topVoteCMCPlot} CMC results for the comparison between Fadul 1-1 and Fadul 1-2 using the original method of \\citet{song_proposed_2013}. The two plots in the top row show the 16 CMCs when Fadul 1-1 is treated as the ``reference" cartridge case to which Fadul 1-2 (the ``target") is compared. The second row shows the 15 CMCs when the roles are reversed. Red cells indicate where cells \\emph{not} identified as congruent achieve the maximum pairwise-complete correlation across all rotations of the target scan. ',fig.align='center',fig.pos='htbp',fig.width=4.95}
+```{r,echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.cap='\\label{fig:topVoteCMCPlot} CMC results for the comparison between Fadul 1-1 and Fadul 1-2 using the Original method. The two plots in the top row show the 16 CMCs when Fadul 1-1 is treated as the ``reference" cartridge case to which Fadul 1-2 (the ``target") is compared. The second row shows the 15 CMCs when the roles are reversed. Red cells indicate where cells \\emph{not} identified as congruent achieve the maximum pairwise-complete correlation across all rotations of the target scan. ',fig.align='center',fig.pos='htbp',fig.width=4.95}
 
 library(patchwork)
 
@@ -1313,7 +1313,7 @@ Similarly, CMCs and non-CMCs determined under the High CMC method are shown in \
 Treating Fadul 1-1 and Fadul 1-2 as the reference scan yields 17 and 18 CMCs, respectively.
 Combining the results as described above, the final High CMC number is 24 CMCs.
 
-```{r,echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.cap='\\label{fig:highCMCPlot} Applying the High CMC method to the comparison of Fadul 1-1 and Fadul 1-2 results in 17 CMCs when Fadul 1-1 is treated as the reference (top) and 18 CMCs when Fadul 1-2 is treated as the reference (bottom). Although the individual comparisons do not yield considerably more CMCs than under the original method of \\citet{song_proposed_2013}, \\citet{tong_improved_2015} indicate that the High CMCs from both comparisons are combined as the final High CMC count (each cell is counted at most once). Combining the results means that the High CMC method tends to produce higher CMC counts than the original method of \\citet{song_proposed_2013}. In this example, the combined High CMC count is 24 CMCs.',fig.align='center',fig.pos='htbp',fig.width=4.95}
+```{r,echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.cap='\\label{fig:highCMCPlot} Applying the High CMC method to the comparison of Fadul 1-1 and Fadul 1-2 results in 17 CMCs when Fadul 1-1 is treated as the reference (top) and 18 CMCs when Fadul 1-2 is treated as the reference (bottom). Although the individual comparisons do not yield considerably more CMCs than under the original CMC method, \\citet{tong_improved_2015} indicate that the High CMCs from both comparisons are combined as the final High CMC count (each cell is counted at most once). Combining the results means that the High CMC method tends to produce higher CMC counts than the original CMC method. In this example, the combined High CMC count is 24 CMCs.',fig.align='center',fig.pos='htbp',fig.width=4.95}
 
 plt1 <- kmCMCPlot$highCMC_reference_v_target
 
@@ -1349,7 +1349,7 @@ plt2 <- plt2  +
 ```
 
 In contrast, \autoref{fig:knmCMCPlot} shows the CMC results for a comparison between Fadul 1-1 and a known non-match scan, Fadul 2-1, under the exact same processing conditions.
-Only one cell is classified as a congruent matching cell under the original method of \citet{song_proposed_2013}  when Fadul 1-1 was treated as the reference scan. No cells were classified as CMCs in the other direction.
+Only one cell is classified as a congruent matching cell under the original method  when Fadul 1-1 is the reference scan. No cells were classified as CMCs in the other direction. \svp{you need to use the same verb tense throughout the paragraph}
 While not shown, this pair failed the High CMC criteria (in both comparison directions, no less) and thus was assigned 0 CMCs under the High CMC method.
 
 ```{r,echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.cap='\\label{fig:knmCMCPlot} Applying both decision rules to the comparison between the non-match pair Fadul 1-1 and Fadul 2-1 results in 1 CMC under the original method (shown above) and 0 CMCs under the High CMC method (not shown). The seemingly random behavior of the red cells exemplifies the assumption that cells in a non-match comparison do not exhibit an observable pattern. Random chance should be the prevailing factor in classifying non-match cells as CMCs.', fig.align='center',fig.pos='htbp',fig.width=4.95}
@@ -1441,8 +1441,8 @@ This set consists of 40 cartridge cases; 63 of which are known match pairs and 7
 While the exact procedures by which these scans are processed are unavailable, these 3d topographi surface images provide the basis of the  comparison between the implementation provided in the \pkg{cmcR} package and published results.
 However, justification for any differences will ultimately involve educated hypothesization due to the closed-source nature of the original implementations.
 
-For any cartridge case pair, the number of CMCs can be determined under the original method of \citet{song_proposed_2013} and the High CMC method described in [implementation](#implementation) section.
-We have applied our implementation of these two methods to the 780 cartridge case pairs available in the \citet{fadul_empirical_nodate} data set under a wide variety of processing conditions to determine which conditions yield \hh{the best results and match the most with the published results}.
+For any cartridge case pair, the number of CMCs can be determined under the original method and the High CMC method described in [implementation](#implementation) section.
+We have applied our implementation of these two methods to the 780 cartridge case pairs available in the \citet{fadul_empirical_nodate} data set under a wide variety of processing conditions to determine which conditions yield \hh{the best results while also matching the published results}.
 Perfect identification of all matching and non-matching pairs corresponds to choosing a minimum CMC count threshold that separates the distributions of the matching and non-matching CMC counts. 
 A CMC count threshold of 6 CMCs \hh{is generally accepted as the threshold in the published papers} [\citet{tong_improved_2015}, \citet{song_estimating_2018}, \citet{song_proposed_2013}]. \hh{However,} this threshold has been shown to not generalize well to all proposed methods and cartridge case data sets \citep{chen_convergence_2017}.
 In this section, we will investigate how ambiguities identified in the [CMC method descriptions](cmcMethod) induce a high degree of sensitivity to choosing the "correct" processing conditions.
