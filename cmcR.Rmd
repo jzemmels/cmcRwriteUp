@@ -1618,6 +1618,37 @@ cmcCountData %>%
 \hh{\autoref{fig:cmc_sensitivityScatter} also shows us  }\jz{ the benefits of breaking a method up into modularized steps } \hh{for an algorithmic analysis.}
 \jz{We will expand upon this } in the next section.
 
+
+
+
+<!-- \jz{Changes to the pre-processing procedures have a major impact on the effectiveness of the CMC method.  -->
+<!-- For example, consider a change to the procedure described in the} [preprocessing](#preProcessing) \jz{section in which surface matrices are not leveled before applying the bandpass Gaussian filter (i.e., skipping step (3) shown in \autoref{fig:processingPipeline}).  -->
+<!-- Recall that this step is performed in our implementation due to the trends in height values exhibited frequently yet inconsistently across cartridge cases fired from the same firearm.  -->
+<!-- No explicit reference is given for how these trends are handled to produce published CMC results, although a Gaussian regression filter would implicitly attenuate their effects.} -->
+
+<!-- \jz{\autoref{fig:cmc_sensitivityScatter} shows the results for both decision rules where the surface matrices were not leveled prior to applying the bandpass Gaussian filter.  -->
+<!-- We can see that the variance ratios are considerably worse, indicating less separation between the match and non-match CMC count distributions, when surface matrices' trends aren't removed. -->
+<!-- In particular, we have observed that non-matching cartridge case pairs with similar trends may be assigned more "false-positive" CMCs while, conversely, matching pairs with dissimilar trends are assigned fewer CMCs. -->
+<!-- This emphasizes how dangerous it can be to take the preprocessing procedures for granted.} -->
+
+<!-- \jz{As another example, unintentional ambiguities in written-language description of the High CMC method lead to different interpretations of its decision rule}. -->
+<!-- Recall that \jz{the last step of the [High CMC method](#highCMCMethod) is to combine CMCs from the two comparison directions, assuming that the High CMC criteria were satisfied. -->
+<!-- A common occurrence we have found in our experimentation is that one comparison direction satisfies the High CMC criteria while the other does not. -->
+<!-- Based on the description provided in \citet{tong_improved_2015} (which we've quoted in the} [High CMC decision rule section](#highCMCMethod))\jz{, it is unclear how to handle such situations. -->
+<!-- The convention adopted in \pkg{cmcR} is to require that both directions satisfy the High CMC criteria in order to combine their results (otherwise, the CMCs determined under the original method are used). -->
+<!-- However, other interpretations of the decision rule could certainly be considered.} -->
+
+<!-- \jz{This illustrates how a prosaic description of an algorithm is generally insufficient to properly implement the method. Even precise algorithmic descriptions typically gloss-over the usage of particular programming languages, functions, or parameter settings.  -->
+<!-- Algorithms that theoretically should be consistent across implementations may in-practice yield numerical inconsistencies due to factors that would require the authors' careful consideration to make consistent.  -->
+<!-- For example, how different programming languages handle various datatypes (floating-point, complex numbers, etc.) or how random seeds are used to initialize pseudorandom number generators.  -->
+<!-- Because of this, anything short of providing the code and data used to produce published results renders computational reproduction challenging if not impossible.} -->
+
+<!-- \jz{Dividing a method into a modularized "pipeline" of exchangeable steps as is done in \pkg{cmcR} makes it easier to explore the sensitivities and deficiencies of a method. -->
+<!-- Further, results and scientific insights are more transparent compared to "black box" or close-source methods. -->
+<!-- For example, skipping the de-trending step of the preprocessing procedure is as simple as commenting-out a few lines of code. -->
+<!-- The authors of the various CMC methods already have some form of this modularization, as evidenced by the slight differences in procedures across between papers.  -->
+<!-- However, there has yet to be a consolidation of the various procedures used into an "optimal" processing pipeline.  -->
+<!-- Perhaps a more principled approach cast as an optimization problem is required rather than an experimental approach. The structure provided by \pkg{cmcR} package certainly makes it easier to explore such alternatives.} -->
 ## Modularization as a basis for FAIR software {#exploring}
 
 <!-- - Modularization of code provides the opportunity to test specific components of each algorithm -->
@@ -1642,11 +1673,9 @@ These principles of open, accessible, interoperable code are also critical for a
 All of these goals are compatible with a FAIR, open-source, reproducible algorithm, and are fundamentally incompatible with closed-source, closed-data, paper-only scientific advancement. }
 
 
+<!-- ## Exploring algorithmic ambiguities through modularization {#exploring} -->
 
-
-
-
-<!-- \jz{Changes to the pre-processing procedures have a major impact on the effectiveness of the CMC method.  -->
+<!-- \jz{Changes to the preprocessing procedures have a major impact on the effectiveness of the CMC method.  -->
 <!-- For example, consider a change to the procedure described in the} [preprocessing](#preProcessing) \jz{section in which surface matrices are not leveled before applying the bandpass Gaussian filter (i.e., skipping step (3) shown in \autoref{fig:processingPipeline}).  -->
 <!-- Recall that this step is performed in our implementation due to the trends in height values exhibited frequently yet inconsistently across cartridge cases fired from the same firearm.  -->
 <!-- No explicit reference is given for how these trends are handled to produce published CMC results, although a Gaussian regression filter would implicitly attenuate their effects.} -->
@@ -1657,7 +1686,7 @@ All of these goals are compatible with a FAIR, open-source, reproducible algorit
 <!-- This emphasizes how dangerous it can be to take the preprocessing procedures for granted.} -->
 
 <!-- \jz{As another example, unintentional ambiguities in written-language description of the High CMC method lead to different interpretations of its decision rule}. -->
-<!-- Recall that \jz{the last step of the [High CMC method](#highCMCMethod) is to combine CMCs from the two comparison directions, assuming that the High CMC criteria were satisfied. -->
+<!-- Recall that \jz{the last step of the} [High CMC method](#highCMCMethod) \jz{is to combine CMCs from the two comparison directions, assuming that the High CMC criteria were satisfied. -->
 <!-- A common occurrence we have found in our experimentation is that one comparison direction satisfies the High CMC criteria while the other does not. -->
 <!-- Based on the description provided in \citet{tong_improved_2015} (which we've quoted in the} [High CMC decision rule section](#highCMCMethod))\jz{, it is unclear how to handle such situations. -->
 <!-- The convention adopted in \pkg{cmcR} is to require that both directions satisfy the High CMC criteria in order to combine their results (otherwise, the CMCs determined under the original method are used). -->
