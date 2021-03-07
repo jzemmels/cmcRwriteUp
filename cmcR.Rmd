@@ -1658,9 +1658,9 @@ cmcCountData %>%
 
 \svp{Both the CMC and High CMC methods are long, multi-step processes that are easier to run and debug when written as a modular pipeline of successive independent steps.
 This modular approach makes it easier to describe the algorithm, easier to write the code, easier to modify and improve the method, and easier to show that the improvement has a noticeable impact on the results. 
-Unfortunately, it takes work to explicitly modularize processes. 
+Unfortunately, it takes work to explicitly modularize an algorithm. 
 The modularity of the CMC methods is something imposed by the authors of this paper, and is not necessarily obvious from the published CMC literature.
-In part, we modularize code because it make it more maintainable, but it is also part of the scientific process: refining and improving previous methods in modern best practices. 
+In part, we modularize code because it make it more maintainable, but it is also part of the scientific process: refining and improving previous methods by incorporating modern best practices. 
 The modularization creates an explicit framework for assessment of the utility and effectiveness of each piece of the algorithm, and allows us to specifically manipulate each step independently, while monitoring the downstream impact on the results. 
 It also allows new collaborators to improve on pieces of the pipeline, adding additional options and improving the method without having to re-invent the wheel. 
 This provides a huge boost to the efficiency of new developments in the field: it is our hope that the cmcR package will facilitate additional research into the matching of cartridge cases and other pattern evidence.}
@@ -1672,7 +1672,13 @@ While not all developers adhere to reproducible, open-source, or FAIR design pri
 These principles of open, accessible, interoperable code are also critical for a fair (in the legal sense) justice system: defendants must be able to examine the code to understand the evidence against them, lawyers must be able to assess the utility of the analysis method, and judges must be able to determine whether a method is admissible in court. 
 All of these goals are compatible with a FAIR, open-source, reproducible algorithm, and are fundamentally incompatible with closed-source, closed-data, paper-only scientific advancement. }
 
-
+\svp{FAIR software standards emphasize open code, but it is just as important in data science applications to have open data. 
+In the CMC example, the original method and application used manually cleaned scans, where the breech face of the cartridge was cut out from the overall scan in a graphical application. 
+We discovered just how important this step of the algorithm was by attempting to automate the cleaning process, and failing to replicate the original results: the precision of the breech face identification significantly affects the results of every subsequent stage in the pipeline. 
+Ideally, when releasing a complicated algorithm such as the CMC process, authors would provide not only code but also intermediate data files which allow others to pick up the process and modify only one stage of the algorithm. 
+This speaks to the modularity of the data as well as the algorithm: at each stage, we must have an eye towards the reproducibility of the results. 
+The availability of intermediate data have made the work that is demonstrated here much easier, but it would also make comparing the CMC algorithm to other alternatives much easier as well by providing a set of benchmarks to compare performance.
+There is a great need for these types of benchmark data sets, not only in forensics, but across the sphere of greater data science: often, solutions in one application area can be adapted to another area, but data availability ensures that these adaptations are firmly grounded.}
 <!-- ## Exploring algorithmic ambiguities through modularization {#exploring} -->
 
 <!-- \jz{Changes to the preprocessing procedures have a major impact on the effectiveness of the CMC method.  -->
