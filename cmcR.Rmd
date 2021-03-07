@@ -1631,7 +1631,7 @@ In particular, we have observed that non-matching cartridge case pairs with simi
 This emphasizes how dangerous it can be to take the preprocessing procedures for granted.}
 
 \jz{As another example, unintentional ambiguities in written-language description of the High CMC method lead to different interpretations of its decision rule}.
-Recall that \jz{the last step of the [High CMC method](#highCMCMethod) is to combine CMCs from the two comparison directions, assuming that the High CMC criteria were satisfied.
+Recall that \jz{the last step of the} [High CMC method](#highCMCMethod) \jz{is to combine CMCs from the two comparison directions, assuming that the High CMC criteria were satisfied.
 A common occurrence we have found in our experimentation is that one comparison direction satisfies the High CMC criteria while the other does not.
 Based on the description provided in \citet{tong_improved_2015} (which we've quoted in the} [High CMC decision rule section](#highCMCMethod))\jz{, it is unclear how to handle such situations.
 The convention adopted in \pkg{cmcR} is to require that both directions satisfy the High CMC criteria in order to combine their results (otherwise, the CMCs determined under the original method are used).
