@@ -1620,27 +1620,26 @@ cmcCountData %>%
 
 ## Modularization as a basis for FAIR software {#exploring}
 
-- Modularization of code provides the opportunity to test specific components of each algorithm
-- When algorithms are complex (lots of steps, parameters) modularization is essential
-- This approach allows for improvements to each part of the algorithm in turn
+<!-- - Modularization of code provides the opportunity to test specific components of each algorithm -->
+<!-- - When algorithms are complex (lots of steps, parameters) modularization is essential -->
+<!-- - This approach allows for improvements to each part of the algorithm in turn -->
+<!-- - This is not like unit testing - we're not testing each module separately, instead we're evaluating the entire algorithm by replacing components of the model with other components - integrated system testing -->
 
-- This is not like unit testing - we're not testing each module separately, instead we're evaluating the entire algorithm by replacing components of the model with other components - integrated system testing
-
-Both the CMC and High CMC methods are long, multi-step processes that are easier to run and debug when written as a modular pipeline of successive independent steps.
+\svp{Both the CMC and High CMC methods are long, multi-step processes that are easier to run and debug when written as a modular pipeline of successive independent steps.
 This modular approach makes it easier to describe the algorithm, easier to write the code, easier to modify and improve the method, and easier to show that the improvement has a noticeable impact on the results. 
 Unfortunately, it takes work to explicitly modularize processes. 
 The modularity of the CMC methods is something imposed by the authors of this paper, and is not necessarily obvious from the published CMC literature.
 In part, we modularize code because it make it more maintainable, but it is also part of the scientific process: refining and improving previous methods in modern best practices. 
 The modularization creates an explicit framework for assessment of the utility and effectiveness of each piece of the algorithm, and allows us to specifically manipulate each step independently, while monitoring the downstream impact on the results. 
 It also allows new collaborators to improve on pieces of the pipeline, adding additional options and improving the method without having to re-invent the wheel. 
-This provides a huge boost to the efficiency of new developments in the field: it is our hope that the cmcR package will facilitate additional research into the matching of cartridge cases and other pattern evidence.
+This provides a huge boost to the efficiency of new developments in the field: it is our hope that the cmcR package will facilitate additional research into the matching of cartridge cases and other pattern evidence.}
 
 
-As described in \citet{wittenburg_open_2021}, open science and data science depend on FAIR algorithms and data, where FAIR stands for findability, accessibility, interoperability, and reusability. 
+\svp{As described in \citet{wittenburg_open_2021}, open science and data science depend on FAIR algorithms and data, where FAIR stands for findability, accessibility, interoperability, and reusability. 
 It is easy to see how modular algorithms increase the interoperability and reusability of code and data, and that the addition of an open-source software package increases the findability and accessibility of the method and code.
 While not all developers adhere to reproducible, open-source, or FAIR design principles, we argue that the addition of a modular framework for the CMC algorithm is a valuable addition to the method, as it results in an algorithm that can be more easily tested, examined, and explained. 
 These principles of open, accessible, interoperable code are also critical for a fair (in the legal sense) justice system: defendants must be able to examine the code to understand the evidence against them, lawyers must be able to assess the utility of the analysis method, and judges must be able to determine whether a method is admissible in court. 
-All of these goals are compatible with a FAIR, open-source, reproducible algorithm, and are fundamentally incompatible with closed-source, closed-data, paper-only scientific advancement. 
+All of these goals are compatible with a FAIR, open-source, reproducible algorithm, and are fundamentally incompatible with closed-source, closed-data, paper-only scientific advancement. }
 
 
 
