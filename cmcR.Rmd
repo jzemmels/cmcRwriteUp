@@ -1260,7 +1260,7 @@ The top row shows 16 CMCs in blue and 10 non-CMCs in red when Fadul 1-1 is treat
 The bottom row shows the 15 CMCs and 15 non-CMCs when the roles are reversed. \svp{This should be indicated in the figure somehow. Can we add some text at the top right that says "target" and "reference"?}
 There is no discussion in \citet{song_proposed_2013} about combining the results from these two comparison directions, but \citet{tong_improved_2015} propose using the minimum of the two CMC counts (15 in this example).
 
-```{r,echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.cap='\\label{fig:topVoteCMCPlot} CMC results for the comparison between Fadul 1-1 and Fadul 1-2 using the Original method. The two plots in the top row show the 16 CMCs when Fadul 1-1 is treated as the ``reference" cartridge case to which Fadul 1-2 (the ``target") is compared. The second row shows the 15 CMCs when the roles are reversed. Red cells indicate where cells \\emph{not} identified as congruent achieve the maximum pairwise-complete correlation across all rotations of the target scan. ',fig.align='center',fig.pos='htbp',fig.width=4.95}
+```{r,echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.align='center',fig.pos='htbp',out.width="\\textwidth",fig.cap='\\label{fig:topVoteCMCPlot} CMC results for the comparison between Fadul 1-1 and Fadul 1-2 using the Original method. The two plots in the top row show the 16 CMCs when Fadul 1-1 is treated as the ``reference" cartridge case to which Fadul 1-2 (the ``target") is compared. The second row shows the 15 CMCs when the roles are reversed. Red cells indicate where cells \\emph{not} identified as congruent achieve the maximum pairwise-complete correlation across all rotations of the target scan. '}
 
 library(patchwork)
 
@@ -1277,13 +1277,13 @@ kmCMCPlot <- cmcR::cmcPlot(reference = fadul1.1,
 
 plt1 <- kmCMCPlot$originalMethodCMCs_reference_v_target
 
-plt1$layers[[4]]$aes_params$size <- 2.5
+plt1$layers[[4]]$aes_params$size <- 2
 
 plt2 <- kmCMCPlot$originalMethodCMCs_target_v_reference +
-  theme(legend.text = element_text(size = 8),
-        legend.title = element_text(size = 8))
+  theme(legend.text = element_text(size = 5.5),
+        legend.title = element_text(size = 5.5))
 
-plt2$layers[[4]]$aes_params$size <- 2.5
+plt2$layers[[4]]$aes_params$size <- 2
 
 plt3 <- cowplot::get_legend(plt2)
 
@@ -1294,77 +1294,93 @@ plt1 <- plt1  +
   theme(axis.title = element_blank(),
         axis.text = element_blank(),
         legend.position = "none",
-        strip.text = element_blank()) +
+        strip.text = element_blank(),
+        plot.margin = margin(0,0,0,0)) +
   geom_text(data = data.frame(x3p = c("Fadul 1-1","Fadul 1-2"),
                               x = c(1750,1750),
                               y = c(1500,1500)),
-            aes(x = x,y = y,label = x3p),size = 3)
+            aes(x = x,y = y,label = x3p),size = 2.5)
 
 plt2 <- plt2  +
   theme(axis.title = element_blank(),
         axis.text = element_blank(),
         legend.position = "none",
-        strip.text = element_blank()) +
+        strip.text = element_blank(),
+        plot.margin = margin(0,0,0,0)) +
   geom_text(data = data.frame(x3p = c("Fadul 1-1","Fadul 1-2"),
                               x = c(1750,1750),
                               y = c(1500,1500)),
-            aes(x = x,y = y,label = x3p),size = 3)
+            aes(x = x,y = y,label = x3p),size = 2.5)
 
 
-(plt1 / plt2 / plt3) +
+plt <- (plt1 / plt2 / plt3) +
   plot_layout(ncol = 1,
               heights = c(2,2.1,.5))
+
+ggsave(filename = "cmcR_files/figure-latex/kmOriginalMethod.pdf",plot = plt)
+
+invisible(knitr::plot_crop("cmcR_files/figure-latex/kmOriginalMethod.pdf",quiet = TRUE))
+
+knitr::include_graphics(path = "cmcR_files/figure-latex/kmOriginalMethod.pdf")
 ```
 
 Similarly, CMCs and non-CMCs determined under the High CMC method are shown in \autoref{fig:highCMCPlot}.
 Treating Fadul 1-1 and Fadul 1-2 as the reference scan yields 17 and 18 CMCs, respectively.
 Combining the results as described above, the final High CMC number is 24 CMCs.
 
-```{r,echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.cap='\\label{fig:highCMCPlot} Applying the High CMC method to the comparison of Fadul 1-1 and Fadul 1-2 results in 17 CMCs when Fadul 1-1 is treated as the reference (top) and 18 CMCs when Fadul 1-2 is treated as the reference (bottom). Although the individual comparisons do not yield considerably more CMCs than under the original CMC method, \\citet{tong_improved_2015} indicate that the High CMCs from both comparisons are combined as the final High CMC count (each cell is counted at most once). Combining the results means that the High CMC method tends to produce higher CMC counts than the original CMC method. In this example, the combined High CMC count is 24 CMCs.',fig.align='center',fig.pos='htbp',fig.width=4.95}
+```{r,echo=FALSE,warning=FALSE,message=FALSE,cache = F, fig.align='center', fig.pos='htbp', out.width="\\textwidth", fig.cap='\\label{fig:highCMCPlot} Applying the High CMC method to the comparison of Fadul 1-1 and Fadul 1-2 results in 17 CMCs when Fadul 1-1 is treated as the reference (top) and 18 CMCs when Fadul 1-2 is treated as the reference (bottom). Although the individual comparisons do not yield considerably more CMCs than under the original CMC method, \\citet{tong_improved_2015} indicate that the High CMCs from both comparisons are combined as the final High CMC count (each cell is counted at most once). Combining the results means that the High CMC method tends to produce higher CMC counts than the original CMC method. In this example, the combined High CMC count is 24 CMCs.'}
 
 plt1 <- kmCMCPlot$highCMC_reference_v_target
 
 
 plt2 <- kmCMCPlot$highCMC_target_v_reference +
-  theme(legend.text = element_text(size = 8),
-        legend.title = element_text(size = 8))
+  theme(legend.text = element_text(size = 5.5),
+        legend.title = element_text(size = 5.5))
 
 plt3 <- cowplot::get_legend(plt2)
 
-plt1$layers[[4]]$aes_params$size <- 2.5
-plt2$layers[[4]]$aes_params$size <- 2.5
+plt1$layers[[4]]$aes_params$size <- 2
+plt2$layers[[4]]$aes_params$size <- 2
 
 plt1 <- plt1  +
   theme(axis.title = element_blank(),
         axis.text = element_blank(),
         legend.position = "none",
-        strip.text = element_blank()) +
+        strip.text = element_blank(),
+        plot.margin = margin(0,0,0,0)) +
   geom_text(data = data.frame(x3p = c("Fadul 1-1","Fadul 1-2"),
                               x = c(1750,1750),
                               y = c(1500,1500)),
-            aes(x = x,y = y,label = x3p),size = 3)
+            aes(x = x,y = y,label = x3p),size = 2.5)
 
 plt2 <- plt2  +
   theme(axis.title = element_blank(),
         axis.text = element_blank(),
         legend.position = "none",
-        strip.text = element_blank()) +
+        strip.text = element_blank(),
+        plot.margin = margin(0,0,0,0)) +
   geom_text(data = data.frame(x3p = c("Fadul 1-1","Fadul 1-2"),
                               x = c(1750,1750),
                               y = c(1500,1500)),
-            aes(x = x,y = y,label = x3p),size = 3)
+            aes(x = x,y = y,label = x3p),size = 2.5)
 
 
-(plt1 / plt2 / plt3) +
+plt <- (plt1 / plt2 / plt3) +
   plot_layout(ncol = 1,
               heights = c(2,2.05,.5))
+
+ggsave(filename = "cmcR_files/figure-latex/kmHighCMC.pdf",plot = plt)
+
+invisible(knitr::plot_crop("cmcR_files/figure-latex/kmHighCMC.pdf"))
+
+knitr::include_graphics(path = "cmcR_files/figure-latex/kmHighCMC.pdf")
 ```
 
 In contrast, \autoref{fig:knmCMCPlot} shows the CMC results for a comparison between Fadul 1-1 and a known non-match scan, Fadul 2-1, under the exact same processing conditions.
 Only one cell is classified as a congruent matching cell under the original method  when Fadul 1-1 is the reference scan. No cells were classified as CMCs in the other direction. \svp{you need to use the same verb tense throughout the paragraph}
 While not shown, this pair failed the High CMC criteria (in both comparison directions, no less) and thus was assigned 0 CMCs under the High CMC method.
 
-```{r,echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.cap='\\label{fig:knmCMCPlot} Applying both decision rules to the comparison between the non-match pair Fadul 1-1 and Fadul 2-1 results in 1 CMC under the original method (shown above) and 0 CMCs under the High CMC method (not shown). The seemingly random behavior of the red cells exemplifies the assumption that cells in a non-match comparison do not exhibit an observable pattern. Random chance should be the prevailing factor in classifying non-match cells as CMCs.', fig.align='center',fig.pos='htbp',fig.width=4.95}
+```{r,echo=FALSE,warning=FALSE,message=FALSE,cache = F, fig.align='center',fig.pos='htbp',out.width="\\textwidth", fig.cap='\\label{fig:knmCMCPlot} Applying both decision rules to the comparison between the non-match pair Fadul 1-1 and Fadul 2-1 results in 1 CMC under the original method (shown above) and 0 CMCs under the High CMC method (not shown). The seemingly random behavior of the red cells exemplifies the assumption that cells in a non-match comparison do not exhibit an observable pattern. Random chance should be the prevailing factor in classifying non-match cells as CMCs.'}
 
 knmCMCPlot <- cmcR::cmcPlot(reference = fadul1.1,
                             target = fadul2.1,
@@ -1388,38 +1404,46 @@ plt1 <- knmCMCPlot$originalMethodCMCs_reference_v_target
 
 
 plt2 <- knmCMCPlot$originalMethodCMCs_target_v_reference +
-  theme(legend.text = element_text(size = 8),
-        legend.title = element_text(size = 8))
+  theme(legend.text = element_text(size = 5.5),
+        legend.title = element_text(size = 5.5))
 
 plt3 <- cowplot::get_legend(plt2)
 
-plt1$layers[[4]]$aes_params$size <- 2.5
-plt2$layers[[4]]$aes_params$size <- 2.5
+plt1$layers[[4]]$aes_params$size <- 2
+plt2$layers[[4]]$aes_params$size <- 2
 
 plt1 <- plt1  +
   theme(axis.title = element_blank(),
         axis.text = element_blank(),
         legend.position = "none",
-        strip.text = element_blank()) +
+        strip.text = element_blank(),
+        plot.margin = margin(0,0,0,0)) +
   geom_text(data = data.frame(x3p = c("Fadul 1-1","Fadul 2-1"),
                               x = c(1750,1750),
                               y = c(1500,1500)),
-            aes(x = x,y = y,label = x3p),size = 3)
+            aes(x = x,y = y,label = x3p),size = 2.5)
 
 plt2 <- plt2  +
   theme(axis.title = element_blank(),
         axis.text = element_blank(),
         legend.position = "none",
-        strip.text = element_blank()) +
+        strip.text = element_blank(),
+        plot.margin = margin(0,0,0,0)) +
   geom_text(data = data.frame(x3p = c("Fadul 1-1","Fadul 2-1"),
                               x = c(1750,1750),
                               y = c(1500,1500)),
-            aes(x = x,y = y,label = x3p),size = 3)
+            aes(x = x,y = y,label = x3p),size = 2.5)
 
 
-(plt1 / plt2 / plt3) +
+plt <- (plt1 / plt2 / plt3) +
   plot_layout(ncol = 1,
               heights = c(2,2,.5))
+
+ggsave(filename = "cmcR_files/figure-latex/knmOriginalMethod.pdf",plot = plt)
+
+invisible(knitr::plot_crop("cmcR_files/figure-latex/knmOriginalMethod.pdf",quiet = TRUE))
+
+knitr::include_graphics(path = "cmcR_files/figure-latex/knmOriginalMethod.pdf")
 ```
 
 
