@@ -643,7 +643,7 @@ As such, only certain sections of the cartridge case <!--have identifiable marki
 Instead,--> 
 \hh{In the CMC method as proposed by} \citet{song_proposed_2013} \hh{two scans are compared by} partitioning one breech face scan into a grid of \hh{so-called} "correlation cells". <!--some of which will enclose the valid correlation regions of interest. -->
 \hh{These cells are compared individually to their best-matching counterpart on the other scan.} If a large \svp{proportion} of these correlation cells are highly similar to \hh{their counterparts on}  the other breech face scan, \hh{this is considered as} evidence that the \hh{markings on the} two cartridge cases \hh{were made by the same source}. \hh{The number of highly similar cells is defined as the }
- \dfn{CMC count} \citep{song_proposed_2013} \hh{of the breech-face comparison}. \hh{The CMC count is considered to be a more} \svp{robust} similarity metric \hh{than a cross-correlation score based on} the entire cartridge case.
+ \dfn{CMC count} $C$ \citep{song_proposed_2013} \hh{of the breech-face comparison}. \hh{The CMC count is considered to be a more} \svp{robust} similarity metric \hh{than a cross-correlation score based on} the entire cartridge case.
 
 ```{r, echo=FALSE,fig.cap='\\label{fig:cmc_illustration} Illustration of comparing a cell in the reference cartridge case scan (left) to a larger region in a questioned cartridge case scan (right). Every \\hh{one of the} cells in the reference cartridge case is similarly paired with a region in the questioned \\hh{cartridge case}.  To determine the rotation at which the two cartridge cases align, the cell-region pairs are compared for various rotations of the questioned cartridge case.',fig.align='center',fig.pos='htbp',out.width='.75\\textwidth'}
 
@@ -1448,7 +1448,7 @@ knitr::include_graphics(path = "cmcR_files/figure-latex/knmOriginalMethod.pdf")
 
 
 <!-- ## An incomplete method? XXX this needs a better title XXX {#incompleteMethod} -->
-## Ambiguities algorithmic descriptions {#ambiguities}
+## Ambiguity in algorithmic descriptions {#ambiguities}
 
 <!-- \svp{This section needs to serve as a transition between the method and the investigation - summarizing the holes we've discovered in the descriptions and moving towards a resolution of those holes through brute-force investigation.} -->
 
@@ -1502,26 +1502,25 @@ Adherence to these principles yields not only computationally reproducible resul
 
 ## Communicating a method's sensitivity to processing conditions
 
-\jz{One of these influential factors is the choice of $T_x, T_y, T_\theta, T_{\text{CCF}}$ thresholds use to declare a particular cell-region pair "congruent." 
-Many combinations of these thresholds yield perfect separation between the matching and non-matching CMC count distributions. 
-As such, some other diagnostic must be used to compare different sets of thresholds.
-Considering that ground-truth is known for the Fadul data set, we will obtain a group of known match CMC counts and a group of known non-match CMC counts for each set of thresholds. 
-A simple diagnostic based on this observation is a ratio that compares the between- and within-group variability.
-Let CMC$_{i,j}$ denote the CMC count assigned to the $j$th cartridge case pair, $j = 1,...,n_i$, $n_1 = 63, n_2 = 717$, from the $i$th group, $i = 1,2$ representing matches and non-matches, respectively. 
-For each set of thresholds we calculate}
+\hh{Choosing threshold values} $T_x, T_y, T_\theta, T_{\text{CCF}}$ \hh{for translation, rotation and maximum cross-correlation is crucial in declaring} a particular cell-region pair "congruent". 
+A lot of different combinations of these thresholds yield perfect separation between the matching and non-matching CMC count distributions. 
+\hh{In situations where ground truth is known, such as in the example of the Fadul data here, we can use the ratio $r$ of between- and within-group variability as an additional statistic to measure  separation between CMC counts of known matches and known non-matches.}
+\hh{XXX For the future: let's stay away from random variables made up of multiple letters - it's terribly confusing because CMC could be also made up of C times M times C.}
+Let C$_{ij}$ denote the CMC count assigned to the $j$th cartridge case pair, $j = 1,...,n_i$, $n_1 = 63, n_2 = 717$, from the $i$th group, $i = 1,2$ representing matches and non-matches, respectively. 
+For each set of thresholds we calculate the **Variance Ratio** $r$ as:
 $$
-r = \frac{\sum_{i=1}^2 \left(\overline{\text{CMC}}_{i} - \overline{\text{CMC}}\right)^2}{\sum_{i=1}^2 \frac{1}{n_i - 1}\sum_{j=1}^{n_i} \left(\text{CMC}_{i,j} - \overline{\text{CMC}}_i\right)^2}
+r = r\left(T_x, T_y, T_\theta, T_{\text{CCF}}\right) = \frac{\sum_{i=1}^2 \left(\overline{C}_{i.} - \overline{C}_{..}\right)^2}{\sum_{i=1}^2 \frac{1}{n_i - 1}\sum_{j=1}^{n_i} \left(C_{ij} - \overline{C}_{i.}\right)^2}
 $$
-\jz{where $\overline{\text{CMC}}_i$ denotes the within-group CMC count average and $\overline{\text{CMC}}$ denotes the grand CMC count average. 
-Greater separation between and less variability within the match and non-match CMC count distributions will yield larger $r$ values. 
-As such, larger values of $r$ are preferred.}
+where $\overline{C}_{i.}$ denotes the within-group CMC count average and $\overline{C}_{..}$ denotes the grand CMC count average. 
+Greater separation between and less variability within the match and non-match CMC count distributions yields larger $r$ values. 
+Larger values of $r$ \hh{are therefore indicative of greater separation between the groups}.
 
-\jz{As an example, \autoref{fig:decisionRuleSensitivity_comparison} compares the CMC results using the original method of \citet{song_proposed_2013} vs. the High CMC method where $T_{\Delta x} = 20 = T_{\Delta y}$ pixels, $T_{\text{CCF}} = .5$, and $T_{\theta} = 6$ degrees. 
-We can see that both decision rules result in separated (i.e., non-overlapping) CMC count distributions. 
-However, the High CMC decision rule yields more appealing separation between the match and non-match distribution as evidenced by the considerably larger variance ratio. 
-These results are, of course, dependent on many other processing decisions than just the threshold values used, so a greater sensitivity analysis should be considered.}
+\autoref{fig:decisionRuleSensitivity_comparison} \hh{shows results for the original method and the High CMC method for a parameter setting of $T_{\Delta x} = 20 = T_{\Delta y}$ pixels, $T_{\text{CCF}} = .5$, and $T_{\theta} = 6$. }
+Both decision rules result in separated CMC count distributions for known matches and known non-matches \hh{corresponding to an AUC of 1.00}. 
+However, the High CMC decision rule yields a larger separation between the known match and known non-match distributions as evidenced by the considerably larger variance ratio $r$. 
+<!--These results are, of course, dependent on many other processing decisions than just the threshold values used, so a greater sensitivity analysis should be considered.-->
 
-```{r echo=FALSE,fig.cap='\\label{fig:decisionRuleSensitivity_comparison} CMC count relative frequencies under the original method of \\citet{song_proposed_2013} and the High CMC method for $T_{\\Delta x} = 20 = T_{\\Delta y}$ pixels, $T_{\\text{CCF}} = .5$, and $T_{\\theta} = 6$ degrees. AUC $= 1.00$ corresponds to perfect separation of the match and non-match CMC count distributions. We can see that, for this set of processing parameters, the High CMC method yields more appealing separation between the match and non-match distributions than the original method of the \\citet{song_proposed_2013}.', fig.align='left',fig.pos='htbp',out.width='\\textwidth'}
+```{r echo=FALSE,fig.cap='\\label{fig:decisionRuleSensitivity_comparison} CMC count relative frequencies under the original method and the High CMC method for $T_{\\Delta x} = 20 = T_{\\Delta y}$ pixels, $T_{\\text{CCF}} = .5$, and $T_{\\theta} = 6$ degrees. AUC $= 1.00$ corresponds to perfect separation of the match and non-match CMC count distributions. We can see that, for this set of processing parameters, the High CMC method yields higher CMC counts for known matches that the original method while known non-matches have the same distribution under both methods.', fig.align='left',fig.pos='htbp',out.width='\\textwidth'}
 
 load("data/cmcCountData.RData")
 
@@ -1560,21 +1559,21 @@ cmcCountData %>%
   ylab("Relative Frequency")
 ```
 
-We consider five parameter settings that, based on our experimentation, have a demonstrable impact on the effectiveness of the CMC method. These include:
+We consider five \hh{dimensions} that have a demonstrable impact on the effectiveness of the CMC method. These include:
 \begin{itemize}
-\item the decision rule (original method of \citet{song_proposed_2013} or High CMC method of \citet{tong_improved_2015}) used,
+\item the decision rule (original method or High CMC method) used,
 
 \item whether the global trend is removed during preprocessing, and
 
-\item choice of congruency thresholds: translation $T_x, T_y$, rotation $T_\theta$, and CCF $T_{\text{CCF}}$.
+\item choice of congruency thresholds: translation $T_x, T_y$, rotation $T_\theta$, and cross-correlation $T_{\text{CCF}}$.
 \end{itemize}
-To understand the generalizability of a particular set of parameters to "out-of-sample" data, choosing parameter settings resulting in an AUC equal to 1 (perfect identification) is not enough. 
-Instead, we use the variance ratio to identify a promising range of thresholds. \autoref{fig:cmc_sensitivityScatter} shows the value of the variance ratio under various settings of these 5 parameters. 
-We can see that using the High CMC method on breech face scans for which the trend was removed yields better variance ratio values. 
-Conditional on these settings, choosing thresholds $T_x, T_y \in [15,20]$, $T_\theta = 6$, and $T_{\text{CCF}} \in [.4,5]$ yields arguably the most promising variance ratios. 
-These are similar thresholds to those chosen in other CMC papers.
+<!--To understand the generalizability of a particular set of parameters to "out-of-sample" data,-->
+Choosing \hh{a single} parameter setting resulting in perfect identification is not enough \hh{to generally understand the algorithm}. 
+Instead, we use the variance ratio $r$ to identify promising ranges of parameters. \autoref{fig:cmc_sensitivityScatter} shows the value of the variance ratio under various settings. We  see that the High CMC method \hh{yields better separation than the original method under any parameter setting.} \hh{Highest variance ratios, however, are achieved for }   thresholds $T_x, T_y \in [10,20]$, $T_\theta = 6$, and $T_{\text{CCF}} \in [.4,.5]$. 
+<!--These are similar thresholds to those chosen in other CMC papers. \hh{XXX I don't agree with this conclusion} --> 
+\hh{Interestingly, as seen in \autoref{tab:thresholdTable}, only the parameters for the High CMC method discussed in \citet{song_estimating_2018} fall into these ranges.}
 
-```{r ,echo=FALSE, fig.cap='\\label{fig:cmc_sensitivityScatter} We desire parameters that yield a high variance ratio. Parameters are currently determined by experimentation and differ between papers. These scatterplots show the behavior of the variance ratio under various parameter settings. Based on the variance ratio statistic, the optimal set of parameter settings include using the High CMC method applied to de-trended breech face scans using translation thresholds $T_x, T_y \\in [15,20]$, rotation threshold $T_\\theta = 6$, and CCF threshold $T_{\\text{CCF}} \\in [.4,5]$. Removal of the trend during preprocessing, which is not explicitly described as a preprocessing step in CMC papers, has a major impact on the effectiveness of the CMC method.',fig.align='left',fig.pos='htbp',out.width='\\textwidth'}
+```{r ,echo=FALSE, fig.cap='\\label{fig:cmc_sensitivityScatter} \\hh{Variance ratios under are plotted for different parameter settings. High variance ratios are indicative of a a good separation between CMC counts for known matching pairs and known-non matching pairs. The High CMC method generally performs better than the original method. Removing the trend during preprocessing, even though not explicitly described as a preprocessing step in the CMC papers, has a major impact on the effectiveness of the CMC method. In this setting, translation thresholds $T_x, T_y \\in [15,20]$, a rotation threshold $T_\\theta = 6$, and a CCF threshold $T_{\\text{CCF}} \\in [.4,5]$ lead to a separation of results.} ',fig.align='left',fig.pos='htbp',out.width='\\textwidth'}
 
 cmcCountData %>%
   mutate(trendRemoved = factor(trendRemoved)) %>%
@@ -1637,41 +1636,103 @@ cmcCountData %>%
 #        width = 6.77,height = 6.77,units = "cm")
 ```
 
-\jz{There are other conclusions that we can draw from \autoref{fig:cmc_sensitivityScatter} that connect to what we have discussed previously as factors that make reproducibility impossible. 
-In particular, \autoref{fig:cmc_sensitivityScatter} illustrates the dangers of providing a written-word description of an algorithm in which, for example, the removal of a global data trend is not explicitly considered.
-Additionally, we can see the benefits of breaking a method up into modularized steps to uncover flaws or sensitivities.
-We will expand upon this below.}
+\hh{As shown in \autoref{fig:cmc_sensitivityScatter}, de-trending breech-scans in the preprocessing stage emerges as a very impactful step to achieve good algorithmic results.  
+}
+\hh{This step is not explicitly mentioned in the written-word descriptions of the algorithm in either of the papers by \citet{song_proposed_2013}, \citet{tong_fired_2014}, \citet{tong_improved_2015}, \citet{chen_convergence_2017}, or \citet{song_estimating_2018}, though it appears from their examples that it was used in the process. This highlights, yet again, the dangers of only providing verbal instructions in lieu of code.}
+\hh{\autoref{fig:cmc_sensitivityScatter} also shows us  }\jz{ the benefits of breaking a method up into modularized steps } \hh{for an algorithmic analysis.}
+\jz{We will expand upon this } in the next section.
 
-## Exploring algorithmic ambiguities through modularization {#exploring}
 
-\jz{Changes to the preprocessing procedures have major impact on the effectiveness of the CMC method. 
-For example, consider a change to the procedure described in the} [preprocessing](#preProcessing) \jz{section in which surface matrices are not leveled before applying the bandpass Gaussian filter (i.e., skipping step (3) shown in \autoref{fig:processingPipeline}). 
-Recall that this step is performed in our implementation due to the trends in height values exhibited frequently yet inconsistently across cartridge cases fired from the same firearm. 
-No explicit reference is given for how these trends are handled to produce published CMC results, although a Gaussian regression filter would implicitly attenuate their effects.}
 
-\jz{\autoref{fig:cmc_sensitivityScatter} shows the results for both decision rules where the surface matrices were not leveled prior to applying the bandpass Gaussian filter. 
-We can see that the variance ratios are considerably worse, indicating less separation between the match and non-match CMC count distributions, when surface matrices' trends aren't removed.
-In particular, we have observed that non-matching cartridge case pairs with similar trends may be assigned more "false-positive" CMCs while, conversely, matching pairs with dissimilar trends are assigned fewer CMCs.
-This emphasizes how dangerous it can be to take the preprocessing procedures for granted.}
 
-\jz{As another example, unintentional ambiguities in written-language description of the High CMC method lead to different interpretations of its decision rule}.
-[Recall that](#highCMCMethod) \jz{the last step of the High CMC method is to combine CMCs from the two comparison directions, assuming that the High CMC criteria were satisfied.
-A common occurrence we have found in our experimentation is that one comparison direction satisfies the High CMC criteria while the other does not.
-Based on the description provided in \citet{tong_improved_2015} (which we've quoted in the} [High CMC decision rule section](#highCMCMethod))\jz{, it is unclear how to handle such situations.
-The convention adopted in \pkg{cmcR} is to require that both directions satisfy the High CMC criteria in order to combine their results (otherwise, the CMCs determined under the original method \citet{song_proposed_2013} are used).
-However, other interpretations of the decision rule could certainly be considered.}
+<!-- \jz{Changes to the pre-processing procedures have a major impact on the effectiveness of the CMC method.  -->
+<!-- For example, consider a change to the procedure described in the} [preprocessing](#preProcessing) \jz{section in which surface matrices are not leveled before applying the bandpass Gaussian filter (i.e., skipping step (3) shown in \autoref{fig:processingPipeline}).  -->
+<!-- Recall that this step is performed in our implementation due to the trends in height values exhibited frequently yet inconsistently across cartridge cases fired from the same firearm.  -->
+<!-- No explicit reference is given for how these trends are handled to produce published CMC results, although a Gaussian regression filter would implicitly attenuate their effects.} -->
 
-\jz{This illustrates how a prosaic description of an algorithm is generally insufficient to properly implement the method. Even precise algorithmic descriptions typically gloss-over the usage of particular programming languages, functions, or parameter settings. 
-Algorithms that theoretically should be consistent across implementations may in-practice yield numerical inconsistencies due to factors that would require the authors' careful consideration to make consistent. 
-For example, how different programming languages handle various datatypes (floating-point, complex numbers, etc.) or how random seeds are used to initialize pseudorandom number generators. 
-Because of this, anything short of providing the code and data used to produce published results renders computational reproduction challenging if not impossible.}
+<!-- \jz{\autoref{fig:cmc_sensitivityScatter} shows the results for both decision rules where the surface matrices were not leveled prior to applying the bandpass Gaussian filter.  -->
+<!-- We can see that the variance ratios are considerably worse, indicating less separation between the match and non-match CMC count distributions, when surface matrices' trends aren't removed. -->
+<!-- In particular, we have observed that non-matching cartridge case pairs with similar trends may be assigned more "false-positive" CMCs while, conversely, matching pairs with dissimilar trends are assigned fewer CMCs. -->
+<!-- This emphasizes how dangerous it can be to take the preprocessing procedures for granted.} -->
 
-\jz{Dividing a method into a modularized "pipeline" of exchangeable steps as is done in \pkg{cmcR} makes it easier to explore the sensitivities and deficiencies of a method.
-Further, results and scientific insights are more transparent compared to "black box" or close-source methods.
-For example, skipping the de-trending step of the preprocessing procedure is as simple as commenting-out a few lines of code.
-The authors of the various CMC methods already have some form of this modularization, as evidenced by the slight differences in procedures across between papers. 
-However, there has yet to be a consolidation of the various procedures used into an "optimal" processing pipeline. 
-Perhaps a more principled approach cast as an optimization problem is required rather than an experimental approach. The structure provided by \pkg{cmcR} package certainly makes it easier to explore such alternatives.}
+<!-- \jz{As another example, unintentional ambiguities in written-language description of the High CMC method lead to different interpretations of its decision rule}. -->
+<!-- Recall that \jz{the last step of the [High CMC method](#highCMCMethod) is to combine CMCs from the two comparison directions, assuming that the High CMC criteria were satisfied. -->
+<!-- A common occurrence we have found in our experimentation is that one comparison direction satisfies the High CMC criteria while the other does not. -->
+<!-- Based on the description provided in \citet{tong_improved_2015} (which we've quoted in the} [High CMC decision rule section](#highCMCMethod))\jz{, it is unclear how to handle such situations. -->
+<!-- The convention adopted in \pkg{cmcR} is to require that both directions satisfy the High CMC criteria in order to combine their results (otherwise, the CMCs determined under the original method are used). -->
+<!-- However, other interpretations of the decision rule could certainly be considered.} -->
+
+<!-- \jz{This illustrates how a prosaic description of an algorithm is generally insufficient to properly implement the method. Even precise algorithmic descriptions typically gloss-over the usage of particular programming languages, functions, or parameter settings.  -->
+<!-- Algorithms that theoretically should be consistent across implementations may in-practice yield numerical inconsistencies due to factors that would require the authors' careful consideration to make consistent.  -->
+<!-- For example, how different programming languages handle various datatypes (floating-point, complex numbers, etc.) or how random seeds are used to initialize pseudorandom number generators.  -->
+<!-- Because of this, anything short of providing the code and data used to produce published results renders computational reproduction challenging if not impossible.} -->
+
+<!-- \jz{Dividing a method into a modularized "pipeline" of exchangeable steps as is done in \pkg{cmcR} makes it easier to explore the sensitivities and deficiencies of a method. -->
+<!-- Further, results and scientific insights are more transparent compared to "black box" or close-source methods. -->
+<!-- For example, skipping the de-trending step of the preprocessing procedure is as simple as commenting-out a few lines of code. -->
+<!-- The authors of the various CMC methods already have some form of this modularization, as evidenced by the slight differences in procedures across between papers.  -->
+<!-- However, there has yet to be a consolidation of the various procedures used into an "optimal" processing pipeline.  -->
+<!-- Perhaps a more principled approach cast as an optimization problem is required rather than an experimental approach. The structure provided by \pkg{cmcR} package certainly makes it easier to explore such alternatives.} -->
+## Modularization as a basis for FAIR software {#exploring}
+
+<!-- - Modularization of code provides the opportunity to test specific components of each algorithm -->
+<!-- - When algorithms are complex (lots of steps, parameters) modularization is essential -->
+<!-- - This approach allows for improvements to each part of the algorithm in turn -->
+<!-- - This is not like unit testing - we're not testing each module separately, instead we're evaluating the entire algorithm by replacing components of the model with other components - integrated system testing -->
+
+\svp{Both the CMC and High CMC methods are complex, multi-step processes that are easier to run and debug when written as a modular pipeline of successive, functionally independent steps.
+This modular approach makes it easier to describe the algorithm, easier to write the code, easier to modify and improve the method, and easier to show that the improvement has a noticeable impact on the results. 
+Unfortunately, it takes work to explicitly modularize an algorithm. 
+The modularity of the CMC methods is something imposed by the authors of this paper, and is not necessarily obvious from the published CMC literature.
+In part, we modularize code because it make it more maintainable, but it is also part of the scientific process: refining and improving previous methods by incorporating modern best practices. 
+The modularization creates an explicit framework for assessment of the utility and effectiveness of each piece of the algorithm, and allows us to specifically manipulate each step independently, while monitoring the downstream impact on the results. 
+It also allows future collaborators to improve on pieces of the pipeline, adding additional options and improving the method without having to re-invent the wheel. 
+This provides a huge boost to the efficiency of new developments in the field: it is our hope that the cmcR package will facilitate additional research into the matching of cartridge cases and other pattern evidence.}
+
+
+\svp{As described in \citet{wittenburg_open_2021}, open science and data science depend on FAIR algorithms and data, where FAIR stands for findability, accessibility, interoperability, and reusability. 
+It is easy to see how modular algorithms increase the interoperability and reusability of code and data, and that the addition of an open-source software package leveraging the CRAN platform increases the findability and accessibility of the method and code.
+While not all developers adhere to reproducible, open-source, or FAIR design principles, we argue that the addition of a modular framework for the CMC algorithm is a valuable addition to the method, as it results in an algorithm that can be more easily tested, examined, and explained. 
+These principles of open, accessible, interoperable code are also critical for a fair (in the legal sense) justice system: the defense must have access to the code to understand the evidence against them, lawyers must be able to assess the utility of the analysis method, and judges must be able to determine whether a method is admissible in court. 
+All of these goals are compatible with a FAIR, open-source, reproducible algorithm, and are fundamentally incompatible with closed-source, closed-data, paper-only scientific advancement. }
+
+\svp{FAIR software standards emphasize open code, but it is just as important in data science applications to have open data. 
+In the CMC example, the original method and application used manually cleaned scans, where the breech face of the cartridge was cut out from the overall scan in a graphical application. 
+We discovered just how important this step of the algorithm was by attempting to automate the cleaning process, and failing to replicate the original results: the precision of the breech face identification significantly affects the results of every subsequent stage in the pipeline. 
+Ideally, when releasing a complicated algorithm such as the CMC process, authors would provide not only code but also intermediate data files which allow others to pick up the process and modify only one stage of the algorithm. 
+This speaks to the modularity of the data as well as the algorithm: at each stage, we must have an eye towards the reproducibility of the results. 
+The availability of intermediate data have made the work that is demonstrated here much easier, but it would also make comparing the CMC algorithm to other alternatives much easier as well by providing a set of benchmarks to compare performance.
+There is a great need for these types of benchmark data sets, not only in forensics, but across the sphere of greater data science: often, solutions in one application area can be adapted to another area, but data availability ensures that these adaptations are firmly grounded.}
+<!-- ## Exploring algorithmic ambiguities through modularization {#exploring} -->
+
+<!-- \jz{Changes to the preprocessing procedures have a major impact on the effectiveness of the CMC method.  -->
+<!-- For example, consider a change to the procedure described in the} [preprocessing](#preProcessing) \jz{section in which surface matrices are not leveled before applying the bandpass Gaussian filter (i.e., skipping step (3) shown in \autoref{fig:processingPipeline}).  -->
+<!-- Recall that this step is performed in our implementation due to the trends in height values exhibited frequently yet inconsistently across cartridge cases fired from the same firearm.  -->
+<!-- No explicit reference is given for how these trends are handled to produce published CMC results, although a Gaussian regression filter would implicitly attenuate their effects.} -->
+
+<!-- \jz{\autoref{fig:cmc_sensitivityScatter} shows the results for both decision rules where the surface matrices were not leveled prior to applying the bandpass Gaussian filter.  -->
+<!-- We can see that the variance ratios are considerably worse, indicating less separation between the match and non-match CMC count distributions, when surface matrices' trends aren't removed. -->
+<!-- In particular, we have observed that non-matching cartridge case pairs with similar trends may be assigned more "false-positive" CMCs while, conversely, matching pairs with dissimilar trends are assigned fewer CMCs. -->
+<!-- This emphasizes how dangerous it can be to take the preprocessing procedures for granted.} -->
+
+<!-- \jz{As another example, unintentional ambiguities in written-language description of the High CMC method lead to different interpretations of its decision rule}. -->
+<!-- Recall that \jz{the last step of the} [High CMC method](#highCMCMethod) \jz{is to combine CMCs from the two comparison directions, assuming that the High CMC criteria were satisfied. -->
+<!-- A common occurrence we have found in our experimentation is that one comparison direction satisfies the High CMC criteria while the other does not. -->
+<!-- Based on the description provided in \citet{tong_improved_2015} (which we've quoted in the} [High CMC decision rule section](#highCMCMethod))\jz{, it is unclear how to handle such situations. -->
+<!-- The convention adopted in \pkg{cmcR} is to require that both directions satisfy the High CMC criteria in order to combine their results (otherwise, the CMCs determined under the original method are used). -->
+<!-- However, other interpretations of the decision rule could certainly be considered.} -->
+
+<!-- \jz{This illustrates how a prosaic description of an algorithm is generally insufficient to properly implement the method. Even precise algorithmic descriptions typically gloss-over the usage of particular programming languages, functions, or parameter settings.  -->
+<!-- Algorithms that theoretically should be consistent across implementations may in-practice yield numerical inconsistencies due to factors that would require the authors' careful consideration to make consistent.  -->
+<!-- For example, how different programming languages handle various datatypes (floating-point, complex numbers, etc.) or how random seeds are used to initialize pseudorandom number generators.  -->
+<!-- Because of this, anything short of providing the code and data used to produce published results renders computational reproduction challenging if not impossible.} -->
+
+<!-- \jz{Dividing a method into a modularized "pipeline" of exchangeable steps as is done in \pkg{cmcR} makes it easier to explore the sensitivities and deficiencies of a method. -->
+<!-- Further, results and scientific insights are more transparent compared to "black box" or close-source methods. -->
+<!-- For example, skipping the de-trending step of the preprocessing procedure is as simple as commenting-out a few lines of code. -->
+<!-- The authors of the various CMC methods already have some form of this modularization, as evidenced by the slight differences in procedures across between papers.  -->
+<!-- However, there has yet to be a consolidation of the various procedures used into an "optimal" processing pipeline.  -->
+<!-- Perhaps a more principled approach cast as an optimization problem is required rather than an experimental approach. The structure provided by \pkg{cmcR} package certainly makes it easier to explore such alternatives.} -->
 
 # Conclusion {#conclusion}
 
@@ -1683,13 +1744,17 @@ Ambiguity in the implementation stems mainly from implicit parameters and proces
 While admissible from a readability perspective, anything short of making the original code available renders published results not reproducible. 
 This is compounded by the fact that a critical preprocessing step is performed manually and that preprocessed data are not publicly available.
 
-\svp{At one time, it was common to publish the specific implementation of an algorithm as raw source code \citep{bron_merge_1972} within the journal article (or at minimum, in the appendix \citep{friend_sorting_1956} if the article contained a significant amount of analysis). 
+\svp{At one time, it was common to publish the specific implementation of an algorithm as raw source code \citep{bron_merge_1972} within the journal article, or at minimum, in the appendix \citep{friend_sorting_1956} if the article contained a significant amount of analysis. 
 While it is still relatively common to provide access to a github repository or other repository for source code, these repositories are not guaranteed to exist in perpetuity; certainly, when compared to \citep{bron_merge_1972}, the likelihood of being able to find the source code for an article is higher when the code is included in the article or made readily accessible in another format. 
 In many cases, though, authors do not make their code available for analysis; this provides a substantial hurdle when attempting to use, replicate, or compare the published method and represents a significant barrier to scientific progress. 
-Unfortunately, a pure `re-implementation' of existing work generally does not count as research, which does not encourage to build on one another's work nor compare across approaches from different research groups.}
+A pure `re-implementation' of existing work generally does not count as research. Unfortunately, this deters to build on one another's work, discourages comparisons across approaches from different research groups, and favors 'one-off' ideas over a collaborative effort to achieve real solutions.}
 Re-implementations often require enumerating and implementing a wide variety of processing options, likely larger than the scope of the original implementation, and yield a deeper understanding of a method's proficiency \citep{Stodden2013SettingTD}. 
 The process by which the CMC method was implemented in the \pkg{cmcR} package testifies to how important the recent push for open-source development is to scientific progress.
 
+\svp{If code is not open-sourced, at a minimum, authors should be willing to publish the data at every intermediate stage of the analysis, to allow those who would re-implement algorithms the ability to check the validity of the re-implementation against the output of the published paper. 
+This simple step protects both the authors' interest in the code and the scientific community's interest in replication and verification of previously posed methods.
+In addition, publishing original, intermediate, and final results allows new algorithms to benchmark against previously proposed solutions to the same problem, providing a much more even basis for comparison of different algorithms.
+This minimum standard of openness and reproducibility is essential to evaluating algorithms, and in consequential applications such as forensics, these validation results are also important when methods are introduced in a legal setting.}
 <!-- Lastly, it is simply best academic practice to be transparent about how certain results were obtained and how sensitive these results are to different processing conditions. The \pkg{cmcR} package is intended to provide researchers with an automatic, transparent tool to further explore the potential of the CMC method and develop novel techniques to perform firearm evidence identification. -->
 
 <!-- Future changes to the current implementation will likely come in the form of improvements to the way that breech face impressions are automatically isolated and highlighted within the scan. Additionally, there are also a number of other extensions to the initially proposed CMC method that currently lack an open-source implementation. The foundation set by the \pkg{cmcR} package should make it easier to implement these extensions in the future.  -->
