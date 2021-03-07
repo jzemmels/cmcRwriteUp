@@ -1277,13 +1277,13 @@ kmCMCPlot <- cmcR::cmcPlot(reference = fadul1.1,
 
 plt1 <- kmCMCPlot$originalMethodCMCs_reference_v_target
 
-plt1$layers[[4]]$aes_params$size <- 2
+plt1$layers[[4]]$aes_params$size <- 1.5
 
 plt2 <- kmCMCPlot$originalMethodCMCs_target_v_reference +
-  theme(legend.text = element_text(size = 5.5),
-        legend.title = element_text(size = 5.5))
+  theme(legend.text = element_text(size = 5),
+        legend.title = element_text(size = 5))
 
-plt2$layers[[4]]$aes_params$size <- 2
+plt2$layers[[4]]$aes_params$size <- 1.5
 
 plt3 <- cowplot::get_legend(plt2)
 
@@ -1299,7 +1299,7 @@ plt1 <- plt1  +
   geom_text(data = data.frame(x3p = c("Fadul 1-1","Fadul 1-2"),
                               x = c(1750,1750),
                               y = c(1500,1500)),
-            aes(x = x,y = y,label = x3p),size = 2.5)
+            aes(x = x,y = y,label = x3p),size = 2)
 
 plt2 <- plt2  +
   theme(axis.title = element_blank(),
@@ -1310,12 +1310,13 @@ plt2 <- plt2  +
   geom_text(data = data.frame(x3p = c("Fadul 1-1","Fadul 1-2"),
                               x = c(1750,1750),
                               y = c(1500,1500)),
-            aes(x = x,y = y,label = x3p),size = 2.5)
+            aes(x = x,y = y,label = x3p),size = 2)
 
 
 plt <- (plt1 / plt2 / plt3) +
   plot_layout(ncol = 1,
-              heights = c(2,2.1,.5))
+              heights =  c(2,2,.5),
+              widths = c(1,1,1))
 
 ggsave(filename = "cmcR_files/figure-latex/kmOriginalMethod.pdf",plot = plt)
 
@@ -1334,13 +1335,13 @@ plt1 <- kmCMCPlot$highCMC_reference_v_target
 
 
 plt2 <- kmCMCPlot$highCMC_target_v_reference +
-  theme(legend.text = element_text(size = 5.5),
-        legend.title = element_text(size = 5.5))
+  theme(legend.text = element_text(size = 5),
+        legend.title = element_text(size = 5))
 
 plt3 <- cowplot::get_legend(plt2)
 
-plt1$layers[[4]]$aes_params$size <- 2
-plt2$layers[[4]]$aes_params$size <- 2
+plt1$layers[[4]]$aes_params$size <- 1.5
+plt2$layers[[4]]$aes_params$size <- 1.5
 
 plt1 <- plt1  +
   theme(axis.title = element_blank(),
@@ -1351,7 +1352,7 @@ plt1 <- plt1  +
   geom_text(data = data.frame(x3p = c("Fadul 1-1","Fadul 1-2"),
                               x = c(1750,1750),
                               y = c(1500,1500)),
-            aes(x = x,y = y,label = x3p),size = 2.5)
+            aes(x = x,y = y,label = x3p),size = 2)
 
 plt2 <- plt2  +
   theme(axis.title = element_blank(),
@@ -1362,12 +1363,13 @@ plt2 <- plt2  +
   geom_text(data = data.frame(x3p = c("Fadul 1-1","Fadul 1-2"),
                               x = c(1750,1750),
                               y = c(1500,1500)),
-            aes(x = x,y = y,label = x3p),size = 2.5)
+            aes(x = x,y = y,label = x3p),size = 2)
 
 
 plt <- (plt1 / plt2 / plt3) +
   plot_layout(ncol = 1,
-              heights = c(2,2.05,.5))
+              heights =  c(2,2,.5),
+              widths = c(1,1,1))
 
 ggsave(filename = "cmcR_files/figure-latex/kmHighCMC.pdf",plot = plt)
 
@@ -1404,13 +1406,13 @@ plt1 <- knmCMCPlot$originalMethodCMCs_reference_v_target
 
 
 plt2 <- knmCMCPlot$originalMethodCMCs_target_v_reference +
-  theme(legend.text = element_text(size = 5.5),
-        legend.title = element_text(size = 5.5))
+  theme(legend.text = element_text(size = 5),
+        legend.title = element_text(size = 5))
 
 plt3 <- cowplot::get_legend(plt2)
 
-plt1$layers[[4]]$aes_params$size <- 2
-plt2$layers[[4]]$aes_params$size <- 2
+plt1$layers[[4]]$aes_params$size <- 1.5
+plt2$layers[[4]]$aes_params$size <- 1.5
 
 plt1 <- plt1  +
   theme(axis.title = element_blank(),
@@ -1421,7 +1423,7 @@ plt1 <- plt1  +
   geom_text(data = data.frame(x3p = c("Fadul 1-1","Fadul 2-1"),
                               x = c(1750,1750),
                               y = c(1500,1500)),
-            aes(x = x,y = y,label = x3p),size = 2.5)
+            aes(x = x,y = y,label = x3p),size = 2)
 
 plt2 <- plt2  +
   theme(axis.title = element_blank(),
@@ -1432,12 +1434,13 @@ plt2 <- plt2  +
   geom_text(data = data.frame(x3p = c("Fadul 1-1","Fadul 2-1"),
                               x = c(1750,1750),
                               y = c(1500,1500)),
-            aes(x = x,y = y,label = x3p),size = 2.5)
+            aes(x = x,y = y,label = x3p),size = 2)
 
 
 plt <- (plt1 / plt2 / plt3) +
   plot_layout(ncol = 1,
-              heights = c(2,2,.5))
+              heights =  c(2,2,.5),
+              widths = c(1,1,1))
 
 ggsave(filename = "cmcR_files/figure-latex/knmOriginalMethod.pdf",plot = plt)
 
