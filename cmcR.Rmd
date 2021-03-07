@@ -1424,7 +1424,7 @@ plt2 <- plt2  +
 
 
 <!-- ## An incomplete method? XXX this needs a better title XXX {#incompleteMethod} -->
-## Ambiguities algorithmic descriptions {#ambiguities}
+## Ambiguity in algorithmic descriptions {#ambiguities}
 
 <!-- \svp{This section needs to serve as a transition between the method and the investigation - summarizing the holes we've discovered in the descriptions and moving towards a resolution of those holes through brute-force investigation.} -->
 
@@ -1549,7 +1549,7 @@ Instead, we use the variance ratio $r$ to identify promising ranges of parameter
 <!--These are similar thresholds to those chosen in other CMC papers. \hh{XXX I don't agree with this conclusion} --> 
 \hh{Interestingly, as seen in \autoref{tab:thresholdTable}, only the parameters for the High CMC method discussed in \citet{song_estimating_2018} fall into these ranges.}
 
-```{r ,echo=FALSE, fig.cap='\\label{fig:cmc_sensitivityScatter} We desire parameters that yield a high variance ratio. Parameters are currently determined by experimentation and differ between papers. These scatterplots show the behavior of the variance ratio under various parameter settings. Based on the variance ratio statistic, the optimal set of parameter settings include using the High CMC method applied to de-trended breech face scans using translation thresholds $T_x, T_y \\in [15,20]$, rotation threshold $T_\\theta = 6$, and CCF threshold $T_{\\text{CCF}} \\in [.4,5]$. Removal of the trend during preprocessing, which is not explicitly described as a preprocessing step in CMC papers, has a major impact on the effectiveness of the CMC method.',fig.align='left',fig.pos='htbp',out.width='\\textwidth'}
+```{r ,echo=FALSE, fig.cap='\\label{fig:cmc_sensitivityScatter} \\hh{Variance ratios under are plotted for different parameter settings. High variance ratios are indicative of a a good separation between CMC counts for known matching pairs and known-non matching pairs. The High CMC method generally performs better than the original method. Removing the trend during preprocessing, even though not explicitly described as a preprocessing step in the CMC papers, has a major impact on the effectiveness of the CMC method. In this setting, translation thresholds $T_x, T_y \\in [15,20]$, a rotation threshold $T_\\theta = 6$, and a CCF threshold $T_{\\text{CCF}} \\in [.4,5]$ lead to a separation of results.} ',fig.align='left',fig.pos='htbp',out.width='\\textwidth'}
 
 cmcCountData %>%
   mutate(trendRemoved = factor(trendRemoved)) %>%
@@ -1612,14 +1612,15 @@ cmcCountData %>%
 #        width = 6.77,height = 6.77,units = "cm")
 ```
 
-\jz{There are other conclusions that we can draw from \autoref{fig:cmc_sensitivityScatter} that connect to what we have discussed previously as factors that make reproducibility impossible. 
-In particular, \autoref{fig:cmc_sensitivityScatter} illustrates the dangers of providing a written-word description of an algorithm in which, for example, the removal of a global data trend is not explicitly considered.
-Additionally, we can see the benefits of breaking a method up into modularized steps to uncover flaws or sensitivities.
-We will expand upon this below.}
+\hh{As shown in \autoref{fig:cmc_sensitivityScatter}, de-trending breech-scans in the preprocessing stage emerges as a very impactful step to achieve good algorithmic results.  
+}
+\hh{This step is not explicitly mentioned in the written-word descriptions of the algorithm in either of the papers by \citet{song_proposed_2013}, \citet{tong_fired_2014}, \citet{tong_improved_2015}, \citet{chen_convergence_2017}, or \citet{song_estimating_2018}, though it appears from their examples that it was used in the process. This highlights, yet again, the dangers of only providing verbal instructions in lieu of code.}
+\hh{\autoref{fig:cmc_sensitivityScatter} also shows us  }\jz{ the benefits of breaking a method up into modularized steps } \hh{for an algorithmic analysis.}
+\jz{We will expand upon this } in the next section.
 
 ## Exploring algorithmic ambiguities through modularization {#exploring}
 
-\jz{Changes to the preprocessing procedures have major impact on the effectiveness of the CMC method. 
+\jz{Changes to the preprocessing procedures have a major impact on the effectiveness of the CMC method. 
 For example, consider a change to the procedure described in the} [preprocessing](#preProcessing) \jz{section in which surface matrices are not leveled before applying the bandpass Gaussian filter (i.e., skipping step (3) shown in \autoref{fig:processingPipeline}). 
 Recall that this step is performed in our implementation due to the trends in height values exhibited frequently yet inconsistently across cartridge cases fired from the same firearm. 
 No explicit reference is given for how these trends are handled to produce published CMC results, although a Gaussian regression filter would implicitly attenuate their effects.}
@@ -1630,7 +1631,7 @@ In particular, we have observed that non-matching cartridge case pairs with simi
 This emphasizes how dangerous it can be to take the preprocessing procedures for granted.}
 
 \jz{As another example, unintentional ambiguities in written-language description of the High CMC method lead to different interpretations of its decision rule}.
-[Recall that](#highCMCMethod) \jz{the last step of the High CMC method is to combine CMCs from the two comparison directions, assuming that the High CMC criteria were satisfied.
+Recall that \jz{the last step of the [High CMC method](#highCMCMethod) is to combine CMCs from the two comparison directions, assuming that the High CMC criteria were satisfied.
 A common occurrence we have found in our experimentation is that one comparison direction satisfies the High CMC criteria while the other does not.
 Based on the description provided in \citet{tong_improved_2015} (which we've quoted in the} [High CMC decision rule section](#highCMCMethod))\jz{, it is unclear how to handle such situations.
 The convention adopted in \pkg{cmcR} is to require that both directions satisfy the High CMC criteria in order to combine their results (otherwise, the CMCs determined under the original method are used).
