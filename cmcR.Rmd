@@ -1656,20 +1656,20 @@ cmcCountData %>%
 <!-- - This approach allows for improvements to each part of the algorithm in turn -->
 <!-- - This is not like unit testing - we're not testing each module separately, instead we're evaluating the entire algorithm by replacing components of the model with other components - integrated system testing -->
 
-\svp{Both the CMC and High CMC methods are long, multi-step processes that are easier to run and debug when written as a modular pipeline of successive independent steps.
+\svp{Both the CMC and High CMC methods are complex, multi-step processes that are easier to run and debug when written as a modular pipeline of successive, functionally independent steps.
 This modular approach makes it easier to describe the algorithm, easier to write the code, easier to modify and improve the method, and easier to show that the improvement has a noticeable impact on the results. 
 Unfortunately, it takes work to explicitly modularize an algorithm. 
 The modularity of the CMC methods is something imposed by the authors of this paper, and is not necessarily obvious from the published CMC literature.
 In part, we modularize code because it make it more maintainable, but it is also part of the scientific process: refining and improving previous methods by incorporating modern best practices. 
 The modularization creates an explicit framework for assessment of the utility and effectiveness of each piece of the algorithm, and allows us to specifically manipulate each step independently, while monitoring the downstream impact on the results. 
-It also allows new collaborators to improve on pieces of the pipeline, adding additional options and improving the method without having to re-invent the wheel. 
+It also allows future collaborators to improve on pieces of the pipeline, adding additional options and improving the method without having to re-invent the wheel. 
 This provides a huge boost to the efficiency of new developments in the field: it is our hope that the cmcR package will facilitate additional research into the matching of cartridge cases and other pattern evidence.}
 
 
 \svp{As described in \citet{wittenburg_open_2021}, open science and data science depend on FAIR algorithms and data, where FAIR stands for findability, accessibility, interoperability, and reusability. 
-It is easy to see how modular algorithms increase the interoperability and reusability of code and data, and that the addition of an open-source software package increases the findability and accessibility of the method and code.
+It is easy to see how modular algorithms increase the interoperability and reusability of code and data, and that the addition of an open-source software package leveraging the CRAN platform increases the findability and accessibility of the method and code.
 While not all developers adhere to reproducible, open-source, or FAIR design principles, we argue that the addition of a modular framework for the CMC algorithm is a valuable addition to the method, as it results in an algorithm that can be more easily tested, examined, and explained. 
-These principles of open, accessible, interoperable code are also critical for a fair (in the legal sense) justice system: defendants must be able to examine the code to understand the evidence against them, lawyers must be able to assess the utility of the analysis method, and judges must be able to determine whether a method is admissible in court. 
+These principles of open, accessible, interoperable code are also critical for a fair (in the legal sense) justice system: the defense must have access to the code to understand the evidence against them, lawyers must be able to assess the utility of the analysis method, and judges must be able to determine whether a method is admissible in court. 
 All of these goals are compatible with a FAIR, open-source, reproducible algorithm, and are fundamentally incompatible with closed-source, closed-data, paper-only scientific advancement. }
 
 \svp{FAIR software standards emphasize open code, but it is just as important in data science applications to have open data. 
@@ -1723,7 +1723,7 @@ This is compounded by the fact that a critical preprocessing step is performed m
 \svp{At one time, it was common to publish the specific implementation of an algorithm as raw source code \citep{bron_merge_1972} within the journal article, or at minimum, in the appendix \citep{friend_sorting_1956} if the article contained a significant amount of analysis. 
 While it is still relatively common to provide access to a github repository or other repository for source code, these repositories are not guaranteed to exist in perpetuity; certainly, when compared to \citep{bron_merge_1972}, the likelihood of being able to find the source code for an article is higher when the code is included in the article or made readily accessible in another format. 
 In many cases, though, authors do not make their code available for analysis; this provides a substantial hurdle when attempting to use, replicate, or compare the published method and represents a significant barrier to scientific progress. 
-Unfortunately, a pure `re-implementation' of existing work generally does not count as research, which does not encourage to build on one another's work nor compare across approaches from different research groups.}
+A pure `re-implementation' of existing work generally does not count as research. Unfortunately, this deters to build on one another's work, discourages comparisons across approaches from different research groups, and favors 'one-off' ideas over a collaborative effort to achieve real solutions.}
 Re-implementations often require enumerating and implementing a wide variety of processing options, likely larger than the scope of the original implementation, and yield a deeper understanding of a method's proficiency \citep{Stodden2013SettingTD}. 
 The process by which the CMC method was implemented in the \pkg{cmcR} package testifies to how important the recent push for open-source development is to scientific progress.
 
