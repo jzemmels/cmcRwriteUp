@@ -1277,11 +1277,13 @@ kmCMCPlot <- cmcR::cmcPlot(reference = fadul1.1,
 
 plt1 <- kmCMCPlot$originalMethodCMCs_reference_v_target
 
-plt1$layers[[4]]$aes_params$size <- 2
+plt1$layers[[4]]$aes_params$size <- 2.5
 
-plt2 <- kmCMCPlot$originalMethodCMCs_target_v_reference
+plt2 <- kmCMCPlot$originalMethodCMCs_target_v_reference +
+  theme(legend.text = element_text(size = 8),
+        legend.title = element_text(size = 8))
 
-plt2$layers[[4]]$aes_params$size <- 2
+plt2$layers[[4]]$aes_params$size <- 2.5
 
 plt3 <- cowplot::get_legend(plt2)
 
@@ -1323,12 +1325,14 @@ Combining the results as described above, the final High CMC number is 24 CMCs.
 plt1 <- kmCMCPlot$highCMC_reference_v_target
 
 
-plt2 <- kmCMCPlot$highCMC_target_v_reference
+plt2 <- kmCMCPlot$highCMC_target_v_reference +
+  theme(legend.text = element_text(size = 8),
+        legend.title = element_text(size = 8))
 
 plt3 <- cowplot::get_legend(plt2)
 
-plt1$layers[[4]]$aes_params$size <- 2
-plt2$layers[[4]]$aes_params$size <- 2
+plt1$layers[[4]]$aes_params$size <- 2.5
+plt2$layers[[4]]$aes_params$size <- 2.5
 
 plt1 <- plt1  +
   theme(axis.title = element_blank(),
@@ -1383,12 +1387,14 @@ knmCMCPlot <- cmcR::cmcPlot(reference = fadul1.1,
 plt1 <- knmCMCPlot$originalMethodCMCs_reference_v_target
 
 
-plt2 <- knmCMCPlot$originalMethodCMCs_target_v_reference
+plt2 <- knmCMCPlot$originalMethodCMCs_target_v_reference +
+  theme(legend.text = element_text(size = 8),
+        legend.title = element_text(size = 8))
 
 plt3 <- cowplot::get_legend(plt2)
 
-plt1$layers[[4]]$aes_params$size <- 2
-plt2$layers[[4]]$aes_params$size <- 2
+plt1$layers[[4]]$aes_params$size <- 2.5
+plt2$layers[[4]]$aes_params$size <- 2.5
 
 plt1 <- plt1  +
   theme(axis.title = element_blank(),
