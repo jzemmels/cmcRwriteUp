@@ -1478,27 +1478,25 @@ Adherence to these principles yields not only computationally reproducible resul
 
 ## Communicating a method's sensitivity to processing conditions
 
-\hh{Choosing threshold values} $T_x, T_y, T_\theta, T_{\text{CCF}}$ \hh{For translation, rotation and maximum cross-correlation is crucial in declaring} a particular cell-region pair "congruent". 
+\hh{Choosing threshold values} $T_x, T_y, T_\theta, T_{\text{CCF}}$ \hh{for translation, rotation and maximum cross-correlation is crucial in declaring} a particular cell-region pair "congruent". 
 A lot of different combinations of these thresholds yield perfect separation between the matching and non-matching CMC count distributions. 
-As such, some other diagnostic must be used to compare different sets of thresholds.
-Considering that ground-truth is known for the Fadul data set, we will obtain a group of known match CMC counts and a group of known non-match CMC counts for each set of thresholds. 
-A simple diagnostic based on this observation is a ratio that compares the between- and within-group variability.
+\hh{In situations where ground truth is known, such as in the example of the Fadul data here, we can use the ratio $r$ of between- and within-group variability as an additional statistic to measure  separation between CMC counts of known matches and known non-matches.}
 \hh{XXX For the future: let's stay away from random variables made up of multiple letters - it's terribly confusing because CMC could be also made up of C times M times C.}
 Let C$_{ij}$ denote the CMC count assigned to the $j$th cartridge case pair, $j = 1,...,n_i$, $n_1 = 63, n_2 = 717$, from the $i$th group, $i = 1,2$ representing matches and non-matches, respectively. 
 For each set of thresholds we calculate the **Variance Ratio** $r$ as:
 $$
 r = r\left(T_x, T_y, T_\theta, T_{\text{CCF}}\right) = \frac{\sum_{i=1}^2 \left(\overline{C}_{i.} - \overline{C}_{..}\right)^2}{\sum_{i=1}^2 \frac{1}{n_i - 1}\sum_{j=1}^{n_i} \left(C_{ij} - \overline{C}_{i.}\right)^2}
 $$
-\jz{where $\overline{C}_{i.}$ denotes the within-group CMC count average and $\overline{C}_{..}$ denotes the grand CMC count average. 
-Greater separation between and less variability within the match and non-match CMC count distributions will yield larger $r$ values. 
-As such, larger values of $r$ are preferred.}
+where $\overline{C}_{i.}$ denotes the within-group CMC count average and $\overline{C}_{..}$ denotes the grand CMC count average. 
+Greater separation between and less variability within the match and non-match CMC count distributions yields larger $r$ values. 
+Larger values of $r$ \hh{are therefore indicative of greater separation between the groups}.
 
-\jz{As an example, \autoref{fig:decisionRuleSensitivity_comparison} compares the CMC results using the original method vs. the High CMC method where $T_{\Delta x} = 20 = T_{\Delta y}$ pixels, $T_{\text{CCF}} = .5$, and $T_{\theta} = 6$ degrees. 
-We can see that both decision rules result in separated (i.e., non-overlapping) CMC count distributions. 
-However, the High CMC decision rule yields more appealing separation between the match and non-match distribution as evidenced by the considerably larger variance ratio. 
-These results are, of course, dependent on many other processing decisions than just the threshold values used, so a greater sensitivity analysis should be considered.}
+\autoref{fig:decisionRuleSensitivity_comparison} \hh{shows results for the original method and the High CMC method for a parameter setting of $T_{\Delta x} = 20 = T_{\Delta y}$ pixels, $T_{\text{CCF}} = .5$, and $T_{\theta} = 6$. }
+Both decision rules result in separated CMC count distributions for known matches and known non-matches \hh{corresponding to an AUC of 1.00}. 
+However, the High CMC decision rule yields a larger separation between the known match and known non-match distributions as evidenced by the considerably larger variance ratio $r$. 
+<!--These results are, of course, dependent on many other processing decisions than just the threshold values used, so a greater sensitivity analysis should be considered.-->
 
-```{r echo=FALSE,fig.cap='\\label{fig:decisionRuleSensitivity_comparison} CMC count relative frequencies under the original method and the High CMC method for $T_{\\Delta x} = 20 = T_{\\Delta y}$ pixels, $T_{\\text{CCF}} = .5$, and $T_{\\theta} = 6$ degrees. AUC $= 1.00$ corresponds to perfect separation of the match and non-match CMC count distributions. We can see that, for this set of processing parameters, the High CMC method yields more appealing separation between the match and non-match distributions than the original method.', fig.align='left',fig.pos='htbp',out.width='\\textwidth'}
+```{r echo=FALSE,fig.cap='\\label{fig:decisionRuleSensitivity_comparison} CMC count relative frequencies under the original method and the High CMC method for $T_{\\Delta x} = 20 = T_{\\Delta y}$ pixels, $T_{\\text{CCF}} = .5$, and $T_{\\theta} = 6$ degrees. AUC $= 1.00$ corresponds to perfect separation of the match and non-match CMC count distributions. We can see that, for this set of processing parameters, the High CMC method yields higher CMC counts for known matches that the original method while known non-matches have the same distribution under both methods.', fig.align='left',fig.pos='htbp',out.width='\\textwidth'}
 
 load("data/cmcCountData.RData")
 
@@ -1537,19 +1535,19 @@ cmcCountData %>%
   ylab("Relative Frequency")
 ```
 
-We consider five parameter settings that, based on our experimentation, have a demonstrable impact on the effectiveness of the CMC method. These include:
+We consider five \hh{dimensions} that have a demonstrable impact on the effectiveness of the CMC method. These include:
 \begin{itemize}
 \item the decision rule (original method or High CMC method) used,
 
 \item whether the global trend is removed during preprocessing, and
 
-\item choice of congruency thresholds: translation $T_x, T_y$, rotation $T_\theta$, and CCF $T_{\text{CCF}}$.
+\item choice of congruency thresholds: translation $T_x, T_y$, rotation $T_\theta$, and cross-correlation $T_{\text{CCF}}$.
 \end{itemize}
-To understand the generalizability of a particular set of parameters to "out-of-sample" data, choosing parameter settings resulting in an AUC equal to 1 (perfect identification) is not enough. 
-Instead, we use the variance ratio to identify a promising range of thresholds. \autoref{fig:cmc_sensitivityScatter} shows the value of the variance ratio under various settings of these 5 parameters. 
-We can see that using the High CMC method on breech face scans for which the trend was removed yields better variance ratio values. 
-Conditional on these settings, choosing thresholds $T_x, T_y \in [15,20]$, $T_\theta = 6$, and $T_{\text{CCF}} \in [.4,5]$ yields arguably the most promising variance ratios. 
-These are similar thresholds to those chosen in other CMC papers.
+<!--To understand the generalizability of a particular set of parameters to "out-of-sample" data,-->
+Choosing \hh{a single} parameter setting resulting in perfect identification is not enough \hh{to generally understand the algorithm}. 
+Instead, we use the variance ratio $r$ to identify promising ranges of parameters. \autoref{fig:cmc_sensitivityScatter} shows the value of the variance ratio under various settings. We  see that the High CMC method \hh{yields better separation than the original method under any parameter setting.} \hh{Highest variance ratios, however, are achieved for }   thresholds $T_x, T_y \in [10,20]$, $T_\theta = 6$, and $T_{\text{CCF}} \in [.4,.5]$. 
+<!--These are similar thresholds to those chosen in other CMC papers. \hh{XXX I don't agree with this conclusion} --> 
+\hh{Interestingly, as seen in \autoref{tab:thresholdTable}, only the parameters for the High CMC method discussed in \citet{song_estimating_2018} fall into these ranges.}
 
 ```{r ,echo=FALSE, fig.cap='\\label{fig:cmc_sensitivityScatter} We desire parameters that yield a high variance ratio. Parameters are currently determined by experimentation and differ between papers. These scatterplots show the behavior of the variance ratio under various parameter settings. Based on the variance ratio statistic, the optimal set of parameter settings include using the High CMC method applied to de-trended breech face scans using translation thresholds $T_x, T_y \\in [15,20]$, rotation threshold $T_\\theta = 6$, and CCF threshold $T_{\\text{CCF}} \\in [.4,5]$. Removal of the trend during preprocessing, which is not explicitly described as a preprocessing step in CMC papers, has a major impact on the effectiveness of the CMC method.',fig.align='left',fig.pos='htbp',out.width='\\textwidth'}
 
