@@ -903,7 +903,7 @@ As such, there is little known about the effectiveness of the any CMC method to 
         \cellcolor{lightgray}{6} & \cellcolor{lightgray}{.50}\\
         \hline
     \end{tabular}
-    \caption{Each CMC implementation uses slightly different translation, rotation, and CCF$_{\max}$ thresholds to classify matches. There is currently no principled approach to determining these thresholds. Instead, thresholds seem to be chosen by authors through experimentation and selecting thresholds that provide promising results.}
+    \caption{Different thresholds for translation, rotation, and CCF$_{\max}$ are used across different papers. The range in CCF$_{\max}$ is particularly notable. There is currently no principled approach to determining these thresholds. Instead, thresholds seem to be chosen by authors through experimentation and selecting thresholds that provide promising results.}
     \label{tab:thresholdTable}
 \end{table}
 
@@ -1445,12 +1445,19 @@ For any cartridge case pair, the number of CMCs can be determined under the orig
 We have applied our implementation of these two methods to the 780 cartridge case pairs available in the \citet{fadul_empirical_nodate} data set under a wide variety of processing conditions to determine which conditions yield \hh{the best results and match the most with the published results}.
 Perfect identification of all matching and non-matching pairs corresponds to choosing a minimum CMC count threshold that separates the distributions of the matching and non-matching CMC counts. 
 A CMC count threshold of 6 CMCs \hh{is generally accepted as the threshold in the published papers} [\citet{tong_improved_2015}, \citet{song_estimating_2018}, \citet{song_proposed_2013}]. \hh{However,} this threshold has been shown to not generalize well to all proposed methods and cartridge case data sets \citep{chen_convergence_2017}.
-In this section, we will investigate how ambiguities identified in the [CMC method descriptions](cmcMethod) induce a high degree of sensitivity to choosing the "correct" processing conditions.
-A sensitivity analysis of the original method \jz{of \citet{song_proposed_2013}} and its descendants has yet to be published. 
-As previously discussed, the conditions under which these proposed methods are applied differ considerably across papers making it difficult to compare results. 
-We hope to partly remedy this problem by providing a discussion of the sensitivity of the original method of \citet{song_proposed_2013} and the High CMC method.
-While the presentation provided here is far from exhaustive, we focus this discussion on what we have found to be highly influential factors on the methods' sensitivity.
-These factors include sensitivity to the choice of congruency thresholds, to the reader's interpretation of the methods' descriptions, and to the preprocessing procedures employed before feature-extraction. \jz{In identifying these influential factors, we also propose a set of principles applicable to any type of computationally reproducible research. We argue that adherence to these principles yields not only reproducible results, but also greater clarity of a proposed method.}
+In this section, we  \hh{demonstrate that the}  ambiguities  in the [CMC method descriptions](cmcMethod) \hh{and lack of guidance in the choice of parameter settings propagate through the algorithm and produce highly variable results.} 
+<!-- A sensitivity analysis of the original method \jz{of \citet{song_proposed_2013}} and its descendants has yet to be published. 
+As previously discussed, the conditions under which these proposed methods are applied differ considerably across papers making it difficult to compare results. -->
+\hh{Additionally,  wildly different parameter settings are used by the same group of authors across different papers as shown in \autoref{tab:thresholdTable}.}
+
+<!--We hope to partly remedy this problem by providing a discussion of the sensitivity of the original method of \citet{song_proposed_2013} and the High CMC method.-->
+\hh{In the next section we focus on a discussion of the sensitivity of some of the method's parameters. This}
+  presentation is far from exhaustive: we primarily focus on the factors \hh{contributing to the most variable results}.
+<!--These factors include sensitivity to the choice of congruency thresholds, to the reader's interpretation of the methods' descriptions, and to the preprocessing procedures employed before feature-extraction.-->
+\hh{As a consequence of this investigation we have developed }
+  a set of principles designed to reduce the need for brute-force searches across  parameter settings when re-implementing algorithms without accompanying code.
+
+Adherence to these principles yields not only computationally reproducible results, but also improves a reader's understanding of a proposed method.
 
 ## Communicating a method's sensitivity to processing conditions
 
