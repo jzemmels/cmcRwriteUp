@@ -83,8 +83,6 @@ library(rgl)
 library(ggpcp)
 ```
 
-<!-- \hh{XXX could we please cut back on the phrase 'discussed in the CMC literature'? It's  terribly vague - right now there's only a handful of CMC papers. let's not make all of that 'literature'. The phrase also sounds all-inclusive and that's not true by definition for future work, so let's not undermine ourselves by repeating this phrase over and over.  } \jz{XXX Sure. I'll change the phrasing where it is used.} -->
-
 # Introduction {#intro}
 \dfn{Research reproducibility}  refers to the ability to use the same procedures and materials as a previous study to arrive at the same results or conclusions. 
 Reproducibility is indispensable for results to be considered valid by the wider scientific community \citep{goodman_what_2016}. Unfortunately, we cannot take reproducibility for granted:
@@ -92,7 +90,7 @@ Reproducibility is indispensable for results to be considered valid by the wider
 Commonly identified reasons for this lack of reproducibility include (1) ambiguity in how procedures
 were implemented, (2) missing or incomplete data, and (3) missing or incomplete computer code to replicate all statistical analyses \citep{leek_is_2017}. 
 
-In computational research, reproducibility of results is commonly translated to mean that the code and data used to produce published results be made publicly available \citep{peng_reproducible_2011}. However, current status quo is that many papers describe the computational methods which were used in the data analysis in broad terms only. Computational reproducibility requires more details: 
+In computational research, reproducibility of results is commonly translated to mean that the code and data used to produce published results be made publicly available \citep{peng_reproducible_2011}. However, current status quo is that many papers describe the computational methods  used in the data analysis in broad terms only. Computational reproducibility requires more details: 
 published results may be numerically sensitive to the particular implementation of a computational method, including such considerations as data processing decisions, parameter settings, and even the chosen programming language. 
 As such, peer-review and scientific progress in the truest sense requires that \emph{all} pre-processed data, code, and results be made openly available. 
 In recognition of the additional requirements of computational reproducibility,  some journals have adopted policies encouraging or requiring that authors provide code and data sufficient to reproduce the statistical analyses, with the goal of building a "culture of reproducibility" in their respective fields \citep{peng_reproducible_2009, peng_reproducible_2011, stodden_toward_2013}. 
@@ -101,8 +99,8 @@ The fundamental reason that descriptions of data analysis procedures, combined w
 
 In this light, computational reproducibility  in forensic science, is all the more important because it fundamentally enables discussions about algorithmic transparency and accountability \citep{kwongAlgorithmSaysYou2017, desaiTrustVerifyGuide2017}. 
 Currently, subjective decisions are made by individual examiners -- human beings are the ultimate closed-source, black-box system, and the operations which lead to a decision are largely opaque. 
-\hh{The \citet{council_strengthening_2009} has pushed to} complement these subjective decisions with automatic algorithms that objectively assess evidence and can be explained during court testimony.
-\hh{It furthermore} is \hh{of the utmost importance} that the community does not go only halfway, trading a subjective, human black box for objective, proprietary algorithms that are similarly opaque and unauditable.
+The \citet{council_strengthening_2009} has pushed to complement these subjective decisions with automatic algorithms that objectively assess evidence and can be explained during court testimony.
+It furthermore is of the utmost importance that the community does not go only halfway, trading a subjective, human black box for objective, proprietary algorithms that are similarly opaque and unauditable.
 As part of the shift towards objectivity in forensic science, automatic methods have  been developed to solve problems such as identifying matching glass shards \citep{park2019}, handwriting \citep{crawford_handwriting_2020}, shoe prints \citep{park_algorithm_2020}, and ballistic evidence \citep{hare_automatic_2016,tai_fully_2018}. 
 However, many of the algorithms described in the literature are not reproducible or open-source.
 In this paper, we will demonstrate the ambiguities present in textual descriptions of algorithms by creating an open-source implementation of one well-known automatic forensic identification method.
@@ -115,12 +113,11 @@ As a result, the findings described in those papers are not computationally repr
 Here, we describe the process of implementing the Congruent Matching Cells (CMC) method for the comparison of marks on spent cartridge cases, using the descriptions from two published papers, \citet{song_3d_2014} and \citet{tong_improved_2015}. 
 Our R package \citep{R}, \pkg{cmcR}, provides an open-source implementation of the CMC method, but it also serves as an example of the implementation barriers which occur when translating textual descriptions of algorithms into detailed source code. 
 This process offers some insight into the necessary components which must be available for computational reproducibility. 
-Our experience shows that when faced with ambiguity in how a method is implemented, there are only few options available to us apart from performing  brute-force searches through combinations of decisions that may have yielded the results reported. 
+Our experience shows that when faced with ambiguity in how a method is implemented, there are few options available to us apart from performing  brute-force searches through combinations of decisions that may have yielded the results reported. 
 Unsurprisingly, the process is both time absorbing and computationally intensive from implementation to sifting through a wide variety of decision combinations.
 The failure to ensure computational reproducibility not only imposes a general barrier to scientific progress; in this application, it also highlights the crucial need of open-source, transparent methodology in high-stakes fields such as forensic analysis.
 
-<!-- \svp{XXX should we cite Fadul too, since it's the original source?}\hh{XXX yes, we should cite the original source} -->
-We will use the same data set which is referenced in \citet{song_3d_2014} and \citet{tong_improved_2015} to illustrate usage of the \pkg{cmcR} package. These 3d scans of cartridge cases are available from the NIST Ballistics Toolmark Research Database \citep[NBTRD;][]{nbtrd}. The strings defined below refer to three cartridge case scans available on the NBTRD from \citet{fadul_empirical_nodate} and will be used throughout the remainder of this paper.
+We will use the same data set which is referenced in \citet{song_3d_2014} and \citet{tong_improved_2015} to illustrate usage of the \pkg{cmcR} package. These 3D scans of cartridge cases are available from the NIST Ballistics Toolmark Research Database \citep[NBTRD;][]{nbtrd}. The strings defined below refer to three cartridge case scans available on the NBTRD from \citet{fadul_empirical_nodate} and will be used throughout the remainder of this paper.
 
 ```{r eval=FALSE,echo=FALSE}
 # SVP comment: Should do this in a tidy way with less code if possible...
@@ -168,7 +165,7 @@ purrr::walk2(.x = x3p_ids,
 
 
 
-In the remainder of this paper, we \hh{first describe some of the background of forensic comparisons of breech face impressions, we then follow with a description of}  the implementation of a general CMC method which encompasses methods \hh{discussed} in \citet{song_proposed_2013}, \citet{song_3d_2014}, and \citet{tong_improved_2015}.
+In the remainder of this paper, we first describe some of the background of forensic comparisons of breech face impressions. We then follow with a description of the implementation of a general CMC method which encompasses methods discussed in \citet{song_proposed_2013}, \citet{song_3d_2014}, and \citet{tong_improved_2015}.
 \citet{song_proposed_2013} lays out the conceptual framework for the original CMC method  later implemented in \citet{song_3d_2014} and \cite{tong_fired_2014}. An improvement of the method presented in \citet{tong_improved_2015} and used in subsequent papers is referred to as the ``High CMC" method \citep{chen_convergence_2017}. Both implementations (and further proposed improvements) have been shown to correctly differentiate same and different-source cartridge cases from the \citet{fadul_empirical_nodate} data set.
 
 The \pkg{cmcR} package contains implementations designed for use with 3D topographical scans of the original method described in \citet{song_proposed_2013} (which we will refer to as the original method) and \citet{song_3d_2014} and the High CMC method described in \citet{tong_improved_2015} (which we will refer to as the High CMC method). The source code to the full \pkg{cmcR} package is accessible at https://github.com/CSAFE-ISU/cmcR.
@@ -181,29 +178,29 @@ The \pkg{cmcR} package contains implementations designed for use with 3D topogra
 A \dfn{cartridge case} is the portion of firearm ammunition that encases a projectile (e.g., bullet, shots, or slug) along with the explosive used to propel the projectile through the firearm. 
 When a firearm is discharged, the projectile is propelled down the barrel of the firearm, while the cartridge case is forced towards the back of the barrel. 
 It strikes the back wall, known as the \dfn{breech face}, of the barrel with considerable force, thereby imprinting any markings on the breech face onto the cartridge case, creating the so-called \dfn{breech face impressions}.
-These markings have been suggested to be unique to a firearm and are used in forensic examinations to determine whether two cartridge cases have been fired by the same handgun.
+These markings have been suggested to be unique to a firearm and are used in forensic examinations to determine whether two cartridge cases have been fired by the same firearm.
 
-During a forensic examination, two pieces of ballistic evidence are  placed under a \dfn{comparison microscope}. Comparison microscopes allow for a side-by-side comparison of two objects within the same viewfinder, as seen in \ref{fig:ccPair_combined}. A pair of breech face images is aligned along the thin black line in the middle of the images. The degree to which these breech face markings \hh{can be aligned is} used to determine whether the two cartridge cases \hh{came from the same source}; i.e., were fired from the same firearm. 
+During a forensic examination, two pieces of ballistic evidence are  placed under a \dfn{comparison microscope}. Comparison microscopes allow for a side-by-side comparison of two objects within the same viewfinder, as seen in \autoref{fig:ccPair_combined}. 
+A pair of breech face images is aligned along the thin black line in the middle of the images. The degree to which these breech face markings can be aligned is used to determine whether the two cartridge cases came from the same source; i.e., were fired from the same firearm. 
 These breech face impressions are considered to be a firearm's unique "fingerprint" left on a cartridge case \citep{firearm_id_thompson}.
 
 ```{r ,echo=FALSE,fig.cap='\\label{fig:ccPair_combined} A cartridge case pair with visible breech face impressions under a microscrope.  A thin line can be seen separating the two views. The degree to which the markings coincide is used to conclude whether the pair comes from the same source.',fig.pos='htbp',out.width="\\textwidth"}
 knitr::include_graphics("images/cartridgeCasePair_comparison_with_line.PNG")
 ```
 
-\autoref{fig:ccPair_combined} is an example of an image coming from a comparison microscope used by firearms examiners in laboratory settings. Digital microscopy is capable of precision measurements of surface topology at even higher resolutions. Using a 3D microscope, we can obtain scans of breech face impressions at the micron level ($1 \mu m = 10^{-3} mm = 10^{-6} m$). 
-These \hh{3d topological scans are} used as input to automated comparison algorithms, such as the CMC method originally proposed in \citet{song_proposed_2013}.
+\autoref{fig:ccPair_combined} is an example of an image from a comparison microscope used by firearms examiners in laboratory settings. Digital microscopy is capable of precision measurements of surface topology at even higher resolutions. Using a 3D microscope, we can obtain scans of breech face impressions at the micron level ($1 \mu m = 10^{-3} mm = 10^{-6} m$). 
+These 3D topological scans are used as input to automated comparison algorithms, such as the CMC method originally proposed in \citet{song_proposed_2013}.
 
 
 # The CMC method {#cmcMethod}
 
-<!-- Transition -->
 In this section, we examine the process of implementing the CMC method for automatic comparisons of 3D cartridge case scans. 
 At each step, we will compare the description in the published papers with the implementation in code, discussing the gaps in the method description and how we filled in those gaps during the creation of \pkg{cmcR}.
 
 All of the CMC methods can be broken down into three broad stages: (1) preprocessing, (2) cell-based similarity feature extraction, and (3) application of a decision rule as illustrated in \autoref{fig:overview-flow}.
 In the following sections we break each of these stages further into a set of modular steps.
 One advantage of modularizing these algorithms is that we can implement an algorithm as a  set of sequential procedures.
-This allows us to then test new variations against the old implementation in a coherent, unified framework.
+This allows us to test new variations against the old implementation in a coherent, unified framework.
 
 \begin{figure}
 \centering
@@ -212,10 +209,10 @@ This allows us to then test new variations against the old implementation in a c
 \end{figure}
 
 
-The primary difference between the original and high CMC methods \hh{lies in how} the decision rules are utilized to separate matches and non-matches. Beyond that there are also several small differences in the preprocessing and comparison procedures.
+The primary difference between the Original and High CMC methods lies in how the decision rules are utilized to separate matches and non-matches. Beyond that there are also several small differences in the preprocessing and comparison procedures.
 Current CMC papers lack justification for changing these procedures. 
 At the same time, different conditions have been shown to yield very different results; even when applying the same decision rule. 
-This sensitivity of various methods to different conditions has also not been discussed \hh{appropriately}.
+This sensitivity of various methods to different conditions has also not been discussed appropriately.
 
 
 In this section, we discuss each stage of the CMC method using excerpts from the original papers.
@@ -223,11 +220,10 @@ Then, we examine the implementation of each sub-procedure in the \pkg{cmcR} pack
 
 
 ## Initial Data {#initialData}
-Cartridge case scans are commonly stored in the ISO standard x3p file format \citep{ISO25178-72}.  x3p is a \hh{container format which} consists of a single surface matrix representing the height value of the breech face surface and metadata concerning the parameters under which the scan was taken (size, resolution, creator, microscope, and microscopy software versions etc.). The \pkg{x3ptools} package \citep{x3ptools} \hh{provides elementary functionality to work with the format in R}.
+Cartridge case scans are commonly stored in the ISO standard x3p file format \citep{ISO25178-72}.  x3p is a container format which consists of a single surface matrix representing the height value of the breech face surface and metadata concerning the parameters under which the scan was taken (size, resolution, creator, microscope, and microscopy software versions etc.). The \pkg{x3ptools} package \citep{x3ptools} provides elementary functionality to work with the format in R.
 
-<!-- \hh{XXXX x3p is a standard file format - we could cite both the ISO site and x3ptools as a way to work with them.} -->
 \autoref{fig:cartridgeCasePair} shows the surface matrices of a known match (KM) pair of cartridge cases from a study by \citet{fadul_empirical_nodate}. 
-A total of 40 cartridge cases were scanned with a lateral resolution of 6.25 microns (micrometers) per pixel. The surface matrices are approximately $1200 \times 1200$ pixels in size \hh{corresponding to an area of about $3.8 \times 3.8$ mm$^2$}.
+In this study, a total of 40 cartridge cases were scanned with a lateral resolution of 6.25 microns (micrometers) per pixel. The surface matrices are approximately $1200 \times 1200$ pixels in size corresponding to an area of about $3.8 \times 3.8$ mm$^2$.
 
 ```{r, fadul1-1Screenshot,include=FALSE}
 fadul1.1 <- x3ptools::x3p_read("data/fadul1-1.x3p")
@@ -318,8 +314,7 @@ knitr::include_graphics(c("derivatives/fadul1-1.png","derivatives/fadul1-2.png")
 
 Only certain regions of a cartridge case contain identifying breech face impression markings.
 \citet{song_proposed_2013} defines "valid correlation regions" as regions where "the individual characteristics of the ballistics signature are found that can be used effectively for ballistics identification."
-<!-- \hh{XXX how are these valid correlation regions defined? If they are not defined in detail, we should remark on that.} -->
-Prior to applying the CMC comparison procedure, cartridge scans must undergo some preprocessing to \hh{identify} these valid correlation regions.
+Prior to applying the CMC comparison procedure, cartridge scans must undergo some preprocessing to identify these valid correlation regions.
 
 ```{r load-data, include = F, cache = T}
 
@@ -410,9 +405,7 @@ bind_rows(kmComparison_cmcs,
 
 ## Preprocessing procedures {#preProcessing}
 
-<!-- First, raw 3D topographical cartridge case surface data need to be processed before applying the CMC method.  -->
-
-During the preprocessing stage, \hh{a series of} sequential steps is used to prepare each cartridge case for analysis.  The goal of this process is to remove the edges and center of the scan which did not come into contact with \hh{XXX  a minimal (specify a number?) amount of}  the breech face, as well as any artifacts of the scan and microscope staging which do not accurately represent the breech face surface.
+During the preprocessing stage, a series of sequential steps is used to prepare each cartridge case for analysis.  The goal of this process is to remove the edges and center of the scan which did not come into contact with \hh{XXX  a minimal (specify a number?) amount of}  the breech face, as well as any artifacts of the scan and microscope staging which do not accurately represent the breech face surface.
 
 
 The different iterations of the CMC algorithm describe  different variations of these steps.
@@ -424,11 +417,11 @@ A summary of these steps is shown in \autoref{fig:preprocessing-schematic}.
 \caption{Overview of the set of pre-processing steps used in the CMC algorithms. Where a procedure step is not discussed or explicitly not applied in the paper, the path traverses empty space.}\label{fig:preprocessing-schematic}
 \end{figure}
 
-The implementation in \citet{tong_fired_2014} describes the preprocessing steps \hh{(for the 2d images)} as:
+The implementation in \citet{tong_fired_2014} describes the preprocessing steps (for the 2D images) as:
 
 >  After trimming processing [sic] to remove unrelated correlations areas, the final image size is reduced to 700 × 700 pixel with an estimated pixel spacing of 5.0 $\mu$m. A Gaussian smoothing filter (standard deviation $\sigma$ = 1) was implemented first to remove high frequency noise.
 
-Complicating the issue \hh{of preprocessing the scans}, the procedures used to process the surface matrices differ in each \hh{of the} paper\hh{s discussed here}. \citet{song_3d_2014} outline the following preprocessing procedure:
+Complicating the issue of preprocessing the scans, the procedures used to process the surface matrices differ in each of the papers discussed here. \citet{song_3d_2014} outline the following preprocessing procedure:
 
 > Trim off the inside firing pin surface and other areas outside the breech face mark, so that only breech face impression data remain for correlation.
 
@@ -448,10 +441,9 @@ As a result of these ambiguities, during our implementation of the preprocessing
 
 ### Implementation of preprocessing procedures
 
-<!-- \hh{XXX Joe, avoid passive voice when you are describing what you did. You need to emphasize that this is your work} -->
 The preprocessing procedures are implemented via modularized functions of the form \code{preProcess\_*}.
-Modularizing the steps of the preprocessing procedures makes the overall process easier to understand and \hh{allow for} experimentation.
-\autoref{fig:processingPipeline} shows \hh{an overview of the preprocessing framework for the Fadul 1-1 breech face from reading the scan (left) to an analysis-ready region (right)}.
+Modularizing the steps of the preprocessing procedures makes the overall process easier to understand and allows for experimentation.
+\autoref{fig:processingPipeline} shows an overview of the preprocessing framework for the Fadul 1-1 breech face from reading the scan (left) to an analysis-ready region (right)}.
 
 ```{r cache=FALSE, include=F}
 fadul1.1_original <- x3ptools::x3p_read("data/fadul1-1.x3p")
@@ -480,7 +472,7 @@ fadul1.1_bpFiltered<- cmcR::preProcess_gaussFilter(x3p = fadul1.1_downsampled,
 ```
 
 
-```{r, echo = F,warning = F,message = F,cache = T,fig.cap='\\label{fig:processingPipeline} Illustration of the  preprocessing pipeline implemented in \\pkg{cmcR}.  At each stage, the amount of variability in height across the scan decreases as extraneous sources of noise are removed.',fig.align='center',fig.pos='htbp',out.width='\\textwidth', message = F, warning = F}
+```{r, echo = F,warning = F,message = F,cache = T,fig.cap='\\label{fig:processingPipeline} Illustration of the  preprocessing pipeline implemented in \\pkg{cmcR}.  At each stage, the variability in height across the scan decreases as extraneous sources of noise are removed.',fig.align='center',fig.pos='htbp',out.width='\\textwidth', message = F, warning = F}
 
 preProcessingPlot <- cmcR::x3pListPlot(list(fadul1.1_original,
                                             fadul1.1_croppedInt,
@@ -530,14 +522,9 @@ fadul1.1 <- x3ptools::x3p_read("data/fadul1-1.x3p")
 ```
 
 We begin with a 3D scan.
-Typically, \hh{scans are downsampled to about 25\% of their size by only retaining} every other row and column in the surface matrix. <!--is retained, resulting in a matrix that is approximately 25% of the original scan dimension. -->
-The \hh{breech faces in} \citet{fadul_empirical_nodate} were initially scanned at a resolution of 3.125 $\mu$m per pixel. Downsampling reduces the resolution to 6.25 $\mu$m per pixel.
-<!-- \hh{XXX what is the resolution at that point?} -->
+Typically, scans are downsampled to about 25\% of their size by only retaining every other row and column in the surface matrix. 
+The breech faces in \citet{fadul_empirical_nodate} were initially scanned at a resolution of 3.125 $\mu$m per pixel. Downsampling reduces the resolution to 6.25 $\mu$m per pixel.
 Step (1) in \autoref{fig:processingPipeline} shows an unprocessed breech face scan.
-
-<!-- \hh{XXX can we get away from the surface matrix and call it a breech face scan? That's gettign away from how it's implemented towards what it is.} -->
-
-<!-- \hh{XXX minor thing, but let's call the things exactly how they are defined. It's not Step 1, its (1) in Figure 5.} -->
 
 ```{r, echo=TRUE,eval=FALSE}
 # Step (2)
@@ -547,7 +534,7 @@ fadul1.1_cropped <- fadul1.1%>%
 ```
 
 Three major regions of the scan are identified via a labeling algorithm as described in \citet{hesselink_concurrent_2001} and available in the \pkg{imager} package \citep{imager}. 
-These regions are the \hh{circle capturing the} exterior of the cartridge case primer, the breech face impression region, and the \hh{circle around the} firing pin impression hole in the center of the scan. 
+These regions are the circle capturing the exterior of the cartridge case primer, the breech face impression region, and the circle around the firing pin impression hole in the center of the scan. 
 
 The goal is to isolate the breech face impression region by removing (i.e., replacing with \code{NA}) the pixels in the other two regions.
 Upon labeling the different regions of the cartridge case scan, the centers and radii of the cartridge case primer and firing pin impression hole are estimated. 
@@ -565,16 +552,11 @@ fadul1.1_deTrended <- fadul1.1_cropped %>%
 ```
 
 
-\hh{In Step 3} any existing large-scale trend  in the breech face scan height values \hh{are removed}. In steps (1) and (2) of \autoref{fig:processingPipeline} it is clear that there is a southwest-to-northeast trend in height values. 
-Such a trend is observable in many cartridge case scans, yet does not occur consistently across cartridge cases fired from the same firearm. \hh{This indicates that a trend in height values is  likely to be an} 
- artifact of the scanning process \hh{resulting from }  cartridge cases  not being precisely, horizontally leveled prior to taking the scan.
-<!-- (XXX should we cite something about scanning SOP here? XXX).  -->
+In step (3) any existing large-scale trend  in the breech face scan height values are removed. In steps (1) and (2) of \autoref{fig:processingPipeline} it is clear that there is a southwest-to-northeast trend in height values. 
+Such a trend is observable in many cartridge case scans, yet does not occur consistently across cartridge cases fired from the same firearm. This indicates that a trend in height values is  likely to be an artifact of the scanning process resulting from cartridge cases not being precisely, horizontally leveled prior to taking the scan.
 Neglecting to remove these trends leads to very different results based on our implementation. 
-\hh{In an extreme situation,} two different-source cartridge cases with similar trends might be incorrectly deemed "congruent." 
-<!--For authors that use something other than a Gaussian regression filter, it is unclear how such trends in height values are dealt with; certainly, a high-pass Gaussian filter will remove some structure, but \jz{it is not discussed in the CMC literature}-->
-<!-- \hh{XXX which papers?} -->
-<!--whether any leveling is performed manually as well.--> 
-The \code{preProcess\_removeTrend} functions levels the breech face impression regions obtained from step (2). The function estimates and subtracts the conditional median via \hh{a quantile regression as implemented in} the \code{rq} function of the \pkg{quantreg} package \citep{quantreg}. Step (3) of \autoref{fig:processingPipeline} shows a median-leveled breech face scan.
+In an extreme situation, two different-source cartridge cases with similar trends might be incorrectly deemed "congruent." 
+The \code{preProcess\_removeTrend} functions levels the breech face impression regions obtained from step (2). The function estimates and subtracts the conditional median via a quantile regression as implemented in the \code{rq} function of the \pkg{quantreg} package \citep{quantreg}. Step (3) of \autoref{fig:processingPipeline} shows a median-leveled breech face scan.
 
 ```{r, echo=TRUE,eval=FALSE}
 # Step (4)
@@ -586,34 +568,18 @@ fadul1.1_processed <- fadul1.1_deTrended %>%
 
 
 In the final preprocessing step, a band-pass filter is applied to the processed breech face scan to reduce the effects of undesired frequencies in the comparison procedure. 
-For example, low frequency (high wavelength) global structure may exist in a cartridge case scan due to manufacturing specifications. In forensics, this type of structure is referred to as a class \hh{or subclass} characteristic -- it is shared by many objects of the same make and model. \hh{Class characteristics are}
- used by forensic practitioners to initially pare down the possible pool of matching cartridge cases \citep{firearm_id_thompson}. 
+For example, low frequency (large wavelength) global structure may exist in a cartridge case scan due to manufacturing specifications. In forensics, this type of structure is referred to as a class or subclass characteristic -- it is shared by many objects of the same make and model. 
+Class characteristics are used by forensic practitioners to initially pare down the possible pool of matching cartridge cases \citep{firearm_id_thompson}. 
 While this additional global structure may assist with matching cartridge cases, it can also artificially inflate the probability of making a false-positive identification. 
-The goal of \hh{comparing breech-face scans is to answer the question of source. Same-sourceness can only be determined by matching individual} characteristics,  so the global structure \hh{is removed by} using a high-pass Gaussian filter. Similarly, \hh{a low-pass filter is used to remove} noise and outliers from cartridge case scans due to, for example, imperfections in the scanning process. 
-<!--Such observations may also reduce the accuracy of our identifications. 
-Their effects can be mitigated by applying a low-pass Gaussian filter that operates as a local, moving average. -->
-A band-pass Gaussian filter combines the effects of low and high-pass filters; \hh{this is the default choice in \pkg{cmcR}}. 
-<!-- \jz{and can be implemented} \svp{by applying the filters consecutively} \citep{gauss_filter_source} \jz{XXX I only say "can be" to emphasize that we chose one of the commonly agreed-upon ways to implement a band-pass filter XXX}.  -->
-<!--There is considerable variation in the filters applied in the CMC literature; initially, low-pass and Gaussian band-pass regression filters were used, but the most recent papers use a band-pass filter.
-The current implementation for the low-pass filter involves constructing a Gaussian kernel based on a user-specified wavelength to attenuate and convolving the kernel with the breech face scan in the frequency domain \citep{computerVision}. 
-\hh{XXX the next sentence needs some work: 'a particular wavelength' is oddly specific - is it any particular wavelength? Can we find a replacement for 'subtracting-away'? Do we need the sentence at all? XXX}
-A high-pass filter of a particular wavelength is applied by subtracting-away the complementary low-pass filtered breech face scan. -->
+The goal of comparing breech-face scans is to answer the question of source. 
+Same-sourceness can only be determined by matching individual characteristics,  so the global structure is removed by using a high-pass Gaussian filter. 
+Similarly, a low-pass filter is used to remove noise and outliers from cartridge case scans due to, for example, imperfections in the scanning process. 
+A band-pass Gaussian filter combines the effects of low and high-pass filters; this is the default choice in \pkg{cmcR}. 
 The band-pass filtered breech face scan as returned by the \code{preProcess\_gaussFilter} function is shown in the fourth panel of \autoref{fig:processingPipeline}.
-<!-- (\code{filterType = "bp"} and \code{wavelength = c(16,500)} default). -->
 
-<!-- In the \pkg{cmcR} package, breech face impression data are isolated using a comthebination of the Random Sample Consensus (RANSAC) robust iterative plane-fitting algorithm \citep{ransac}, the Hough Transform shape detection algorithm \citep{hough}, and cropping rows/columns of the breech face scan containing only \code{NA} values on the exterior of the breech face impression region.  -->
-<!-- The \pkg{cmcR} package does not yet use a Gaussian regression filter. -->
-<!-- A simpler Gaussian filter, a technique used by \citet{tong_fired_2014} and \citet{song_estimating_2018}, is currently implemented instead.  -->
+There is currently no determination or removal of outliers in the \pkg{cmcR} package's preprocessing procedures. Instead, we rely on the low-pass portion of the Gaussian filter to reduce the effects of any high-frequency noise.
 
-<!-- In order to perform the comparison procedure, \code{NA}-valued pixels must be replaced with a non-\code{NA} value.  -->
-<!-- The convention adopted in the \pkg{cmcR} package is to use the average pixel value as a replacement.  -->
-<!-- \svp{XXX Do we know that they did or did not use a similar consensus in the CMC method? XXX} \jz{XXX No, we don't XXX} -->
-There is currently no determination or removal of outliers in the \pkg{cmcR} package's preprocessing procedures. <!--, in part because \hh{in the available } contains limited details on outlier removal.--> Instead, we rely on the low-pass portion of the Gaussian filter to reduce the effects of any high-frequency noise.
-
-<!-- To illustrate the usage of the \pkg{cmcR} package, we will consider a comparison between the KM cartridge case pair shown in \autoref{fig:cartridgeCasePair}. -->
 \autoref{fig:processedScans} displays the processed Fadul 1-1 and Fadul 1-2 scans; the second matrix is processed using the same parameters. Similarity features are extracted from a processed cartridge case pair in the cell-based comparison procedure.
-
-<!-- \svp{XXX Joe - please parenthetically indicate each argument name in the text above, along with its default value XXX} -->
 
 ```{r,echo=FALSE,cache = T,fig.cap='\\label{fig:processedScans} Fadul 1-1 and Fadul 1-2 after preprocessing. Similar striated markings are now easier to visually identify on both surfaces. It is now clearer that one of the scans needs to be rotated to align better with the other.',fig.align='center',fig.pos='htbp',out.width='\\textwidth', message = F, warning = F}
 
@@ -635,30 +601,26 @@ cmcR::x3pListPlot(x3pList = list("Fadul 1-1" = fadul1.1,
 
 ## "Correlation cell" comparison procedure {#comparisonProcedure}
 
-<!-- \svp{XXX Need to quote directly from the relevant papers. Ideally, from the papers with implementations and not just theory.} -->
-
 As described in \citet{song_proposed_2013}, breech face markings are not uniformly impressed upon a cartridge case during the firing process. 
-As such, only certain sections of the cartridge case <!--have identifiable markings that make it possible to match to a firearm. --> \hh{are used in a comparison.}
-<!--\hh{XXX That's just speculation} Calculating a similarity score between the entirety of two cartridge case surfaces might not highlight these valid correlation regions. 
-Instead,--> 
-\hh{In the CMC method as proposed by} \citet{song_proposed_2013} \hh{two scans are compared by} partitioning one breech face scan into a grid of \hh{so-called} "correlation cells". <!--some of which will enclose the valid correlation regions of interest. -->
-\hh{These cells are compared individually to their best-matching counterpart on the other scan.} If a large \svp{proportion} of these correlation cells are highly similar to \hh{their counterparts on}  the other breech face scan, \hh{this is considered as} evidence that the \hh{markings on the} two cartridge cases \hh{were made by the same source}. \hh{The number of highly similar cells is defined as the }
- \dfn{CMC count} $C$ \citep{song_proposed_2013} \hh{of the breech-face comparison}. \hh{The CMC count is considered to be a more} \svp{robust} similarity metric \hh{than a cross-correlation score based on} the entire cartridge case.
+As such, only certain sections of the cartridge case are used in a comparison.
+In the CMC method as proposed by \citet{song_proposed_2013} two scans are compared by partitioning one breech face scan into a grid of so-called "correlation cells".
+These cells are compared individually to their best-matching counterpart on the other scan.
+If a large proportion of these correlation cells are highly similar to their counterparts on the other breech face scan, this is considered as evidence that the markings on the two cartridge cases were made by the same source.
+The number of highly similar cells is defined as the \dfn{CMC count} $C$ \citep{song_proposed_2013} of the breech-face comparison. 
+The CMC count is considered to be a more robust similarity metric than a cross-correlation score based on the entire cartridge case.
 
-```{r, echo=FALSE,fig.cap='\\label{fig:cmc_illustration} Illustration of comparing a cell in the reference cartridge case scan (left) to a larger region in a questioned cartridge case scan (right). Every \\hh{one of the} cells in the reference cartridge case is similarly paired with a region in the questioned \\hh{cartridge case}.  To determine the rotation at which the two cartridge cases align, the cell-region pairs are compared for various rotations of the questioned cartridge case.',fig.align='center',fig.pos='htbp',out.width='.75\\textwidth'}
+```{r, echo=FALSE,fig.cap='\\label{fig:cmc_illustration} Illustration of comparing a cell in the reference cartridge case scan (left) to a larger region in a questioned cartridge case scan (right). Every one of the cells in the reference cartridge case is similarly paired with a region in the questioned cartridge case.  To determine the rotation at which the two cartridge cases align, the cell-region pairs are compared for various rotations of the questioned cartridge case.',fig.align='center',fig.pos='htbp',out.width='.75\\textwidth'}
 
 knitr::include_graphics("images/cmc_illustration.PNG")
 ```
 
 \autoref{fig:cmc_illustration} illustrates the cell-based comparison procedure between two cartridge case scans. 
-The scan on the left  \hh{serves as the reference; it is} divided into a grid of $k \times k$ cells. 
+The scan on the left serves as the reference; it is divided into a grid of $k \times k$ cells. 
 The cell size (and thus, the corresponding number of cells) is optimized experimentally:
 
 > The cell size must be experimentally optimized, not too small and not too large. Either condition may result in low correlation accuracy. For the initial tests of 9 mm caliber cartridge cases, good correlation results for breech face correlations were obtained using the cell sizes ranging from (0.25 × 0.25) to (0.5 × 0.5) $mm^2$. \citep{song_3d_2014}
 
 \hh{XXX note for the conclusion: how does a different resolution affect the correlations? }
-
-<!-- \includegraphics[width=\linewidth]{images/cellbased.pdf} -->
 
 \begin{figure}
 \includegraphics[width=\textwidth]{images/cmc_flow.png}
@@ -667,49 +629,43 @@ The cell size (and thus, the corresponding number of cells) is optimized experim
 
 \autoref{fig:cmc-schematic} shows the steps of the correlation cell comparison process in each of the papers as well as the \pkg{cmcR} implementation. Each cell is paired with an associated larger region in the other scan. 
 The absolute location of each cell and region in their respective surface matrices remain constant. 
-However, the scan on the right is rotated to determine the rotation at which the two scans are the most "similar", as quantified by the \dfn{cross-correlation function} (CCF). 
+However, the scan on the right is rotated to determine the rotation at which the two scans are the most "similar," as quantified by the \dfn{cross-correlation function} (CCF). 
 
-For two real-valued, $M \times N$ matrices $A$ and $B$, the cross-correlation function, denoted $(A \star B)$ \hh{is} defined as 
+For a real-valued matrices $A$ and $B$ of dimension $M \times N$ and $P \times Q$, respectively, the cross-correlation function, denoted $(A \star B)$ is defined as 
 $$
-(A \star B)[m,n] = \sum_{i} \sum_{j} A[i,j] B[(i + m), (j + n)],
+(A \star B)[m,n] = \sum_{i=1}^M \sum_{j=1}^N A[i,j] B[(i + m), (j + n)],
 $$
-\hh{where indices $i,j$ and $m,n$ are suitably defined. } \hh{XXX could you please include actual boundaries for these indices?}
-By this definition, the $[m,n]$th element of the resulting CCF matrix \hh{XXX dimensions?}   quantifies the similarity between matrices $A$ and $B$ for a translation of matrix $B$ by $m$ pixels horizontally and $n$ pixel vertically.
+where $-(P-1) \leq m \leq M-1$ and $-(Q-1) \leq n \leq N-1$.
+By this definition, the $[m,n]$th element of the resulting $M + P - 1 \times N + Q - 1$ CCF matrix quantifies the similarity between matrices $A$ and $B$ for a translation of matrix $B$ by $m$ pixels horizontally and $n$ pixel vertically.
 The index at which the CCF attains a maximum represents the optimal translation needed to align $B$ with $A$.
 The CCF as defined need not be bounded between $-1$ and $1$. However, it is common to normalize the CCF for interpretability, and this is the convention adopted by the \pkg{cmcR} package.
 
 Prior to calculating the CCF, the matrices $A$ and $B$ are standardized through subtraction of their respective means and division by their respective standard deviations. 
 This is referred to as the \dfn{Areal Cross-Correlation Function} (ACCF) in some CMC papers \citep{ott_applying_2017}.
-\hh{A direct c}alculation of the CCF for breech face scans based on the definition above is inhibitingly slow.
+A direct calculation of the CCF for breech face scans based on the definition above is inhibitingly slow.
 While computationally feasible alternatives exist, \citet{song_proposed_2013} and other CMC papers do not specify the algorithm used to calculate the CCF.
 
-\svp{In \citet{song_3d_2014}, the comparison process is described with characteristic brevity:}
+In \citet{song_3d_2014}, the comparison process is described with characteristic brevity:
 
 > CMC pairs are identified by three types of identification parameters: the correlation value CCF$_{\max}$, registration angle $\theta$ and translation distances $x$, $y$ with thresholds $T_{\text{CCF}}$, $T_\theta$ and $T_x, T_y$, respectively. The correlated cell pairs are considered as CMCs when their correlation value CCF$_{\max}$, $T_{\text{CCF}}$, and their registration angle $\theta$ and $x-y$ registration pattern are within the thresholds $T_\theta$, and $T_x, T_y$.
 
 Note, that rotating an image or breech face scan by an arbitrary angle (other than a multiple of 90 degrees) requires interpolating new pixel locations. 
-A variety of interpolation schemes exist \citep{parker_comparison_1983}, but there are no details provided in the \hh{papers under consideration} indicating which interpolation algorithm was used. In \pkg{cmcR}, surfaces matrices are rotated using a "nearest-neighbor" interpolation scheme \citep{imager}.
-
-<!-- \svp{XXX what do we use? Make it explicit so we're not being hypocritical XXX} \jz{XXX nearest-neighbor interpolation -- this is stated in the paragraph below describing the implementation XXX} -->
-
-<!-- \svp{For clarity and reproducibility, we will attempt to provide more precise mathematical and computational descriptions of the algorithm, starting with a definition of the cross-correlation function and later discuss more efficient computational implementations}. -->
+A variety of interpolation schemes exist \citep{parker_comparison_1983}, but there are no details provided in the papers under consideration indicating which interpolation algorithm was used. In \pkg{cmcR}, surfaces matrices are rotated using a "nearest-neighbor" interpolation scheme \citep{imager}.
 
 In the next section, we discuss our implementation of the cell-based comparison procedure.
 
 ### Implementation of the correlation cell comparison procedure
 
-\hh{All of} the steps \hh{dealing with } cell-based comparisons are implemented \hh{as functions of the form } \code{comparison\_*}.
+All of the steps dealing with cell-based comparisons are implemented as functions of the form \code{comparison\_*}.
 Similar to the \code{preProcess\_*} functions, the \code{comparison\_*} functions can be chained together through a sequence of pipes.
 
 Published implementations of the CMC algorithm do not describe precisely how the CCF is calculated. 
 In image processing, it is common to use an implementation based on the Fast Fourier Transform \citep{Brown92asurvey}. 
 This implementation leverages the Cross-Correlation Theorem, which states that for matrices $A$ and $B$, the CCF can be expressed in terms of frequency-domain pointwise product:
-<!-- \hh{XXX write out the statement in a concise statement ahead of the math XXX} -->
 $$
 (A \star B )[m,n]= \mathcal{F}^{-1}\left(\overline{\mathcal{F}(A)} \odot \mathcal{F}(B)\right)[m,n]
 $$
 where $\mathcal{F}$ and $\mathcal{F}^{-1}$ denote the discrete Fourier and inverse discrete Fourier transforms, respectively, and $\overline{\mathcal{F}(A)}$ denotes the complex conjugate \citep{fft_brigham}. 
-<!-- Note that the multiplication on the right-hand side is a pointwise (Hadamard) multiplication.  -->
 Because the product on the right-hand side is calculated pointwise, this result allows us to trade the moving sum computations from the definition of the CCF for two forward Fourier transformation, a pointwise product, and an inverse Fourier transformation. 
 The Fast Fourier Transform (FFT) algorithm can be used to reduce the computational load considerably.
 
@@ -720,18 +676,9 @@ While it is unclear how the CCF is implemented in the CMC papers (it is not even
 - Only cells with a minimum proportion of non-missing pixels are assessed. This minimum threshold differs across CMC papers \citep{chen_convergence_2017,song_estimating_2018}, as shown in \autoref{fig:cmc-schematic}, and is referenced but not specified in several other papers \citep{tong_fired_2014,song_3d_2014,chu_validation_2013}.
 The \code{comparison\_calcPropMissing} function computes the proportion of a matrix that is missing (\code{NA}-valued).
 - Missing values are replaced with the overall mean value when the FFT-based CCF is computed (using function \code{comparison\_replaceMissing}).
-- The optimal translation is determined using the FFT-based CCF (using  \code{comparison\_fft\_ccf}). Replacing the missing values with the overall mean leads to a deflated CCF value, but produces an accurate estimate of the optimal translation.
-- Based on the optimal translation determined from the FFT-based CCF, we compute the pairwise complete CCF directly, avoiding any distortion of the CCF computation based on compensation for missing values (using function \code{comparison\_cor})..
+- The optimal translation is determined using the FFT-based CCF (using  \code{comparison\_fft\_ccf}). 
 
-
-<!-- \svp{XXX what proportion do we use? If it's variable, we should say that we have implemented this as a parameter setting for compatibility with the other algorithms} -->
-
-<!-- \svp{The entire matching procedure is performed twice: once with scan A partitioned and scan B as the target, and once with scan B partitioned and scan A as the target.} -->
-<!-- The correlation cell comparison procedure is implemented in the \code{cellCCF\_bothDirections} function.  -->
-
-<!-- \svp{This chunk of code is 1) too dense, and 2) not particularly useful. Either take each function/step and show it line-by-line as you discuss the procedure, or just show the full function and say that it does the following steps. -->
-<!-- } -->
-<!-- \svp{Something like this might work better:} -->
+- Based on the optimal translation determined from the FFT-based CCF, we compute the pairwise complete CCF directly, avoiding any distortion of the CCF computation based on compensation for missing values (using function \code{comparison\_cor}).
 
 The code below demonstrates how the \code{comparison\_allTogether} function can be used to perform the entire cell-based comparison procedure in one call. The comparison procedure is performed twice: once with Fadul 1-1 considered the "reference" scan divided into cells that are compared to the "target" scan Fadul 1-2 and again with the roles reversed.
 
@@ -756,17 +703,16 @@ The \code{comparison\_allTogether} function consists of the following steps wrap
 - Divide the reference scan into cells (`comparison_cellDivision`)
 - Extract from the target scan the regions associated with each reference cell
   (`comparison_getTargetRegions`)
-- Compute missing proportions (`comparison_calcPropMissing`) \hh{and filter out cells with a proportion of missing values above the threshold}
+- Compute missing proportions (`comparison_calcPropMissing`) and filter out cells with a proportion of missing values above the threshold.
 - Standardize height values (`comparison_standardizeHeights`) 
 - Replace missing values (`comparison_replaceMissing`)
 - Compute CCF and estimated translations using FFT (`comparison_fft_ccf`)
 - Compute pairwise-complete correlation between a reference cell and a matrix of the same size extracted from the associated target region (`comparison_cor`)
 
-This sequence of functions are applied for \hh{a sequence of angles} $\theta$ rotating the target scan relative to the reference scan. When implementing the  High CMC method \citep{tong_improved_2015}, both combinations of reference and target scan are examined (e.g. A-B and B-A).
+This sequence of functions are applied for a sequence of angles $\theta$ rotating the target scan relative to the reference scan. When implementing the  High CMC method \citep{tong_improved_2015}, both combinations of reference and target scan are examined (e.g. A-B and B-A).
 
-\autoref{tab:cellCCF} shows several rows of the data frame output of the \code{comparison\_allTogether} function \jz{for the comparison of Fadul 1-1 vs. Fadul 1-2 considering Fadul 1-1 as the reference scan}.
-Although a grid of $8 \times 8$ cells was used, there were \hh{only} 26 
-<!-- \hh{XXX I am getting 47 cells - is the 27 a typo? XXX} \jz{XXX No, I don't think so. I'm basing 26 (not 27 - that was a typo, it seems) off of considering length(unique(kmComparisonFeatures$cellIndex))}  -->
+\autoref{tab:cellCCF} shows several rows of the data frame output of the \code{comparison\_allTogether} function for the comparison of Fadul 1-1 vs. Fadul 1-2 considering Fadul 1-1 as the reference scan.
+Although a grid of $8 \times 8$ cells was used, there were only 26 
 cell-region pairs that contained a sufficient proportion of non-missing values (15% in this example). 
 The features derived from the correlation cell procedure (CCF$_{max}$, $\Delta x$, $\Delta y$, $\theta$) are used as inputs to the methods for assessing the similarity between scans.
 
@@ -797,50 +743,12 @@ kmComparisonFeatures %>%
 
 ## Decision Rule
 
-\hh{XXX This whole section would benefit from a bit of tightening. I do not thing that we need the first quote. there's a sentence at the end of the original method that is repeated in the sentence right after it. 
-I also think we could summarize the quote in the original method as 'calculate the median'.}
+For each cell on the reference scan, a set of rotation angles $\theta$ with associated translations $(\Delta x, \Delta y)$ and cross-correlation values are calculated. These sets need to be aggregated into a single consensus decision. Here, we describe the two methods implemented in the \pkg{cmcR} package: the original decision rule described in  \citet{song_3d_2014} and the High CMC method proposed in \citep{tong_improved_2015}.
 
-
-\hh{For each cell on the reference scan, a set of rotation angles $\theta$ with associated translations $(\Delta x, \Delta y)$ and cross-correlation values are calculated. These sets need to be aggregated into a single consensus decision. Here, we describe the two methods implemented in the \pkg{cmcR} package: the original decision rule described in  \citet{song_3d_2014} and the High CMC method proposed in \citep{tong_improved_2015}. }
-
-<!-- the CMC literature describes various methods for aggregating the available information of rotation angles $\theta$, translations $(\delta x, \delta y)$, and cross-correlation values into a consensus decision about the similarity of the two cartridge cases. -->
-
-<!-- As stated in \citet{song_3d_2014},  -->
-
-<!-- > [t]he qualifications of CMCs require not only high correlation values CCF$_{\max} \geq T_{\text{CCF}}$, but also similar registration angles $\theta$ (within the threshold $T_{\theta}$) and similar $x - y$ registration pattern (within the thresholds $T_x$, $T_y$). -->
-
-\hh{The idea of a consensus decision is based on the assumption, that a}  matching pair of cartridge cases has similar translation and rotation values for \hh{all of the} cells, while a non-matching pair of cartridge cases exhibits a variety of different translation and rotation values without showing a particular pattern.
+The idea of a consensus decision is based on the assumption, that a matching pair of cartridge cases has similar translation and rotation values for all of the cells, while a non-matching pair of cartridge cases exhibits a variety of different translation and rotation values without showing a particular pattern.
 
 The first step in any CMC decision process is therefore to obtain a consensus estimate of $x, y, \theta$.
 Where the various CMC decision rules principally differ is in how they identify a "consensus" among the estimated $x,y, \theta$ values.
-
-<!-- \svp{XXX Add a figure (and reference) here showing CMCs from the original method as in figure 15, 16, for matching and nonmatching cartridges. So e.g. A | A' B, 3 across, with blue and red squares on A' and B showing the cells from A aligned.} -->
-
-<!-- \jz{\autoref{fig:originon-matching pair Fadul 1-1 to Fadul 2-1.  -->
-<!-- Fadul 1-1 was treated as the reference scan inalMethod_sideBySide} shows the CMCs determined under the original method of \citet{song_proposed_2013} from comparing the matching pair Fadul 1-1 to Fadul 1-2 and the n both comparisons.  -->
-<!-- Descendants of the original method of \citet{song_proposed_2013} perform comparisons twice for a given pair so that each scan is treated as the reference scan (referred to as the two \dfn{comparison directions}).} -->
-<!-- \svp{The 19 CMCs in the comparison between Fadul 1-1 and 1-2 are shown in blue; in red, non-CMC cells} -->
-<!-- Blue cells represent the 19 cells identified as CMCs between Fadul 1-1 and Fadul 1-2; non-CMCs are shown in red at the location maximizing the cross-correlation function.  -->
-<!-- \svp{It is clear from \autoref{fig:originalMethod_sideBySide} that our initial expectations are correct: the cells in the same-source comparison are (mostly) ordered, with 12 non-CMCs, while the cells in the different-source comparison are distributed haphazardly and there are 32 non-CMCs.} -->
-
-<!-- ```{r echo=FALSE,message=FALSE,error=FALSE,out.width='\\textwidth',cache = T,fig.cap='\\label{fig:originalMethod_sideBySide} CMC results under the original method of \\citet{song_proposed_2013} from comparing the matching pair Fadul 1-1 to Fadul 1-2 and the non-matching pair Fadul 1-1 to Fadul 2-1. In the right two plots, blue cells show how each CMC aligns in the other breech face scan while red cells show how the non-CMCs align to attain their CCF$_{\\max}$ value. Note that Fadul 1-1 is treated as the "reference" scan in both of these comparison, meaning it is divided into a grid of cells that are compared to larger regions in the other scans.',fig.pos = 'h'} -->
-<!-- knitr::include_graphics("images/correlationResults_sideBySide.PNG") -->
-<!-- ``` -->
-
-<!-- \begin{figure} -->
-<!-- \centering -->
-<!-- \includegraphics[width=\textwidth]{images/originalMethod_sideBySide_secondDraft.png} -->
-<!-- \caption{\jz{Estimated phase alignment and CCF$_{\max}$ distributions for the comparison between the matching Fadul 1-1 vs. Fadul 1-2 and non-matching Fadul 1-1 vs. Fadul 2-1. Fadul 1-1 is treated as the "reference" scan, meaning it is split into a grid of cells and compared to regions in the other cartridge cases. The cells shown on Fadul 1-2 and Fadul 2-1 represent where each cell in Fadul 1-1 attains the highest CCF$_{\max}$ value. The distributions below the scans depict the actual $x,y,\theta$, and CCF$_{\max}$ values for each cell-region pair used in the comparison. For the first three rows, $x,y,$ and $\theta$ values within the blue ribbons are "congruent" in that they are within the allowed tolerance $(T_x = T_y = 20$ pixels, $T_\theta = 6$ degree) of the median alignment value. In the last row, CCF$_{\max}$ values above the allowed threshold $(T_{\text{CCF}} \geq .5$) are considered "congruent."}} -->
-<!-- \end{figure} -->
-
-<!-- \svp{Both methods enforce decision criteria on the CCF, translation in x, translation in y, and rotation angle $\theta$ to determine which cells are declared to be sufficiently similar; then, the total number of similar cells is used to evaluate the cartridge cases as whole units.} -->
-<!-- \svp{The criteria proposed in \citet{song_proposed_2013} are fairly strict; the High CMC method described in \citet{tong_improved_2015} adjusts the procedure for determining consensus estimates and the subsequent decision rules.} -->
-<!-- The final step in any CMC method is to apply a set of criteria (i.e., a decision rule) to determine whether a consensus exists among these values.  -->
-<!-- Where the various proposed CMC methods principally differ is in these criteria.  -->
-<!-- For example, in the original method of \citet{song_proposed_2013}, the strength of the consensus is quantified by the number of cell-region pairs with "similar" registration phases (to be defined in [the description of the original method](\#originalMethod)). \jz{To overcome limitations of the original method, its descendants, including the High CMC method, apply more stringent criteria.} -->
-
-
-<!--In this section, we describe the two decision rules implemented in the \pkg{cmcR} package the  original method \citep{song_proposed_2013} and the High CMC method \citep{tong_improved_2015}.-->
 
 ### The Original CMC Method {#originalMethod}
 
@@ -850,11 +758,7 @@ This section briefly describes the decision rule used in the first CMC paper \ci
 Let $x_i, y_i, \theta_i$ denote the translation and rotation parameters which produce the highest CCF for the alignment of cell-region pair $i$, $i = 1,...,n$ where $n$ is the total number of cell-region pairs containing a sufficient proportion of non-missing values.
 
 
-\citet{song_proposed_2013} <!--describes the original method conceptually, an actionable description is found in \citet{song_3d_2014}:
-
-> a virtual reference with three reference registration parameters $\theta_{\text{ref}}$, $x_{\text{ref}}$ and $y_{\text{ref}}$ generated by the median values of the collective $\theta$, and $x$-, $y$-translation values of all cell pairs.
-
-That is,--> \hh{propose the median as} a consensus $(x_{\text{ref}}, y_{\text{ref}}, \theta_{\text{ref}})$ <!--is determined by finding the median registration phase values,--> across the cell-region pairs for a particular cartridge case pair comparison.
+\citet{song_proposed_2013} propose the median as a consensus $(x_{\text{ref}}, y_{\text{ref}}, \theta_{\text{ref}})$ across the cell-region pairs for a particular cartridge case pair comparison.
 Then, the distances between the consensus values and the values for each cell comparison are assessed to determine whether the values are within a specified distance of the consensus, as determined by three threshold parameters $T_{x}, T_{y}, T_\theta, T_{\text{CCF}}$.
 
 A cell-region pair $i$ is declared a match if all of the following conditions hold:
@@ -866,7 +770,7 @@ A cell-region pair $i$ is declared a match if all of the following conditions ho
 \text{CCF}_{\max,i} &\geq& T_{\text{CCF}}.
 \end{eqnarray}
 
-\hh{The CMC count is then defined as the number of matching cell-region pairs (out of $n$). }
+The CMC count is then defined as the number of matching cell-region pairs (out of $n$).
 
 \citet{song_3d_2014} indicate that these thresholds need to be determined experimentally. 
 There is little consensus on an optimal set of thresholds and no discussion of the sensitivity of proposed methods to different threshold choices across CMC papers.
@@ -909,35 +813,15 @@ As such, there is little known about the effectiveness of the any CMC method to 
 
 
 
-Unlike the Original CMC method,  the High CMC method considers multiple rotations for each cell-region pair. 
-
-<!--utilizes the behavior of the CCF$_{\max}$ values across various rotations more \jz{carefully} \hh{XXX don't agree with that either. Can we leave out the judgment?} than the original method of \citet{song_proposed_2013}. 
-<!-- \hh{XXX I'm not sure that I agree with the 'advantageously'. In a truly principled approach, parameters would be chosen based on the performance on a training data set (as done here), but then validated based on the performance of the algorithm on a testing or hold-out data set.} -->
-<!-- \hh{XXX could you find a different adjective that describes the difference more accurately?} -->
-
-<!-- Additionally, comparisons are performed in both directions, i.e. each scan takes on the role of the reference scan that is partitioned into a grid of cells. -->
-
+Unlike the Original CMC method, the High CMC method considers multiple rotations for each cell-region pair. 
 
 ### The High CMC method {#highCMCMethod}
 
 
-For the High CMC method, comparisons \hh{between two scans} are performed in both directions, i.e. each scan takes on the role of the reference scan that is partitioned into a grid of cells.
+For the High CMC method, comparisons between two scans are performed in both directions, i.e. each scan takes on the role of the reference scan that is partitioned into a grid of cells.
+\citet{tong_improved_2015} claim that in the original method, some  matching cell-region pairs "may be mistakenly excluded from the CMC count" because they attain the largest CCF value at a rotation value outside the range allowed by $T_\theta$ "by chance."
 
-
-\citet{tong_improved_2015} claim \hh{that in the original method}, some  matching cell-region pairs "may be mistakenly excluded from the CMC count" because they attain the largest CCF value at a rotation value outside the range allowed by $T_\theta$ "by chance."
-
-<!-- {\jz{An analogy is useful for understanding the difference between the decision rules of the original method of \citet{song_proposed_2013} and the High CMC method. Consider the decision rules as a voting system by which each cell in the reference scan votes for what it considers to be the true registration phase (translations and rotation) of the overall scans. The "votes" of each cell are ranked based on the associated CCF$_{\max}$ value. The original method of \citet{song_proposed_2013} might be viewed as a single-choice voting system similar to the system used in U.S. presidential elections. Every cell is allowed to submit one vote corresponding to the registration phase with the highest CCF$_{\max}$ value. Votes are discarded if the associated CCF value is below the $T_{\text{CCF}}$ threshold. A consensus is determined by counting the number of votes that are close to the reference values $x_{\text{ref}}, y_{\text{ref}}, \theta_{\text{ref}}$ (which is dyadically defined based on the $T_x,T_y,T_{\theta}$ thresholds). By considering only the "top vote" of each cell, information is lost regarding other registration phases for which a cell might also rank highly. As \citet{tong_improved_2015} observe:}} -->
-
-<!-- \begin{quote} -->
-<!-- some of the valid cell pairs may be mistakenly excluded from the CMC -->
-<!-- count because by chance their correlation yields a higher CCF value at a -->
-<!-- rotation angle outside the threshold range \(T_\theta\). -->
-<!-- \end{quote} -->
-
-<!--The original method of \citet{song_proposed_2013} only considers the $(x,y,\theta)$ phase values 
-<!-- \hh{what counts as the alignment phase? That hasn't been mentioned before}  
-at which each cell attains a maximum CCF, it is \hh{XXXX not? I would think the method IS sensitive to these } \jz{XXX "sensitive to" like how a drug-sniffing dog is sensitive to the scent of narcotics - in the sense that the original method does not identify these mistakenly excluded pairs when they exist (at least this is what the NIST folks have argued for in  \citet{tong_improved_2015} and \citet{chen_convergence_2017}).} not sensitive to these  excluded cell pairs.-->
-To combat this, \citet{tong_improved_2015} \hh{introduce consensus  values across all cell-region pairs for each rotation angle $\theta$ and calcluate a $\theta$ dependent CMC count as the sum of matches observed. A match is defined, as previously if a cell-region pair $i$ fulfills the following three conditions: } 
+To combat this, \citet{tong_improved_2015} introduce consensus  values across all cell-region pairs for each rotation angle $\theta$ and calcluate a $\theta$ dependent CMC count as the sum of matches observed. A match is defined, as previously if a cell-region pair $i$ fulfills the following three conditions:
 
 \begin{eqnarray}\label{eqn:high-cmc}
 |x_{i,\theta} - x_{ref,\theta}| &\leq& T_x \\ \nonumber
@@ -945,32 +829,7 @@ To combat this, \citet{tong_improved_2015} \hh{introduce consensus  values acros
 \text{CCF}_{i,\theta} &\geq& T_{\text{CCF}}.
 \end{eqnarray}
 
-\hh{The $\theta$-dependent CMC count,  CMC$_\theta$, is then defined as the sum of matching cell-region pairs.}
-<!--
-
-instead consider the number of cells with "sufficiently large" CCF values and translation phases close to reference values for each $\theta$.
-
-\hh{Can you summarize the math below in plain words first? - I'm also a bit confused as to what to do with the previous sentence... 'considering' is not a very actionable plan.}
-\jz{I've been unable to come up with a concise, plain-word explanation for how the High CMC method works. Susan and I came up with the voting system analogy to describe the method, but that seems to have been commented-out at some point. Also, I'm not sure what you mean by "actionable plan." I use the word "consider" in the sense that this is the information they attempt to leverage to make classifications.}
-Let $(x_{i,\theta}, y_{i,\theta})'$ be the translation phase of cell $i$ associated with rotation $\theta \in \Theta$ and $CCF_{i,\theta}$ be the associated CCF value. Also let $(x_{ref,\theta}, y_{ref,\theta})' \equiv \text{median}\left(\{(x_{i,\theta}, y_{i,\theta})' : i = 1,...,n_{\theta}\}\right)$ where $n_\theta$ is the total number of cell-region pairs containing a sufficient proportion of non-missing values at $\theta$ (which may change across $\Theta$ because the observations captured by a particular region change as the target scan is rotated). 
-<!-- \hh{XXX How is $n$ determined? Are these values all related to one cell or is this set determined across all cells?} -->
-<!--
-\jz{The cell of cell-region pair} $i$ \hh{XXX what is the domain of this $i$? - is that the same one as above?} \jz{XXX I added an explanation of $i$ in the original method description above} is considered a "potential" CMC at $\theta$, if 
-\begin{itemize}
-\item $|x_{i,\theta} - x_{ref,\theta}| \leq T_x$,
-<!-- \hh{is the first item indexed wrongly? I believe it should be $x_{i, \theta}$.} 
-
-\item $|y_{i,\theta} - y_{ref,\theta}| \leq T_y$,
-
-\item and CCF$_{i,\theta} \geq T_{\text{CCF}}$.
-\end{itemize}
-
--->
-
-<!--
-\hh{XXX generally, definitions should go first - if we need a $\theta$ distribution, define it at the top. If not, let's cut that. If the CMC-$\theta$ distribution actually exhibits the described performance, it would be good as diagnostic. From what I have seen in the actual data, I am not that convinced.  XXX}
-\jz{XXX The CMC-$\theta$ distribution is what \citet{tong_improved_2015} construct to decide whether a cartridge case pair should be assigned the High CMC count or the minimum of the Original Method CMC counts, so it's important to explaining how the method works. I don't think there's a good way to define it without first defining the "potential" CMCs, which is done in the previous statement and 3 bullet points. Like I said, I haven't thought of a good, plain-word explanation for the High CMC method.}
-In counting the number of potential CMCs for each $\theta$, we obtain what \citet{tong_improved_2015} refer to as a "CMC-$\theta$" distribution on $\Theta$.-->
+The $\theta$-dependent CMC count,  CMC$_\theta$, is then defined as the sum of matching cell-region pairs.
 
 \citet{tong_improved_2015} assert that for a truly matching cartridge case pair, the relationship between $\theta$ and CMC$_\theta$ should exhibit a "prominent peak" near the true rotation value at which the pair aligns.
 In contrast, truly non-matching pairs should exhibit a "relatively flat and random [...] pattern."
@@ -980,46 +839,19 @@ To determine whether a "prominent peak" exists in the relationship between $\the
  and $\arg \max_\theta CMC_\theta < CMC_{\text{max}} - \tau$, where $CMC_{\text{max}}$ is defined as the maximum of CMC$_\theta$ counts across all rotation angles $\theta$. \citet{tong_improved_2015} suggest a value for $\tau$ of 1 and further determine:
 
 
-<!--
-$R(\tau) := \left(\{\theta : CMC_\theta \geq N - \tau\}\right)$ for some user-defined $\tau$, where $N_\theta$ is defined as the number of cell-region pairs fulfilling the conditions of \autoref{eqn:high-cmc} and $N$ is defined as their maximum, $N = \max_\theta N_\theta$. The $\theta$ values in this set are referred as the "high CMC" $\theta$ values as they have a relatively high number of associated potential CMCs. \citet{tong_improved_2015} propose the following:
-
-Let  be the number of potential CMCs at a particular $\theta \in \Theta$ and let $N \equiv \max_\theta\{N_\theta\}$. 
-
-> Conduct both forward and backward correlations at each rotation and record the registration based on CCF$_{\max}$, $x$, and $y$ for each cell at each rotation. These data will be used in the next two steps separately.
-
-> At every rotation angle, each cell in the reference image finds a registration position in the compared image with a maximum CCF value. By selecting the registration with the maximum CCF value for each cell, the two CMC numbers determined by the four thresholds can be obtained based on the original algorithm [\citet{tong_fired_2014}]. The lower CMC number is used as the initial result.
-
-> Build CMC-$\theta$ distributions using the data generated in step 1, by counting the number of cells that have congruent positions at each individual rotation angle. Calculate the angular range of “high CMCs” using both the forward and backward CMC-$\theta$ distributions, as illustrated in Figs. 2 and 3. -->
-
 > If the angular range of the “high CMCs” is within the range $T_\theta$, identify the CMCs for each rotation angle in this range and combine them to give the number of CMCs for this comparison in place of the original CMC number. 
 
-<!--In this step, if the range is narrower than $T_\theta$, the nearby angles are included to make the range equal to $T_\theta$; CMCs with same index in each rotation are only counted once.-->
-
-\jz{If the angular range is outside the range of  $T_\theta$, we say that the cartridge case pair "fails" the High CMC criteria and the original CMC number is used.}
-
-
-\hh{Using this definition,  the High CMC method  returns for any comparison of breech face scans a CMC count equal to or higher to the Original method for both known matches and known non-matches.}
-
-<!-- The "prominent peak" observation upon which the High CMC method is based does seem to hold for many known match and known non-match pairs in our experience.-->
-<!--However, we've observed that the behavior of the CMC-$\theta$ distributions depend heavily on the preprocessing procedures used and thresholds set. 
-In particular, the CMC-$\theta$ distributions for some KNM pairs exhibit the prominent peak behavior for a wide range of threshold values making them difficult to distinguish from KM pairs.
--->
-
+If the angular range is outside the range of  $T_\theta$, we say that the cartridge case pair "fails" the High CMC criteria and the original CMC number is used. Using this definition,  the High CMC method  returns for any comparison of breech face scans a CMC count equal to or higher to the Original method for both known matches and known non-matches.
 
 \hh{XXX Note on symmetry?}
 
 ### Implementation of decision rules {#decisionRuleImplementation}
 
-<!-- \svp{XXX this is a bit abrupt, can you transition into the implementation a bit more gently? Make the point that the parameters described above are included as parameters, and thus, we defer the determination of what the values of those parameters should be until the next section?} -->
-
-In this section, we demonstrate the implementation of the decision rules in `cmcR` for both the original method and the High CMC method.
+In this section, we demonstrate the implementation of the decision rules in \pkg{cmcR} for both the original method and the High CMC method.
 For illustrative purposes, let us consider a particular set of thresholds: $T_x = T_y = 20$,  $T_{\theta} = 6$, and $T_{\text{CCF}} = .5$ values.
-<!--A discussion of how to actually determine thresholds is provided in the [investigation](#investigation) section.-->
 
-Decision rules in `cmcR` are implemented as functions of the form \code{decision\_*}. In particular, the \code{decision\_CMC} function applies both the decision rule of the original method and the High CMC method depending on whether  a value for $\tau$ is provided.
+Decision rules in \pkg{cmcR} are implemented as functions of the form \code{decision\_*}. In particular, the \code{decision\_CMC} function applies both the decision rule of the original method and the High CMC method depending on whether  a value for $\tau$ is provided.
 The code below demonstrates the use of \code{decision\_CMC} on the features \code{kmComparisonFeatures}, extracted from the comparison of scans Fadul 1-1 and Fadul 1-2. \code{kmComparisonFeatures\_rev} contains the features from a comparison of Fadul 1-2 and Fadul 1-1. Addiionally, we also compute the CMCs under both decision rules for the comparison between the non-match pair Fadul 1-1 and Fadul 2-1 (not shown to avoid redundancy).
-
-<!-- \svp{We should have a single function that can do both decisions, `decision_CMC`, with a method argument and an optional parameter `tau`. Also, it would be better to leverage `mutate` rather than having an argument for the column name... more flexible.} -->
 
 ```{r,echo=FALSE,cache = T}
 fadul2.1 <- x3ptools::x3p_read("data/fadul2-1.x3p") %>%
@@ -1107,157 +939,12 @@ kmComparison_cmcs <- kmComparisonFeatures %>%
                                        tau = 1))
 ```
 
-```{r include=FALSE}
-kmCMCPlot <- cmcR::cmcPlot(reference = fadul1.1,
-                            target = fadul1.2,
-                            reference_v_target_CMCs = kmComparison_cmcs,
-                            target_v_reference_CMCs = kmComparison_cmcs_rev,
-                            type = "list",
-                            x3pNames = c("Fadul 1-1","Fadul 1-2"),
-                            legend.quantiles = c(0,.01,.2,.5,.8,.99,1),
-                            cell.colors = c("#a60b00","#1b03a3"),
-                            cell.alpha = .15,
-                            na.value = "grey100")
 
-kmLegend_originalCMC <- cowplot::get_legend(kmCMCPlot$originalMethodCMCs_reference_v_target$`Fadul 1-1` +
-                                   theme(legend.direction = "horizontal"))
-
-kmLegend_highCMC <- cowplot::get_legend(kmCMCPlot$highCMC_reference_v_target$`Fadul 1-1` +
-                                   theme(legend.direction = "horizontal"))
-
-kmCMCPlot <- kmCMCPlot %>%
-  map(function(pltList){
-    map(pltList, 
-        ~ . + theme(strip.text = element_blank(),
-                    legend.position = "none",
-                    plot.margin=unit(c(-.05,-.5,-.05,-.5), "cm"),
-                    plot.title = element_blank()))
-  })
-
-# km_originalCMC_reference_v_target <- kmCMCPlot$originalMethodCMCs_reference_v_target + 
-#   theme(legend.position = "none",
-#         plot.margin=unit(c(-.05,-.5,-.05,-.5), "cm"),
-#         plot.title = element_blank())
-# 
-# km_originalCMC_target_v_reference <- kmCMCPlot$originalMethodCMCs_target_v_reference + 
-#   theme(legend.position = "none",
-#         plot.margin=unit(c(-.05,-.5,-.05,-.5), "cm"),
-#         plot.title = element_blank())
-
-km_originalCMCPlot_bothDirections <- ggplot(data.frame(a = 1)) +
-  theme_void() +
-  coord_cartesian(xlim = c(1,10),
-                  ylim = c(1,11),
-                  expand = FALSE) +
-  annotation_custom(ggplotGrob(kmCMCPlot$originalMethodCMCs_reference_v_target$`Fadul 1-1`),
-                    xmin = 2.5,xmax = 5,ymin = 6.1,ymax = 10.5) +
-  annotation_custom(ggplotGrob(kmCMCPlot$originalMethodCMCs_reference_v_target$`Fadul 1-2`),
-                    xmin = 4,xmax = 10.5,ymin = 6.1,ymax = 11) +
-  annotation_custom(ggplotGrob(kmCMCPlot$originalMethodCMCs_target_v_reference$`Fadul 1-2`),
-                    xmin = 2.5,xmax = 5,ymin = 2,ymax = 6) +
-  annotation_custom(ggplotGrob(kmCMCPlot$originalMethodCMCs_target_v_reference$`Fadul 1-1`),
-                    xmin = 4,xmax = 10.5,ymin = 1.75,ymax = 6) +
-  annotation_custom(kmLegend_originalCMC,
-                    xmin = 1,xmax = 10,ymin = 1.45,ymax = 1.45) +
-  annotate("text",x = 3.75,y = 8,size = 4.5,label = "Fadul 1-1") +
-  annotate("text",x = 3.7,y = 3.75,size = 4.5,label = "Fadul 1-2") +
-  annotate("text",x = 7.2,y = 8,size = 4.5,label = "Fadul 1-2") +
-  annotate("text",x = 7.3,y = 3.75,size = 4.5,label = "Fadul 1-1")
-```
-
-```{r include=FALSE}
-
-
-# km_highCMC_reference_v_target <- kmCMCPlot$highCMC_reference_v_target + 
-#   theme(legend.position = "none",
-#         plot.margin=unit(c(-.05,-.5,-.05,-.5), "cm"),
-#         plot.title = element_blank())
-# 
-# km_highCMC_target_v_reference <- kmCMCPlot$highCMC_target_v_reference + 
-#   theme(legend.position = "none",
-#         plot.margin=unit(c(-.05,-.5,-.05,-.5), "cm"),
-#         plot.title = element_blank())
-
-km_highCMCCMCPlot_bothDirections <- ggplot(data.frame(a = 1)) +
-  theme_void() +
-  coord_cartesian(xlim = c(1,10),
-                  ylim = c(1,11),
-                  expand = FALSE) +
-  annotation_custom(ggplotGrob(kmCMCPlot$highCMC_reference_v_target$`Fadul 1-1`),
-                    xmin = 2.5,xmax = 5,ymin = 6.5,ymax = 11) +
-  annotation_custom(ggplotGrob(kmCMCPlot$highCMC_reference_v_target$`Fadul 1-2`),
-                    xmin = 4.25,xmax = 10.5,ymin = 6.5,ymax = 11) +
-  annotation_custom(ggplotGrob(kmCMCPlot$highCMC_target_v_reference$`Fadul 1-2`),
-                    xmin = 2.5,xmax = 5,ymin = 2,ymax = 6.5) +
-  annotation_custom(ggplotGrob(kmCMCPlot$highCMC_target_v_reference$`Fadul 1-1`),
-                    xmin = 4,xmax = 10.5,ymin = 2,ymax = 6.5) +
-  annotation_custom(kmLegend_highCMC,
-                    xmin = 1,xmax = 10,ymin = 1.45,ymax = 1.45) +
-  annotate("text",x = 3.75,y = 8.6,size = 4.5,label = "Fadul 1-1") +
-  annotate("text",x = 3.75,y = 4.2,size = 4.5,label = "Fadul 1-2") +
-  annotate("text",x = 7.25,y = 8.55,size = 4.5,label = "Fadul 1-2") +
-  annotate("text",x = 7.25,y = 4.1,size = 4.5,label = "Fadul 1-1")
-```
-
-```{r cache = T,include=FALSE}
-knmCMCPlot <- cmcR::cmcPlot(reference = fadul1.1,
-                            target = fadul2.1,
-                            reference_v_target_CMCs = knmComparison_cmcs,
-                            target_v_reference_CMCs = knmComparison_cmcs_rev,
-                            type = "list",
-                            x3pNames = c("Fadul 1-1","Fadul 2-1"),
-                            legend.quantiles = c(0,.01,.2,.5,.8,.99,1),
-                            height.colors = colorspace::desaturate(c('#7f3b08','#b35806',
-                                                                     '#e08214','#fdb863',
-                                                                     '#fee0b6','#f7f7f7',
-                                                                     '#d8daeb','#b2abd2',
-                                                                     '#8073ac','#542788',
-                                                                     '#2d004b'),
-                                                                   amount = .75),
-                            cell.colors = c("#a60b00","#1b03a3"),
-                            cell.alpha = .15,
-                            na.value = "grey100")
-
-knmLegend <- cowplot::get_legend(knmCMCPlot$originalMethodCMCs_reference_v_target$`Fadul 1-1` +
-                                   theme(legend.direction = "horizontal"))
-
-knmCMCPlot <- knmCMCPlot %>%
-  map(function(pltList){
-    map(pltList, 
-        ~ . + theme(strip.text = element_blank(),
-                    legend.position = "none",
-                    plot.margin=unit(c(-.05,-.5,-.05,-.5), "cm"),
-                    plot.title = element_blank()))
-  })
-
-knm_cmcPlot_bothDirections <- ggplot(data.frame(a = 1)) +
-  theme_void() +
-  coord_cartesian(xlim = c(1,10),
-                  ylim = c(1,11),
-                  expand = FALSE) +
-  annotation_custom(ggplotGrob(knmCMCPlot$originalMethodCMCs_reference_v_target$`Fadul 1-1`),
-                    xmin = 2.5,xmax = 5,ymin = 6.6,ymax = 11) +
-  annotation_custom(ggplotGrob(knmCMCPlot$originalMethodCMCs_reference_v_target$`Fadul 2-1`),
-                    xmin = 4,xmax = 10.5,ymin = 6.5,ymax = 11) +
-  annotation_custom(ggplotGrob(knmCMCPlot$originalMethodCMCs_target_v_reference$`Fadul 2-1`),
-                    xmin = 2.5,xmax = 5,ymin = 2,ymax = 6.5) +
-  annotation_custom(ggplotGrob(knmCMCPlot$originalMethodCMCs_target_v_reference$`Fadul 1-1`),
-                    xmin = 4,xmax = 10.5,ymin = 1.75,ymax = 6.5) +
-  annotation_custom(knmLegend,
-                    xmin = 1,xmax = 10,ymin = 1.45,ymax = 1.45) +
-  annotate("text",x = 3.75,y = 8.6,size = 4.5,label = "Fadul 1-1") +
-  annotate("text",x = 3.75,y = 4.2,size = 4.5,label = "Fadul 2-1") +
-  annotate("text",x = 7.45,y = 8.75,size = 4.5,label = "Fadul 2-1") +
-  annotate("text",x = 7.35,y = 4,size = 4.5,label = "Fadul 1-1")
-
-# knm_cmcPlot_bothDirections
-```
-
-\hh{We can use the} \code{cmcPlot} function to visualize CMCs and non-CMCs. \hh{XXX figures 9-11 have a sizing issue. Can you please resize the plots such that the text in the patches stays well within the patch (more space between text in different patches than between the indices in the same patch, that's one of the cognitive grouping rules that help with processing visuals correctly). Editing rules for all journal ask for text in images to not be too much smaller than the text surrounding them, so make sure to hit that balance properly, thanks! XXX}
+We can use the \code{cmcPlot} function to visualize CMCs and non-CMCs.
 \autoref{fig:topVoteCMCPlot} shows  congruent matching cells (CMCs) and non-congruent matching cells (non-CMCs) determined under the original method in blue and red, respectively.
 The (red) non-CMC patches are located in the position where the maximum CCF value in the target scan is attained.
 The top row shows 16 CMCs in blue and 10 non-CMCs in red when Fadul 1-1 is treated as the reference and Fadul 1-2 the target.
-The bottom row shows the 15 CMCs and 15 non-CMCs when the roles are reversed. \svp{This should be indicated in the figure somehow. Can we add some text at the top right that says "target" and "reference"?}
+The bottom row shows the 15 CMCs and 15 non-CMCs when the roles are reversed. \svp{XXX This should be indicated in the figure somehow. Can we add some text at the top right that says "target" and "reference"? XXX}
 There is no discussion in \citet{song_proposed_2013} about combining the results from these two comparison directions, but \citet{tong_improved_2015} propose using the minimum of the two CMC counts (15 in this example).
 
 ```{r,echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.align='center',fig.pos='htbp',out.width="\\textwidth",fig.cap='\\label{fig:topVoteCMCPlot} CMC results for the comparison between Fadul 1-1 and Fadul 1-2 using the Original method. The two plots in the top row show the 16 CMCs when Fadul 1-1 is treated as the ``reference" cartridge case to which Fadul 1-2 (the ``target") is compared. The second row shows the 15 CMCs when the roles are reversed. Red cells indicate where cells \\emph{not} identified as congruent achieve the maximum pairwise-complete correlation across all rotations of the target scan. '}
@@ -1275,6 +962,8 @@ kmCMCPlot <- cmcR::cmcPlot(reference = fadul1.1,
                             cell.alpha = .15,
                             na.value = "grey100")
 
+
+
 plt1 <- kmCMCPlot$originalMethodCMCs_reference_v_target
 
 plt1$layers[[4]]$aes_params$size <- 1.5
@@ -1287,15 +976,11 @@ plt2$layers[[4]]$aes_params$size <- 1.5
 
 plt3 <- cowplot::get_legend(plt2)
 
-# plt11 <- ggplot_gtable(plt1)
-# plt21 <- ggplot_gtable(plt2)
-
 plt1 <- plt1  +
   theme(axis.title = element_blank(),
         axis.text = element_blank(),
         legend.position = "none",
-        strip.text = element_blank(),
-        plot.margin = margin(0,0,0,0)) +
+        strip.text = element_blank()) +
   geom_text(data = data.frame(x3p = c("Fadul 1-1","Fadul 1-2"),
                               x = c(1750,1750),
                               y = c(1500,1500)),
@@ -1305,8 +990,7 @@ plt2 <- plt2  +
   theme(axis.title = element_blank(),
         axis.text = element_blank(),
         legend.position = "none",
-        strip.text = element_blank(),
-        plot.margin = margin(0,0,0,0)) +
+        strip.text = element_blank()) +
   geom_text(data = data.frame(x3p = c("Fadul 1-1","Fadul 1-2"),
                               x = c(1750,1750),
                               y = c(1500,1500)),
@@ -1315,8 +999,8 @@ plt2 <- plt2  +
 
 plt <- (plt1 / plt2 / plt3) +
   plot_layout(ncol = 1,
-              heights =  c(2,2,.5),
-              widths = c(1,1,1))
+              heights =  c(2,1.8,.5),
+              widths = c(1,.9,1))
 
 ggsave(filename = "cmcR_files/figure-latex/kmOriginalMethod.pdf",plot = plt)
 
@@ -1347,8 +1031,7 @@ plt1 <- plt1  +
   theme(axis.title = element_blank(),
         axis.text = element_blank(),
         legend.position = "none",
-        strip.text = element_blank(),
-        plot.margin = margin(0,0,0,0)) +
+        strip.text = element_blank()) +
   geom_text(data = data.frame(x3p = c("Fadul 1-1","Fadul 1-2"),
                               x = c(1750,1750),
                               y = c(1500,1500)),
@@ -1358,8 +1041,7 @@ plt2 <- plt2  +
   theme(axis.title = element_blank(),
         axis.text = element_blank(),
         legend.position = "none",
-        strip.text = element_blank(),
-        plot.margin = margin(0,0,0,0)) +
+        strip.text = element_blank()) +
   geom_text(data = data.frame(x3p = c("Fadul 1-1","Fadul 1-2"),
                               x = c(1750,1750),
                               y = c(1500,1500)),
@@ -1379,8 +1061,8 @@ knitr::include_graphics(path = "cmcR_files/figure-latex/kmHighCMC.pdf")
 ```
 
 In contrast, \autoref{fig:knmCMCPlot} shows the CMC results for a comparison between Fadul 1-1 and a known non-match scan, Fadul 2-1, under the exact same processing conditions.
-Only one cell is classified as a congruent matching cell under the original method  when Fadul 1-1 is the reference scan. No cells were classified as CMCs in the other direction. \svp{you need to use the same verb tense throughout the paragraph}
-While not shown, this pair failed the High CMC criteria (in both comparison directions, no less) and thus was assigned 0 CMCs under the High CMC method.
+Only one cell is classified as a congruent matching cell under the original method  when Fadul 1-1 is the reference scan. No cells are classified as CMCs in the other direction.
+While not shown, this pair fails the High CMC criteria and thus was assigned 0 CMCs under the High CMC method.
 
 ```{r,echo=FALSE,warning=FALSE,message=FALSE,cache = F, fig.align='center',fig.pos='htbp',out.width="\\textwidth", fig.cap='\\label{fig:knmCMCPlot} Applying both decision rules to the comparison between the non-match pair Fadul 1-1 and Fadul 2-1 results in 1 CMC under the original method (shown above) and 0 CMCs under the High CMC method (not shown). The seemingly random behavior of the red cells exemplifies the assumption that cells in a non-match comparison do not exhibit an observable pattern. Random chance should be the prevailing factor in classifying non-match cells as CMCs.'}
 
@@ -1418,8 +1100,7 @@ plt1 <- plt1  +
   theme(axis.title = element_blank(),
         axis.text = element_blank(),
         legend.position = "none",
-        strip.text = element_blank(),
-        plot.margin = margin(0,0,0,0)) +
+        strip.text = element_blank()) +
   geom_text(data = data.frame(x3p = c("Fadul 1-1","Fadul 2-1"),
                               x = c(1750,1750),
                               y = c(1500,1500)),
@@ -1429,8 +1110,7 @@ plt2 <- plt2  +
   theme(axis.title = element_blank(),
         axis.text = element_blank(),
         legend.position = "none",
-        strip.text = element_blank(),
-        plot.margin = margin(0,0,0,0)) +
+        strip.text = element_blank()) +
   geom_text(data = data.frame(x3p = c("Fadul 1-1","Fadul 2-1"),
                               x = c(1750,1750),
                               y = c(1500,1500)),
@@ -1450,10 +1130,7 @@ knitr::include_graphics(path = "cmcR_files/figure-latex/knmOriginalMethod.pdf")
 ```
 
 
-<!-- ## An incomplete method? XXX this needs a better title XXX {#incompleteMethod} -->
 ## Ambiguity in algorithmic descriptions {#ambiguities}
-
-<!-- \svp{This section needs to serve as a transition between the method and the investigation - summarizing the holes we've discovered in the descriptions and moving towards a resolution of those holes through brute-force investigation.} -->
 
 During the implementation process we encountered various ambiguities  in the  descriptions of the various CMC methods. 
 In the following section we investigate ways in which such ambiguities can be rectified by exploring a set of reproducibility principles.
@@ -1461,10 +1138,8 @@ In the following section we investigate ways in which such ambiguities can be re
 It is important to note that much of what we have presented as "the CMC method" might not be considered as such by the original authors. 
 In particular, other authors might distinguish proposed methods based only on how their decision rules differ.
 We include the preprocessing and cell-based comparison procedures as part of the CMC methodology to emphasize how much the final results depend on decisions made in these first two steps.
-<!--We have only come to this realization after considerable experimentation with and tweaking of our implementation.-->
 The preprocessing and cell-based comparison procedures are discussed only briefly, if at all, in \citet{song_3d_2014}, \citet{tong_fired_2014}, \citet{tong_improved_2015}, or \citet{chen_convergence_2017}, yet, the results reported often indicate a sensitivity to these procedures.
 An actual sensitivity analysis of proposed CMC methods has yet to be published.
-<!--Instead, such an analysis seems to be done internally and only promising results are reported.-->
 Left unchecked, this can lead to results that are difficult to generalize to new data.
 
 
@@ -1480,35 +1155,27 @@ In the next section, we describe the process of resolving these ambiguities in t
 
 As described in the [initial data](#initialData) section, the set of cartridge case scans from \citet{fadul_empirical_nodate} is commonly used to compare the performance of various classification methods \citep{song_3d_2014, tong_improved_2015, chen_convergence_2017}. 
 This set consists of 40 cartridge cases; 63 of which are known match pairs and 717 known non-match pairs. 
-<!-- https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement/Details/2d9cc51f-6f66-40a0-973a-a9292dbee36d-->
-\hh{Scans of each of the breech face impression were taken with a Nanofocus Confocal Light Microscope at 10 fold magnification for a nominal lateral resolution of  3.125 microns per pixel and published as part of  NBTRD \citep{nbtrd}.}
-While the exact procedures by which these scans are processed are unavailable, these 3d topographi surface images provide the basis of the  comparison between the implementation provided in the \pkg{cmcR} package and published results.
+Scans of each of the breech face impression were taken with a Nanofocus Confocal Light Microscope at 10 fold magnification for a nominal lateral resolution of  3.125 microns per pixel and published as part of  NBTRD \citep{nbtrd}.
+While the exact procedures by which these scans are processed are unavailable, these 3D topographic surface images provide the basis of the  comparison between the implementation provided in the \pkg{cmcR} package and published results.
 However, justification for any differences will ultimately involve educated hypothesization due to the closed-source nature of the original implementations.
 
 For any cartridge case pair, the number of CMCs can be determined under the original method and the High CMC method described in [implementation](#implementation) section.
-We have applied our implementation of these two methods to the 780 cartridge case pairs available in the \citet{fadul_empirical_nodate} data set under a wide variety of processing conditions to determine which conditions yield \hh{the best results while also matching the published results}.
+We have applied our implementation of these two methods to the 780 cartridge case pairs available in the \citet{fadul_empirical_nodate} data set under a wide variety of processing conditions to determine which conditions yield the best results while also matching the published results.
 Perfect identification of all matching and non-matching pairs corresponds to choosing a minimum CMC count threshold that separates the distributions of the matching and non-matching CMC counts. 
-A CMC count threshold of 6 CMCs \hh{is generally accepted as the threshold in the published papers} [\citet{tong_improved_2015}, \citet{song_estimating_2018}, \citet{song_proposed_2013}]. \hh{However,} this threshold has been shown to not generalize well to all proposed methods and cartridge case data sets \citep{chen_convergence_2017}.
-In this section, we  \hh{demonstrate that the}  ambiguities  in the [CMC method descriptions](cmcMethod) \hh{and lack of guidance in the choice of parameter settings propagate through the algorithm and produce highly variable results.} 
-<!-- A sensitivity analysis of the original method \jz{of \citet{song_proposed_2013}} and its descendants has yet to be published. 
-As previously discussed, the conditions under which these proposed methods are applied differ considerably across papers making it difficult to compare results. -->
-\hh{Additionally,  wildly different parameter settings are used by the same group of authors across different papers as shown in \autoref{tab:thresholdTable}.}
+A CMC count threshold of 6 CMCs is generally accepted as the threshold in the published papers [\citet{tong_improved_2015}, \citet{song_estimating_2018}, \citet{song_proposed_2013}]. However, this threshold has been shown to not generalize well to all proposed methods and cartridge case data sets \citep{chen_convergence_2017}.
+In this section, we demonstrate that the  ambiguities  in the [CMC method descriptions](cmcMethod) and lack of guidance in the choice of parameter settings propagate through the algorithm and produce highly variable results.
+Additionally,  wildly different parameter settings are used by the same group of authors across different papers as shown in \autoref{tab:thresholdTable}.
 
-<!--We hope to partly remedy this problem by providing a discussion of the sensitivity of the original method of \citet{song_proposed_2013} and the High CMC method.-->
-\hh{In the next section we focus on a discussion of the sensitivity of some of the method's parameters. This}
-  presentation is far from exhaustive: we primarily focus on the factors \hh{contributing to the most variable results}.
-<!--These factors include sensitivity to the choice of congruency thresholds, to the reader's interpretation of the methods' descriptions, and to the preprocessing procedures employed before feature-extraction.-->
-\hh{As a consequence of this investigation we have developed }
-  a set of principles designed to reduce the need for brute-force searches across  parameter settings when re-implementing algorithms without accompanying code.
+In the next section we focus on a discussion of the sensitivity of some of the method's parameters. This presentation is far from exhaustive: we primarily focus on the factors contributing to the most variable results.
+As a consequence of this investigation we have developed a set of principles designed to reduce the need for brute-force searches across  parameter settings when re-implementing algorithms without accompanying code.
 
 Adherence to these principles yields not only computationally reproducible results, but also improves a reader's understanding of a proposed method.
 
 ## Communicating a method's sensitivity to processing conditions
 
-\hh{Choosing threshold values} $T_x, T_y, T_\theta, T_{\text{CCF}}$ \hh{for translation, rotation and maximum cross-correlation is crucial in declaring} a particular cell-region pair "congruent". 
-A lot of different combinations of these thresholds yield perfect separation between the matching and non-matching CMC count distributions. 
-\hh{In situations where ground truth is known, such as in the example of the Fadul data here, we can use the ratio $r$ of between- and within-group variability as an additional statistic to measure  separation between CMC counts of known matches and known non-matches.}
-\hh{XXX For the future: let's stay away from random variables made up of multiple letters - it's terribly confusing because CMC could be also made up of C times M times C.}
+Choosing threshold values $T_x, T_y, T_\theta, T_{\text{CCF}}$ for translation, rotation and maximum cross-correlation is crucial in declaring a particular cell-region pair "congruent". 
+Many different combinations of these thresholds yield perfect separation between the matching and non-matching CMC count distributions. 
+In situations where ground truth is known, such as in the example of the Fadul data here, we can use the ratio $r$ of between- and within-group variability as an additional statistic to measure  separation between CMC counts of known matches and known non-matches.
 Let C$_{ij}$ denote the CMC count assigned to the $j$th cartridge case pair, $j = 1,...,n_i$, $n_1 = 63, n_2 = 717$, from the $i$th group, $i = 1,2$ representing matches and non-matches, respectively. 
 For each set of thresholds we calculate the **Variance Ratio** $r$ as:
 $$
@@ -1516,12 +1183,11 @@ r = r\left(T_x, T_y, T_\theta, T_{\text{CCF}}\right) = \frac{\sum_{i=1}^2 \left(
 $$
 where $\overline{C}_{i.}$ denotes the within-group CMC count average and $\overline{C}_{..}$ denotes the grand CMC count average. 
 Greater separation between and less variability within the match and non-match CMC count distributions yields larger $r$ values. 
-Larger values of $r$ \hh{are therefore indicative of greater separation between the groups}.
+Larger values of $r$ are therefore indicative of greater separation between the groups.
 
-\autoref{fig:decisionRuleSensitivity_comparison} \hh{shows results for the original method and the High CMC method for a parameter setting of $T_{\Delta x} = 20 = T_{\Delta y}$ pixels, $T_{\text{CCF}} = .5$, and $T_{\theta} = 6$. }
-Both decision rules result in separated CMC count distributions for known matches and known non-matches \hh{corresponding to an AUC of 1.00}. 
+\autoref{fig:decisionRuleSensitivity_comparison} shows results for the original method and the High CMC method for a parameter setting of $T_{\Delta x} = 20 = T_{\Delta y}$ pixels, $T_{\text{CCF}} = .5$, and $T_{\theta} = 6$.
+Both decision rules result in separated CMC count distributions for known matches and known non-matches corresponding to an AUC of 1.00. 
 However, the High CMC decision rule yields a larger separation between the known match and known non-match distributions as evidenced by the considerably larger variance ratio $r$. 
-<!--These results are, of course, dependent on many other processing decisions than just the threshold values used, so a greater sensitivity analysis should be considered.-->
 
 ```{r echo=FALSE,fig.cap='\\label{fig:decisionRuleSensitivity_comparison} CMC count relative frequencies under the original method and the High CMC method for $T_{\\Delta x} = 20 = T_{\\Delta y}$ pixels, $T_{\\text{CCF}} = .5$, and $T_{\\theta} = 6$ degrees. AUC $= 1.00$ corresponds to perfect separation of the match and non-match CMC count distributions. We can see that, for this set of processing parameters, the High CMC method yields higher CMC counts for known matches that the original method while known non-matches have the same distribution under both methods.', fig.align='left',fig.pos='htbp',out.width='\\textwidth'}
 
@@ -1562,7 +1228,7 @@ cmcCountData %>%
   ylab("Relative Frequency")
 ```
 
-We consider five \hh{dimensions} that have a demonstrable impact on the effectiveness of the CMC method. These include:
+We consider five dimensions that have a demonstrable impact on the effectiveness of the CMC method. These include:
 \begin{itemize}
 \item the decision rule (original method or High CMC method) used,
 
@@ -1570,13 +1236,12 @@ We consider five \hh{dimensions} that have a demonstrable impact on the effectiv
 
 \item choice of congruency thresholds: translation $T_x, T_y$, rotation $T_\theta$, and cross-correlation $T_{\text{CCF}}$.
 \end{itemize}
-<!--To understand the generalizability of a particular set of parameters to "out-of-sample" data,-->
-Choosing \hh{a single} parameter setting resulting in perfect identification is not enough \hh{to generally understand the algorithm}. 
-Instead, we use the variance ratio $r$ to identify promising ranges of parameters. \autoref{fig:cmc_sensitivityScatter} shows the value of the variance ratio under various settings. We  see that the High CMC method \hh{yields better separation than the original method under any parameter setting.} \hh{Highest variance ratios, however, are achieved for }   thresholds $T_x, T_y \in [10,20]$, $T_\theta = 6$, and $T_{\text{CCF}} \in [.4,.5]$. 
-<!--These are similar thresholds to those chosen in other CMC papers. \hh{XXX I don't agree with this conclusion} --> 
-\hh{Interestingly, as seen in \autoref{tab:thresholdTable}, only the parameters for the High CMC method discussed in \citet{song_estimating_2018} fall into these ranges.}
 
-```{r ,echo=FALSE, fig.cap='\\label{fig:cmc_sensitivityScatter} \\hh{Variance ratios under are plotted for different parameter settings. High variance ratios are indicative of a a good separation between CMC counts for known matching pairs and known-non matching pairs. The High CMC method generally performs better than the original method. Removing the trend during preprocessing, even though not explicitly described as a preprocessing step in the CMC papers, has a major impact on the effectiveness of the CMC method. In this setting, translation thresholds $T_x, T_y \\in [15,20]$, a rotation threshold $T_\\theta = 6$, and a CCF threshold $T_{\\text{CCF}} \\in [.4,5]$ lead to a separation of results.} ',fig.align='left',fig.pos='htbp',out.width='\\textwidth'}
+Choosing a single parameter setting resulting in perfect identification is not enough to generally understand the algorithm. 
+Instead, we use the variance ratio $r$ to identify promising ranges of parameters. \autoref{fig:cmc_sensitivityScatter} shows the value of the variance ratio under various settings. We  see that the High CMC method yields better separation than the original method under any parameter setting. Highest variance ratios, however, are achieved for thresholds $T_x, T_y \in [10,20]$, $T_\theta = 6$, and $T_{\text{CCF}} \in [.4,.5]$. 
+Interestingly, as seen in \autoref{tab:thresholdTable}, only the parameters for the High CMC method discussed in \citet{song_estimating_2018} fall into these ranges.
+
+```{r ,echo=FALSE, fig.cap='\\label{fig:cmc_sensitivityScatter} Variance ratios under are plotted for different parameter settings. High variance ratios are indicative of a a good separation between CMC counts for known matching pairs and known-non matching pairs. The High CMC method generally performs better than the original method. Removing the trend during preprocessing, even though not explicitly described as a preprocessing step in the CMC papers, has a major impact on the effectiveness of the CMC method. In this setting, translation thresholds $T_x, T_y \\in [15,20]$, a rotation threshold $T_\\theta = 6$, and a CCF threshold $T_{\\text{CCF}} \\in [.4,5]$ lead to a separation of results. ',fig.align='left',fig.pos='htbp',out.width='\\textwidth'}
 
 cmcCountData %>%
   mutate(trendRemoved = factor(trendRemoved)) %>%
@@ -1601,81 +1266,14 @@ cmcCountData %>%
                                  title.vjust = .825,
                                  frame.colour = "black",
                                  ticks.colour = "black"))
-
-# plt <- cmcCountData %>%
-#   mutate(trendRemoved = factor(trendRemoved,levels = c(TRUE,FALSE)),
-#          decisionRule = factor(decisionRule,levels = c("originalMethodCMCs","highCMCs"))) %>%
-#   filter(thetaThresh == 6) %>%
-#   ggplot(aes(x = transThresh,
-#              y = varRatio,
-#              colour = corThresh)) +
-#   geom_point() +
-#   scale_colour_gradient(low = "#a1d99b",
-#                         high = "#00441b",
-#                         breaks = seq(.35,.6,by = .05)) +
-#   facet_grid(trendRemoved ~ decisionRule,
-#              labeller = labeller(decisionRule = c("High CMC","Original Method") %>% set_names(c("highCMCs","originalMethodCMCs")),
-#                                  thetaThresh = c("Theta Thresh.: 3","Theta Thresh.: 6") %>% setNames(c(3,6)),
-#                                  trendRemoved = c("Trend Removed","Trend Not Removed") %>% setNames(c(TRUE,FALSE)))) +
-#   xlab("Translation Threshold") +
-#   ylab("variance ratio") +
-#   theme_bw() +
-#   theme(legend.position = "bottom",
-#         axis.text = element_text(size = 5),
-#         axis.title = element_text(size = 7),
-#         legend.text = element_text(size = 5),
-#         legend.title = element_text(size = 6),
-#         strip.text.x =  element_text(size = 6),
-#         strip.text.y = element_text(size = 5)) +
-#   guides(colour = guide_colorbar(title = "CCF Threshold",
-#                                  barwidth =  8,
-#                                  title.hjust = -1,
-#                                  title.vjust = .95,
-#                                  frame.colour = "black",
-#                                  ticks.colour = "black",
-#                                  barheight = .4))
-# 
-# ggsave(filename = "images/varRatios.png",plot = plt,
-#        width = 6.77,height = 6.77,units = "cm")
 ```
 
-\hh{As shown in \autoref{fig:cmc_sensitivityScatter}, de-trending breech-scans in the preprocessing stage emerges as a very impactful step to achieve good algorithmic results.  
-}
-\hh{This step is not explicitly mentioned in the written-word descriptions of the algorithm in either of the papers by \citet{song_proposed_2013}, \citet{tong_fired_2014}, \citet{tong_improved_2015}, \citet{chen_convergence_2017}, or \citet{song_estimating_2018}, though it appears from their examples that it was used in the process. This highlights, yet again, the dangers of only providing verbal instructions in lieu of code.}
-\hh{\autoref{fig:cmc_sensitivityScatter} also shows us  }\jz{ the benefits of breaking a method up into modularized steps } \hh{for an algorithmic analysis.}
-\jz{We will expand upon this } in the next section.
+As shown in \autoref{fig:cmc_sensitivityScatter}, de-trending breech-scans in the preprocessing stage emerges as a very impactful step to achieve good algorithmic results. 
+This step is not explicitly mentioned in the written-word descriptions of the algorithm in either of the papers by \citet{song_proposed_2013}, \citet{tong_fired_2014}, \citet{tong_improved_2015}, \citet{chen_convergence_2017}, or \citet{song_estimating_2018}, though it appears from their examples that it was used in the process.
+This highlights, yet again, the dangers of only providing verbal instructions in lieu of code.
+\autoref{fig:cmc_sensitivityScatter} also shows us the benefits of breaking a method up into modularized steps for an algorithmic analysis.
+We will expand upon this in the next section.
 
-
-
-
-<!-- \jz{Changes to the pre-processing procedures have a major impact on the effectiveness of the CMC method.  -->
-<!-- For example, consider a change to the procedure described in the} [preprocessing](#preProcessing) \jz{section in which surface matrices are not leveled before applying the bandpass Gaussian filter (i.e., skipping step (3) shown in \autoref{fig:processingPipeline}).  -->
-<!-- Recall that this step is performed in our implementation due to the trends in height values exhibited frequently yet inconsistently across cartridge cases fired from the same firearm.  -->
-<!-- No explicit reference is given for how these trends are handled to produce published CMC results, although a Gaussian regression filter would implicitly attenuate their effects.} -->
-
-<!-- \jz{\autoref{fig:cmc_sensitivityScatter} shows the results for both decision rules where the surface matrices were not leveled prior to applying the bandpass Gaussian filter.  -->
-<!-- We can see that the variance ratios are considerably worse, indicating less separation between the match and non-match CMC count distributions, when surface matrices' trends aren't removed. -->
-<!-- In particular, we have observed that non-matching cartridge case pairs with similar trends may be assigned more "false-positive" CMCs while, conversely, matching pairs with dissimilar trends are assigned fewer CMCs. -->
-<!-- This emphasizes how dangerous it can be to take the preprocessing procedures for granted.} -->
-
-<!-- \jz{As another example, unintentional ambiguities in written-language description of the High CMC method lead to different interpretations of its decision rule}. -->
-<!-- Recall that \jz{the last step of the [High CMC method](#highCMCMethod) is to combine CMCs from the two comparison directions, assuming that the High CMC criteria were satisfied. -->
-<!-- A common occurrence we have found in our experimentation is that one comparison direction satisfies the High CMC criteria while the other does not. -->
-<!-- Based on the description provided in \citet{tong_improved_2015} (which we've quoted in the} [High CMC decision rule section](#highCMCMethod))\jz{, it is unclear how to handle such situations. -->
-<!-- The convention adopted in \pkg{cmcR} is to require that both directions satisfy the High CMC criteria in order to combine their results (otherwise, the CMCs determined under the original method are used). -->
-<!-- However, other interpretations of the decision rule could certainly be considered.} -->
-
-<!-- \jz{This illustrates how a prosaic description of an algorithm is generally insufficient to properly implement the method. Even precise algorithmic descriptions typically gloss-over the usage of particular programming languages, functions, or parameter settings.  -->
-<!-- Algorithms that theoretically should be consistent across implementations may in-practice yield numerical inconsistencies due to factors that would require the authors' careful consideration to make consistent.  -->
-<!-- For example, how different programming languages handle various datatypes (floating-point, complex numbers, etc.) or how random seeds are used to initialize pseudorandom number generators.  -->
-<!-- Because of this, anything short of providing the code and data used to produce published results renders computational reproduction challenging if not impossible.} -->
-
-<!-- \jz{Dividing a method into a modularized "pipeline" of exchangeable steps as is done in \pkg{cmcR} makes it easier to explore the sensitivities and deficiencies of a method. -->
-<!-- Further, results and scientific insights are more transparent compared to "black box" or close-source methods. -->
-<!-- For example, skipping the de-trending step of the preprocessing procedure is as simple as commenting-out a few lines of code. -->
-<!-- The authors of the various CMC methods already have some form of this modularization, as evidenced by the slight differences in procedures across between papers.  -->
-<!-- However, there has yet to be a consolidation of the various procedures used into an "optimal" processing pipeline.  -->
-<!-- Perhaps a more principled approach cast as an optimization problem is required rather than an experimental approach. The structure provided by \pkg{cmcR} package certainly makes it easier to explore such alternatives.} -->
 ## Modularization as a basis for FAIR software {#exploring}
 
 <!-- - Modularization of code provides the opportunity to test specific components of each algorithm -->
@@ -1683,59 +1281,29 @@ cmcCountData %>%
 <!-- - This approach allows for improvements to each part of the algorithm in turn -->
 <!-- - This is not like unit testing - we're not testing each module separately, instead we're evaluating the entire algorithm by replacing components of the model with other components - integrated system testing -->
 
-\svp{Both the CMC and High CMC methods are complex, multi-step processes that are easier to run and debug when written as a modular pipeline of successive, functionally independent steps.
+Both the CMC and High CMC methods are complex, multi-step processes that are easier to run and debug when written as a modular pipeline of successive, functionally independent steps.
 This modular approach makes it easier to describe the algorithm, easier to write the code, easier to modify and improve the method, and easier to show that the improvement has a noticeable impact on the results. 
 Unfortunately, it takes work to explicitly modularize an algorithm. 
 The modularity of the CMC methods is something imposed by the authors of this paper, and is not necessarily obvious from the published CMC literature.
 In part, we modularize code because it make it more maintainable, but it is also part of the scientific process: refining and improving previous methods by incorporating modern best practices. 
 The modularization creates an explicit framework for assessment of the utility and effectiveness of each piece of the algorithm, and allows us to specifically manipulate each step independently, while monitoring the downstream impact on the results. 
 It also allows future collaborators to improve on pieces of the pipeline, adding additional options and improving the method without having to re-invent the wheel. 
-This provides a huge boost to the efficiency of new developments in the field: it is our hope that the cmcR package will facilitate additional research into the matching of cartridge cases and other pattern evidence.}
+This provides a huge boost to the efficiency of new developments in the field: it is our hope that the \pkg{cmcR} package will facilitate additional research into the matching of cartridge cases and other pattern evidence.
 
 
-\svp{As described in \citet{wittenburg_open_2021}, open science and data science depend on FAIR algorithms and data, where FAIR stands for findability, accessibility, interoperability, and reusability. 
+As described in \citet{wittenburg_open_2021}, open science and data science depend on FAIR algorithms and data, where FAIR stands for findability, accessibility, interoperability, and reusability. 
 It is easy to see how modular algorithms increase the interoperability and reusability of code and data, and that the addition of an open-source software package leveraging the CRAN platform increases the findability and accessibility of the method and code.
 While not all developers adhere to reproducible, open-source, or FAIR design principles, we argue that the addition of a modular framework for the CMC algorithm is a valuable addition to the method, as it results in an algorithm that can be more easily tested, examined, and explained. 
 These principles of open, accessible, interoperable code are also critical for a fair (in the legal sense) justice system: the defense must have access to the code to understand the evidence against them, lawyers must be able to assess the utility of the analysis method, and judges must be able to determine whether a method is admissible in court. 
-All of these goals are compatible with a FAIR, open-source, reproducible algorithm, and are fundamentally incompatible with closed-source, closed-data, paper-only scientific advancement. }
+All of these goals are compatible with a FAIR, open-source, reproducible algorithm, and are fundamentally incompatible with closed-source, closed-data, paper-only scientific advancement.
 
-\svp{FAIR software standards emphasize open code, but it is just as important in data science applications to have open data. 
+FAIR software standards emphasize open code, but it is just as important in data science applications to have open data. 
 In the CMC example, the original method and application used manually cleaned scans, where the breech face of the cartridge was cut out from the overall scan in a graphical application. 
 We discovered just how important this step of the algorithm was by attempting to automate the cleaning process, and failing to replicate the original results: the precision of the breech face identification significantly affects the results of every subsequent stage in the pipeline. 
 Ideally, when releasing a complicated algorithm such as the CMC process, authors would provide not only code but also intermediate data files which allow others to pick up the process and modify only one stage of the algorithm. 
 This speaks to the modularity of the data as well as the algorithm: at each stage, we must have an eye towards the reproducibility of the results. 
 The availability of intermediate data have made the work that is demonstrated here much easier, but it would also make comparing the CMC algorithm to other alternatives much easier as well by providing a set of benchmarks to compare performance.
-There is a great need for these types of benchmark data sets, not only in forensics, but across the sphere of greater data science: often, solutions in one application area can be adapted to another area, but data availability ensures that these adaptations are firmly grounded.}
-<!-- ## Exploring algorithmic ambiguities through modularization {#exploring} -->
-
-<!-- \jz{Changes to the preprocessing procedures have a major impact on the effectiveness of the CMC method.  -->
-<!-- For example, consider a change to the procedure described in the} [preprocessing](#preProcessing) \jz{section in which surface matrices are not leveled before applying the bandpass Gaussian filter (i.e., skipping step (3) shown in \autoref{fig:processingPipeline}).  -->
-<!-- Recall that this step is performed in our implementation due to the trends in height values exhibited frequently yet inconsistently across cartridge cases fired from the same firearm.  -->
-<!-- No explicit reference is given for how these trends are handled to produce published CMC results, although a Gaussian regression filter would implicitly attenuate their effects.} -->
-
-<!-- \jz{\autoref{fig:cmc_sensitivityScatter} shows the results for both decision rules where the surface matrices were not leveled prior to applying the bandpass Gaussian filter.  -->
-<!-- We can see that the variance ratios are considerably worse, indicating less separation between the match and non-match CMC count distributions, when surface matrices' trends aren't removed. -->
-<!-- In particular, we have observed that non-matching cartridge case pairs with similar trends may be assigned more "false-positive" CMCs while, conversely, matching pairs with dissimilar trends are assigned fewer CMCs. -->
-<!-- This emphasizes how dangerous it can be to take the preprocessing procedures for granted.} -->
-
-<!-- \jz{As another example, unintentional ambiguities in written-language description of the High CMC method lead to different interpretations of its decision rule}. -->
-<!-- Recall that \jz{the last step of the} [High CMC method](#highCMCMethod) \jz{is to combine CMCs from the two comparison directions, assuming that the High CMC criteria were satisfied. -->
-<!-- A common occurrence we have found in our experimentation is that one comparison direction satisfies the High CMC criteria while the other does not. -->
-<!-- Based on the description provided in \citet{tong_improved_2015} (which we've quoted in the} [High CMC decision rule section](#highCMCMethod))\jz{, it is unclear how to handle such situations. -->
-<!-- The convention adopted in \pkg{cmcR} is to require that both directions satisfy the High CMC criteria in order to combine their results (otherwise, the CMCs determined under the original method are used). -->
-<!-- However, other interpretations of the decision rule could certainly be considered.} -->
-
-<!-- \jz{This illustrates how a prosaic description of an algorithm is generally insufficient to properly implement the method. Even precise algorithmic descriptions typically gloss-over the usage of particular programming languages, functions, or parameter settings.  -->
-<!-- Algorithms that theoretically should be consistent across implementations may in-practice yield numerical inconsistencies due to factors that would require the authors' careful consideration to make consistent.  -->
-<!-- For example, how different programming languages handle various datatypes (floating-point, complex numbers, etc.) or how random seeds are used to initialize pseudorandom number generators.  -->
-<!-- Because of this, anything short of providing the code and data used to produce published results renders computational reproduction challenging if not impossible.} -->
-
-<!-- \jz{Dividing a method into a modularized "pipeline" of exchangeable steps as is done in \pkg{cmcR} makes it easier to explore the sensitivities and deficiencies of a method. -->
-<!-- Further, results and scientific insights are more transparent compared to "black box" or close-source methods. -->
-<!-- For example, skipping the de-trending step of the preprocessing procedure is as simple as commenting-out a few lines of code. -->
-<!-- The authors of the various CMC methods already have some form of this modularization, as evidenced by the slight differences in procedures across between papers.  -->
-<!-- However, there has yet to be a consolidation of the various procedures used into an "optimal" processing pipeline.  -->
-<!-- Perhaps a more principled approach cast as an optimization problem is required rather than an experimental approach. The structure provided by \pkg{cmcR} package certainly makes it easier to explore such alternatives.} -->
+There is a great need for these types of benchmark data sets, not only in forensics, but across the sphere of greater data science: often, solutions in one application area can be adapted to another area, but data availability ensures that these adaptations are firmly grounded.
 
 # Conclusion {#conclusion}
 
@@ -1747,19 +1315,16 @@ Ambiguity in the implementation stems mainly from implicit parameters and proces
 While admissible from a readability perspective, anything short of making the original code available renders published results not reproducible. 
 This is compounded by the fact that a critical preprocessing step is performed manually and that preprocessed data are not publicly available.
 
-\svp{At one time, it was common to publish the specific implementation of an algorithm as raw source code \citep{bron_merge_1972} within the journal article, or at minimum, in the appendix \citep{friend_sorting_1956} if the article contained a significant amount of analysis. 
+At one time, it was common to publish the specific implementation of an algorithm as raw source code \citep{bron_merge_1972} within the journal article, or at minimum, in the appendix \citep{friend_sorting_1956} if the article contained a significant amount of analysis. 
 While it is still relatively common to provide access to a github repository or other repository for source code, these repositories are not guaranteed to exist in perpetuity; certainly, when compared to \citep{bron_merge_1972}, the likelihood of being able to find the source code for an article is higher when the code is included in the article or made readily accessible in another format. 
 In many cases, though, authors do not make their code available for analysis; this provides a substantial hurdle when attempting to use, replicate, or compare the published method and represents a significant barrier to scientific progress. 
-A pure `re-implementation' of existing work generally does not count as research. Unfortunately, this deters to build on one another's work, discourages comparisons across approaches from different research groups, and favors 'one-off' ideas over a collaborative effort to achieve real solutions.}
+A pure `re-implementation' of existing work generally does not count as research. Unfortunately, this deters to build on one another's work, discourages comparisons across approaches from different research groups, and favors 'one-off' ideas over a collaborative effort to achieve real solutions.
 Re-implementations often require enumerating and implementing a wide variety of processing options, likely larger than the scope of the original implementation, and yield a deeper understanding of a method's proficiency \citep{Stodden2013SettingTD}. 
 The process by which the CMC method was implemented in the \pkg{cmcR} package testifies to how important the recent push for open-source development is to scientific progress.
 
-\svp{If code is not open-sourced, at a minimum, authors should be willing to publish the data at every intermediate stage of the analysis, to allow those who would re-implement algorithms the ability to check the validity of the re-implementation against the output of the published paper. 
+If code is not open-sourced, at a minimum, authors should be willing to publish the data at every intermediate stage of the analysis, to allow those who would re-implement algorithms the ability to check the validity of the re-implementation against the output of the published paper. 
 This simple step protects both the authors' interest in the code and the scientific community's interest in replication and verification of previously posed methods.
 In addition, publishing original, intermediate, and final results allows new algorithms to benchmark against previously proposed solutions to the same problem, providing a much more even basis for comparison of different algorithms.
-This minimum standard of openness and reproducibility is essential to evaluating algorithms, and in consequential applications such as forensics, these validation results are also important when methods are introduced in a legal setting.}
-<!-- Lastly, it is simply best academic practice to be transparent about how certain results were obtained and how sensitive these results are to different processing conditions. The \pkg{cmcR} package is intended to provide researchers with an automatic, transparent tool to further explore the potential of the CMC method and develop novel techniques to perform firearm evidence identification. -->
-
-<!-- Future changes to the current implementation will likely come in the form of improvements to the way that breech face impressions are automatically isolated and highlighted within the scan. Additionally, there are also a number of other extensions to the initially proposed CMC method that currently lack an open-source implementation. The foundation set by the \pkg{cmcR} package should make it easier to implement these extensions in the future.  -->
+This minimum standard of openness and reproducibility is essential to evaluating algorithms, and in consequential applications such as forensics, these validation results are also important when methods are introduced in a legal setting.
 
 \bibliography{RJreferences}
