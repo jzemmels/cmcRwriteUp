@@ -1,4 +1,4 @@
-## ----localDataDir, include=FALSE----------------------------------------------
+## ----localDataDir, include=FALSE---------------------------------------------------------------------------------------------------------------------------------------------------------------
 if(!dir.exists("data")){
   dir.create("data")
 }
@@ -14,51 +14,71 @@ if(!file.exists("data/fadul2-1.x3p")){
 }
 
 
-## ---- derivativeImagesDir,include=FALSE---------------------------------------
+## ---- derivativeImagesDir,include=FALSE--------------------------------------------------------------------------------------------------------------------------------------------------------
 if(!dir.exists("derivatives")){
   dir.create("derivatives")
 }
 
 
-## ----setup,echo=FALSE,message=FALSE,warning=FALSE-----------------------------
+## ----setup,echo=FALSE,message=FALSE,warning=FALSE----------------------------------------------------------------------------------------------------------------------------------------------
 knitr::opts_chunk$set(cache = T, dpi = 300, fig.width = 8, fig.height = 4, out.width = "\\textwidth", dpi = 300)
 library(cmcR) # remotes::install_github("CSAFE-ISU/cmcR")
 library(tidyverse)
-library(x3ptools)
+library(x3ptools) # remotes::install_github("heike/x3ptools")
 library(rgl)
-set.seed(4132020)
+library(ggpcp)
 
 
-## ----eval=FALSE,echo=TRUE-----------------------------------------------------
-#> library(cmcR)
-#> set.seed(4132020)
-#> 
-#> nrbtd_url <- "https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement/"
-#> 
-#> fadul1.1_id <- "DownloadMeasurement/2d9cc51f-6f66-40a0-973a-a9292dbee36d"
-#> fadul1.2_id <- "DownloadMeasurement/cb296c98-39f5-46eb-abff-320a2f5568e8"
-#> fadul2.2_id <- "DownloadMeasurement/8ae0b86d-210a-41fd-ad75-8212f9522f96"
-#> 
-#> # Code to download breech face impressions:
-#> nrbtd_url <- "https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement/"
-#> download.file(
-#>   file.path(nrbtd_url, fadul1.1_id), destfile = "data/fadul1-1.x3p", mode = "wb")
-#> download.file(
-#>   file.path(nrbtd_url, fadul1.2_id), destfile = "data/fadul1-2.x3p", mode = "wb")
-#> download.file(
-#>   file.path(nrbtd_url, fadul2.1_id), destfile = "data/fadul2-1.x3p", mode = "wb")
+## ----eval=FALSE,echo=FALSE---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## # SVP comment: Should do this in a tidy way with less code if possible...
+## library(cmcR)
+## 
+## fadul1.1_id <- "DownloadMeasurement/2d9cc51f-6f66-40a0-973a-a9292dbee36d"
+## # Same source comparison
+## fadul1.2_id <- "DownloadMeasurement/cb296c98-39f5-46eb-abff-320a2f5568e8"
+## # Different source comparison
+## fadul2.1_id <- "DownloadMeasurement/8ae0b86d-210a-41fd-ad75-8212f9522f96"
+## 
+## #Code to download breech face impressions:
+## 
+## # Aside: while the URL says "NRBTD", it's
+## #actually the NIST Ballistics Toolmark Research Database (so their URL
+## #is mistaken)
+## 
+## nbtrd_url <- "https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement"
+## download.file(
+##   file.path(nbtrd_url , fadul1.1_id), destfile = "data/fadul1-1.x3p", mode = "wb")
+## download.file(
+##   file.path(nbtrd_url , fadul1.2_id), destfile = "data/fadul1-2.x3p", mode = "wb")
+## download.file(
+##   file.path(nbtrd_url, fadul2.1_id), destfile = "data/fadul2-1.x3p", mode = "wb")
 
 
-## ----echo=FALSE,fig.cap='\\label{fig:ccPair_separated} A cartridge case pair with visible breech face impressions under a microscrope. Forensic practitioners determine by visual comparison how similar these impressions are to conclude whether the pair is a match. It can be especially challenging to determine whether a marking is an \\emph{individual characteristic} caused by contact with the breech face of a particular firearm or a \\emph{subclass characteristic} shared across cartridge cases manufactured by the same manufacturer within a short time frame \\citep{firearmTraining}.',fig.align='center',fig.pos='htbp',out.width="\\textwidth"----
-knitr::include_graphics("images/cartridgeCasePair_separated.PNG")
+## ----eval=FALSE,echo=TRUE----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## library(cmcR)
+## 
+## nbtrd_url <- "https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement"
+## 
+## x3p_ids <- c("DownloadMeasurement/2d9cc51f-6f66-40a0-973a-a9292dbee36d",
+##              "DownloadMeasurement/cb296c98-39f5-46eb-abff-320a2f5568e8",
+##              "DownloadMeasurement/8ae0b86d-210a-41fd-ad75-8212f9522f96")
+## 
+## file_names <- c("fadul1-1.x3p","fadul1-2.x3p","fadul2-1.x3p")
+## 
+## purrr::walk2(.x = x3p_ids,
+##              .y = file_names,
+##              .f = function(x3p_id,file_name){
+##                download.file(url = file.path(nbtrd_url, x3p_id),
+##                              destfile = paste0("data/",file_name),mode = "wb")
+##              })
 
 
 ## ----echo=FALSE,fig.cap='\\label{fig:ccPair_combined} A cartridge case pair with visible breech face impressions under a microscrope.  A thin line can be seen separating the two views. The degree to which the markings coincide is used to conclude whether the pair comes from the same source.',fig.pos='htbp',out.width="\\textwidth"----
 knitr::include_graphics("images/cartridgeCasePair_comparison_with_line.PNG")
 
 
-## ---- fadul1-1Screenshot,include=FALSE----------------------------------------
-fadul1.1 <- x3ptools::read_x3p("data/fadul1-1.x3p")
+## ---- fadul1-1Screenshot,include=FALSE---------------------------------------------------------------------------------------------------------------------------------------------------------
+fadul1.1 <- x3ptools::x3p_read("data/fadul1-1.x3p")
 
 #apply low-pass filter to reduce noise in scan:
 surface1 <- fadul1.1 %>%
@@ -106,8 +126,8 @@ x3ptools::x3p_snapshot(file = "derivatives/fadul1-1.png")
 rgl.close()
 
 
-## ----fadul1-2Screenshot,include=FALSE-----------------------------------------
-fadul1.2 <- x3ptools::read_x3p("data/fadul1-2.x3p")
+## ----fadul1-2Screenshot,include=FALSE----------------------------------------------------------------------------------------------------------------------------------------------------------
+fadul1.2 <- x3ptools::x3p_read("data/fadul1-2.x3p")
 
 surface2 <- fadul1.2 %>%
   cmcR::preProcess_gaussFilter(wavelength = 16,filtertype = "lp")
@@ -139,89 +159,107 @@ x3ptools::x3p_snapshot(file = "derivatives/fadul1-2.png")
 rgl.close()
 
 
-## ---- rawBFs,echo=FALSE,fig.cap='\\label{fig:cartridgeCasePair} Unprocessed surface matrices of the known-match Fadul 1-1 (left) and Fadul 1-2 (right) \\citep{fadul_empirical_nodate}. The observations in the corners of these surface matrices are artifacts of the staging area in which these scans were taken. The holes on the interior of the primer surfaces are caused by the firing pin striking the primer during the firing process. The region of the primer around this hole does not come into uniform contact with the breech face of the firearm.', fig.subcap=c('',''),fig.align='center',fig.pos='htbp',out.width='.49\\linewidth',out.height='.49\\linewidth'----
+## ---- rawBFs,echo=FALSE,fig.cap='\\label{fig:cartridgeCasePair} Unprocessed surface matrices of the known-match Fadul 1-1 (left) and Fadul 1-2 (right) \\citep{fadul_empirical_2011}. The observations in the corners of these surface matrices are artifacts of the staging area in which these scans were taken. The holes on the interior of the primer surfaces are caused by the firing pin striking the primer during the firing process. The region of the primer around this hole does not come into uniform contact with the breech face of the firearm.', fig.subcap=c('',''),fig.align='center',fig.pos='htbp',out.width='.49\\linewidth',out.height='.49\\linewidth'----
 knitr::include_graphics(c("derivatives/fadul1-1.png","derivatives/fadul1-2.png"))
 
 
-## ----load-data, include = F, cache = T----------------------------------------
+## ----load-data, include = F, cache = T---------------------------------------------------------------------------------------------------------------------------------------------------------
 
-fadul1.1 <- x3ptools::read_x3p("data/fadul1-1.x3p") %>%
-  cmcR::preProcess_cropBFExterior(radiusOffset = -30,
-                                  agg_function = median) %>%
-  cmcR::preProcess_filterBFInterior(radiusOffset = 200) %>%
-  cmcR::preProcess_removeBFTrend(statistic = "quantile",
+fadul1.1 <- x3ptools::x3p_read("data/fadul1-1.x3p") %>%
+  cmcR::preProcess_crop(region = "exterior",
+                        radiusOffset = -30) %>%
+  cmcR::preProcess_crop(region = "interior",
+                        radiusOffset = 200) %>%
+  cmcR::preProcess_removeTrend(statistic = "quantile",
                                  tau = .5,
                                  method = "fn") %>%
   cmcR::preProcess_gaussFilter() %>%
   x3ptools::sample_x3p()
 
-fadul1.2 <- x3ptools::read_x3p("data/fadul1-2.x3p") %>%
-  cmcR::preProcess_cropBFExterior(radiusOffset = -30,
-                                  agg_function = median) %>%
-  cmcR::preProcess_filterBFInterior(radiusOffset = 200) %>%
-  cmcR::preProcess_removeBFTrend(statistic = "quantile",
+fadul1.2 <- x3ptools::x3p_read("data/fadul1-2.x3p") %>%
+  cmcR::preProcess_crop(region = "exterior",
+                        radiusOffset = -30) %>%
+  cmcR::preProcess_crop(region = "interior",
+                        radiusOffset = 200) %>%
+  cmcR::preProcess_removeTrend(statistic = "quantile",
                                  tau = .5,
                                  method = "fn") %>%
   cmcR::preProcess_gaussFilter() %>%
   x3ptools::sample_x3p()
 
 
-## ----cmc-ccf, include = F, cache = T------------------------------------------
-kmComparison <- cmcR::cellCCF_bothDirections(x3p1 = fadul1.1,
-                                             x3p2 = fadul1.2,
-                                             cellNumHoriz = 8,
-                                             minObservedProp = .1,
-                                             regionToCellProp = 9,
-                                             ccfMethod = "fftThenPairwise")
+## ----cmc-ccf, include = F, cache = T-----------------------------------------------------------------------------------------------------------------------------------------------------------
+kmComparisonFeatures <- purrr::map_dfr(seq(-30,30,by = 3),
+                                       ~ comparison_allTogether(reference = fadul1.1,
+                                                                target = fadul1.2,
+                                                                numCells = 64,
+                                                                maxMissingProp = .85,
+                                                                theta = .))
 
-kmCMC <- cmcR::cmcFilter_improved(kmComparison,
-                                    ccf_thresh = .5,
-                                    dx_thresh = 20,
-                                    theta_thresh = 6,
-                                    missingTheta_decision = "fail")
+kmComparisonFeatures_rev <- purrr::map_dfr(seq(-30,30,by = 3),
+                                           ~ comparison_allTogether(reference = fadul1.2,
+                                                                    target = fadul1.1,
+                                                                    numCells = 64,
+                                                                    maxMissingProp = .85,
+                                                                    theta = .))
+
+kmComparison_cmcs <- kmComparisonFeatures %>%
+  mutate(originalMethodClassif = decision_CMC(cellIndex = cellIndex,
+                                              x = x,
+                                              y = y,
+                                              theta = theta,
+                                              corr = pairwiseCompCor,
+                                              xThresh = 20,
+                                              thetaThresh = 6,
+                                              corrThresh = .5),
+         highCMCClassif = decision_CMC(cellIndex = cellIndex,
+                                              x = x,
+                                              y = y,
+                                              theta = theta,
+                                              corr = pairwiseCompCor,
+                                              xThresh = 20,
+                                              thetaThresh = 6,
+                                              corrThresh = .5,
+                                              tau = 1))
+
+kmComparison_cmcs_rev <- kmComparisonFeatures_rev %>%
+  mutate(originalMethodClassif = decision_CMC(cellIndex = cellIndex,
+                                              x = x,
+                                              y = y,
+                                              theta = theta,
+                                              corr = pairwiseCompCor,
+                                              xThresh = 20,
+                                              thetaThresh = 6,
+                                              corrThresh = .5),
+         highCMCClassif = decision_CMC(cellIndex = cellIndex,
+                                              x = x,
+                                              y = y,
+                                              theta = theta,
+                                              corr = pairwiseCompCor,
+                                              xThresh = 20,
+                                              thetaThresh = 6,
+                                              corrThresh = .5,
+                                              tau = 1))
+
+bind_rows(kmComparison_cmcs,
+          kmComparison_cmcs_rev) %>%
+  filter(highCMCClassif == "CMC") %>%
+  group_by(cellIndex) %>%
+  filter(pairwiseCompCor == max(pairwiseCompCor))
 
 
-## ----cmc-filter, include = F, cache = T---------------------------------------
-# if (!file.exists("data/kmcmc.Rdata")) {
-#   save(kmCMC, file = "data/kmcmc.Rdata")
-# } else {
-#   load("data/kmcmc.Rdata")
-# }
+## ----cache=FALSE, include=F--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+fadul1.1_original <- x3ptools::x3p_read("data/fadul1-1.x3p")
 
+fadul1.1_croppedExt <- cmcR::preProcess_crop(fadul1.1_original,
+                                             region = "exterior",
+                                             radiusOffset = -30)
 
-## ----include = F,cache = T----------------------------------------------------
-# fadul1.1_downsampled <- x3ptools::x3p_sample(fadul1.1,m = 2)
-# 
-# fadul1.1_ransac <- fadul1.1_downsampled
-# fadul1.1_ransac$surface.matrix <- fadul1.1_ransac$surface.matrix %>%
-#   cmcR::preProcess_ransac(ransacInlierThresh = 1e-5) %>%
-#   cmcR::preProcess_levelBF(useResiduals = TRUE)
-# 
-# fadul1.1_cropped <- fadul1.1_ransac
-# fadul1.1_cropped$surface.matrix <- fadul1.1_cropped$surface.matrix %>%
-#   cmcR::preProcess_cropWS(croppingThresh = 1)
-# fadul1.1_cropped$header.info$sizeY <- ncol(fadul1.1_cropped$surface.matrix)
-# fadul1.1_cropped$header.info$sizeX <- nrow(fadul1.1_cropped$surface.matrix)
-# 
-# fadul1.1_noFP <- fadul1.1_cropped
-# fadul1.1_noFP$surface.matrix <- fadul1.1_noFP$surface.matrix %>%
-#   cmcR::preProcess_removeFPCircle(aggregationFunction = function(x,na.rm){median(x,na.rm) - 11})
-# 
-# fadul1.1_filtered <- fadul1.1_noFP
-# fadul1.1_filtered$surface.matrix <- fadul1.1_filtered$surface.matrix %>%
-#   cmcR::preProcess_gaussFilter(res = fadul1.1_filtered$header.info$incrementY,
-#                                wavelength = c(16,500))
+fadul1.1_croppedInt <- cmcR::preProcess_crop(fadul1.1_croppedExt,
+                                             region = "interior",
+                                             radiusOffset = 200)
 
-fadul1.1_original <- x3ptools::read_x3p("data/fadul1-1.x3p")
-
-fadul1.1_croppedExt <- cmcR::preProcess_cropBFExterior(x3p = fadul1.1_original,
-                                            radiusOffset = -30,
-                                            agg_function = median) 
-
-fadul1.1_croppedInt <- cmcR::preProcess_filterBFInterior(fadul1.1_croppedExt,
-                                                         radiusOffset = 200)
-
-fadul1.1_medRemoved <-   cmcR::preProcess_removeBFTrend(fadul1.1_croppedInt,
+fadul1.1_medRemoved <-   cmcR::preProcess_removeTrend(fadul1.1_croppedInt,
                                                         statistic = "quantile",
                                                         tau = .5,
                                                         method = "fn")
@@ -236,12 +274,16 @@ fadul1.1_bpFiltered<- cmcR::preProcess_gaussFilter(x3p = fadul1.1_downsampled,
                                                    filtertype = "bp")
 
 
-## ---- echo = F,warning = F,message = F,cache = T,fig.cap='\\label{fig:processingPipeline} Illustration of \\pkg{cmcR} preprocessing pipeline designed to automate the manual cleaning in the CMC papers. \\svp{At each stage, the amount of variability in height across the scan decreases as extraneous sources of noise are removed.}',fig.align='center',fig.pos='htbp',out.width='\\textwidth', message = F, warning = F----
+## ---- echo = F,warning = F,message = F,cache = T,fig.cap='\\label{fig:processingPipeline} Illustration of the  preprocessing pipeline implemented in \\CRANpkg{cmcR}.  At each stage, the variability in height across the scan decreases as extraneous sources of noise are removed.',fig.align='center',fig.pos='htbp',out.width='\\textwidth', message = F, warning = F----
 
-preProcessingPlot <- cmcR::x3pListPlot(list("(1) Original" = fadul1.1_original,
-                                            "(2) Crop exterior/interior" = fadul1.1_croppedInt,
-                                            "(3) Level surface" = fadul1.1_medRemoved,
-                                            "(4) Band-pass filter" = fadul1.1_bpFiltered),
+preProcessingPlot <- cmcR::x3pListPlot(list(fadul1.1_original,
+                                            fadul1.1_croppedInt,
+                                            fadul1.1_medRemoved,
+                                            fadul1.1_bpFiltered) %>%
+                                         set_names(c("(1) Original \n x3p_read()",
+                                                    "(2) Crop exterior/interior \n preProcess_crop()",
+                                                    "(3) Level surface \n preProcess_removeTrend()",
+                                                    "(4) Band-pass filter \n preProcess_gaussFilter()")),
                                        type = "list",
                                        legend.quantiles = c(0,.5,1)) %>%
   map2(.x = .,
@@ -273,16 +315,35 @@ gridExtra::grid.arrange(preProcessingPlot$`(1) Original`,
                         widths = unit(c(1,1,1,1),units = "null"))
 
 
-## ----include=FALSE,eval=FALSE-------------------------------------------------
-#> fadul1.1 <- selectBFImpression_sample_x3p(x3p_path = paste0(nrbtd_url,fadul1.1_id),
-#>                                           ransacInlierThresh = 1e-6, #.1 microns
-#>                                           ransacIters = 300,
-#>                                           m = 2, #sample_x3p downsample rate
-#>                                           gaussFilterWavelength = c(16,500),
-#>                                           gaussFilterType = "bp") #band-pass filter
+## ---- echo=TRUE,eval=FALSE---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## # Step (1)
+## fadul1.1 <- x3ptools::x3p_read("data/fadul1-1.x3p")
 
 
-## ----echo=FALSE,cache = T,fig.cap='\\label{fig:processedScans} Fadul 1-1 and Fadul 1-2 after preprocessing. Similar striated markings are now easier to visually identify on both surfaces.',fig.align='center',fig.pos='htbp',out.width='\\textwidth', message = F, warning = F----
+## ---- echo=TRUE,eval=FALSE---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## # Step (2)
+## fadul1.1_cropped <- fadul1.1%>%
+##   cmcR::preProcess_crop(region = "exterior") %>%
+##   cmcR::preProcess_crop(region = "interior")
+
+
+## ---- echo=TRUE,eval=FALSE---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## # Step (3)
+## fadul1.1_deTrended <- fadul1.1_cropped %>%
+##   preProcess_removeTrend(statistic = "quantile",
+##                          tau = .5,
+##                          method = "fn")
+
+
+## ---- echo=TRUE,eval=FALSE---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## # Step (4)
+## fadul1.1_processed <- fadul1.1_deTrended %>%
+##   preProcess_gaussFilter(filtertype = "bp",
+##                          wavelength = c(16,500)) %>%
+##   x3ptools::x3p_sample(m = 2)
+
+
+## ----echo=FALSE,cache = T,fig.cap='\\label{fig:processedScans} Fadul 1-1 and Fadul 1-2 after preprocessing. Similar striated markings are now easier to visually identify on both surfaces. It is now clearer that one of the scans needs to be rotated to align better with the other.',fig.align='center',fig.pos='htbp',out.width='\\textwidth', message = F, warning = F----
 
 cmcR::x3pListPlot(x3pList = list("Fadul 1-1" = fadul1.1,
                                  "Fadul 1-2" = fadul1.2),
@@ -292,484 +353,387 @@ cmcR::x3pListPlot(x3pList = list("Fadul 1-1" = fadul1.1,
                   rotate = 90,
                   legend.quantiles = c(0,.01,.2,.5,.8,.99,1)) +
   guides(fill = guide_colourbar(barheight = grid::unit(2.6,"inches"),
-                                label.theme = element_text(size = 8),
-                                title.theme = ggplot2::element_text(size = 12),
+                                label.theme = element_text(size = 7),
+                                title.theme = ggplot2::element_text(size = 9),
                                 frame.colour = "black",
                                 ticks.colour = "black")) +
   theme(legend.position = c(1.11,.551),plot.margin = ggplot2::margin(c(0,3,.2,0),unit = "cm"))
 
 
-## ---- echo=FALSE,fig.cap='\\label{fig:cmc_illustration} Illustration of comparing a "cell" in the reference cartridge case scan (left) to a larger region in a questioned cartridge case scan (right). Every cell in the reference cartridge case is similarly paired with a region in the questioned. To determine the rotation at which the two cartridge cases align, the cell/region pairs are compared for various rotations of the questioned cartridge case.',fig.align='center',fig.pos='htbp',out.width='.75\\textwidth'----
+## ---- echo=FALSE,fig.cap='\\label{fig:cmc_illustration} Illustration of comparing a cell in the reference cartridge case scan (left) to a larger region in a questioned cartridge case scan (right). Every one of the cells in the reference cartridge case is similarly paired with a region in the questioned cartridge case.  To determine the rotation at which the two cartridge cases align, the cell-region pairs are compared for various rotations of the questioned cartridge case.',fig.align='center',fig.pos='htbp',out.width='.75\\textwidth'----
 
 knitr::include_graphics("images/cmc_illustration.PNG")
 
 
-## ----echo=TRUE,eval=FALSE-----------------------------------------------------
-#> kmComparison <- cellCCF_bothDirections(x3p1 = fadul1.1,
-#>                                        x3p2 = fadul1.2,
-#>                                        thetas = seq(-30,30,by = 3),
-#>                                        cellNumHoriz = 8,
-#>                                        cellNumVert = 8,
-#>                                        minObservedProp = .1)
+## ----echo=TRUE,eval=FALSE----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## kmComparisonFeatures <- purrr::map_dfr(seq(-30,30,by = 3),
+##                                        ~ comparison_allTogether(reference = fadul1.1,
+##                                                                 target = fadul1.2,
+##                                                                 numCells = 64,
+##                                                                 maxMissingProp = .85,
+##                                                                 theta = .))
+## 
+## kmComparisonFeatures_rev <- purrr::map_dfr(seq(-30,30,by = 3),
+##                                            ~ comparison_allTogether(reference = fadul1.2,
+##                                                                     target = fadul1.1,
+##                                                                     numCells = 64,
+##                                                                     maxMissingProp = .85,
+##                                                                     theta = .))
 
 
-## ----include=FALSE,eval=FALSE-------------------------------------------------
-#> kmComparison$comparison_1to2$ccfResults %>%
-#>   topResultsPerCell() %>%
-#>   head()
-
-## ----echo=FALSE,warning=F,message=F,eval=TRUE,cache = T-----------------------
-kmComparison$comparison_1to2$ccfResults %>%
-  topResultsPerCell() %>%
-  ungroup() %>%
-  mutate(cellIndex = cmcR:::linear_to_matrix(index = (cellNum %% ceiling(sqrt(max(cellNum)))) +
-                                               floor((ceiling(sqrt(max(cellNum)))^2 - cellNum)/ceiling(sqrt(max(cellNum))))*ceiling(sqrt(max(cellNum))) +
-                                               ifelse(cellNum %% ceiling(sqrt(max(cellNum))) == 0,ceiling(sqrt(max(cellNum))),0),
-                                             nrow = ceiling(sqrt(max(cellNum))),
-                                             byrow = TRUE)) %>%
+## ----echo=FALSE,warning=F,message=F,eval=TRUE,cache = T----------------------------------------------------------------------------------------------------------------------------------------
+kmComparisonFeatures %>%
   mutate(`Cell index` = cellIndex,
-         `Pairwise-complete corr.` = round(ccf,3),
-         `FFT-based corr.` = round(fft.ccf,3),
-         `Non-missing percent.` = round(100*nonMissingProportion,2)) %>%
-  select(-c(cellNum,cellID)) %>%
-  select(c(`Cell index`,`Pairwise-complete corr.`,`FFT-based corr.`,dx,dy,theta,`Non-missing percent.`)) %>%
+         `Pairwise-complete corr.` = round(pairwiseCompCor,3),
+         `FFT-based corr.` = round(fft_ccf,3)) %>%
+  select(c(`Cell index`,`Pairwise-complete corr.`,`FFT-based corr.`,x,y,theta)) %>%
   filter(theta == -24) %>%
   arrange(`Cell index`) %>%
-  head() %>%
+  head(5) %>%
   knitr::kable(caption = "\\label{tab:cellCCF} Example of output from correlation cell comparison procedure between Fadul 1-1 and Fadul 1-2 rotated by -24 degrees. Due to the large proportion of missing values that are replaced to compute the FFT-based correlation, the pairwise-complete correlation is most often greater than the FFT-based correlation.",
                format = "latex",
-               align = c("|c","c","c","r","r","r","c|"),
+               align = c("|c","c","c","r","r","r|"),
                col.names = c("Cell Index",
                              "Pairwise-comp. corr.",
                              "FFT-based corr.",
                              "$\\Delta$x",
                              "$\\Delta$y",
-                             "$\\theta$",
-                             "Non-NA percent."),
-               escape = FALSE) %>%
-  kableExtra::kable_styling(latex_options = "hold_position",
-                            position = "center")
+                             "$\\theta$"),
+               escape = FALSE, 
+               booktabs = TRUE) %>%
+  kableExtra::kable_styling(latex_options = "striped", 
+                            position = "center", 
+                            stripe_color="lightgray")
 
 
-## ----echo=FALSE,cache = T-----------------------------------------------------
-# fadul2.1 <- cmcR::selectBFImpression_sample_x3p("data/fadul2-1.x3p",
-#                                                 gaussFilterWavelength = c(16,500))
-
-fadul2.1 <- x3ptools::read_x3p("data/fadul2-1.x3p") %>%
-  preProcess_cropBFExterior(radiusOffset = -30,
-                 agg_function = median) %>%
-  preProcess_filterBFInterior(radiusOffset = 200) %>%
-  preProcess_removeBFTrend(statistic = "quantile",
+## ----echo=FALSE,cache = T----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+fadul2.1 <- x3ptools::x3p_read("data/fadul2-1.x3p") %>%
+  cmcR::preProcess_crop(region = "exterior",
+                        radiusOffset = -30) %>%
+  cmcR::preProcess_crop(region = "interior",
+                        radiusOffset = 200) %>%
+  preProcess_removeTrend(statistic = "quantile",
                               tau = .5,
                               method = "fn") %>%
   cmcR::preProcess_gaussFilter() %>%
   x3ptools::sample_x3p()
 
-knmComparison <- cmcR::cellCCF_bothDirections(x3p1 = fadul1.1,
-                                              x3p2 = fadul2.1,
-                                              #x3p1 = fadul1.2$x3p,
-                                              #x3p2 = fadul2.1$x3p,
-                                              cellNumHoriz = 8,
-                                              minObservedProp = .1,
-                                              regionToCellProp = 9,
-                                              ccfMethod = "fftThenPairwise")
+knmComparisonFeatures <- purrr::map_dfr(seq(-30,30,by = 3),
+                                        ~ comparison_allTogether(reference = fadul1.1,
+                                                                 target = fadul2.1,
+                                                                 numCells = 64,
+                                                                 maxMissingProp = .85,
+                                                                 theta = .))
 
-knmCMC <- cmcR::cmcFilter_improved(knmComparison,
-                                   ccf_thresh = .5,
-                                   dx_thresh = 20,
-                                   theta_thresh = 6,
-                                   missingTheta_decision = "fail")
+knmComparisonFeatures_rev <- purrr::map_dfr(seq(-30,30,by = 3),
+                                            ~ comparison_allTogether(reference = fadul2.1,
+                                                                     target = fadul1.1,
+                                                                     numCells = 64,
+                                                                     maxMissingProp = .85,
+                                                                     theta = .))
 
+knmComparison_cmcs <- knmComparisonFeatures %>%
+  mutate(originalMethodClassif = decision_CMC(cellIndex = cellIndex,
+                                              x = x,
+                                              y = y,
+                                              theta = theta,
+                                              corr = pairwiseCompCor,
+                                              xThresh = 20,
+                                              thetaThresh = 6,
+                                              corrThresh = .5),
+         highCMCClassif = decision_CMC(cellIndex = cellIndex,
+                                              x = x,
+                                              y = y,
+                                              theta = theta,
+                                              corr = pairwiseCompCor,
+                                              xThresh = 20,
+                                              thetaThresh = 6,
+                                              corrThresh = .5,
+                                              tau = 1))
 
-## ----cache = T,include=FALSE--------------------------------------------------
-knmCMCPlot <- cmcR::cmcPlot(fadul1.1,
-              fadul2.1,
-              cellCCF_bothDirections_output = knmComparison,
-              cmcFilter_improved_output = knmCMC,
-              type = "faceted",
-              x3pNames = c("Fadul 1-1","Fadul 2-1"),
-              legend.quantiles = c(0,.01,.2,.5,.8,.99,1),
-              height.colors = colorspace::desaturate(c('#7f3b08','#b35806',
-                                                       '#e08214','#fdb863',
-                                                       '#fee0b6','#f7f7f7',
-                                                       '#d8daeb','#b2abd2',
-                                                       '#8073ac','#542788',
-                                                       '#2d004b'),
-                                                     amount = .75),
-              cell.colors = c("#a60b00","#1b03a3"),
-              cell.alpha = .15,
-              na.value = "gray80")
-
-#We want Fadul 1-1 to be the reference cartridge case for all 3 of these plots
-#to enforce visual consistency. The original CMC method applied to Fadul 1-1 and
-#Fadul 1-2 results in two CMC counts (one for each comparison direction), the
-#minimum of which is associated with Fadul 1-2 being the reference cartridge
-#case. Unless changed, the cmcPlot function (by design) will then create a Top
-#Vote CMC plot with Fadul 1-2 as the reference cartridge case (which we don't
-#want). Since we desire Fadul 1-1 to be the reference for this particular
-#illustrative example, we will artificially inflate the number CMCs in the Fadul
-#1-2 vs. Fadul 1-1 direction (i.e., with Fadul 1-2 as the reference) so as to
-#force Fadul 1-1 to be plotted as the reference.
-
-kmCMC_fake <- kmCMC
-
-kmCMC_fake$originalMethodCMCs$comparison_2to1 <- bind_rows(kmCMC_fake$originalMethodCMCs$comparison_2to1,
-                                                    kmCMC_fake$originalMethodCMCs$comparison_2to1)
-
-kmCMCPlot <- cmcR::cmcPlot(fadul1.1,
-                          fadul1.2,
-                          # fadul1.2$x3p,
-                          # fadul1.1$x3p,
-                          cellCCF_bothDirections_output = kmComparison,
-                          cmcFilter_improved_output = kmCMC_fake,
-                          # cellCCF_bothDirections_output = kmComparison_swapped,
-                          # cmcFilter_improved_output = kmCMC_swapped,
-                          x3pNames = c("Fadul 1-1","Fadul 1-2"),
-                          legend.quantiles = c(0,.01,.2,.5,.8,.99,1),
-                          height.colors = colorspace::desaturate(c('#7f3b08',
-                                                                   '#b35806',
-                                                                   '#e08214',
-                                                                   '#fdb863',
-                                                                   '#fee0b6',
-                                                                   '#f7f7f7',
-                                                                   '#d8daeb',
-                                                                   '#b2abd2',
-                                                                   '#8073ac',
-                                                                   '#542788',
-                                                                   '#2d004b'),
-                                                                 amount = .75),
-        cell.colors = c("#a60b00","#1b03a3"),
-        cell.alpha = .15,
-        na.value = "gray80")
-
-knmCMCPlot_list_comparison1to2 <- cmcR::cmcPlot(fadul1.1,
-                                 fadul2.1,
-                                 cellCCF_bothDirections_output = knmComparison,
-                                 cmcFilter_improved_output = knmCMC,
-                                 type = "list",
-                                 x3pNames = c("Fadul 1-1","Fadul 2-1"),
-                                 legend.quantiles = c(0,.01,.2,.5,.8,.99,1),
-                                 height.colors = colorspace::desaturate(c('#7f3b08','#b35806',
-                                                                          '#e08214','#fdb863',
-                                                                          '#fee0b6','#f7f7f7',
-                                                                          '#d8daeb','#b2abd2',
-                                                                          '#8073ac','#542788',
-                                                                          '#2d004b'),
-                                                                        amount = .75),
-                                 cell.colors = c("black","black"),
-                                 cell.alpha = .15,
-                                 cell.text.size = 7,
-                                 na.value = "gray90")
-
-kmCMCPlot_list_comparison1to2 <- cmcR::cmcPlot(fadul1.1,
-                                fadul1.2,
-                                # fadul1.2$x3p,
-                                # fadul1.1$x3p,
-                                cellCCF_bothDirections_output = kmComparison,
-                                cmcFilter_improved_output = kmCMC_fake,
-                                # cellCCF_bothDirections_output = kmComparison_swapped,
-                                # cmcFilter_improved_output = kmCMC_swapped,
-                                x3pNames = c("Fadul 1-1","Fadul 1-2"),
-                                legend.quantiles = c(0,.01,.2,.5,.8,.99,1),
-                                height.colors = colorspace::desaturate(c('#7f3b08',
-                                                                         '#b35806',
-                                                                         '#e08214',
-                                                                         '#fdb863',
-                                                                         '#fee0b6',
-                                                                         '#f7f7f7',
-                                                                         '#d8daeb',
-                                                                         '#b2abd2',
-                                                                         '#8073ac',
-                                                                         '#542788',
-                                                                         '#2d004b'),
-                                                                       amount = .75),
-                                cell.colors = c("black","black"),
-                                cell.alpha = .15,
-                                cell.text.size = 7,
-                                na.value = "gray90",
-                                type = "list")
-
-# kmCMCPlot_list_comparison1to2$originalMethodCMCs$`Fadul 1-1`$layers[[2]]$mapping$fill <- NULL
-
-# kmCMCPlot_list_comparison1to2$originalMethodCMCs$`Fadul 1-1`$layers[[2]]$mapping$colour <- "black"
-# 
-# kmCMCPlot_list_comparison1to2$originalMethodCMCs$`Fadul 1-1`$layers[[2]]$mapping$size <-
+knmComparison_cmcs_rev <- knmComparisonFeatures_rev %>%
+  mutate(originalMethodClassif = decision_CMC(cellIndex = cellIndex,
+                                              x = x,
+                                              y = y,
+                                              theta = theta,
+                                              corr = pairwiseCompCor,
+                                              xThresh = 20,
+                                              thetaThresh = 6,
+                                              corrThresh = .5),
+         highCMCClassif = decision_CMC(cellIndex = cellIndex,
+                                              x = x,
+                                              y = y,
+                                              theta = theta,
+                                              corr = pairwiseCompCor,
+                                              xThresh = 20,
+                                              thetaThresh = 6,
+                                              corrThresh = .5,
+                                              tau = 1))
 
 
-## ----echo=TRUE,eval=FALSE-----------------------------------------------------
-#> kmCMC <- cmcR::cmcFilter_improved(kmComparison,
-#>                                   ccf_thresh = .5,
-#>                                   dx_thresh = 20,
-#>                                   dy_thresh = 20,
-#>                                   theta_thresh = 6)
+## ----echo=TRUE,eval=FALSE----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## kmComparison_cmcs <- kmComparisonFeatures %>%
+##   mutate(originalMethodClassif = decision_CMC(cellIndex = cellIndex,
+##                                               x = x,
+##                                               y = y,
+##                                               theta = theta,
+##                                               corr = pairwiseCompCor,
+##                                               xThresh = 20,
+##                                               thetaThresh = 6,
+##                                               corrThresh = .5),
+##          highCMCClassif = decision_CMC(cellIndex = cellIndex,
+##                                        x = x,
+##                                        y = y,
+##                                        theta = theta,
+##                                        corr = pairwiseCompCor,
+##                                        xThresh = 20,
+##                                        thetaThresh = 6,
+##                                        corrThresh = .5,
+##                                        tau = 1))
 
 
-## ----echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.cap='\\label{fig:topVoteCMCPlot} CMC results for the comparison between Fadul 1-1 and Fadul 1-2 using the original method of \\citet{song_proposed_2013}. Fadul 1-1 (left) acts as the reference cartridge case to which Fadul 1-2 (right) is compared. The 19 blue cells on the right show the phase registration of each cell identified as congruent. The 12 red cells on the right show where cells \\emph{not} identified as congruent achieve the maximum pairwise-complete correlation across all rotations of Fadul 1-2 considered.',fig.align='center',fig.pos='htbp',out.width='\\textwidth'----
+## ----echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.align='center',fig.pos='htbp',out.width="\\textwidth",fig.cap='\\label{fig:topVoteCMCPlot} CMC results for the comparison between Fadul 1-1 and Fadul 1-2 using the original method. The two plots in the top row show the 17 CMCs when Fadul 1-1 is treated as the ``reference" cartridge case to which Fadul 1-2 (the ``target") is compared. The second row shows the 18 CMCs when the roles are reversed. Red cells indicate where cells \\emph{not} identified as congruent achieve the maximum pairwise-complete correlation across all rotations of the target scan. '----
 
-kmCMCPlot$originalMethodCMCs
+library(patchwork)
+
+kmCMCPlot <- cmcR::cmcPlot(reference = fadul1.1,
+                            target = fadul1.2,
+                            reference_v_target_CMCs = kmComparison_cmcs,
+                            target_v_reference_CMCs = kmComparison_cmcs_rev,
+                            type = "faceted",
+                            x3pNames = c("Fadul 1-1","Fadul 1-2"),
+                            legend.quantiles = c(0,.01,.2,.5,.8,.99,1),
+                            cell.colors = c("#a60b00","#1b03a3"),
+                            cell.alpha = .15,
+                            na.value = "grey100")
 
 
-## ----echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.cap='\\label{fig:highCMCPlot} CMC results for the comparison between Fadul 1-1 and Fadul 1-2 using the High CMC method, which tends to assign a higher CMC count to cartridge case pairs that pass its more stringent criteria (discussed in section REF). This matching cartridge case pair passes the High CMC criterion, meaning 26 cells are identified as congruent while only 6 are not.',fig.align='center',fig.pos='htbp',out.width='\\textwidth'----
 
-kmCMCPlot$highCMCs
+plt1 <- kmCMCPlot$originalMethodCMCs_reference_v_target
+
+plt1$layers[[4]]$aes_params$size <- 1.5
+
+plt2 <- kmCMCPlot$originalMethodCMCs_target_v_reference +
+  theme(legend.text = element_text(size = 4.5),
+        legend.title = element_text(size = 4.5))
+
+plt2$layers[[4]]$aes_params$size <- 1.5
+
+plt3 <- cowplot::get_legend(plt2)
+
+plt1 <- plt1  +
+  theme(axis.title = element_blank(),
+        axis.text = element_blank(),
+        legend.position = "none",
+        strip.text = element_blank()) +
+  geom_text(data = data.frame(x3p = c("Fadul 1-1","Fadul 1-2"),
+                              type = c("\n(Reference)","\n(Target)"),
+                              x = c(1750,1750),
+                              y = c(1500,1500)),
+            aes(x = x,y = y,label = paste0(x3p,type)),size = 1.75)
+
+plt2 <- plt2  +
+  theme(axis.title = element_blank(),
+        axis.text = element_blank(),
+        legend.position = "none",
+        strip.text = element_blank()) +
+  geom_text(data = data.frame(x3p = c("Fadul 1-1","Fadul 1-2"),
+                              type = c("\n(Target)","\n(Reference)"),
+                              x = c(1750,1750),
+                              y = c(1500,1500)),
+            aes(x = x,y = y,label = paste0(x3p,type)),size = 1.75)
 
 
-## ----echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.cap='\\label{fig:knmCMCPlot} CMC results for the comparison between the non-match pair Fadul 1-1 and Fadul 2-1. This pair failed the High CMC criterion and also yielded 0 CMCs under the original method of \\citet{song_proposed_2013}. As such, all 32 cells considered are classified as non-congruent.', fig.align='center',fig.pos='htbp',out.width='\\textwidth'----
+plt <- (plt1 / plt2 / plt3) +
+  plot_layout(ncol = 1,
+              heights =  c(2,1.8,.5),
+              widths = c(1,.9,1))
 
-knmCMCPlot$originalMethodCMCs
+ggsave(filename = "cmcR_files/figure-latex/kmOriginalMethod.pdf",plot = plt)
+
+invisible(knitr::plot_crop("cmcR_files/figure-latex/kmOriginalMethod.pdf",quiet = TRUE))
+
+knitr::include_graphics(path = "cmcR_files/figure-latex/kmOriginalMethod.pdf")
 
 
-## ----echo=FALSE,fig.cap='\\label{fig:topVoteCMC_sensitivity} CMC count relative frequencies under the original method of \\citet{song_proposed_2013} for various $T_{\\Delta x}, T_{\\Delta y}$, and $T_{\\text{CCF}}$ values and $T_{\\theta} = 6$ degrees. Thresholds become more stringent as the $T_{\\Delta x}, T_{\\Delta y}$ values decrease and $T_{\\text{CCF}}$ values increase. AUCs based on the minimum CMC count classification threshold and Between/Within group variance ratios are shown for each combination. AUC $= 1$ corresponds to perfect separation of the match and non-match CMC count distributions and a larger Between/Within group variance ratio value is preferred.', fig.align='left',fig.pos='htbp',out.width='\\textwidth'----
+## ----echo=FALSE,warning=FALSE,message=FALSE,cache = F, fig.align='center', fig.pos='htbp', out.width="\\textwidth", fig.cap='\\label{fig:highCMCPlot} Applying the High CMC method to the comparison of Fadul 1-1 and Fadul 1-2 results in 19 CMCs when Fadul 1-1 is treated as the reference (top) and 18 CMCs when Fadul 1-2 is treated as the reference (bottom). Although the individual comparisons do not yield considerably more CMCs than under the original CMC method, \\citet{tong_improved_2015} indicate that the High CMCs from both comparisons are combined as the final High CMC count (each cell is counted at most once). Combining the results means that the High CMC method tends to produce higher CMC counts than the original CMC method. In this example, the combined High CMC count is 24 CMCs.'----
+
+plt1 <- kmCMCPlot$highCMC_reference_v_target
+
+
+plt2 <- kmCMCPlot$highCMC_target_v_reference +
+  theme(legend.text = element_text(size = 4.5),
+        legend.title = element_text(size = 4.5))
+
+plt3 <- cowplot::get_legend(plt2)
+
+plt1$layers[[4]]$aes_params$size <- 1.5
+plt2$layers[[4]]$aes_params$size <- 1.5
+
+plt1 <- plt1  +
+  theme(axis.title = element_blank(),
+        axis.text = element_blank(),
+        legend.position = "none",
+        strip.text = element_blank()) +
+  geom_text(data = data.frame(x3p = c("Fadul 1-1","Fadul 1-2"),
+                              type = c("\n(Reference)","\n(Target)"),
+                              x = c(1750,1750),
+                              y = c(1500,1500)),
+            aes(x = x,y = y,label = paste0(x3p,type)),size = 1.75)
+
+plt2 <- plt2  +
+  theme(axis.title = element_blank(),
+        axis.text = element_blank(),
+        legend.position = "none",
+        strip.text = element_blank()) +
+  geom_text(data = data.frame(x3p = c("Fadul 1-1","Fadul 1-2"),
+                              type = c("\n(Target)","\n(Reference)"),
+                              x = c(1750,1750),
+                              y = c(1500,1500)),
+            aes(x = x,y = y,label = paste0(x3p,type)),size = 1.75)
+
+
+plt <- (plt1 / plt2 / plt3) +
+  plot_layout(ncol = 1,
+              heights =  c(2,2,.5),
+              widths = c(1,1,1))
+
+ggsave(filename = "cmcR_files/figure-latex/kmHighCMC.pdf",plot = plt)
+
+invisible(knitr::plot_crop("cmcR_files/figure-latex/kmHighCMC.pdf"))
+
+knitr::include_graphics(path = "cmcR_files/figure-latex/kmHighCMC.pdf")
+
+
+## ----echo=FALSE,warning=FALSE,message=FALSE,cache = F, fig.align='center',fig.pos='htbp',out.width="\\textwidth", fig.cap='\\label{fig:knmCMCPlot} Applying both decision rules to the comparison between the non-match pair Fadul 1-1 and Fadul 2-1 results in 1 CMC under the original method (shown above) and 0 CMCs under the High CMC method (not shown). The seemingly random behavior of the red cells exemplifies the assumption that cells in a non-match comparison do not exhibit an observable pattern. Random chance should be the prevailing factor in classifying non-match cells as CMCs.'----
+
+knmCMCPlot <- cmcR::cmcPlot(reference = fadul1.1,
+                            target = fadul2.1,
+                            reference_v_target_CMCs = knmComparison_cmcs,
+                            target_v_reference_CMCs = knmComparison_cmcs_rev,
+                            type = "faceted",
+                            x3pNames = c("Fadul 1-1","Fadul 2-1"),
+                            legend.quantiles = c(0,.01,.2,.5,.8,.99,1),
+                            height.colors = colorspace::desaturate(c('#7f3b08','#b35806',
+                                                                     '#e08214','#fdb863',
+                                                                     '#fee0b6','#f7f7f7',
+                                                                     '#d8daeb','#b2abd2',
+                                                                     '#8073ac','#542788',
+                                                                     '#2d004b'),
+                                                                   amount = .75),
+                            cell.colors = c("#a60b00","#1b03a3"),
+                            cell.alpha = .15,
+                            na.value = "grey100")
+
+plt1 <- knmCMCPlot$originalMethodCMCs_reference_v_target +
+  theme(legend.text = element_text(size = 4.5),
+        legend.title = element_text(size = 4.5))
+
+
+plt2 <- knmCMCPlot$originalMethodCMCs_target_v_reference
+
+plt3 <- cowplot::get_legend(plt1)
+
+plt1$layers[[4]]$aes_params$size <- 1.5
+plt2$layers[[4]]$aes_params$size <- 1.5
+
+plt1 <- plt1  +
+  theme(axis.title = element_blank(),
+        axis.text = element_blank(),
+        legend.position = "none",
+        strip.text = element_blank()) +
+  geom_text(data = data.frame(x3p = c("Fadul 1-1","Fadul 2-1"),
+                              type = c("\n(Reference)","\n(Target)"),
+                              x = c(1750,1750),
+                              y = c(1500,1500)),
+            aes(x = x,y = y,label = paste0(x3p,type)),size = 1.75)
+
+plt2 <- plt2  +
+  theme(axis.title = element_blank(),
+        axis.text = element_blank(),
+        legend.position = "none",
+        strip.text = element_blank()) +
+  geom_text(data = data.frame(x3p = c("Fadul 1-1","Fadul 2-1"),
+                              type = c("\n(Target)","\n(Reference)"),
+                              x = c(1750,1750),
+                              y = c(1500,1500)),
+            aes(x = x,y = y,label = paste0(x3p,type)),size = 1.75)
+
+
+plt <- (plt1 / plt2 / plt3) +
+  plot_layout(ncol = 1,
+              heights =  c(2,2,.5),
+              widths = c(1,1,1))
+
+ggsave(filename = "cmcR_files/figure-latex/knmOriginalMethod.pdf",plot = plt)
+
+invisible(knitr::plot_crop("cmcR_files/figure-latex/knmOriginalMethod.pdf",quiet = TRUE))
+
+knitr::include_graphics(path = "cmcR_files/figure-latex/knmOriginalMethod.pdf")
+
+
+## ----echo=FALSE,fig.cap='\\label{fig:decisionRuleSensitivity_comparison} CMC count relative frequencies under the original method and the High CMC method for $T_{\\Delta x} = 20 = T_{\\Delta y}$ pixels, $T_{\\text{CCF}} = .5$, and $T_{\\theta} = 6$ degrees. AUC $= 1.00$ corresponds to perfect separation of the match and non-match CMC count distributions. We can see that, for this set of processing parameters, the High CMC method yields higher CMC counts for known matches that the original method while known non-matches have the same distribution under both methods.', fig.align='left',fig.pos='htbp',out.width='\\textwidth'----
 
 load("data/cmcCountData.RData")
 
-cmcs_varRatios <-  cmcs_downSampled %>%
-  pivot_longer(cols = c(originalMethodCMCs,highCMCs),names_to = "cmcType",values_to = "cmcCount") %>%
-  group_by(theta_thresh,ccf_thresh,dx_thresh,missingTheta_decision,compareInitialAndHighThetas,cmcType,type) %>%
-  mutate(group_var = var(cmcCount)) %>%
-  ungroup(type) %>%
-  mutate(withinGroup_var = mean(group_var),
-         betweenGroup_var = var(cmcCount)) %>%
-  mutate(varRatio = betweenGroup_var/withinGroup_var)
-
-cmcs_aucs <- cmcs_downSampled %>%
-  group_by(theta_thresh,ccf_thresh,dx_thresh,missingTheta_decision,compareInitialAndHighThetas) %>%
-  dplyr::group_split()  %>%
-  map_dfr(function(paramConditionedResults = .x){
-    
-    topVoteROC <- paramConditionedResults %>%
-      pROC::roc(response = type,
-                predictor = originalMethodCMCs,
-                levels = c("non-match","match"),
-                quiet = TRUE)
-    
-    highROC <- paramConditionedResults %>%
-      pROC::roc(response = type,
-                predictor = highCMCs,
-                levels = c("non-match","match"),
-                quiet = TRUE)
-    
-    paramConditionedResults %>%
-      mutate(topVoteCMC_AUC = rep(topVoteROC$auc),
-             highCMC_AUC = rep(highROC$auc))
-  }) 
-
-topVoteCMC_labels <- cmcs_aucs %>%
+cmcCountData %>%
   ungroup() %>%
-  filter(missingTheta_decision == "replace" & compareInitialAndHighThetas == TRUE & theta_thresh == 6) %>%
-  filter((ccf_thresh %in% c(.4,.5) | (ccf_thresh > .39 & ccf_thresh < .41)) & dx_thresh %in% c(10,20,30)) %>%
-  inner_join(cmcs_varRatios %>%
-               ungroup() %>%
-               filter(cmcType == "originalMethodCMCs") %>%
-               select(ccf_thresh,dx_thresh,theta_thresh,varRatio) %>%
-               distinct(),by = c("theta_thresh","ccf_thresh","dx_thresh")) %>%
-  select(ccf_thresh,dx_thresh,topVoteCMC_AUC,varRatio) %>%
-  distinct() %>%
-  rename(`Trans. Thresh` = dx_thresh,
-         `CCF Thresh` = ccf_thresh) %>%
-  mutate(label = sprintf("AUC: %.4f\nVar. Ratio: %.2f", topVoteCMC_AUC, varRatio))
-  
-
-cmcs_aucs %>%
+  filter(thetaThresh == 6 & 
+           corThresh == .5 &
+           transThresh == 20 &
+           trendRemoved == TRUE) %>%
+  group_by(thetaThresh,corThresh,transThresh,type) %>%
+  mutate(n = n/sum(n),
+         decisionRule = factor(decisionRule,levels = c("originalMethodCMCs","highCMCs"))) %>%
   ungroup() %>%
-  filter(missingTheta_decision == "replace" & compareInitialAndHighThetas == TRUE & theta_thresh == 6) %>% 
-  filter((ccf_thresh %in% c(.4,.5) | (ccf_thresh > .39 & ccf_thresh < .41)) & dx_thresh %in% c(10,20,30)) %>%
-  select(-c(missingTheta_decision,compareInitialAndHighThetas)) %>%
-  distinct() %>% 
-  rename(`Trans. Thresh` = dx_thresh,
-         `CCF Thresh` = ccf_thresh) %>%
+  rename(`Trans. Thresh` = transThresh,
+         `CCF Thresh` = corThresh) %>%
+  mutate(label = sprintf("AUC: %.2f\nVar. Ratio: %.2f", AUC, varRatio)) %>%
   ggplot() +
-  geom_bar(aes(x = originalMethodCMCs,
-               y = ..prop..,
+  geom_bar(aes(x = cmcCount,
+               y = n,
                fill = type),
-           stat = "count",
+           stat = "identity",
            alpha = .7) +
-  geom_label(data = topVoteCMC_labels,
-             aes(x = 15,
-                 y = .7,
+  geom_label(aes(x = 15,
+                 y = .25,
                  label = label),
              size = 4) +
-  facet_grid(rows = vars(`CCF Thresh`),
-             cols = vars(`Trans. Thresh`),
-             scales = "free_y",labeller = label_both) +
+  facet_grid(rows = vars(decisionRule),
+             labeller = labeller(decisionRule = c("High CMC","Original Method") %>% set_names(c("highCMCs","originalMethodCMCs")))) +
   scale_fill_manual(values = c("#40B0A6","#E1BE6A")) +
-  guides(fill = guide_legend(override.aes = list(alpha = 1))) +
+  guides(fill = guide_legend(title = "Type",
+                             override.aes = list(alpha = 1))) +
   theme_bw() + 
   theme(legend.position = "bottom",
         strip.text = element_text(size = 7)) +
-  xlab("Original Method CMC Count") +
+  xlab("CMC Count") +
   ylab("Relative Frequency")
 
 
-## ----echo=FALSE, fig.cap='\\label{fig:highCMC_sensitivity} High CMC count relative frequencies for various $T_{\\Delta x}, T_{\\Delta y}$, and $T_{\\text{CCF}}$ values and $T_{\\theta} = 6$ degrees, \\code{missingTheta\\_decision = "fail"}, and \\code{compareInitialAndHighThetas = TRUE}. Thresholds become more stringent as the $T_{\\Delta x}, T_{\\Delta y}$ values decrease and $T_{\\text{CCF}}$ values increase. AUCs based on the minimum CMC count classification threshold and Between/Within group variance ratios are shown for each combination.',fig.align='left',fig.pos='htbp',out.width='\\textwidth'----
-highCMC_conservative_labels <- cmcs_aucs %>%
-  ungroup() %>%
-  filter(missingTheta_decision == "fail" & compareInitialAndHighThetas == TRUE & theta_thresh == 6) %>%
-  filter((ccf_thresh %in% c(.4,.5) | (ccf_thresh > .39 & ccf_thresh < .41)) & dx_thresh %in% c(10,20,30)) %>%
-  inner_join(cmcs_varRatios %>%
-               ungroup() %>%
-               filter(cmcType == "highCMCs" & missingTheta_decision == "fail" & compareInitialAndHighThetas == TRUE) %>%
-               select(ccf_thresh,dx_thresh,theta_thresh,varRatio) %>%
-               distinct(),
-             by = c("theta_thresh","ccf_thresh","dx_thresh")) %>%
-  select(ccf_thresh,dx_thresh,highCMC_AUC,varRatio) %>%
-  distinct() %>%
-  rename(`Trans. Thresh` = dx_thresh,
-         `CCF Thresh` = ccf_thresh) %>%
-  mutate(label = sprintf("AUC: %.4f\nVar. Ratio: %.2f", highCMC_AUC, varRatio))
+## ----echo=FALSE, fig.cap='\\label{fig:cmc_sensitivityScatter} Variance ratios under are plotted for different parameter settings. High variance ratios are indicative of a a good separation between CMC counts for known matching pairs and known-non matching pairs. The High CMC method generally performs better than the original method. Removing the trend during preprocessing, even though not explicitly described as a preprocessing step in the CMC papers, has a major impact on the effectiveness of the CMC method. In this setting, translation thresholds $T_x, T_y \\in [15,20]$, a rotation threshold $T_\\theta = 6$, and a CCF threshold $T_{\\text{CCF}} \\in [.4,5]$ lead to a separation of results. ',fig.align='left',fig.pos='htbp',out.width='\\textwidth'----
 
-cmcs_aucs %>%
-  ungroup() %>%
-  filter(missingTheta_decision == "fail" & compareInitialAndHighThetas == TRUE & theta_thresh == 6) %>% 
-  filter((ccf_thresh %in% c(.4,.5) | (ccf_thresh > .39 & ccf_thresh < .41)) & dx_thresh %in% c(10,20,30)) %>%
-  distinct() %>%
-  rename(`Trans. Thresh` = dx_thresh,
-         `CCF Thresh` = ccf_thresh) %>%
-  ggplot() +
-  geom_bar(aes(x = highCMCs,
-               y = ..prop..,
-               fill = type),
-           stat = "count",
-           alpha = .7) +
-  geom_label(data = highCMC_conservative_labels,
-             aes(x = 22.5,
-                 y = .7,
-                 label = label),
-             size = 4) +
-  facet_grid(rows = vars(`CCF Thresh`),
-             cols = vars(`Trans. Thresh`),
-             scales = "free_y",labeller = label_both) +
-  scale_fill_manual(values = c("#40B0A6","#E1BE6A")) +
-  guides(fill = guide_legend(override.aes = list(alpha = 1))) +
-  theme_bw() + 
-  theme(legend.position = "bottom",
-        strip.text = element_text(size = 7)) +
-  xlab("High CMC Count") +
-  ylab("Relative Frequency")
-
-
-## ----echo=FALSE, fig.cap='\\label{fig:highCMC_comparison_sensitivity} High CMC count relative frequencies for various interpretations on the High CMC method description given in \\citet{tong_improved_2015} with $T_{\\Delta x} = T_{\\Delta y} = 20$, $T_{\\text{CCF}} = .5$, and $T_{\\theta} = 6$ degrees. In particlar, compares CMC results for different the 4 combinations of \\code{missingTheta\\_decision = "fail"} or \\code{"replace"} and \\code{compareInitialAndHighThetas = TRUE} or \\code{FALSE} (see \\@sec:highMethod for details). Different interpretations of the High CMC method description lead to different results, particularly with respect to the behavior of the non-match CMC count distribution. Additionally, as evidenced by the stillness of the matching CMC count distribution, this illustrates how the High CMC criterion functions essentially as a preliminary classification rule for non-matches vs. matches.',fig.align='left',fig.pos='htbp',out.width='\\textwidth'----
-
-highCMC_comparison_labels <- cmcs_aucs %>%
-  ungroup() %>%
-  filter(missingTheta_decision %in% c("replace","fail")  & theta_thresh == 6) %>%
-  filter(ccf_thresh == .5 & dx_thresh == 20) %>%
-  inner_join(cmcs_varRatios %>%
-               ungroup() %>%
-               filter(missingTheta_decision %in% c("replace","fail")  & theta_thresh == 6 & ccf_thresh == .5 & dx_thresh == 20 & cmcType == "highCMCs") %>%
-               select(missingTheta_decision,compareInitialAndHighThetas,ccf_thresh,theta_thresh,dx_thresh,varRatio) %>%
-               distinct(),
-             by = c("missingTheta_decision","compareInitialAndHighThetas","ccf_thresh","theta_thresh","dx_thresh")) %>%  
-  select(missingTheta_decision,compareInitialAndHighThetas,highCMC_AUC,varRatio)  %>%
-  distinct() %>%
-  rename(`Missing Theta` = missingTheta_decision,
-         `Compare Initial/High Thetas` = compareInitialAndHighThetas) %>%
-  mutate(label = sprintf("AUC: %.4f\nVar. Ratio: %.2f", highCMC_AUC, varRatio))
-
-cmcs_aucs %>%
-  ungroup() %>%
-  filter(missingTheta_decision %in% c("replace","fail") & theta_thresh == 6) %>%
-  filter(ccf_thresh == .5 & dx_thresh == 20)  %>%
-  distinct() %>%
-  rename(`Missing Theta` = missingTheta_decision,
-         `Compare Initial/High Thetas` = compareInitialAndHighThetas) %>%
-  ggplot() +
-  geom_bar(aes(x = highCMCs,
-               y = ..prop..,
-               fill = type),
-           stat = "count",
-           alpha = .7) +
-  geom_label(data = highCMC_comparison_labels,
-             aes(x = 22.5,
-                 y = .5,
-                 label = label),
-             size = 4) +
-  facet_grid(rows = vars(`Missing Theta`),
-             cols = vars(`Compare Initial/High Thetas`),
-             scales = "free_y",labeller = label_both) +
-  scale_fill_manual(values = c("#40B0A6","#E1BE6A")) +
-  guides(fill = guide_legend(override.aes = list(alpha = 1))) +
-  theme_bw() + 
-  theme(legend.position = "bottom",
-        strip.text = element_text(size = 7)) +
-  xlab("High CMC Count") +
-  ylab("Relative Frequency")
-
-
-## ----echo=FALSE, fig.cap='\\label{fig:highCMC_noLeveling_sensitivity} High CMC count relative frequencies for various $T_{\\Delta x}, T_{\\Delta y}$, and $T_{\\text{CCF}}$ values and $T_{\\theta} = 6$ degrees, \\code{missingTheta\\_decision = "fail"}, and \\code{compareInitialAndHighThetas = TRUE} where the breech face impression surfaces were not leveled during preprocessing. Compared to \\autoref{fig:highCMC_sensitivity}, this demonstrates that High CMC method becomes less effective if this processing step is skipped. Modularization of the processing procedures into a "pipeline" is useful for uncovering such sensitivites.',fig.align='left',fig.pos='htbp',out.width='\\textwidth'----
-cmcs_noLeveling_varRatios <-  cmcs_downSampled_noLeveling %>%
-  pivot_longer(cols = c(originalMethodCMCs,highCMCs),names_to = "cmcType",values_to = "cmcCount") %>%
-  group_by(theta_thresh,ccf_thresh,dx_thresh,missingTheta_decision,compareInitialAndHighThetas,cmcType,type) %>%
-  mutate(group_var = var(cmcCount)) %>%
-  ungroup(type) %>%
-  mutate(withinGroup_var = mean(group_var),
-         betweenGroup_var = var(cmcCount)) %>%
-  mutate(varRatio = betweenGroup_var/withinGroup_var)
-
-cmcs_noLeveling_aucs <- cmcs_downSampled_noLeveling %>%
-  group_by(theta_thresh,ccf_thresh,dx_thresh,missingTheta_decision,compareInitialAndHighThetas) %>%
-  dplyr::group_split()  %>%
-  map_dfr(function(paramConditionedResults = .x){
-    
-    topVoteROC <- paramConditionedResults %>%
-      pROC::roc(response = type,
-                predictor = originalMethodCMCs,
-                levels = c("non-match","match"),
-                quiet = TRUE)
-    
-    highROC <- paramConditionedResults %>%
-      pROC::roc(response = type,
-                predictor = highCMCs,
-                levels = c("non-match","match"),
-                quiet = TRUE)
-    
-    paramConditionedResults %>%
-      mutate(topVoteCMC_AUC = rep(topVoteROC$auc),
-             highCMC_AUC = rep(highROC$auc))
-  })
-
-highCMC_noLeveling_labels <- cmcs_noLeveling_aucs %>%
-  ungroup() %>%
-  filter(missingTheta_decision == "fail" & compareInitialAndHighThetas == TRUE & theta_thresh == 6) %>%
-  filter((ccf_thresh %in% c(.4,.5) | (ccf_thresh > .39 & ccf_thresh < .41)) & dx_thresh %in% c(10,20,30)) %>%
-  inner_join(cmcs_noLeveling_varRatios %>%
-               ungroup() %>%
-               filter(cmcType == "highCMCs" & missingTheta_decision == "fail" & compareInitialAndHighThetas == TRUE) %>%
-               select(ccf_thresh,dx_thresh,theta_thresh,varRatio) %>%
-               distinct(),
-             by = c("theta_thresh","ccf_thresh","dx_thresh")) %>%
-  select(ccf_thresh,dx_thresh,highCMC_AUC,varRatio) %>%
-  distinct() %>%
-  rename(`Trans. Thresh` = dx_thresh,
-         `CCF Thresh` = ccf_thresh) %>%
-  mutate(label = sprintf("AUC: %.4f\nVar. Ratio: %.2f", highCMC_AUC, varRatio))
-
-cmcs_noLeveling_aucs %>%
-  ungroup() %>%
-  filter(missingTheta_decision == "fail" & compareInitialAndHighThetas == TRUE & theta_thresh == 6) %>% 
-  filter((ccf_thresh %in% c(.4,.5) | (ccf_thresh > .39 & ccf_thresh < .41)) & dx_thresh %in% c(10,20,30)) %>%
-  distinct() %>%
-  rename(`Trans. Thresh` = dx_thresh,
-         `CCF Thresh` = ccf_thresh) %>%
-  ggplot() +
-  geom_bar(aes(x = highCMCs,
-               y = ..prop..,
-               fill = type),
-           stat = "count",
-           alpha = .7) +
-  geom_label(data = highCMC_noLeveling_labels,
-             aes(x = 22.5,
-                 y = .7,
-                 label = label),
-             size = 4) +
-  facet_grid(rows = vars(`CCF Thresh`),
-             cols = vars(`Trans. Thresh`),
-             scales = "free_y",labeller = label_both) +
-  scale_fill_manual(values = c("#40B0A6","#E1BE6A")) +
-  guides(fill = guide_legend(override.aes = list(alpha = 1))) +
-  theme_bw() + 
-  theme(legend.position = "bottom",
-        strip.text = element_text(size = 7)) +
-  xlab("High CMC Count") +
-  ylab("Relative Frequency")
+cmcCountData %>%
+  mutate(trendRemoved = factor(trendRemoved)) %>%
+  ggplot(aes(x = transThresh,
+             y = varRatio,
+             colour = corThresh)) +
+  geom_point() +
+  scale_colour_gradient(low = "#a1d99b",
+                        high = "#00441b",
+                        breaks = seq(.35,.6,by = .05)) +
+  facet_grid(thetaThresh ~ decisionRule + trendRemoved,
+             labeller = labeller(decisionRule = c("High CMC","Original Method") %>% set_names(c("highCMCs","originalMethodCMCs")),
+                                 thetaThresh = c("Theta Thresh.: 3","Theta Thresh.: 6") %>% setNames(c(3,6)),
+                                 trendRemoved = c("Trend Removed: TRUE","Trend Removed: FALSE") %>% setNames(c(TRUE,FALSE)))) +
+  xlab("Translation Threshold") +
+  ylab("variance ratio") +
+  theme_bw() +
+  theme(legend.position = "bottom") +
+  guides(colour = guide_colorbar(title = "CCF Threshold",
+                                 barwidth =  8,
+                                 title.hjust = -1,
+                                 title.vjust = .825,
+                                 frame.colour = "black",
+                                 ticks.colour = "black"))
 
