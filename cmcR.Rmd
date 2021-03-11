@@ -175,7 +175,7 @@ In this section, we discuss each stage of the CMC method using excerpts from the
 
 ## Initial Data {#initialData}
 
-Cartridge case scans are commonly stored in the ISO standard x3p file format \citep{ISO25178-72}. x3p is a container format which consists of a single surface matrix representing the height value of the breech face surface and metadata concerning the parameters under which the scan was taken (size, resolution, creator, microscope, and microscopy software versions etc.). The \CRANpkg{x3ptools} package \citep{x3ptools} provides elementary functionality to work with the format in R.
+Cartridge case scans are commonly stored in the ISO standard x3p file format \citep{ISO25178-72}. x3p is a container format which consists of a single surface matrix representing the height value of the breech face surface and metadata concerning the parameters under which the scan was taken (size, resolution, creator, microscope, and microscopy software versions etc.). The \pkg{x3ptools} package \citep{x3ptools} provides elementary functionality to work with the format in R.
 
 \autoref{fig:cartridgeCasePair} shows the surface matrices of a known match (KM) pair of cartridge cases from a study by \citet{fadul_empirical_2011}. In this study, a total of 40 cartridge cases were scanned with a lateral resolution of 6.25 microns (micrometers) per pixel. The surface matrices are approximately $1200 \times 1200$ pixels in size corresponding to an area of about $3.8 \times 3.8$ mm$^2$.
 
