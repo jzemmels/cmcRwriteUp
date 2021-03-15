@@ -569,19 +569,17 @@ The code below demonstrates how the \code{comparison\_allTogether} function can 
 
 ```{r echo=TRUE,eval=FALSE}
 # Fill in most of the arguments first
-reference_11 <- purrr::partial(.f = comparison_allTogether, 
-                               reference = fadul1.1, target = fadul1.2, 
-                               numCells = 64, maxMissingProp = .85)
-reference_12 <- purrr::partial(.f = comparison_allTogether, 
-                               reference = fadul1.2, target = fadul1.1, 
+comp_w_pars <- purrr::partial(.f = comparison_allTogether, 
                                numCells = 64, maxMissingProp = .85)
 
 # Then, map the remaining values to theta
-kmComparisonFeatures <- purrr::map_dfr(seq(-30,30,by = 3), 
-                                       ~reference_11(theta = .))
+kmComparisonFeatures <- purrr::map_dfr(
+  seq(-30,30,by = 3), 
+  ~comp_w_pars(reference = fadul1.1, target = fadul1.2, theta = .))
 
-kmComparisonFeatures_rev <- purrr::map_dfr(seq(-30,30,by = 3), 
-                                           ~reference_12(theta = .))
+kmComparisonFeatures_rev <- purrr::map_dfr(
+  seq(-30,30,by = 3), 
+  ~comp_w_pars(reference = fadul1.2, target = fadul1.1, theta = .))
 ```
 
 The \code{comparison\_allTogether} function consists of the following steps wrapped into a single convenience function:
