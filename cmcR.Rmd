@@ -8,8 +8,9 @@ author:
     - Ames, IA 50011
     email:  jzemmels@iastate.edu
   - name: Susan VanderPlas
-    affiliation: University of Nebraska - Lincoln
+    affiliation: Department of Statistics
     address:
+    - University of Nebraska - Lincoln
     - 340 Hardin Hall North Wing
     - Lincoln, NE 68583
     email: susan.vanderplas@unl.edu
