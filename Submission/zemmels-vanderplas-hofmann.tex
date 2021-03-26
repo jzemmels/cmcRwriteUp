@@ -6,30 +6,30 @@ Identification}
 \maketitle
 
 \abstract{%
-Scientific research is driven by our ability to use existing methods,
-procedures, and materials from previous studies and further this
-research by adding to it. As the need for computationally-intensive
-methods to analyze large amount of data grows, the criteria needed to
-achieve reproducibility, specifically computational reproducibility,
-have become more sophisticated. In general, prosaic descriptions of
-algorithms are not detailed or precise enough to ensure a complete
-reproducibility of a method. Results may be sensitive to conditions not
-commonly specified in written-word descriptions such as implicit
-parameter settings or the programming language used. To achieve true
-computational reproducibility, it is necessary to provide all
-intermediate data and code used to produce published results. In this
-paper, we consider a class of algorithms developed at the National
-Institute of Standards and Technology (NIST) to perform firearm evidence
-identification on cartridge case evidence known as the
-\dfn{Congruent Matching Cells} (CMC) methods. To date, only textual
-descriptions of these algorithms have been published. We introduce the
-first open-source implementation of the Congruent Matching Cells methods
-in the R package \CRANpkg{cmcR}. We have structured the \CRANpkg{cmcR}
-package as a set of sequential, modularized functions intended to ease
-the process of parameter experimentation. We use \CRANpkg{cmcR} and a
-novel variance ratio statistic to explore the CMC methodology and
-illustrate problems that arise when only computationally ambiguous
-descriptions of algorithms are provided.
+Scientific research is driven by our ability to use methods, procedures,
+and materials from previous studies and further this research by adding
+to it. As the need for computationally-intensive methods to analyze
+large amount of data grows, the criteria needed to achieve
+reproducibility, specifically computational reproducibility, have become
+more sophisticated. In general, prosaic descriptions of algorithms are
+not detailed or precise enough to ensure complete reproducibility of a
+method. Results may be sensitive to conditions not commonly specified in
+written-word descriptions such as implicit parameter settings or the
+programming language used. To achieve true computational
+reproducibility, it is necessary to provide all intermediate data and
+code used to produce published results. In this paper, we consider a
+class of algorithms developed at the National Institute of Standards and
+Technology (NIST) to perform firearm evidence identification on
+cartridge case evidence known as the \dfn{Congruent Matching Cells}
+(CMC) methods. To date, only textual descriptions of these algorithms
+have been published. We introduce the first open-source implementation
+of the Congruent Matching Cells methods in the R package \CRANpkg{cmcR}.
+We have structured the \CRANpkg{cmcR} package as a set of sequential,
+modularized functions intended to ease the process of parameter
+experimentation. We use \CRANpkg{cmcR} and a novel variance ratio
+statistic to explore the CMC methodology and illustrate problems that
+arise when only computationally ambiguous descriptions of algorithms are
+provided.
 }
 
 \hypertarget{intro}{%
@@ -1009,7 +1009,7 @@ counts (17 in this example).
 \begin{Schunk}
 \begin{figure}[htbp]
 
-{\centering \includegraphics[width=\textwidth]{cmcR_files/figure-latex/kmOriginalMethod} 
+{\centering \includegraphics[width=\textwidth]{derivatives/kmOriginalMethod} 
 
 }
 
@@ -1025,7 +1025,7 @@ results as described above, the final High CMC number is 24 CMCs.
 \begin{Schunk}
 \begin{figure}[htbp]
 
-{\centering \includegraphics[width=\textwidth]{cmcR_files/figure-latex/kmHighCMC} 
+{\centering \includegraphics[width=\textwidth]{derivatives/kmHighCMC} 
 
 }
 
@@ -1044,7 +1044,7 @@ thus was assigned 0 CMCs under the High CMC method.
 \begin{Schunk}
 \begin{figure}[htbp]
 
-{\centering \includegraphics[width=\textwidth]{cmcR_files/figure-latex/knmOriginalMethod} 
+{\centering \includegraphics[width=\textwidth]{derivatives/knmOriginalMethod} 
 
 }
 
@@ -1379,7 +1379,7 @@ University of California Irvine, University of Virginia, West Virginia
 University, University of Pennsylvania, Swarthmore College and
 University of Nebraska, Lincoln.
 
-\bibliography{cmcR}
+\bibliography{zemmels-vanderplas-hofmann}
 
 
 \address{%
