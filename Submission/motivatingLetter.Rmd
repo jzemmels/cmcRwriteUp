@@ -1,14 +1,15 @@
 ---
-title: "cmcR Motivating Letter"
+title: "A Study in Reproducibility: The Congruent Matching Cells Algorithm and cmcR package"
 author: "Joseph Zemmels, Susan VanderPlas, and Heike Hofmann"
 output: pdf_document
 ---
 
 In \textit{cmcR: Congruent Matching Cells Method in R for Cartridge Case Identification}, we detail the implementation of a cartridge case evidence comparison algorithm called the Congruent Matching Cells (CMC) method. Our contributions extend past a "package vignette" in the following ways.
 \begin{enumerate}
-\item In detailing the steps of the algorithm and our implementation, our discussion is centered primarily computational reproducibility and  ambiguities that arise when only a prosaic description of an algorithm is provided. We use the CMC method as a case-study to show that equally valid interpretations of a written-word algorithm description result in demonstrably different final results, which is antithetical to reproducible research. The process by which we implemented the method testifies to the fact that, especially in high-stakes fields such as forensics, it is imperative that source code and intermediate data be provided before the an algorithm is accepted.
-
 \item We modularize the Congruent Matching Cells method as a set of sequential, pipe-friendly \texttt{R} functions. This structure allows for easier experimentation with alternative parameter settings and makes the algorithm more user-friendly.
 
-\item We introduce a novel variance ratio statistic for comparing results from different paramaterizations of the CMC method. This variance ratio statistic can be used as both a diagnostic tool and a comparison benchmark with other cartridge case comparison algorithms.
+\item We introduce a novel variance ratio statistic for comparing results from different parameterizations of the CMC method. This variance ratio statistic can be used as both a diagnostic tool and a comparison benchmark with other cartridge case comparison algorithms.
+
+\item In detailing the steps of the algorithm and our implementation, our discussion is centered primarily computational reproducibility and ambiguities that arise when only a prosaic description of an algorithm is provided. We use the CMC method as a case-study to show that equally valid interpretations of a written-word algorithm description result in demonstrably different final results, which is antithetical to reproducible research. The process by which we implemented the method testifies to the fact that, especially in high-stakes fields such as forensics, it is imperative that source code and intermediate data be provided for examination of the algorithm's accuracy and implementation.
+
 \end{enumerate}
