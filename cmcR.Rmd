@@ -1,5 +1,5 @@
 ---
-title: "cmcR: Congruent Matching Cells Method in R for Cartridge Case Identification"
+title: "A Study in Reproducibility: The Congruent Matching Cells Algorithm and cmcR package"
 author:
   - name: Joseph Zemmels
     affiliation: Iowa State University
