@@ -1,6 +1,6 @@
 % !TeX root = RJwrapper.tex
-\title{cmcR: Congruent Matching Cells Method in R for Cartridge Case
-Identification}
+\title{A Study in Reproducibility: The Congruent Matching Cells
+Algorithm and cmcR package}
 \author{by Joseph Zemmels, Susan VanderPlas, and Heike Hofmann}
 
 \maketitle
@@ -28,7 +28,7 @@ We have structured the \CRANpkg{cmcR} package as a set of sequential,
 modularized functions intended to ease the process of parameter
 experimentation. We use \CRANpkg{cmcR} and a novel variance ratio
 statistic to explore the CMC methodology and illustrate problems that
-arise when only computationally ambiguous descriptions of algorithms are
+arise when computationally ambiguous algorithms descriptions are
 provided.
 }
 
@@ -299,7 +299,7 @@ cases were scanned with a lateral resolution of 6.25 microns
 \begin{Schunk}
 \begin{figure}[htbp]
 
-{\centering \subfloat[\label{fig:rawBFs-1}]{\includegraphics[width=.49\linewidth,height=.49\linewidth]{derivatives/fadul1-1} }\subfloat[\label{fig:rawBFs-2}]{\includegraphics[width=.49\linewidth,height=.49\linewidth]{derivatives/fadul1-2} }
+{\centering \subfloat[\label{fig:rawBFs-1}]{\includegraphics[width=.49\linewidth,height=.49\linewidth]{figures/fadul1-1} }\subfloat[\label{fig:rawBFs-2}]{\includegraphics[width=.49\linewidth,height=.49\linewidth]{figures/fadul1-2} }
 
 }
 
@@ -414,7 +414,7 @@ extreme values in each scan.
 \begin{Schunk}
 \begin{figure}[htbp]
 
-{\centering \includegraphics[width=\textwidth]{zemmels-vanderplas-hofmann_files/figure-latex/unnamed-chunk-5-1} 
+{\centering \includegraphics[width=\textwidth]{figures/cmcr-unnamed-chunk-5-1} 
 
 }
 
@@ -540,7 +540,7 @@ in the cell-based comparison procedure.
 \begin{Schunk}
 \begin{figure}[htbp]
 
-{\centering \includegraphics[width=\textwidth]{zemmels-vanderplas-hofmann_files/figure-latex/unnamed-chunk-10-1} 
+{\centering \includegraphics[width=\textwidth]{figures/cmcr-unnamed-chunk-10-1} 
 
 }
 
@@ -1009,7 +1009,7 @@ counts (17 in this example).
 \begin{Schunk}
 \begin{figure}[htbp]
 
-{\centering \includegraphics[width=\textwidth]{derivatives/kmOriginalMethod} 
+{\centering \includegraphics[width=\textwidth]{figures/kmOriginalMethod} 
 
 }
 
@@ -1025,7 +1025,7 @@ results as described above, the final High CMC number is 24 CMCs.
 \begin{Schunk}
 \begin{figure}[htbp]
 
-{\centering \includegraphics[width=\textwidth]{derivatives/kmHighCMC} 
+{\centering \includegraphics[width=\textwidth]{figures/kmHighCMC} 
 
 }
 
@@ -1044,7 +1044,7 @@ thus was assigned 0 CMCs under the High CMC method.
 \begin{Schunk}
 \begin{figure}[htbp]
 
-{\centering \includegraphics[width=\textwidth]{derivatives/knmOriginalMethod} 
+{\centering \includegraphics[width=\textwidth]{figures/knmOriginalMethod} 
 
 }
 
@@ -1187,7 +1187,7 @@ distributions as evidenced by the considerably larger variance ratio
 \begin{Schunk}
 \begin{figure}[htbp]
 
-\includegraphics[width=\textwidth]{zemmels-vanderplas-hofmann_files/figure-latex/unnamed-chunk-19-1} \hfill{}
+\includegraphics[width=\textwidth]{figures/cmcr-unnamed-chunk-19-1} \hfill{}
 
 \caption{\label{fig:decisionRuleSensitivity_comparison} CMC count relative frequencies under the original method and the High CMC method for $T_{\Delta x} = 20 = T_{\Delta y}$ pixels, $T_{\text{CCF}} = .5$, and $T_{\theta} = 6$ degrees. AUC $= 1.00$ corresponds to perfect separation of the match and non-match CMC count distributions. We can see that, for this set of processing parameters, the High CMC method yields higher CMC counts for known matches that the original method while known non-matches have the same distribution under both methods.}\label{fig:unnamed-chunk-19}
 \end{figure}
@@ -1219,7 +1219,7 @@ method discussed in \citet{song_estimating_2018} fall into these ranges.
 \begin{Schunk}
 \begin{figure}[htbp]
 
-\includegraphics[width=\textwidth]{zemmels-vanderplas-hofmann_files/figure-latex/unnamed-chunk-20-1} \hfill{}
+\includegraphics[width=\textwidth]{figures/cmcr-unnamed-chunk-20-1} \hfill{}
 
 \caption{\label{fig:cmc_sensitivityScatter} Variance ratios under are plotted for different parameter settings. High variance ratios are indicative of a a good separation between CMC counts for known matching pairs and known-non matching pairs. The High CMC method generally performs better than the original method. Removing the trend during preprocessing, even though not explicitly described as a preprocessing step in the CMC papers, has a major impact on the effectiveness of the CMC method. In this setting, translation thresholds $T_x, T_y \in [15,20]$, a rotation threshold $T_\theta = 6$, and a CCF threshold $T_{\text{CCF}} \in [.4,5]$ lead to a separation of results. }\label{fig:unnamed-chunk-20}
 \end{figure}
@@ -1385,7 +1385,7 @@ University of Nebraska, Lincoln.
 \address{%
 Joseph Zemmels\\
 Iowa State University\\%
-2438 Osborn Dr\\ Ames, IA 50011\\
+2438 Osborn Drive\\ Ames, IA 50011\\
 %
 %
 %
@@ -1394,8 +1394,9 @@ Iowa State University\\%
 
 \address{%
 Susan VanderPlas\\
-University of Nebraska - Lincoln\\%
-340 Hardin Hall North Wing\\ Lincoln, NE 68583\\
+Department of Statistics\\%
+University of Nebraska - Lincoln\\ 340 Hardin Hall North Wing\\ Lincoln,
+NE 68583\\
 %
 %
 %
@@ -1405,7 +1406,8 @@ University of Nebraska - Lincoln\\%
 \address{%
 Heike Hofmann\\
 Iowa State University\\%
-2438 Osborn Dr\\ Ames, IA 50011\\
+Center for Statistics and Applications in Forensic Evidence\\ Department
+of Statistics\\ 2438 Osborn Drive\\ Ames, IA 50011\\
 %
 %
 %

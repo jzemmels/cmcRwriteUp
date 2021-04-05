@@ -4,7 +4,7 @@ author:
   - name: Joseph Zemmels
     affiliation: Iowa State University
     address:
-    - 2438 Osborn Dr
+    - 2438 Osborn Drive
     - Ames, IA 50011
     email:  jzemmels@iastate.edu
   - name: Susan VanderPlas
@@ -19,7 +19,7 @@ author:
     address:
     - Center for Statistics and Applications in Forensic Evidence
     - Iowa State University
-    - 2438 Osborn Dr
+    - 2438 Osborn Drive
     - Ames, IA 50011
     email: hofmann@iastate.edu
 abstract: > 
@@ -54,6 +54,9 @@ output: rticles::rjournal_article
 \newcommand{\svp}[1]{{\textcolor{blue}{#1}}}
 \newcommand{\jz}[1]{{\textcolor{purple}{#1}}}
 ```
+
+
+
 ```{r ,localDataDir, include=FALSE}
 if (!dir.exists("data")){
   dir.create("data")

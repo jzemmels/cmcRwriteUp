@@ -1,4 +1,4 @@
-## ----localDataDir, include=FALSE----------------------------------------------
+## ----localDataDir, include=FALSE-------------------------------------------------------------
 if (!dir.exists("data")){
   dir.create("data")
 }
@@ -14,69 +14,63 @@ if (!file.exists("data/fadul2-1.x3p")){
 }
 
 
-## ---- derivativeImagesDir,include=FALSE---------------------------------------
-if (!dir.exists("derivatives")){
-  dir.create("derivatives")
-}
-
-
-## ----setup,echo=FALSE,message=FALSE,warning=FALSE-----------------------------
-knitr::opts_chunk$set(cache = T, dpi = 300, fig.width = 8, fig.height = 4, out.width = "\\textwidth", dpi = 300)
+## ----setup,echo=FALSE,message=FALSE,warning=FALSE--------------------------------------------
+knitr::opts_chunk$set(cache = T, dpi = 300, fig.width = 8, fig.height = 4, out.width = "\\textwidth", dpi = 300, fig.path = 'figures/cmcr-')
 library(cmcR) # remotes::install_github("CSAFE-ISU/cmcR")
 library(tidyverse)
 library(x3ptools) # remotes::install_github("heike/x3ptools")
 library(rgl)
 
 
-## ----eval=FALSE,echo=FALSE----------------------------------------------------
-#> # SVP comment: Should do this in a tidy way with less code if possible...
-#> library(cmcR)
-#> 
-#> fadul1.1_id <- "DownloadMeasurement/2d9cc51f-6f66-40a0-973a-a9292dbee36d"
-#> # Same source comparison
-#> fadul1.2_id <- "DownloadMeasurement/cb296c98-39f5-46eb-abff-320a2f5568e8"
-#> # Different source comparison
-#> fadul2.1_id <- "DownloadMeasurement/8ae0b86d-210a-41fd-ad75-8212f9522f96"
-#> 
-#> #Code to download breech face impressions:
-#> 
-#> # Aside: while the URL says "NRBTD", it's
-#> #actually the NIST Ballistics Toolmark Research Database (so their URL
-#> #is mistaken)
-#> 
-#> nbtrd_url <- "https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement"
-#> download.file(
-#>   file.path(nbtrd_url , fadul1.1_id), destfile = "data/fadul1-1.x3p", mode = "wb")
-#> download.file(
-#>   file.path(nbtrd_url , fadul1.2_id), destfile = "data/fadul1-2.x3p", mode = "wb")
-#> download.file(
-#>   file.path(nbtrd_url, fadul2.1_id), destfile = "data/fadul2-1.x3p", mode = "wb")
+## ----eval=FALSE,echo=FALSE-------------------------------------------------------------------
+## # SVP comment: Should do this in a tidy way with less code if possible...
+## library(cmcR)
+## 
+## fadul1.1_id <- "DownloadMeasurement/2d9cc51f-6f66-40a0-973a-a9292dbee36d"
+## # Same source comparison
+## fadul1.2_id <- "DownloadMeasurement/cb296c98-39f5-46eb-abff-320a2f5568e8"
+## # Different source comparison
+## fadul2.1_id <- "DownloadMeasurement/8ae0b86d-210a-41fd-ad75-8212f9522f96"
+## 
+## #Code to download breech face impressions:
+## 
+## # Aside: while the URL says "NRBTD", it's
+## #actually the NIST Ballistics Toolmark Research Database (so their URL
+## #is mistaken)
+## 
+## nbtrd_url <- "https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement"
+## download.file(
+##   file.path(nbtrd_url , fadul1.1_id), destfile = "data/fadul1-1.x3p", mode = "wb")
+## download.file(
+##   file.path(nbtrd_url , fadul1.2_id), destfile = "data/fadul1-2.x3p", mode = "wb")
+## download.file(
+##   file.path(nbtrd_url, fadul2.1_id), destfile = "data/fadul2-1.x3p", mode = "wb")
 
 
-## ----eval=FALSE,echo=TRUE-----------------------------------------------------
-#> library(cmcR)
-#> 
-#> nbtrd_url <- "https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement"
-#> 
-#> x3p_ids <- c("DownloadMeasurement/2d9cc51f-6f66-40a0-973a-a9292dbee36d",
-#>              "DownloadMeasurement/cb296c98-39f5-46eb-abff-320a2f5568e8",
-#>              "DownloadMeasurement/8ae0b86d-210a-41fd-ad75-8212f9522f96")
-#> 
-#> file_names <- c("fadul1-1.x3p","fadul1-2.x3p","fadul2-1.x3p")
-#> 
-#> purrr::walk2(.x = x3p_ids,
-#>              .y = file_names,
-#>              .f = function(x3p_id,file_name){
-#>                download.file(url = file.path(nbtrd_url, x3p_id),
-#>                              destfile = paste0("data/",file_name),mode = "wb")
-#>              })
+## ----eval=FALSE,echo=TRUE--------------------------------------------------------------------
+## library(cmcR)
+## 
+## nbtrd_url <- "https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement"
+## 
+## x3p_ids <- c("DownloadMeasurement/2d9cc51f-6f66-40a0-973a-a9292dbee36d",
+##              "DownloadMeasurement/cb296c98-39f5-46eb-abff-320a2f5568e8",
+##              "DownloadMeasurement/8ae0b86d-210a-41fd-ad75-8212f9522f96")
+## 
+## file_names <- c("fadul1-1.x3p","fadul1-2.x3p","fadul2-1.x3p")
+## 
+## purrr::walk2(.x = x3p_ids,
+##              .y = file_names,
+##              .f = function(x3p_id,file_name){
+##                download.file(url = file.path(nbtrd_url, x3p_id),
+##                              destfile = paste0("data/",file_name),mode = "wb")
+##              })
 
 
 ## ----echo=FALSE,fig.cap='\\label{fig:ccPair_combined} A cartridge case pair with visible breech face impressions under a microscrope.  A thin line can be seen separating the two views. The degree to which the markings coincide is used to conclude whether the pair comes from the same source.',fig.pos='htbp',out.width="\\textwidth"----
 knitr::include_graphics("images/cartridgeCasePair_comparison_with_line.PNG")
 
 
-## ---- fadul1-1Screenshot,include=FALSE----------------------------------------
+## ---- fadul1-1Screenshot,include=FALSE-------------------------------------------------------
 fadul1.1 <- x3ptools::x3p_read("data/fadul1-1.x3p")
 
 #apply low-pass filter to reduce noise in scan:
@@ -120,12 +114,12 @@ x <- fadul1.1$header.info$incrementX * (1:nrow(z))
 # again, a lot of possible experimentation
 surface3d(x, y, z, back = "filled",emission = "grey30",specular = "grey50",ambient = "grey10")
 
-x3ptools::x3p_snapshot(file = "derivatives/fadul1-1.png")
+x3ptools::x3p_snapshot(file = "figures/fadul1-1.png")
 
 rgl.close()
 
 
-## ----fadul1-2Screenshot,include=FALSE-----------------------------------------
+## ----fadul1-2Screenshot,include=FALSE--------------------------------------------------------
 fadul1.2 <- x3ptools::x3p_read("data/fadul1-2.x3p")
 
 surface2 <- fadul1.2 %>%
@@ -153,16 +147,16 @@ x <- fadul1.2$header.info$incrementX * (1:nrow(z))
 # again, a lot of possible experimentation
 surface3d(x, y, z, back = "filled",emission = "grey30",specular = "grey50",ambient = "grey10")
 
-x3ptools::x3p_snapshot(file = "derivatives/fadul1-2.png")
+x3ptools::x3p_snapshot(file = "figures/fadul1-2.png")
 
 rgl.close()
 
 
 ## ---- rawBFs,echo=FALSE,fig.cap='\\label{fig:cartridgeCasePair} Unprocessed surface matrices of the known-match Fadul 1-1 (left) and Fadul 1-2 (right) \\citep{fadul_empirical_2011}. The observations in the corners of these surface matrices are artifacts of the staging area in which these scans were taken. The holes on the interior of the primer surfaces are caused by the firing pin striking the primer during the firing process. The region of the primer around this hole does not come into uniform contact with the breech face of the firearm.', fig.subcap=c('',''),fig.align='center',fig.pos='htbp',out.width='.49\\linewidth',out.height='.49\\linewidth'----
-knitr::include_graphics(c("derivatives/fadul1-1.png","derivatives/fadul1-2.png"))
+knitr::include_graphics(c("figures/fadul1-1.png","figures/fadul1-2.png"))
 
 
-## ----load-data, include = F, cache = T----------------------------------------
+## ----load-data, include = F, cache = T-------------------------------------------------------
 
 fadul1.1 <- x3ptools::x3p_read("data/fadul1-1.x3p") %>%
   cmcR::preProcess_crop(region = "exterior",
@@ -187,7 +181,7 @@ fadul1.2 <- x3ptools::x3p_read("data/fadul1-2.x3p") %>%
   x3ptools::sample_x3p()
 
 
-## ----cmc-ccf, include = F, cache = T------------------------------------------
+## ----cmc-ccf, include = F, cache = T---------------------------------------------------------
 reference_11 <- purrr::partial(.f = comparison_allTogether, 
                                reference = fadul1.1, target = fadul1.2, 
                                numCells = 64, maxMissingProp = .85)
@@ -246,7 +240,7 @@ bind_rows(kmComparison_cmcs,
   filter(pairwiseCompCor == max(pairwiseCompCor))
 
 
-## ----cache=FALSE, include=F---------------------------------------------------
+## ----cache=FALSE, include=F------------------------------------------------------------------
 fadul1.1_original <- x3ptools::x3p_read("data/fadul1-1.x3p")
 
 fadul1.1_croppedExt <- cmcR::preProcess_crop(fadul1.1_original,
@@ -313,29 +307,29 @@ gridExtra::grid.arrange(preProcessingPlot$`(1) Original`,
                         widths = unit(c(1,1,1,1),units = "null"))
 
 
-## ---- echo=TRUE,eval=FALSE----------------------------------------------------
-#> # Step (1)
-#> fadul1.1 <- x3ptools::x3p_read("data/fadul1-1.x3p")
+## ---- echo=TRUE,eval=FALSE-------------------------------------------------------------------
+## # Step (1)
+## fadul1.1 <- x3ptools::x3p_read("data/fadul1-1.x3p")
 
 
-## ---- echo=TRUE,eval=FALSE----------------------------------------------------
-#> # Step (2)
-#> fadul1.1_cropped <- fadul1.1 %>%
-#>   cmcR::preProcess_crop(region = "exterior") %>%
-#>   cmcR::preProcess_crop(region = "interior")
+## ---- echo=TRUE,eval=FALSE-------------------------------------------------------------------
+## # Step (2)
+## fadul1.1_cropped <- fadul1.1 %>%
+##   cmcR::preProcess_crop(region = "exterior") %>%
+##   cmcR::preProcess_crop(region = "interior")
 
 
-## ---- echo=TRUE,eval=FALSE----------------------------------------------------
-#> # Step (3)
-#> fadul1.1_deTrended <- fadul1.1_cropped %>%
-#>   preProcess_removeTrend(statistic = "quantile", tau = .5, method = "fn")
+## ---- echo=TRUE,eval=FALSE-------------------------------------------------------------------
+## # Step (3)
+## fadul1.1_deTrended <- fadul1.1_cropped %>%
+##   preProcess_removeTrend(statistic = "quantile", tau = .5, method = "fn")
 
 
-## ---- echo=TRUE,eval=FALSE----------------------------------------------------
-#> # Step (4)
-#> fadul1.1_processed <- fadul1.1_deTrended %>%
-#>   preProcess_gaussFilter(filtertype = "bp", wavelength = c(16,500)) %>%
-#>   x3ptools::x3p_sample(m = 2)
+## ---- echo=TRUE,eval=FALSE-------------------------------------------------------------------
+## # Step (4)
+## fadul1.1_processed <- fadul1.1_deTrended %>%
+##   preProcess_gaussFilter(filtertype = "bp", wavelength = c(16,500)) %>%
+##   x3ptools::x3p_sample(m = 2)
 
 
 ## ----echo=FALSE,cache = T,fig.cap='\\label{fig:processedScans} Fadul 1-1 and Fadul 1-2 after preprocessing. Similar striated markings are now easier to visually identify on both surfaces. It is now clearer that one of the scans needs to be rotated to align better with the other.',fig.align='center',fig.pos='htbp',out.width='\\textwidth', message = F, warning = F----
@@ -360,22 +354,22 @@ cmcR::x3pListPlot(x3pList = list("Fadul 1-1" = fadul1.1,
 knitr::include_graphics("images/cmc_illustration.PNG")
 
 
-## ----echo=TRUE,eval=FALSE-----------------------------------------------------
-#> # Fill in most of the arguments first
-#> comp_w_pars <- purrr::partial(.f = comparison_allTogether,
-#>                                numCells = 64, maxMissingProp = .85)
-#> 
-#> # Then, map the remaining values to theta
-#> kmComparisonFeatures <- purrr::map_dfr(
-#>   seq(-30,30,by = 3),
-#>   ~comp_w_pars(reference = fadul1.1, target = fadul1.2, theta = .))
-#> 
-#> kmComparisonFeatures_rev <- purrr::map_dfr(
-#>   seq(-30,30,by = 3),
-#>   ~comp_w_pars(reference = fadul1.2, target = fadul1.1, theta = .))
+## ----echo=TRUE,eval=FALSE--------------------------------------------------------------------
+## # Fill in most of the arguments first
+## comp_w_pars <- purrr::partial(.f = comparison_allTogether,
+##                                numCells = 64, maxMissingProp = .85)
+## 
+## # Then, map the remaining values to theta
+## kmComparisonFeatures <- purrr::map_dfr(
+##   seq(-30,30,by = 3),
+##   ~comp_w_pars(reference = fadul1.1, target = fadul1.2, theta = .))
+## 
+## kmComparisonFeatures_rev <- purrr::map_dfr(
+##   seq(-30,30,by = 3),
+##   ~comp_w_pars(reference = fadul1.2, target = fadul1.1, theta = .))
 
 
-## ----echo=FALSE,warning=F,message=F,eval=TRUE,cache = T-----------------------
+## ----echo=FALSE,warning=F,message=F,eval=TRUE,cache = T--------------------------------------
 kmComparisonFeatures %>%
   mutate(`Cell index` = cellIndex,
          `Pairwise-complete corr.` = round(pairwiseCompCor,3),
@@ -400,7 +394,7 @@ kmComparisonFeatures %>%
                             stripe_color = "lightgray")
 
 
-## ----echo=FALSE,cache = T-----------------------------------------------------
+## ----echo=FALSE,cache = T--------------------------------------------------------------------
 fadul2.1 <- x3ptools::x3p_read("data/fadul2-1.x3p") %>%
   cmcR::preProcess_crop(region = "exterior",
                         radiusOffset = -30) %>%
@@ -465,16 +459,16 @@ knmComparison_cmcs_rev <- knmComparisonFeatures_rev %>%
                                               tau = 1))
 
 
-## ----echo=TRUE,eval=FALSE-----------------------------------------------------
-#> kmComparison_cmcs <- kmComparisonFeatures %>% mutate(
-#>   originalMethodClassif =
-#>     decision_CMC(cellIndex = cellIndex, x = x, y = y, theta = theta,
-#>                  corr = pairwiseCompCor, xThresh = 20, thetaThresh = 6,
-#>                  corrThresh = .5),
-#>   highCMCClassif =
-#>     decision_CMC(cellIndex = cellIndex, x = x, y = y, theta = theta,
-#>                  corr = pairwiseCompCor, xThresh = 20, thetaThresh = 6,
-#>                  corrThresh = .5, tau = 1))
+## ----echo=TRUE,eval=FALSE--------------------------------------------------------------------
+## kmComparison_cmcs <- kmComparisonFeatures %>% mutate(
+##   originalMethodClassif =
+##     decision_CMC(cellIndex = cellIndex, x = x, y = y, theta = theta,
+##                  corr = pairwiseCompCor, xThresh = 20, thetaThresh = 6,
+##                  corrThresh = .5),
+##   highCMCClassif =
+##     decision_CMC(cellIndex = cellIndex, x = x, y = y, theta = theta,
+##                  corr = pairwiseCompCor, xThresh = 20, thetaThresh = 6,
+##                  corrThresh = .5, tau = 1))
 
 
 ## ----echo=FALSE,warning=FALSE,message=FALSE,cache = F,fig.align='center',fig.pos='htbp',out.width="\\textwidth",fig.cap='\\label{fig:topVoteCMCPlot} CMC results for the comparison between Fadul 1-1 and Fadul 1-2 using the original method. The two plots in the top row show the 17 CMCs when Fadul 1-1 is treated as the ``reference" cartridge case to which Fadul 1-2 (the ``target") is compared. The second row shows the 18 CMCs when the roles are reversed. Red cells indicate where cells \\emph{not} identified as congruent achieve the maximum pairwise-complete correlation across all rotations of the target scan. '----
@@ -534,11 +528,11 @@ plt <- (plt1 / plt2 / plt3) +
               heights =  c(2,1.8,.5),
               widths = c(1,.9,1))
 
-ggsave(filename = "cmcR_files/figure-latex/kmOriginalMethod.pdf",plot = plt)
+ggsave(filename = "figures/kmOriginalMethod.pdf",plot = plt)
 
-invisible(knitr::plot_crop("cmcR_files/figure-latex/kmOriginalMethod.pdf",quiet = TRUE))
+invisible(knitr::plot_crop("figures/kmOriginalMethod.pdf",quiet = TRUE))
 
-knitr::include_graphics(path = "cmcR_files/figure-latex/kmOriginalMethod.pdf")
+knitr::include_graphics(path = "figures/kmOriginalMethod.pdf")
 
 
 ## ----echo=FALSE,warning=FALSE,message=FALSE,cache = F, fig.align='center', fig.pos='htbp', out.width="\\textwidth", fig.cap='\\label{fig:highCMCPlot} Applying the High CMC method to the comparison of Fadul 1-1 and Fadul 1-2 results in 19 CMCs when Fadul 1-1 is treated as the reference (top) and 18 CMCs when Fadul 1-2 is treated as the reference (bottom). Although the individual comparisons do not yield considerably more CMCs than under the original CMC method, \\citet{tong_improved_2015} indicate that the High CMCs from both comparisons are combined as the final High CMC count (each cell is counted at most once). Combining the results means that the High CMC method tends to produce higher CMC counts than the original CMC method. In this example, the combined High CMC count is 24 CMCs.'----
@@ -583,11 +577,11 @@ plt <- (plt1 / plt2 / plt3) +
               heights =  c(2,2,.5),
               widths = c(1,1,1))
 
-ggsave(filename = "cmcR_files/figure-latex/kmHighCMC.pdf",plot = plt)
+ggsave(filename = "figures/kmHighCMC.pdf",plot = plt)
 
-invisible(knitr::plot_crop("cmcR_files/figure-latex/kmHighCMC.pdf"))
+invisible(knitr::plot_crop("figures/kmHighCMC.pdf"))
 
-knitr::include_graphics(path = "cmcR_files/figure-latex/kmHighCMC.pdf")
+knitr::include_graphics(path = "figures/kmHighCMC.pdf")
 
 
 ## ----echo=FALSE,warning=FALSE,message=FALSE,cache = F, fig.align='center',fig.pos='htbp',out.width="\\textwidth", fig.cap='\\label{fig:knmCMCPlot} Applying both decision rules to the comparison between the non-match pair Fadul 1-1 and Fadul 2-1 results in 1 CMC under the original method (shown above) and 0 CMCs under the High CMC method (not shown). The seemingly random behavior of the red cells exemplifies the assumption that cells in a non-match comparison do not exhibit an observable pattern. Random chance should be the prevailing factor in classifying non-match cells as CMCs.'----
@@ -650,11 +644,11 @@ plt <- (plt1 / plt2 / plt3) +
               heights =  c(2,2,.5),
               widths = c(1,1,1))
 
-ggsave(filename = "cmcR_files/figure-latex/knmOriginalMethod.pdf",plot = plt)
+ggsave(filename = "figures/knmOriginalMethod.pdf",plot = plt)
 
-invisible(knitr::plot_crop("cmcR_files/figure-latex/knmOriginalMethod.pdf",quiet = TRUE))
+invisible(knitr::plot_crop("figures/knmOriginalMethod.pdf",quiet = TRUE))
 
-knitr::include_graphics(path = "cmcR_files/figure-latex/knmOriginalMethod.pdf")
+knitr::include_graphics(path = "figures/knmOriginalMethod.pdf")
 
 
 ## ----echo=FALSE,fig.cap='\\label{fig:decisionRuleSensitivity_comparison} CMC count relative frequencies under the original method and the High CMC method for $T_{\\Delta x} = 20 = T_{\\Delta y}$ pixels, $T_{\\text{CCF}} = .5$, and $T_{\\theta} = 6$ degrees. AUC $= 1.00$ corresponds to perfect separation of the match and non-match CMC count distributions. We can see that, for this set of processing parameters, the High CMC method yields higher CMC counts for known matches that the original method while known non-matches have the same distribution under both methods.', fig.align='left',fig.pos='htbp',out.width='\\textwidth'----

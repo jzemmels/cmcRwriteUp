@@ -4,19 +4,22 @@ author:
   - name: Joseph Zemmels
     affiliation: Iowa State University
     address:
-    - 2438 Osborn Dr
+    - 2438 Osborn Drive
     - Ames, IA 50011
     email:  jzemmels@iastate.edu
   - name: Susan VanderPlas
-    affiliation: University of Nebraska - Lincoln
+    affiliation: Department of Statistics
     address:
+    - University of Nebraska - Lincoln
     - 340 Hardin Hall North Wing
     - Lincoln, NE 68583
     email: susan.vanderplas@unl.edu
   - name: Heike Hofmann
     affiliation: Iowa State University
     address:
-    - 2438 Osborn Dr
+    - Center for Statistics and Applications in Forensic Evidence
+    - Department of Statistics
+    - 2438 Osborn Drive
     - Ames, IA 50011
     email: hofmann@iastate.edu
 abstract: > 
@@ -62,14 +65,10 @@ if (!file.exists("data/fadul2-1.x3p")){
 }
 ```
 
-```{r, derivativeImagesDir,include=FALSE}
-if (!dir.exists("derivatives")){
-  dir.create("derivatives")
-}
-```
+
 
 ```{r setup,echo=FALSE,message=FALSE,warning=FALSE}
-knitr::opts_chunk$set(cache = T, dpi = 300, fig.width = 8, fig.height = 4, out.width = "\\textwidth", dpi = 300)
+knitr::opts_chunk$set(cache = T, dpi = 300, fig.width = 8, fig.height = 4, out.width = "\\textwidth", dpi = 300, fig.path = 'figures/cmcr-')
 library(cmcR) # remotes::install_github("CSAFE-ISU/cmcR")
 library(tidyverse)
 library(x3ptools) # remotes::install_github("heike/x3ptools")
@@ -217,7 +216,7 @@ x <- fadul1.1$header.info$incrementX * (1:nrow(z))
 # again, a lot of possible experimentation
 surface3d(x, y, z, back = "filled",emission = "grey30",specular = "grey50",ambient = "grey10")
 
-x3ptools::x3p_snapshot(file = "derivatives/fadul1-1.png")
+x3ptools::x3p_snapshot(file = "figures/fadul1-1.png")
 
 rgl.close()
 ```
@@ -250,13 +249,13 @@ x <- fadul1.2$header.info$incrementX * (1:nrow(z))
 # again, a lot of possible experimentation
 surface3d(x, y, z, back = "filled",emission = "grey30",specular = "grey50",ambient = "grey10")
 
-x3ptools::x3p_snapshot(file = "derivatives/fadul1-2.png")
+x3ptools::x3p_snapshot(file = "figures/fadul1-2.png")
 
 rgl.close()
 ```
 
 ```{r, rawBFs,echo=FALSE,fig.cap='\\label{fig:cartridgeCasePair} Unprocessed surface matrices of the known-match Fadul 1-1 (left) and Fadul 1-2 (right) \\citep{fadul_empirical_2011}. The observations in the corners of these surface matrices are artifacts of the staging area in which these scans were taken. The holes on the interior of the primer surfaces are caused by the firing pin striking the primer during the firing process. The region of the primer around this hole does not come into uniform contact with the breech face of the firearm.', fig.subcap=c('',''),fig.align='center',fig.pos='htbp',out.width='.49\\linewidth',out.height='.49\\linewidth'}
-knitr::include_graphics(c("derivatives/fadul1-1.png","derivatives/fadul1-2.png"))
+knitr::include_graphics(c("figures/fadul1-1.png","figures/fadul1-2.png"))
 ```
 
 Only certain regions of a cartridge case contain identifying breech face impression markings. \citet{song_proposed_2013} defines "valid correlation regions" as regions where "the individual characteristics of the ballistics signature are found that can be used effectively for ballistics identification." Prior to applying the CMC comparison procedure, cartridge scans must undergo some preprocessing to identify these valid correlation regions.
@@ -840,11 +839,11 @@ plt <- (plt1 / plt2 / plt3) +
               heights =  c(2,1.8,.5),
               widths = c(1,.9,1))
 
-ggsave(filename = "derivatives/kmOriginalMethod.pdf",plot = plt)
+ggsave(filename = "figures/kmOriginalMethod.pdf",plot = plt)
 
-invisible(knitr::plot_crop("derivatives/kmOriginalMethod.pdf",quiet = TRUE))
+invisible(knitr::plot_crop("figures/kmOriginalMethod.pdf",quiet = TRUE))
 
-knitr::include_graphics(path = "derivatives/kmOriginalMethod.pdf")
+knitr::include_graphics(path = "figures/kmOriginalMethod.pdf")
 ```
 
 Similarly, CMCs and non-CMCs determined under the High CMC method are shown in \autoref{fig:highCMCPlot}. Treating Fadul 1-1 and Fadul 1-2 as the reference scan yields 19 and 18 CMCs, respectively. Combining the results as described above, the final High CMC number is 24 CMCs.
@@ -891,11 +890,11 @@ plt <- (plt1 / plt2 / plt3) +
               heights =  c(2,2,.5),
               widths = c(1,1,1))
 
-ggsave(filename = "derivatives/kmHighCMC.pdf",plot = plt)
+ggsave(filename = "figures/kmHighCMC.pdf",plot = plt)
 
-invisible(knitr::plot_crop("derivatives/kmHighCMC.pdf"))
+invisible(knitr::plot_crop("figures/kmHighCMC.pdf"))
 
-knitr::include_graphics(path = "derivatives/kmHighCMC.pdf")
+knitr::include_graphics(path = "figures/kmHighCMC.pdf")
 ```
 
 In contrast, \autoref{fig:knmCMCPlot} shows the CMC results for a comparison between Fadul 1-1 and a known non-match scan, Fadul 2-1, under the exact same processing conditions. Only one cell is classified as a congruent matching cell under the original method when Fadul 1-1 is the reference scan. No cells are classified as CMCs in the other direction. While not shown, this pair fails the High CMC criteria and thus was assigned 0 CMCs under the High CMC method.
@@ -960,11 +959,11 @@ plt <- (plt1 / plt2 / plt3) +
               heights =  c(2,2,.5),
               widths = c(1,1,1))
 
-ggsave(filename = "derivatives/knmOriginalMethod.pdf",plot = plt)
+ggsave(filename = "figures/knmOriginalMethod.pdf",plot = plt)
 
-invisible(knitr::plot_crop("derivatives/knmOriginalMethod.pdf",quiet = TRUE))
+invisible(knitr::plot_crop("figures/knmOriginalMethod.pdf",quiet = TRUE))
 
-knitr::include_graphics(path = "derivatives/knmOriginalMethod.pdf")
+knitr::include_graphics(path = "figures/knmOriginalMethod.pdf")
 ```
 
 ## Ambiguity in algorithmic descriptions {#ambiguities}
