@@ -42,15 +42,15 @@ knmCombinationNames <- map2(fileList,1:10,
     # # names(pair)[1]
     firearmNumber <- pair[[1]] %>%
       stringr::str_extract("firearm[0-9]{1,2}")
-    
+
     #Firearm 10 is difficult to tell apart from firearm 1 in the regex
     #expressions above, so it's handled separately:
     if(any(str_detect(pair,pattern = "Fadul10\\-.*$")) &
-       any(str_detect(pair,pattern = "Fadul1\\-.*$")) | 
+       any(str_detect(pair,pattern = "Fadul1\\-.*$")) |
        any(str_detect(pair,pattern = "Fadul[EL]")) & #Fadul1 E and Fadul L are both from firearm 10
-       any(str_detect(pair,pattern = "Fadul1\\-.*$")) | 
+       any(str_detect(pair,pattern = "Fadul1\\-.*$")) |
        any(str_detect(pair,pattern = "Fadul[EL]")) & #Fadul1 E and Fadul L are both from firearm 10
-       any(str_detect(pair,pattern = "FadulF")) | 
+       any(str_detect(pair,pattern = "FadulF")) |
        any(str_detect(pair,pattern = "Fadul10\\-.*$")) & #Fadul1 E and Fadul L are both from firearm 10
        any(str_detect(pair,pattern = "FadulF"))){
       return(pair)
@@ -62,7 +62,7 @@ knmCombinationNames <- map2(fileList,1:10,
       return(pair)
     }
   })   %>%
-  discard(~ all(is.na(.))) %>% 
+  discard(~ all(is.na(.))) %>%
   map_chr(~ paste0(.[[1]],"_",.[[2]]))
 
 
@@ -78,9 +78,9 @@ selectedBreechFaces <- fileList %>%
       map(~ str_remove_all(string = .,
                            pattern = ".x3p| ")) %>% #remove .x3p extension and whitespace
       unlist()
-    
+
     selectedBreechFace <- kmSet %>% map(function(filePath){
-      
+
       x3p <- x3ptools::read_x3p(filePath) %>%
         cmcR::preProcess_crop(region = "exterior",
                               radiusOffset = -30) %>%
@@ -91,14 +91,14 @@ selectedBreechFaces <- fileList %>%
                                      method = "fn") %>%
         cmcR::preProcess_gaussFilter() %>%
         x3ptools::x3p_sample(m=2)
-      
+
       return(x3p)
-      
+
     }) %>%
       setNames(breechFaceNames)
-    
+
     return(selectedBreechFace)
-    
+
   }) %>%
   setNames(paste0("firearm",1:10))
 
@@ -111,9 +111,9 @@ selectedBreechFaces_noTrendRemoval <- fileList %>%
       map(~ str_remove_all(string = .,
                            pattern = ".x3p| ")) %>% #remove .x3p extension and whitespace
       unlist()
-    
+
     selectedBreechFace <- kmSet %>% map(function(filePath){
-      
+
       x3p <- x3ptools::read_x3p(filePath) %>%
         cmcR::preProcess_crop(region = "exterior",
                               radiusOffset = -30) %>%
@@ -124,14 +124,14 @@ selectedBreechFaces_noTrendRemoval <- fileList %>%
         #                              method = "fn") %>%
         cmcR::preProcess_gaussFilter() %>%
         x3ptools::x3p_sample(m=2)
-      
+
       return(x3p)
-      
+
     }) %>%
       setNames(breechFaceNames)
-    
+
     return(selectedBreechFace)
-    
+
   }) %>%
   setNames(paste0("firearm",1:10))
 
@@ -155,14 +155,14 @@ comparisonData <- map(list(
 ),
 function(selectBFs){
   # browser()
-  
+
   kmPairCombinations <- selectBFs %>%
     map(function(imSet){
       kmPairs <- combn(x = imSet,m = 2,simplify = FALSE)
     }) %>%
     flatten() %>%
     setNames(kmCombinationNames)
-  
+
   knmPairCombinations <- selectBFs %>%
     map2(.x = .,
          .y = fileList,
@@ -173,7 +173,7 @@ function(selectBFs){
              map(~ str_remove_all(string = .,
                                   pattern = ".x3p| ")) %>% #remove .x3p extension and whitespace
              unlist()
-           
+
            setNames(kmSet,bfNames)
          }) %>%
     map2(.x = .,
@@ -188,9 +188,9 @@ function(selectBFs){
       # names(pair)[1]
       firearmNumber <- names(pair)[1] %>%
         stringr::str_extract("firearm[0-9]{1,2}")
-      
+
       # str_detect(names(pair)[2],pattern = firearmNumber)
-      if(any(str_detect(names(pair),pattern = "10")) & 
+      if(any(str_detect(names(pair),pattern = "10")) &
          any(str_detect(names(pair),pattern = "1$"))){
         return(pair)
       }
@@ -203,12 +203,12 @@ function(selectBFs){
     }) %>%
     discard(~ all(is.na(.))) %>%
     setNames(knmCombinationNames)
-  
+
   kmCorrs_64Cells_fftThenPairwise <- kmPairCombinations %>%
     map2_dfr(.x = .,
              .y = kmCombinationNames,
              function(pair,pairName){
-               
+
                kmComparisonFeatures <- purrr::map_dfr(seq(-30,30,by = 3),
                                                       ~ comparison_allTogether(reference = pair[[1]],
                                                                                target = pair[[2]],
@@ -218,7 +218,7 @@ function(selectBFs){
                  mutate(direction = "1to2",
                         type = "match",
                         pairName = pairName)
-               
+
                kmComparisonFeatures_rev <- purrr::map_dfr(seq(-30,30,by = 3),
                                                           ~ comparison_allTogether(reference = pair[[2]],
                                                                                    target = pair[[1]],
@@ -228,18 +228,18 @@ function(selectBFs){
                  mutate(direction = "2to1",
                         type = "match",
                         pairName = pairName)
-               
+
                return(bind_rows(kmComparisonFeatures,kmComparisonFeatures_rev))
-               
+
              })
-  
+
   print("fftThenPairwise KM pairs done")
-  
+
   knmCorrs_64Cells_fftThenPairwise <- knmPairCombinations %>%
     map2_dfr(.x = .,
              .y = knmCombinationNames,
              function(pair,pairName){
-               
+
                knmComparisonFeatures <- purrr::map_dfr(seq(-30,30,by = 3),
                                                        ~ comparison_allTogether(reference = pair[[1]],
                                                                                 target = pair[[2]],
@@ -249,7 +249,7 @@ function(selectBFs){
                  mutate(direction = "1to2",
                         type = "non-match",
                         pairName = pairName)
-               
+
                knmComparisonFeatures_rev <- purrr::map_dfr(seq(-30,30,by = 3),
                                                            ~ comparison_allTogether(reference = pair[[2]],
                                                                                     target = pair[[1]],
@@ -259,13 +259,13 @@ function(selectBFs){
                  mutate(direction = "2to1",
                         type = "non-match",
                         pairName = pairName)
-               
+
                return(bind_rows(knmComparisonFeatures,knmComparisonFeatures_rev))
-               
+
              })
-  
+
   print("fftThenPairwise KNM pairs done")
-  
+
   return(bind_rows(kmCorrs_64Cells_fftThenPairwise,
                    knmCorrs_64Cells_fftThenPairwise))
 })
@@ -287,12 +287,12 @@ cmcResults <- comparisonData %>%
                group_by(pairName,direction) %>%
                group_split() %>%
                map_dfr(function(pairCorrResults){
-                 
+
                  map_dfr(purrr::cross(.l = list("ccf" = seq(.35,.6,by = .025),
                                                 "translation" = c(5,10,15,20,25,30),
                                                 "theta" = c(3,6))),
                          function(thresholds){
-                           
+
                            pairCorrResults %>%
                              mutate(originalMethodClassif = decision_CMC(cellIndex,x,y,theta,pairwiseCompCor,
                                                                          xThresh = thresholds$translation,thetaThresh = thresholds$theta,corrThresh = thresholds$ccf),
@@ -320,15 +320,15 @@ cmcResults_combinedDirections <- cmcResults %>%
   group_by(pairName,transThresh,corThresh,thetaThresh,trendRemoved) %>%
   group_split() %>%
   purrr::map_dfr(function(pairResults){
-    
+
     cmcs <- cmcR::decision_combineDirections(pairResults %>%
                                                filter(direction == "1to2"),
                                              pairResults %>%
                                                filter(direction == "2to1"),
                                              thetaThresh = 6)
-    
+
     originalMethodCount <- min(c(nrow(cmcs$originalMethodCMCs[[1]]),nrow(cmcs$originalMethodCMCs[[2]])))
-    
+
     pairResults %>%
       select(c(pairName,transThresh,corThresh,thetaThresh)) %>%
       distinct() %>%
@@ -343,13 +343,13 @@ cmcResults_combinedDirections <- cmcResults %>%
   group_by(transThresh,corThresh,thetaThresh,trendRemoved,decisionRule) %>%
   group_split() %>%
   map_dfr(function(paramConditionedResults){
-    
+
     decisionRuleAUC <- paramConditionedResults %>%
       pROC::roc(response = type,
                 predictor = cmcCount,
                 levels = c("non-match","match"),
                 quiet = TRUE)
-    
+
     paramConditionedResults %>%
       mutate(AUC = as.numeric(decisionRuleAUC$auc))
   }) %>%
@@ -365,3 +365,4 @@ cmcCountData <-  cmcResults_combinedDirections %>%
             AUC = unique(AUC)) %>%
   ungroup()
 
+save(cmcCoundData,"data/cmcCountData.Rdata")
