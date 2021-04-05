@@ -2,6 +2,8 @@
 output: pdf_document
 ---
 
+Dear Professor Di Cook,
+
 In \textit{A Study in Reproducibility: The Congruent Matching Cells Algorithm and cmcR package}, we describe the process of implementing an open-source version of an algorithm used for cartridge case comparisons called the Congruent Matching Cells (CMC) method. 
 Our paper discusses the usage of the `cmcR` implementation, but this is ancillary to the paper's narrative: instead, we focus on the challenges of implementing an algorithm which was released without any code, intermediate data, or even pseudocode. 
 
@@ -19,8 +21,8 @@ Joseph Zemmels, Susan Vanderplas, and Heike Hofmann
 Below is an explanation of non-standard files/folders included with the submission.
 
 - data folder: contains data to reproduce results discussed in paper (via zemmels-vanderplas-hofmann.R file)
-  - fadul1-1.x3p, fadul1-2.x3p, fadu2-1.x3p: X3P files to demonstrate usage of the cmcR package
-  - cmcCountData.Rdata file: data to generate Figures 12 and 13
+  - fadul1-1.x3p, fadul1-2.x3p, fadu2-1.x3p: X3P files of breech faces of 2 same-source and one different-source to demonstrate usage of the cmcR package
+  - cmcCountData.Rdata file: contains CMC count data from the Fadul data set to generate Figures 12 and 13
   - cmcCountData_script.R file: a script to reproduce the cmcCountData.RData file
-- images folder: contains manually-created images used in the paper
+- images folder: contains manually-created images and photos used in the paper
 - figures folder: contains automatically-generated images (while running zemmels-vanderplas-hofmann.R) used in the paper

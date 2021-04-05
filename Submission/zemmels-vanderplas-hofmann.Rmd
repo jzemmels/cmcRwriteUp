@@ -2,23 +2,25 @@
 title: "A Study in Reproducibility: The Congruent Matching Cells Algorithm and cmcR package"
 author:
   - name: Joseph Zemmels
-    affiliation: Iowa State University
+    affiliation: Center for Statistics and Applications in Forensic Evidence
     address:
+    - Department of Statistics
+    - Iowa State University
     - 2438 Osborn Drive
     - Ames, IA 50011
     email:  jzemmels@iastate.edu
   - name: Susan VanderPlas
-    affiliation: Department of Statistics
+    affiliation: University of Nebraska - Lincoln
     address:
-    - University of Nebraska - Lincoln
+    - Department of Statistics
     - 340 Hardin Hall North Wing
     - Lincoln, NE 68583
     email: susan.vanderplas@unl.edu
   - name: Heike Hofmann
-    affiliation: Iowa State University
+    affiliation: Center for Statistics and Applications in Forensic Evidence
     address:
-    - Center for Statistics and Applications in Forensic Evidence
     - Department of Statistics
+    - Iowa State University
     - 2438 Osborn Drive
     - Ames, IA 50011
     email: hofmann@iastate.edu
@@ -1091,7 +1093,7 @@ At one time, it was common to publish the specific implementation of an algorith
 
 If code is not open-sourced, at a minimum, authors should be willing to publish the data at every intermediate stage of the analysis, to allow those who would re-implement algorithms the ability to check the validity of the re-implementation against the output of the published paper. This simple step protects both the authors' interest in the code and the scientific community's interest in replication and verification of previously posed methods. In addition, publishing original, intermediate, and final results allows new algorithms to benchmark against previously proposed solutions to the same problem, providing a much more even basis for comparison of different algorithms. This minimum standard of openness and reproducibility is essential to evaluating algorithms, and in consequential applications such as forensics, these validation results are also important when methods are introduced in a legal setting.
 
-# Funding Statement
+# Acknowledgement
 
 This work was partially funded by the Center for Statistics and Applications in Forensic Evidence (CSAFE) through Cooperative Agreement 70NANB20H019 between NIST and Iowa State University, which includes activities carried out at Carnegie Mellon University, Duke University, University of California Irvine, University of Virginia, West Virginia University, University of Pennsylvania, Swarthmore College and University of Nebraska, Lincoln.
 

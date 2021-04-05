@@ -169,7 +169,7 @@ file_names <- c("fadul1-1.x3p","fadul1-2.x3p","fadul2-1.x3p")
 purrr::walk2(.x = x3p_ids,
              .y = file_names,
              .f = function(x3p_id,file_name){
-               download.file(url = file.path(nbtrd_url, x3p_id),
+               download.file(url = file.path(nbtrd_url, x3p_id), 
                              destfile = paste0("data/",file_name),mode = "wb")
              })
 \end{Sinput}
@@ -414,7 +414,7 @@ extreme values in each scan.
 \begin{Schunk}
 \begin{figure}[htbp]
 
-{\centering \includegraphics[width=\textwidth]{figures/cmcr-unnamed-chunk-5-1}
+{\centering \includegraphics[width=\textwidth]{figures/cmcr-unnamed-chunk-5-1} 
 
 }
 
@@ -540,7 +540,7 @@ in the cell-based comparison procedure.
 \begin{Schunk}
 \begin{figure}[htbp]
 
-{\centering \includegraphics[width=\textwidth]{figures/cmcr-unnamed-chunk-10-1}
+{\centering \includegraphics[width=\textwidth]{figures/cmcr-unnamed-chunk-10-1} 
 
 }
 
@@ -571,7 +571,7 @@ case.
 \begin{Schunk}
 \begin{figure}[htbp]
 
-{\centering \includegraphics[width=.75\textwidth]{images/cmc_illustration}
+{\centering \includegraphics[width=.75\textwidth]{images/cmc_illustration} 
 
 }
 
@@ -727,16 +727,16 @@ reversed.
 \begin{Schunk}
 \begin{Sinput}
 # Fill in most of the arguments first
-comp_w_pars <- purrr::partial(.f = comparison_allTogether,
+comp_w_pars <- purrr::partial(.f = comparison_allTogether, 
                                numCells = 64, maxMissingProp = .85)
 
 # Then, map the remaining values to theta
 kmComparisonFeatures <- purrr::map_dfr(
-  seq(-30,30,by = 3),
+  seq(-30,30,by = 3), 
   ~comp_w_pars(reference = fadul1.1, target = fadul1.2, theta = .))
 
 kmComparisonFeatures_rev <- purrr::map_dfr(
-  seq(-30,30,by = 3),
+  seq(-30,30,by = 3), 
   ~comp_w_pars(reference = fadul1.2, target = fadul1.1, theta = .))
 \end{Sinput}
 \end{Schunk}
@@ -879,17 +879,17 @@ CMC papers.
         Paper & Translation $T_x, T_y$ & Rotation $\theta$ & CCF$_{\max}$ \\
               & (in pixels) & (in degrees) \\
         \hline
-        \cellcolor{lightgray}{\citet{song_3d_2014}} & \cellcolor{lightgray}{20} &
+        \cellcolor{lightgray}{\citet{song_3d_2014}} & \cellcolor{lightgray}{20} & 
         \cellcolor{lightgray}{6} & \cellcolor{lightgray}{.60} \\
-
+        
         \citet{tong_fired_2014} & 30 & 3 & .25 \\
-
-        \cellcolor{lightgray}{\citet{tong_improved_2015}} & \cellcolor{lightgray}{15} &
+        
+        \cellcolor{lightgray}{\citet{tong_improved_2015}} & \cellcolor{lightgray}{15} & 
         \cellcolor{lightgray}{3} & \cellcolor{lightgray}{.55} \\
-
+        
         \citet{chen_convergence_2017} & 20 & 3 & .40 \\
-
-        \cellcolor{lightgray}{\citet{song_estimating_2018}} & \cellcolor{lightgray}{20} &
+        
+        \cellcolor{lightgray}{\citet{song_estimating_2018}} & \cellcolor{lightgray}{20} & 
         \cellcolor{lightgray}{6} & \cellcolor{lightgray}{.50}\\
         \hline
     \end{tabular}
@@ -982,11 +982,11 @@ redundancy).
 \begin{Schunk}
 \begin{Sinput}
 kmComparison_cmcs <- kmComparisonFeatures %>% mutate(
-  originalMethodClassif =
+  originalMethodClassif = 
     decision_CMC(cellIndex = cellIndex, x = x, y = y, theta = theta,
                  corr = pairwiseCompCor, xThresh = 20, thetaThresh = 6,
                  corrThresh = .5),
-  highCMCClassif =
+  highCMCClassif = 
     decision_CMC(cellIndex = cellIndex, x = x, y = y, theta = theta,
                  corr = pairwiseCompCor, xThresh = 20, thetaThresh = 6,
                  corrThresh = .5, tau = 1))
@@ -1009,7 +1009,7 @@ counts (17 in this example).
 \begin{Schunk}
 \begin{figure}[htbp]
 
-{\centering \includegraphics[width=\textwidth]{figures/kmOriginalMethod}
+{\centering \includegraphics[width=\textwidth]{figures/kmOriginalMethod} 
 
 }
 
@@ -1025,7 +1025,7 @@ results as described above, the final High CMC number is 24 CMCs.
 \begin{Schunk}
 \begin{figure}[htbp]
 
-{\centering \includegraphics[width=\textwidth]{figures/kmHighCMC}
+{\centering \includegraphics[width=\textwidth]{figures/kmHighCMC} 
 
 }
 
@@ -1044,7 +1044,7 @@ thus was assigned 0 CMCs under the High CMC method.
 \begin{Schunk}
 \begin{figure}[htbp]
 
-{\centering \includegraphics[width=\textwidth]{figures/knmOriginalMethod}
+{\centering \includegraphics[width=\textwidth]{figures/knmOriginalMethod} 
 
 }
 
@@ -1384,8 +1384,9 @@ University of Nebraska, Lincoln.
 
 \address{%
 Joseph Zemmels\\
-Iowa State University\\%
-2438 Osborn Drive\\ Ames, IA 50011\\
+Center for Statistics and Applications in Forensic Evidence\\%
+Department of Statistics\\ Iowa State University\\ 2438 Osborn
+Drive\\ Ames, IA 50011\\
 %
 %
 %
@@ -1394,9 +1395,9 @@ Iowa State University\\%
 
 \address{%
 Susan VanderPlas\\
-Department of Statistics\\%
-University of Nebraska - Lincoln\\ 340 Hardin Hall North Wing\\ Lincoln,
-NE 68583\\
+University of Nebraska - Lincoln\\%
+Department of Statistics\\ 340 Hardin Hall North Wing\\ Lincoln, NE
+68583\\
 %
 %
 %
@@ -1405,12 +1406,11 @@ NE 68583\\
 
 \address{%
 Heike Hofmann\\
-Iowa State University\\%
-Center for Statistics and Applications in Forensic Evidence\\ Department
-of Statistics\\ 2438 Osborn Drive\\ Ames, IA 50011\\
+Center for Statistics and Applications in Forensic Evidence\\%
+Department of Statistics\\ Iowa State University\\ 2438 Osborn
+Drive\\ Ames, IA 50011\\
 %
 %
 %
 \\\href{mailto:hofmann@iastate.edu}{\nolinkurl{hofmann@iastate.edu}}
 }
-
