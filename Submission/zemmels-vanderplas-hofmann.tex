@@ -682,7 +682,9 @@ calculated pointwise, this result allows us to trade the moving sum
 computations from the definition of the CCF for two forward Fourier
 transformation, a pointwise product, and an inverse Fourier
 transformation. The Fast Fourier Transform (FFT) algorithm can be used
-to reduce the computational load considerably.
+to reduce the computational load considerably. Our implementation of
+this FFT-based CCF calculation is adapted from the \pkg{cartridges3D}
+package \citep{cartridges3D}.
 
 No computational shortcut comes without some tradeoffs, though, and this
 FFT-based CCF calculation is no different. The FFT does not tolerate
@@ -1378,6 +1380,16 @@ activities carried out at Carnegie Mellon University, Duke University,
 University of California Irvine, University of Virginia, West Virginia
 University, University of Pennsylvania, Swarthmore College and
 University of Nebraska, Lincoln.
+
+We would like to thank the creators/maintainers of a number of R
+packages upon which the general infrastructure of \CRANpkg{cmcR} relies.
+First and foremost, we would like to thank Hadley Wickham and the
+RStudio team for developing the \CRANpkg{tidyverse} suite of packages
+without which it would have been difficult to structure \CRANpkg{cmcR}
+in an intuitive, modularized format \citep{tidyverse}. Additionally,
+\CRANpkg{knitr}, \CRANpkg{rmarkdown}, and \CRANpkg{rticles} have been
+incredibly useful for communicating and ensuring reproducibility of our
+work \citep{knitr,rmarkdown,rticles}.
 
 \hypertarget{computational-details}{%
 \section{Computational details}\label{computational-details}}

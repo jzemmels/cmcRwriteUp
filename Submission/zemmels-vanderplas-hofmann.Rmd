@@ -548,7 +548,7 @@ All of the steps dealing with cell-based comparisons are implemented as function
 
 Published implementations of the CMC algorithm do not describe precisely how the CCF is calculated. In image processing, it is common to use an implementation based on the Fast Fourier Transform \citep{Brown92asurvey}. This implementation leverages the Cross-Correlation Theorem, which states that for matrices $A$ and $B$, the CCF can be expressed in terms of frequency-domain pointwise product: $$
 (A \star B )[m,n]= \mathcal{F}^{-1}\left(\overline{\mathcal{F}(A)} \odot \mathcal{F}(B)\right)[m,n]
-$$ where $\mathcal{F}$ and $\mathcal{F}^{-1}$ denote the discrete Fourier and inverse discrete Fourier transforms, respectively, and $\overline{\mathcal{F}(A)}$ denotes the complex conjugate \citep{fft_brigham}. Because the product on the right-hand side is calculated pointwise, this result allows us to trade the moving sum computations from the definition of the CCF for two forward Fourier transformation, a pointwise product, and an inverse Fourier transformation. The Fast Fourier Transform (FFT) algorithm can be used to reduce the computational load considerably.
+$$ where $\mathcal{F}$ and $\mathcal{F}^{-1}$ denote the discrete Fourier and inverse discrete Fourier transforms, respectively, and $\overline{\mathcal{F}(A)}$ denotes the complex conjugate \citep{fft_brigham}. Because the product on the right-hand side is calculated pointwise, this result allows us to trade the moving sum computations from the definition of the CCF for two forward Fourier transformation, a pointwise product, and an inverse Fourier transformation. The Fast Fourier Transform (FFT) algorithm can be used to reduce the computational load considerably. Our implementation of this FFT-based CCF calculation is adapted from the \pkg{cartridges3D} package \citep{cartridges3D}.
 
 No computational shortcut comes without some tradeoffs, though, and this FFT-based CCF calculation is no different. The FFT does not tolerate missing values, and breech faces are not continuous surfaces -- all of the white regions in \autoref{fig:cmc_illustration} correspond to missing values. While it is unclear how the CCF is implemented in the CMC papers (it is not even defined mathematically), the \CRANpkg{cmcR} package adopts the following conventions:
 
@@ -1096,6 +1096,8 @@ If code is not open-sourced, at a minimum, authors should be willing to publish 
 # Acknowledgement
 
 This work was partially funded by the Center for Statistics and Applications in Forensic Evidence (CSAFE) through Cooperative Agreement 70NANB20H019 between NIST and Iowa State University, which includes activities carried out at Carnegie Mellon University, Duke University, University of California Irvine, University of Virginia, West Virginia University, University of Pennsylvania, Swarthmore College and University of Nebraska, Lincoln.
+
+We would like to thank the creators/maintainers of a number of R packages upon which the general infrastructure of \CRANpkg{cmcR} relies. First and foremost, we would like to thank Hadley Wickham and the RStudio team for developing the \CRANpkg{tidyverse} suite of packages without which it would have been difficult to structure \CRANpkg{cmcR} in an intuitive, modularized format \citep{tidyverse}. Additionally, \CRANpkg{knitr}, \CRANpkg{rmarkdown}, and \CRANpkg{rticles} have been incredibly useful for communicating and ensuring reproducibility of our work \citep{knitr,rmarkdown,rticles}.
 
 # Computational details
 
