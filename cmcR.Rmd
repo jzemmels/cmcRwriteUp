@@ -2,28 +2,30 @@
 title: "A Study in Reproducibility: The Congruent Matching Cells Algorithm and cmcR package"
 author:
   - name: Joseph Zemmels
-    affiliation: Iowa State University
+    affiliation: Center for Statistics and Applications in Forensic Evidence
     address:
+    - Department of Statistics
+    - Iowa State University
     - 2438 Osborn Drive
     - Ames, IA 50011
     email:  jzemmels@iastate.edu
   - name: Susan VanderPlas
-    affiliation: Department of Statistics
+    affiliation: University of Nebraska - Lincoln
     address:
-    - University of Nebraska - Lincoln
+    - Department of Statistics
     - 340 Hardin Hall North Wing
     - Lincoln, NE 68583
     email: susan.vanderplas@unl.edu
   - name: Heike Hofmann
-    affiliation: Department of Statistics
+    affiliation: Center for Statistics and Applications in Forensic Evidence
     address:
-    - Center for Statistics and Applications in Forensic Evidence
+    - Department of Statistics
     - Iowa State University
     - 2438 Osborn Drive
     - Ames, IA 50011
     email: hofmann@iastate.edu
 abstract: > 
-  Scientific research is driven by our ability to use existing methods, procedures, and materials from previous studies and further this research by adding to it. As the need for computationally-intensive methods to analyze large amount of data grows, the criteria needed to achieve reproducibility, specifically computational reproducibility, have become more sophisticated. In general, prosaic descriptions of algorithms are not detailed or precise enough to ensure a complete reproducibility of a method. Results may be sensitive to conditions not commonly specified in written-word descriptions such as implicit parameter settings or the programming language used. To achieve true computational reproducibility, it is necessary to provide all intermediate data and code used to produce published results. In this paper, we consider a class of algorithms developed at the National Institute of Standards and Technology (NIST) to perform firearm evidence identification on cartridge case evidence known as the \dfn{Congruent Matching Cells} (CMC) methods. To date, only textual descriptions of these algorithms have been published. We introduce the first open-source implementation of the Congruent Matching Cells methods in the R package \CRANpkg{cmcR}. We have structured the \CRANpkg{cmcR} package as a set of sequential, modularized functions intended to ease the process of parameter experimentation. We use \CRANpkg{cmcR} and a novel variance ratio statistic to explore the CMC methodology and illustrate problems that arise when only computationally ambiguous descriptions of algorithms are provided.
+  Scientific research is driven by our ability to use methods, procedures, and materials from previous studies and further this research by adding to it. As the need for computationally-intensive methods to analyze large amount of data grows, the criteria needed to achieve reproducibility, specifically computational reproducibility, have become more sophisticated. In general, prosaic descriptions of algorithms are not detailed or precise enough to ensure complete reproducibility of a method. Results may be sensitive to conditions not commonly specified in written-word descriptions such as implicit parameter settings or the programming language used. To achieve true computational reproducibility, it is necessary to provide all intermediate data and code used to produce published results. In this paper, we consider a class of algorithms developed at the National Institute of Standards and Technology (NIST) to perform firearm evidence identification on cartridge case evidence known as the \dfn{Congruent Matching Cells} (CMC) methods. To date, only textual descriptions of these algorithms have been published. We introduce the first open-source implementation of the Congruent Matching Cells methods in the R package \CRANpkg{cmcR}. We have structured the \CRANpkg{cmcR} package as a set of sequential, modularized functions intended to ease the process of parameter experimentation. We use \CRANpkg{cmcR} and a novel variance ratio statistic to explore the CMC methodology and illustrate problems that arise when  computationally ambiguous algorithms descriptions   are provided.
 preamble: | 
   \PassOptionsToPackage{table}{xcolor}
   \usepackage[utf8]{inputenc}
@@ -49,14 +51,6 @@ header-includes: \definecolor{lightgray}{HTML}{D3D3D3}
 output: rticles::rjournal_article
 ---
 
-```{=tex}
-\newcommand{\hh}[1]{{\textcolor{orange}{#1}}}
-\newcommand{\svp}[1]{{\textcolor{blue}{#1}}}
-\newcommand{\jz}[1]{{\textcolor{purple}{#1}}}
-```
-
-
-
 ```{r ,localDataDir, include=FALSE}
 if (!dir.exists("data")){
   dir.create("data")
@@ -73,19 +67,14 @@ if (!file.exists("data/fadul2-1.x3p")){
 }
 ```
 
-```{r, derivativeImagesDir,include=FALSE}
-if (!dir.exists("derivatives")){
-  dir.create("derivatives")
-}
-```
+
 
 ```{r setup,echo=FALSE,message=FALSE,warning=FALSE}
-knitr::opts_chunk$set(cache = T, dpi = 300, fig.width = 8, fig.height = 4, out.width = "\\textwidth", dpi = 300)
+knitr::opts_chunk$set(cache = T, dpi = 300, fig.width = 8, fig.height = 4, out.width = "\\textwidth", dpi = 300, fig.path = 'figures/cmcr-')
 library(cmcR) # remotes::install_github("CSAFE-ISU/cmcR")
 library(tidyverse)
 library(x3ptools) # remotes::install_github("heike/x3ptools")
 library(rgl)
-library(ggpcp)
 ```
 
 # Introduction {#intro}
@@ -229,7 +218,7 @@ x <- fadul1.1$header.info$incrementX * (1:nrow(z))
 # again, a lot of possible experimentation
 surface3d(x, y, z, back = "filled",emission = "grey30",specular = "grey50",ambient = "grey10")
 
-x3ptools::x3p_snapshot(file = "derivatives/fadul1-1.png")
+x3ptools::x3p_snapshot(file = "figures/fadul1-1.png")
 
 rgl.close()
 ```
@@ -262,13 +251,13 @@ x <- fadul1.2$header.info$incrementX * (1:nrow(z))
 # again, a lot of possible experimentation
 surface3d(x, y, z, back = "filled",emission = "grey30",specular = "grey50",ambient = "grey10")
 
-x3ptools::x3p_snapshot(file = "derivatives/fadul1-2.png")
+x3ptools::x3p_snapshot(file = "figures/fadul1-2.png")
 
 rgl.close()
 ```
 
 ```{r, rawBFs,echo=FALSE,fig.cap='\\label{fig:cartridgeCasePair} Unprocessed surface matrices of the known-match Fadul 1-1 (left) and Fadul 1-2 (right) \\citep{fadul_empirical_2011}. The observations in the corners of these surface matrices are artifacts of the staging area in which these scans were taken. The holes on the interior of the primer surfaces are caused by the firing pin striking the primer during the firing process. The region of the primer around this hole does not come into uniform contact with the breech face of the firearm.', fig.subcap=c('',''),fig.align='center',fig.pos='htbp',out.width='.49\\linewidth',out.height='.49\\linewidth'}
-knitr::include_graphics(c("derivatives/fadul1-1.png","derivatives/fadul1-2.png"))
+knitr::include_graphics(c("figures/fadul1-1.png","figures/fadul1-2.png"))
 ```
 
 Only certain regions of a cartridge case contain identifying breech face impression markings. \citet{song_proposed_2013} defines "valid correlation regions" as regions where "the individual characteristics of the ballistics signature are found that can be used effectively for ballistics identification." Prior to applying the CMC comparison procedure, cartridge scans must undergo some preprocessing to identify these valid correlation regions.
@@ -852,11 +841,11 @@ plt <- (plt1 / plt2 / plt3) +
               heights =  c(2,1.8,.5),
               widths = c(1,.9,1))
 
-ggsave(filename = "cmcR_files/figure-latex/kmOriginalMethod.pdf",plot = plt)
+ggsave(filename = "figures/kmOriginalMethod.pdf",plot = plt)
 
-invisible(knitr::plot_crop("cmcR_files/figure-latex/kmOriginalMethod.pdf",quiet = TRUE))
+invisible(knitr::plot_crop("figures/kmOriginalMethod.pdf",quiet = TRUE))
 
-knitr::include_graphics(path = "cmcR_files/figure-latex/kmOriginalMethod.pdf")
+knitr::include_graphics(path = "figures/kmOriginalMethod.pdf")
 ```
 
 Similarly, CMCs and non-CMCs determined under the High CMC method are shown in \autoref{fig:highCMCPlot}. Treating Fadul 1-1 and Fadul 1-2 as the reference scan yields 19 and 18 CMCs, respectively. Combining the results as described above, the final High CMC number is 24 CMCs.
@@ -903,11 +892,11 @@ plt <- (plt1 / plt2 / plt3) +
               heights =  c(2,2,.5),
               widths = c(1,1,1))
 
-ggsave(filename = "cmcR_files/figure-latex/kmHighCMC.pdf",plot = plt)
+ggsave(filename = "figures/kmHighCMC.pdf",plot = plt)
 
-invisible(knitr::plot_crop("cmcR_files/figure-latex/kmHighCMC.pdf"))
+invisible(knitr::plot_crop("figures/kmHighCMC.pdf"))
 
-knitr::include_graphics(path = "cmcR_files/figure-latex/kmHighCMC.pdf")
+knitr::include_graphics(path = "figures/kmHighCMC.pdf")
 ```
 
 In contrast, \autoref{fig:knmCMCPlot} shows the CMC results for a comparison between Fadul 1-1 and a known non-match scan, Fadul 2-1, under the exact same processing conditions. Only one cell is classified as a congruent matching cell under the original method when Fadul 1-1 is the reference scan. No cells are classified as CMCs in the other direction. While not shown, this pair fails the High CMC criteria and thus was assigned 0 CMCs under the High CMC method.
@@ -972,11 +961,11 @@ plt <- (plt1 / plt2 / plt3) +
               heights =  c(2,2,.5),
               widths = c(1,1,1))
 
-ggsave(filename = "cmcR_files/figure-latex/knmOriginalMethod.pdf",plot = plt)
+ggsave(filename = "figures/knmOriginalMethod.pdf",plot = plt)
 
-invisible(knitr::plot_crop("cmcR_files/figure-latex/knmOriginalMethod.pdf",quiet = TRUE))
+invisible(knitr::plot_crop("figures/knmOriginalMethod.pdf",quiet = TRUE))
 
-knitr::include_graphics(path = "cmcR_files/figure-latex/knmOriginalMethod.pdf")
+knitr::include_graphics(path = "figures/knmOriginalMethod.pdf")
 ```
 
 ## Ambiguity in algorithmic descriptions {#ambiguities}
@@ -1104,8 +1093,15 @@ At one time, it was common to publish the specific implementation of an algorith
 
 If code is not open-sourced, at a minimum, authors should be willing to publish the data at every intermediate stage of the analysis, to allow those who would re-implement algorithms the ability to check the validity of the re-implementation against the output of the published paper. This simple step protects both the authors' interest in the code and the scientific community's interest in replication and verification of previously posed methods. In addition, publishing original, intermediate, and final results allows new algorithms to benchmark against previously proposed solutions to the same problem, providing a much more even basis for comparison of different algorithms. This minimum standard of openness and reproducibility is essential to evaluating algorithms, and in consequential applications such as forensics, these validation results are also important when methods are introduced in a legal setting.
 
-# Funding Statement
+
+# Acknowledgement
 
 This work was partially funded by the Center for Statistics and Applications in Forensic Evidence (CSAFE) through Cooperative Agreement 70NANB20H019 between NIST and Iowa State University, which includes activities carried out at Carnegie Mellon University, Duke University, University of California Irvine, University of Virginia, West Virginia University, University of Pennsylvania, Swarthmore College and University of Nebraska, Lincoln.
 
-\bibliography{RJreferences}
+# Computational details
+
+```{r}
+sessionInfo()
+```
+
+\bibliography{cmcR}
