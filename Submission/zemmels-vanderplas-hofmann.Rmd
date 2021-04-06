@@ -1097,7 +1097,7 @@ If code is not open-sourced, at a minimum, authors should be willing to publish 
 
 This work was partially funded by the Center for Statistics and Applications in Forensic Evidence (CSAFE) through Cooperative Agreement 70NANB20H019 between NIST and Iowa State University, which includes activities carried out at Carnegie Mellon University, Duke University, University of California Irvine, University of Virginia, West Virginia University, University of Pennsylvania, Swarthmore College and University of Nebraska, Lincoln.
 
-We would like to thank the creators/maintainers of a number of R packages upon which the general infrastructure of \CRANpkg{cmcR} relies. First and foremost, we would like to thank Hadley Wickham and the RStudio team for developing the \CRANpkg{tidyverse} suite of packages without which it would have been difficult to structure \CRANpkg{cmcR} in an intuitive, modularized format \citep{tidyverse}. Additionally, \CRANpkg{knitr}, \CRANpkg{rmarkdown}, and \CRANpkg{rticles} have been incredibly useful for communicating and ensuring reproducibility of our work \citep{knitr,rmarkdown,rticles}.
+Special thanks also to all the developers and open-source contributors of R [@R], knitr [@knitr1; @knitr2], rticles [@rticles], and the tidyverse [@tidyverse], without whom this project would not have been possible.
 
 # Computational details
 
