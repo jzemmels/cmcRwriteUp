@@ -4,15 +4,15 @@ output: pdf_document
 
 Dear Professor Di Cook,
 
-In our submission \textit{A Study in Reproducibility: The Congruent Matching Cells Algorithm and cmcR package} to the R Journal, we describe the process of implementing an open-source version of the Congruent Matching Cells (CMC) algorithm first described by Tong et al (2014). The CMC algorithm is used in forensic settings to compare breech face impressions on cartridge cases. 
+In \textit{A Study in Reproducibility: The Congruent Matching Cells Algorithm and cmcR package}, we describe the process of implementing an open-source version of an algorithm used for cartridge case comparisons called the Congruent Matching Cells (CMC) method. 
 Our paper discusses the usage of the `cmcR` implementation, but this is ancillary to the paper's narrative: instead, we focus on the challenges of implementing an algorithm which was released without any code, intermediate data, or even pseudocode. 
 
-We are highlighting the shortcomings of a purely verbal description of an algorithm.
+We are highlighting the shortcomings of a purely verbal description of an algorithm - a discussion that does not include pseudocode, function references, or any discussion of parameter settings. 
 Our discussion of this process centers on the required components for true computational reproducibility: that both source code and intermediate data are necessary to assure that the new implementation is qualitatively similar to the implementation described in the paper. 
 
-In the absence of source code or intermediate data, we conducted a limited grid search through  different parameter settings and algorithm options, and developed a method to quantify the differences between the results of each combination of settings and procedures. 
-This required modularizing the algorithm and investigating (many of) the different ways any particular description could be interpreted. 
-As a result, we think this paper extends well beyond the `cmcR` package vignette, and in fact contains useful observations for anyone interested in computational reproducibility or anyone who is operating in a field where open-source software is not an expectation. 
+Because we did not have these luxuries, we conducted a limited grid search through the different parameter settings and algorithm options, and developed a method to quantify the differences between the results of each combination of settings and procedures. 
+This required modularizing the algorithm (which is of course good programming practice in any case) and examining many of the different ways any particular description could be interpreted. 
+As a result, we think this paper extends well beyond the `cmcR` package vignette, and in fact contains useful observations for anyone interested in computational reproducibility or anyone who is operating in fields where open-source software is not an expectation. 
 
 Thank you for your consideration,
 

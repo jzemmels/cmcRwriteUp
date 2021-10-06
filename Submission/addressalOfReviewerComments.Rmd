@@ -1,0 +1,78 @@
+---
+title: "Addressal of Reviewer Feedback"
+author: "Joe Zemmels, Susan VanderPlas, Heike Hofmann"
+output: pdf_document
+---
+
+## Reviewer Comments \#1
+
+The manuscript describes the authors’ development of an open-source implementation of the CMC method described by the NIST group. 
+The authors contend that the NIST papers were insufficient for the advancement of science and for the implementation of their methods; however, the fact that the authors were able to create the described implementation disproves this assertion. 
+The NIST CMC people are not listed as co-authors on this paper and thus the reader is left to assume that the authors obtained all the information they needed for CMC implementation from the published CMC papers.
+
+**We were not able to obtain  all the information [we] needed for the CMC implementation from the published CMC papers." Our implementation, while providing qualitatively similar results to those in published papers on the Fadul data set, is based on a large amount of guesswork and lengthy experimentation due to the ambiguity in the original CMC papers. We have no reason to believe that our implementation will behave the same on different data sets.**
+
+The authors are a bit harsh on the NIST authors, using phrases like “the comparison process is described with characteristic brevity” and highly criticizing the NIST authors’ lack of detail in their papers. 
+
+**We've addressed this comment by changing XYZ**
+
+CMC is described by the NIST developers as a family of methods, still under development, and not a single finalized approach (thus the series of CMC papers).
+Thus it is understandable that NIST papers not spell out a perfect step by step approach.
+Computational methods, like CMC, evolve and improve over time. 
+Some preprocessing steps that might work for one approach do not work for another approach. 
+Some steps will work for one type of data, or data from a specific type of firearm. 
+For example, different preprocessing steps may be needed for data from different sources. 
+It is therefore not clear why the authors appear confused that different CMC papers would have different processing steps “Complicating the issue of preprocessing the scans, the procedures used to process the surface matrices differ in each of the papers discussed here.”.
+
+
+
+It is well known that differences in preprocessing, CMC gridding, thresholds, and parameters can affect the final CMC scores. 
+
+**Previous studies do not provide a sensitivity analysis to demonstrate how various processing decisions affect the final CMC scores. We can only surmise as much by comparing results across CMC papers where various parameters inexplicably change even though the same method (e.g., the High CMC decision rule) is applied to the same data (the Fadul scans). One of our goals in this paper was to provide the first demonstration of the sensitivity of the final CMC scores to (a limited grid of) processing decisions.**
+
+The optimal set of parameters and algorithmic steps may be dataset specific and those searching among these parameters (such as the authors) need to be careful about over-fitting. 
+There did not appear to be anything in the paper about prevention of over-fitting.
+
+**We agree that avoiding over-fitting to a particular data set is critical for ensuring the generalizability of the CMC method. However, there is no discussion of over-fitting to the Fadul data in the original CMC papers. Rather, authors appear to perform an internal parameter search on the entire Fadul data set and report the most-promising results. In this manuscript, our goal wasn't to optimize the performance of the CMC method but instead show that our implementation could produce results that are qualitatively similar to published results. The cmcR package can and should be used to explore the problem of over-fitting in future applications.**
+
+Some of the NIST criticisms are over-stated. 
+For example, the authors criticize NIST for not describing how scan rotation was performed and which type of interpolation was used during rotation. 
+This is a minor point and not one that should not cause issue with any implementation.
+It is completely reasonable that the NIST authors left out this detail for including minutia at this level would cause all CMC papers to be unnecessarily long.
+
+**We agree that not including minor details in the prosaic description of the algorithm is admissible from a readability perspective. While any one of such decisions *shouldn't* affect results, our purpose in bringing up such minutiae is to emphasize that en-masse, without access to the processed data or code, they compound and ultimately yield opaque results.**
+
+Overall, the largest contribution of this paper is the open-source implementation provided by the authors. 
+The authors were able to assemble a set of algorithmic steps and parameters that fully implement one (or two) of the CMC methods. 
+The modularization described in their implementation is indeed beneficial for those interested in modifying or improving upon the methods.
+This is indeed a useful contribution to the community. 
+My main criticism is the authors over-stating of the issues in the original CMC papers. 
+As stated above, the fact that the authors were able to produce their implementation demonstrates that sufficient information was available. 
+
+**The fact that we were able to create an implementation does not mean that the original methods are reproducible. For example, to reiterate a point made above, there is no reason to believe that our implementation will behave the same on a new data set. We agree that some of our language was overly harsh and have changed both the language and underlying points we were trying to make.**
+
+In the conclusion the authors state “The results shared in thi manuscript indicate that the implementation of the CMC method in the cmcR package is qualitatively similar to those published in Song et al. (2014), Tong et al. (2015), Chen et al. (2017), and Song et al. (2018).” but I did not see any of these results?
+Perhaps there were missing tables in my manuscript?
+
+**We've addressed this comment by including Figure 14 showing variance ratio values across the various CMC papers.**
+
+One reference I wanted to examine was the Zemmels 2020 reference however it does not appear in the bibliography.
+
+**We recognized that this was a typo in the paper. The "Zemmels 2020" reference was actually meant to refer to the current manuscript (which we began writing in 2020). We have clarified this by changing references in the paper to "Zemmels et al. (2020)" to "cmcR Implementation."**
+
+The level of criticism should be toned down to reflect the reality of the CMC method as being a family of approaches still under active development and one that the authors were able to implement. 
+Missing references (Zemmels) and results (comparison with the NIST published results as stated in the conclusion; missing table?) should be added.
+
+## Reviwer Comments \#2
+
+1.  I don’t think this paper works as a paper on reproducible research (RR), nor does it contribute to this field. 
+However it is a good paper and the application is interesting. 
+I would like you to remove the RR focus, and rather concentrate on the motivation for a parallel implementation (freedom of use, ease of extension, research platform, forensic transparency), and the implementation itself.
+
+**We have changed the focus of the paper to instead be on the importance of open-source algorithms for the sake of transparency in forensics.**
+
+2.  It would be good to know if you actually tried to contact the original authors – especially since they appear to be NIST researchers, and NIST funds your research
+
+3.  Comparison of your package with published results is a must.
+
+**We've addressed this comment by including Figure 14 showing variance ratio values across the various CMC papers.**
