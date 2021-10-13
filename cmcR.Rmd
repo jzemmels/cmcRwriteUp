@@ -92,7 +92,7 @@ Historically, the assessment of probative value has been performed by a forensic
 The process by which an examiner arrives to their evidentiary conclusion is largely opaque and unauditable [cite PCAST].
 In response, the \citet{council_strengthening_2009} has pushed to complement subjective decisions made by forensic examiners with automatic algorithms that objectively assess evidence and can be explained during court testimony.
 Various pattern-matching methods have been proposed to objectively measure the similarity between two pieces of evidence.
-However, only a fraction of these proposed methods have an open-source, auditable implementation [cite CSAFE work].
+However, only a fraction of these proposed methods have an open-source, auditable implementation \citep{park2019}, handwriting \citep{crawford_handwriting_2020}, shoe prints \citep{park_algorithm_2020}, and ballistic evidence \citep{hare_automatic_2016,tai_fully_2018}..
 In high-stakes fields like forensics, where it is necessary that a method's strengths and weaknesses are well-understood by practitioners, open-source algorithms provide a transparency that manufacturers of proprietary algorithms cannot or will not provide.
 In particular, open-source algorithms encourage the forensic science community to explore a method's sensitivity to processing or parameter choices.
 Such an exploration is needed to reach a consensus on reasonable settings to use in-practice.
@@ -138,172 +138,6 @@ Additionally, we argue that our implementation can be used as a template for fut
 In the remainder of this paper, we first describe some of the background of forensic comparisons of breech face impressions. We then follow with a description of the implementation of a general CMC method which encompasses methods discussed in \citet{song_proposed_2013}, \citet{song_3d_2014}, and \citet{tong_improved_2015}. \citet{song_proposed_2013} lays out the conceptual framework for the original CMC method later implemented in \citet{song_3d_2014} and \cite{tong_fired_2014}. An improvement of the method presented in \citet{tong_improved_2015} and used in subsequent papers is referred to as the \`\`High CMC" method \citep{chen_convergence_2017}. Both implementations (and further proposed improvements) have been shown to correctly differentiate same and different-source cartridge cases from the \citet{fadul_empirical_2011} data set.
 
 The \CRANpkg{cmcR} package contains implementations designed for use with 3D topographical scans of the original method described in \citet{song_proposed_2013} (which we will refer to as the original method) and \citet{song_3d_2014} and the High CMC method described in \citet{tong_improved_2015} (which we will refer to as the High CMC method). The source code to the full \CRANpkg{cmcR} package is accessible at <https://github.com/CSAFE-ISU/cmcR>.
-
-<!-- \jz{Pattern matching algorithms applied to forensic evidence have recently grown in prevalence.  -->
-<!-- The \citet{council_strengthening_2009} has pushed to complement subjective decisions made by forensic examiners, which are largely unauditable, with automatic algorithms that objectively assess evidence and can be explained during court testimony.  -->
-<!-- However, increased interest in these algorithms has also led many legal experts to question the admissibility and acceptability of these algorithms in court [cite Imwinkelried and Nutter papers].  -->
-<!-- For example, is it admissible for a forensic examiner to justify an evidentiary conclusion based on the output of an algorithm? -->
-<!-- Proprietary algorithms like TrueAllele [cite], which analyzes DNA mixtures and provide a statistic that helps assess whether a particular defendant was one of the contributors, have so far been considered admissible as long as it is demonstrated that the theory or technique rests on adequate validation [cite Daubert]. -->
-<!-- However, validation studies generally provide only broad numerical or graphical summaries of an algorithm's performance on a particular data set rather than its sensitivity to parameter choice or new data. -->
-<!-- An algorithm's sensitivity should be discussed among the forensic science community to come to a consensus on a set of parameters before it is considered admissible evidence. -->
-<!-- In the absence of such a discussion, it is plausible that the prosecution and defense could each choose a set of parameters and arrive at conflicting results. -->
-<!-- As the goal of a forensic examination is to provide an objective assessment of the probative value of a piece of evidence, this is not a desirable outcome.} -->
-
-<!-- \jz{For the family of algorithms discussed in this paper, our implementation highlights an extreme sensitivity to parameter choice that hasn't been discussed previously. -->
-<!-- The current standard in the field is to provide a graphical or numerical summary conveying the performance of a method on a particular data set under, presumably, internally optimized parameters.  -->
-<!-- While understandable from a readability perspective, broad graphical or numerical summaries do not allow us to contrast different algorithms or parameter choices at the individual comparison level. -->
-<!-- A distinction between two types of reproducibility, \emph{qualitative} vs. \emph{quantitative} reproducibility, can be drawn here. -->
-<!-- Qualitative reproducibility ensures that summary statistics match between implementations of an algorithm.  -->
-<!-- In the cartridge case comparison context, quantitative reproducibility ensures that pairwise comparison results match. -->
-<!-- As quantitative reproducibility implies qualitative reproducibility, it's clear that quantitative reproducibility is more stringent. -->
-<!-- Quantitative reproducibility is necessary to truly understand the sensitivity of a method to different parameter choices. -->
-<!-- However, if provided with only graphical or numerical summaries, the best we can hope for is qualitative reproducibility.} -->
-<!-- [Reproducibility is a pillar of science. Qualitative reproducibility does not fit the definition of reproducibility.] -->
-<!-- Numerical or graphical summaries prohibit us from verifying whether an implementation quantitatively reproduces results. -->
-<!-- As such, the best we can hope for is qualitative reproducibility. -->
-<!-- \jz{In the R community, quantitative reproducibility can be taken for granted due to the accessible, shared ecosystem provided by CRAN and other code repositories. -->
-<!-- In this paper, we discuss challenges that arise when such an ecosystem does not exist. -->
-<!-- Our open-source implementation of the Congruent Matching Cells algorithm empowers the wider forensic science community to take part in the discussion of the method's sensitivity. -->
-<!-- We intend the \CRANpkg{cmcR} package to serve as a flexible, easy-to-use foundation upon which transparent improvements to the CMC method can be developed.} -->
-
-<!-- \jz{Apart from issues surrounding the manner in which results are presented, there are also concerns about how forensic pattern matching algorithms themselves are commonly introduced. -->
-<!-- As part of the shift towards objectivity in forensic science, automatic methods have been developed to solve problems such as identifying matching glass shards \citep{park2019}, handwriting \citep{crawford_handwriting_2020}, shoe prints \citep{park_algorithm_2020}, and ballistic evidence \citep{hare_automatic_2016,tai_fully_2018}. -->
-<!-- However, many of the algorithms described in the literature are not transparent or open-source. -->
-<!-- In particular, algorithms for which only a prosaic description is provided generally do not contain sufficient detail to reproduce every part of the algorithm. -->
-<!-- If the written-language description of the method in the publication is the sole source of information about the algorithm, we trade computational reproducibility and transparency for readability. -->
-<!-- For example, we generally do not describe the particular parameter settings used (or how those were derived) when we describe an algorithm in a publication. -->
-<!-- This is an understandable editorial decision, as the purpose of a publication is to demonstrate and justify the method rather than discuss the fine details and parameter settings. -->
-<!-- However, it is then necessary to supplement the paper with open code and intermediate forms of the data (after any manual steps have been performed or simply as check points for replications) to ensure reproducibility of the results. -->
-<!-- For ballistics evidence, the [NIST Ballistics Toolmark Research Database](https://tsapps.nist.gov/NRBTD/Studies/Search) created by \citet{nbtrd} provides openly available bullet and cartridge case 2D images and 3D scans. -->
-<!-- However, in the automatic cartridge case comparison literature, it is currently the standard to perform a critical preprocessing step manually. -->
-<!-- A genuine comparison between different algorithms is hindered if these processed scans and code are not made openly available.} -->
-
-<!-- [Discussion here about how neither qualitative nor quantitative reproducibility ensure generalizability of an algorithm. That is, we cannot claim that an two implementations of the same algorithm will yield the same results on a new data set. Open-source algorithms permit and encourage verifying that an method is generalizable.] -->
-<!-- Additionally, our open-source implementation of the Congruent Matching Cells algorithm empowers the wider forensic science community to take part in the discussion of the method's sensitivity. -->
-<!-- We intend the \CRANpkg{cmcR} package to serve as a flexible, easy-to-use foundation upon which transparent improvements to the CMC method can be developed. -->
-
-<!-- In lieu of divulging an algorithm's source code or other trade secrets, validation studies have been sufficient to establish admissibility and has allowed the unexplainable, black-box nature of these algorithms to persist. -->
-<!-- Legal experts have raised concerns about whether legal triers of fact, judges and jurors, will assign much weight to the results of black-box algorithms that are fundamentally opaque [cite Nutter]. -->
-<!-- The solution to the various concerns raised regarding the use of algorithms in a forensic or legal setting is to rely on validated, intuitive, transparent, open-source algorithms. -->
-
-<!-- It is therefore of the utmost importance that the forensic community does not go only halfway, trading a subjective, human black box for objective, proprietary algorithms that are similarly opaque and unauditable. -->
-<!-- As part of the shift towards objectivity in forensic science, automatic methods have been developed to solve problems such as identifying matching glass shards \citep{park2019}, handwriting \citep{crawford_handwriting_2020}, shoe prints \citep{park_algorithm_2020}, and ballistic evidence \citep{hare_automatic_2016,tai_fully_2018}. -->
-<!-- However, many of the algorithms described in the literature are not transparent or open-source. -->
-<!-- In particular, algorithms for which only a prosaic description is provided generally do not contain sufficient detail to reproduce every part of the algorithm. -->
-<!-- If the written-language description of the method in the publication is the sole source of information about the algorithm, we trade computational reproducibility for readability. -->
-<!-- We generally do not describe the particular parameter settings used (or how those were derived) when we describe an algorithm in a publication. -->
-<!-- This is an understandable editorial decision, as the purpose of a publication is to demonstrate and justify the method rather than discuss the fine details and parameter settings. -->
-<!-- However, it is then necessary to supplement the paper with open code and intermediate forms of the data (after any manual steps have been performed or simply as check points for replications) to ensure reproducibility of the results. -->
-<!-- The [NIST Ballistics Toolmark Research Database](https://tsapps.nist.gov/NRBTD/Studies/Search) created by \citet{nbtrd} provides openly available bullet and cartridge case 2D images and 3D scans. -->
-<!-- However, in the automatic cartridge case comparison literature, it is currently the standard to perform a critical preprocessing step manually. -->
-<!-- A genuine comparison between different algorithms is hindered if these processed scans are not made openly available. -->
-<!-- Especially in applications like forensic science or medicine, where results from computational methods may directly affect an individual's life, transparency in how a method or algorithm is implemented is necessary \citep{angwin_machine_2016, cino_deploying_2018}. -->
-<!-- Peer-review and scientific progress in the truest sense requires that \emph{all} pre-processed data, code, and results be made openly available \citep{kwongAlgorithmSaysYou2017, desaiTrustVerifyGuide2017}. -->
-
-<!-- \jz{ -->
-<!-- <!-- In this paper, we will demonstrate the ambiguities present in textual descriptions of algorithms by creating an open-source implementation of one well-known automatic forensic identification method.  --> -->
-<!-- The Congruent Matching Cells (CMC) algorithm was developed at the National Institute of Standards and Technology (NIST) in 2012 to perform firearm evidence identification using identifiable markings left on spent cartridge cases from a firearm's barrel \citep{song_proposed_2013}.  -->
-<!-- Since then, the method and its numerous extensions \citep{tong_improved_2015,chen_convergence_2017,song_estimating_2018} have shown promise in being able to differentiate between matching and non-matching cartridge cases. -->
-<!-- Here, we describe the process of implementing the Congruent Matching Cells (CMC) method for the comparison of marks on spent cartridge cases, using the descriptions from two published papers, \citet{song_3d_2014} and \citet{tong_improved_2015}. -->
-<!-- Our R package, \CRANpkg{cmcR}, provides an open-source implementation of the CMC method. -->
-<!-- } -->
-<!-- It also serves as an example of the implementation barriers which occur when translating textual descriptions of algorithms into detailed source code.  -->
-<!-- This process offers some insight into the necessary components which must be available for computational reproducibility. -->
-<!-- \jz{Our experience shows that when faced with ambiguity in how a method is implemented, there are few options available to us apart from performing brute-force searches through combinations of decisions that may have yielded the results reported. -->
-<!-- Unsurprisingly, the process is both time absorbing and computationally intensive from implementation to sifting through a wide variety of decision combinations.  -->
-<!-- The failure to ensure computational reproducibility not only imposes a general barrier to scientific progress; in this application, it also highlights the crucial need of open-source, transparent methodology in high-stakes fields such as forensic analysis.} -->
-<!-- While NIST researchers and collaborators have been able to build on the foundation of the original algorithm, the code and data necessary to reproduce the results have not been made available to external researchers.  -->
-<!-- As a result, the findings described in those papers are not computationally reproducible for the research community at large. -->
-<!-- Unfortunately, we cannot take reproducibility for granted: recent studies have raised concerns about reproducibility of scientific findings in various fields [\citet{king_replication_1995}, \citet{baker_1500_2016}, \citet{pasquier_if_2017}]. -->
-
-<!-- In this light, computational reproducibility in forensic science, is all the more important because it fundamentally enables discussions about algorithmic transparency and accountability \citep{kwongAlgorithmSaysYou2017, desaiTrustVerifyGuide2017}.  -->
-  
-
-<!-- The fundamental reason that descriptions of data analysis procedures, combined with the raw data, are not sufficient for reproducibility is that published procedures are described in words rather than algorithmically, and in some cases, steps are performed manually without providing the resulting intermediary outcomes. -->
-<!-- If the written-language description of the method in the publication is the sole source of information about the algorithm, we trade computational reproducibility for readability. We generally do not describe the particular parameter settings used (or how those were derived) when we describe an algorithm in a publication. -->
-<!-- This is an understandable editorial decision, as the purpose of a publication is to demonstrate and justify the method rather than discuss the fine details and parameter settings. -->
-<!-- Because publications generally do not contain sufficient detail to reproduce every part of the algorithm, it is necessary to supplement the paper with open code and intermediate forms of the data (after any manual steps have been performed or simply as check points for replications). -->
-<!-- Especially in applications like forensic science or medicine, where results from computational methods may directly affect an individual's life, transparency in how a method or algorithm is implemented is necessary \citep{angwin_machine_2016, cino_deploying_2018}. -->
-<!-- It is therefore of the utmost importance that the forensic community does not go only halfway, trading a subjective, human black box for objective, proprietary algorithms that are similarly opaque and unauditable. -->
-
-<!-- \dfn{Research reproducibility} refers to the ability to use the same procedures and materials as a previous study to arrive at the same results or conclusions. Reproducibility is indispensable for results to be considered valid by the wider scientific community \citep{goodman_what_2016}.  -->
-<!-- Unfortunately, we cannot take reproducibility for granted: recent studies have raised concerns about reproducibility of scientific findings in various fields [\citet{king_replication_1995}, \citet{baker_1500_2016}, \citet{pasquier_if_2017}].  -->
-<!-- Commonly identified reasons for this lack of reproducibility include (1) ambiguity in how procedures were implemented, (2) missing or incomplete data, and (3) missing or incomplete computer code to replicate all statistical analyses \citep{leek_is_2017}. -->
-
-<!-- In computational research, reproducibility of results is commonly translated to mean that the code and data used to produce published results be made publicly available \citep{peng_reproducible_2011}.  -->
-<!-- However, current status quo is that many papers describe the computational methods used in the data analysis in broad terms only.  -->
-<!-- Computational reproducibility requires more details: published results may be numerically sensitive to the particular implementation of a computational method, including such considerations as data processing decisions, parameter settings, and even the chosen programming language. -->
-<!-- As such, peer-review and scientific progress in the truest sense requires that \emph{all} pre-processed data, code, and results be made openly available. -->
-<!-- In recognition of the additional requirements of computational reproducibility, some journals have adopted policies encouraging or requiring that authors provide code and data sufficient to reproduce the statistical analyses, with the goal of building a "culture of reproducibility" in their respective fields \citep{peng_reproducible_2009, peng_reproducible_2011, stodden_toward_2013}. -->
-
-<!-- Here, we describe the process of implementing the Congruent Matching Cells (CMC) method for the comparison of marks on spent cartridge cases, using the descriptions from two published papers, \citet{song_3d_2014} and \citet{tong_improved_2015}. -->
-<!-- Our R package, \CRANpkg{cmcR}, provides an open-source implementation of the CMC method, but it also serves as an example of the implementation barriers which occur when translating textual descriptions of algorithms into detailed source code.  -->
-<!-- This process offers some insight into the necessary components which must be available for computational reproducibility. -->
-<!-- Our experience shows that when faced with ambiguity in how a method is implemented, there are few options available to us apart from performing brute-force searches through combinations of decisions that may have yielded the results reported. -->
-<!-- Unsurprisingly, the process is both time absorbing and computationally intensive from implementation to sifting through a wide variety of decision combinations.  -->
-<!-- The failure to ensure computational reproducibility not only imposes a general barrier to scientific progress; in this application, it also highlights the crucial need of open-source, transparent methodology in high-stakes fields such as forensic analysis. -->
-
-<!-- \jz{\autoref{fig:ccPair_combined} is an example of an image from a comparison microscope used by firearms examiners in laboratory settings. Digital microscopy is capable of precision measurements of surface topology at even higher resolutions. Using a 3D microscope, we can obtain scans of breech face impressions at the micron level ($1 \mu m = 10^{-3} mm = 10^{-6} m$). These 3D topological scans are used as input to automated comparison algorithms, such as the CMC method originally proposed in \citet{song_proposed_2013}.} We will use the same data set which is referenced in \citet{song_3d_2014} and \citet{tong_improved_2015} to illustrate usage of the \CRANpkg{cmcR} package. These 3D scans of cartridge cases are available from the NIST Ballistics Toolmark Research Database \citep[NBTRD;][]{nbtrd}. The strings defined below refer to three cartridge case scans available on the NBTRD from \citet{fadul_empirical_2011} and will be used throughout the remainder of this paper. -->
-
-<!-- ```{r eval=FALSE,echo=FALSE} -->
-<!-- # SVP comment: Should do this in a tidy way with less code if possible... -->
-<!-- library(cmcR) -->
-
-<!-- fadul1.1_id <- "DownloadMeasurement/2d9cc51f-6f66-40a0-973a-a9292dbee36d" -->
-<!-- # Same source comparison -->
-<!-- fadul1.2_id <- "DownloadMeasurement/cb296c98-39f5-46eb-abff-320a2f5568e8" -->
-<!-- # Different source comparison -->
-<!-- fadul2.1_id <- "DownloadMeasurement/8ae0b86d-210a-41fd-ad75-8212f9522f96" -->
-
-<!-- #Code to download breech face impressions:  -->
-
-<!-- # Aside: while the URL says "NRBTD", it's -->
-<!-- #actually the NIST Ballistics Toolmark Research Database (so their URL -->
-<!-- #is mistaken) -->
-
-<!-- nbtrd_url <- "https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement" -->
-<!-- download.file( -->
-<!--   file.path(nbtrd_url , fadul1.1_id), destfile = "data/fadul1-1.x3p", mode = "wb") -->
-<!-- download.file( -->
-<!--   file.path(nbtrd_url , fadul1.2_id), destfile = "data/fadul1-2.x3p", mode = "wb") -->
-<!-- download.file( -->
-<!--   file.path(nbtrd_url, fadul2.1_id), destfile = "data/fadul2-1.x3p", mode = "wb") -->
-<!-- ``` -->
-
-<!-- ```{r eval=FALSE,echo=TRUE} -->
-<!-- library(cmcR) -->
-
-<!-- nbtrd_url <- "https://tsapps.nist.gov/NRBTD/Studies/CartridgeMeasurement" -->
-
-<!-- x3p_ids <- c("DownloadMeasurement/2d9cc51f-6f66-40a0-973a-a9292dbee36d", -->
-<!--              "DownloadMeasurement/cb296c98-39f5-46eb-abff-320a2f5568e8", -->
-<!--              "DownloadMeasurement/8ae0b86d-210a-41fd-ad75-8212f9522f96") -->
-
-<!-- file_names <- c("fadul1-1.x3p","fadul1-2.x3p","fadul2-1.x3p") -->
-
-<!-- purrr::walk2(.x = x3p_ids, -->
-<!--              .y = file_names, -->
-<!--              .f = function(x3p_id,file_name){ -->
-<!--                download.file(url = file.path(nbtrd_url, x3p_id),  -->
-<!--                              destfile = paste0("data/",file_name),mode = "wb") -->
-<!--              }) -->
-<!-- ``` -->
-
-<!-- In the remainder of this paper, we first describe some of the background of forensic comparisons of breech face impressions. We then follow with a description of the implementation of a general CMC method which encompasses methods discussed in \citet{song_proposed_2013}, \citet{song_3d_2014}, and \citet{tong_improved_2015}. \citet{song_proposed_2013} lays out the conceptual framework for the original CMC method later implemented in \citet{song_3d_2014} and \cite{tong_fired_2014}. An improvement of the method presented in \citet{tong_improved_2015} and used in subsequent papers is referred to as the \`\`High CMC" method \citep{chen_convergence_2017}. Both implementations (and further proposed improvements) have been shown to correctly differentiate same and different-source cartridge cases from the \citet{fadul_empirical_2011} data set. -->
-
-<!-- The \CRANpkg{cmcR} package contains implementations designed for use with 3D topographical scans of the original method described in \citet{song_proposed_2013} (which we will refer to as the original method) and \citet{song_3d_2014} and the High CMC method described in \citet{tong_improved_2015} (which we will refer to as the High CMC method). The source code to the full \CRANpkg{cmcR} package is accessible at <https://github.com/CSAFE-ISU/cmcR>. -->
-
-<!-- # Cartridge cases & breech face impressions {#cartridgeCases_bfImpressions} -->
-
-<!-- A \dfn{cartridge case} is the portion of firearm ammunition that encases a projectile (e.g., bullet, shots, or slug) along with the explosive used to propel the projectile through the firearm. When a firearm is discharged, the projectile is propelled down the barrel of the firearm, while the cartridge case is forced towards the back of the barrel. It strikes the back wall, known as the \dfn{breech face}, of the barrel with considerable force, thereby imprinting any markings on the breech face onto the cartridge case, creating the so-called \dfn{breech face impressions}. These markings have been suggested to be unique to a firearm and are used in forensic examinations to determine whether two cartridge cases have been fired by the same firearm. -->
-
-<!-- During a forensic examination, two pieces of ballistic evidence are placed under a \dfn{comparison microscope}. Comparison microscopes allow for a side-by-side comparison of two objects within the same viewfinder, as seen in \autoref{fig:ccPair_combined}. A pair of breech face images is aligned along the thin black line in the middle of the images. The degree to which these breech face markings can be aligned is used to determine whether the two cartridge cases came from the same source; i.e., were fired from the same firearm. These breech face impressions are considered to be a firearm's unique "fingerprint" left on a cartridge case \citep{firearm_id_thompson}. -->
-
-<!--   ```{r ,echo=FALSE,fig.cap='\\label{fig:ccPair_combined} A cartridge case pair with visible breech face impressions under a microscrope.  A thin line can be seen separating the two views. The degree to which the markings coincide is used to conclude whether the pair comes from the same source.',fig.pos='htbp',out.width="\\textwidth"} -->
-<!-- knitr::include_graphics("images/cartridgeCasePair_comparison_with_line.PNG") -->
-<!-- ``` -->
-
-<!-- \autoref{fig:ccPair_combined} is an example of an image from a comparison microscope used by firearms examiners in laboratory settings. Digital microscopy is capable of precision measurements of surface topology at even higher resolutions. Using a 3D microscope, we can obtain scans of breech face impressions at the micron level ($1 \mu m = 10^{-3} mm = 10^{-6} m$). These 3D topological scans are used as input to automated comparison algorithms, such as the CMC method originally proposed in \citet{song_proposed_2013}. -->
 
 # The CMC method {#cmcMethod}
 
@@ -1430,55 +1264,85 @@ data.frame(study = factor(c("Tong et al. (2014)",
                                  ticks.colour = "black"))
 ```
 
-<!-- ```{=tex} -->
-<!-- \begin{table}[ht] -->
-<!-- \centering -->
-<!-- \begin{tabular}{|llr|} -->
-<!-- \hline -->
-<!-- Method & Paper & Variance Ratio \\ -->
-<!-- %(Figure) &  &  \\ -->
-<!-- \hline -->
-<!-- \cellcolor{lightgray}{Original} & \cellcolor{lightgray}{\citet{song_3d_2014}} &   -->
-<!-- \cellcolor{lightgray}{11.50} \\ -->
-<!-- %\cellcolor{lightgray}{(Fig. 6)} & \cellcolor{lightgray}{} & \cellcolor{lightgray}{} \\ -->
 
-<!-- Original & \citet{tong_fired_2014} &  8.00 \\ -->
-<!-- %(Fig. 7b) & & \\ -->
+## Discussion {#discussion}
 
-<!-- \cellcolor{lightgray}{Original} & \cellcolor{lightgray}{\citet{tong_improved_2015}} &   -->
-<!-- \cellcolor{lightgray}{10.21} \\ -->
-<!-- % \cellcolor{lightgray}{(Fig. 9a)} & \cellcolor{lightgray}{} & \cellcolor{lightgray}{} & \\ -->
+[Summarize arguments here. (1) Proprietary algorithms (e.g., algorithms for which only a written-language description is provided)  and data throw computational reproducibility into question. (2) Computational reproducibility is necessary to ensure that algorithms are being used fairly and transparently. (3) Written-word descriptions and summaries of algorithms do not communicate possible sensitivities -- draw distinction between "qualitative" vs. "quantitative" reproducibility. ]
 
-<!-- Original & \citet{chen_convergence_2017} & 21.46 \\ -->
-<!-- %\cellcolor{lightgray}{(Fig. 6a)} & \cellcolor{lightgray}{} & \cellcolor{lightgray}{} \\ -->
+\jz{\dfn{Research reproducibility} refers to the ability to use the same procedures and materials as a previous study to arrive at the same results or conclusions. Reproducibility is indispensable for results to be considered valid by the wider scientific community \citep{goodman_what_2016}.
+Unfortunately, we cannot take reproducibility for granted: recent studies have raised concerns about reproducibility of scientific findings in various fields [\citet{king_replication_1995}, \citet{baker_1500_2016}, \citet{pasquier_if_2017}].
+Commonly identified reasons for this lack of reproducibility include (1) ambiguity in how procedures were implemented, (2) missing or incomplete data, and (3) missing or incomplete computer code to replicate all statistical analyses \citep{leek_is_2017}.
+In computational research, reproducibility of results is commonly translated to mean that the code and data used to produce published results be made publicly available \citep{peng_reproducible_2011}.
+However, current status quo is that many papers describe the computational methods used in the data analysis in broad terms only.
+Computational reproducibility requires more details: published results may be numerically sensitive to the particular implementation of a computational method, including such considerations as data processing decisions, parameter settings, and even the chosen programming language.
+In this light, computational reproducibility in forensic science is all the more important because it fundamentally enables discussions about algorithmic transparency and accountability \citep{kwongAlgorithmSaysYou2017, desaiTrustVerifyGuide2017}.
+It is therefore of the utmost importance that the forensic community does not go only halfway, trading a subjective, human black box for objective, proprietary algorithms that are similarly opaque and unauditable.}
 
-<!-- \cellcolor{lightgray}{Original} & \cellcolor{lightgray}{\citet{song_estimating_2018}} &  -->
-<!-- \cellcolor{lightgray}{15.88} \\ -->
-<!-- %\cellcolor{lightgray}{(Fig. 6)} & \cellcolor{lightgray}{} & \cellcolor{lightgray}{} \\ -->
+<!-- \jz{ -->
+<!-- As such, peer-review and scientific progress in the truest sense requires that \emph{all} pre-processed data, code, and results be made openly available. -->
+<!-- In recognition of the additional requirements of computational reproducibility, some journals have adopted policies encouraging or requiring that authors provide code and data sufficient to reproduce the statistical analyses, with the goal of building a "culture of reproducibility" in their respective fields \citep{peng_reproducible_2009, peng_reproducible_2011, stodden_toward_2013}.} -->
 
-<!-- Original & Zemmels et al. (2021) & 8.78 \\ -->
+\jz{In the case of the CMC algorithm, a lack of computational reproducibilty makes it impossible to truly validate, and therefore trust, the method.
+For example, our implementation highlights an extreme sensitivity to parameter choice that hasn't been discussed previously.
+The current standard in the field is to provide a graphical or numerical summary conveying the performance of a method on a particular data set under, presumably, internally optimized parameters.
+While understandable from a readability perspective, broad graphical or numerical summaries do not allow us to contrast different algorithms or parameter choices at the individual comparison level.
+<!-- [Something about the forensic science community needing to understand the sensitivity]. -->
+If provided with only graphical or numerical summaries, the best we can hope for is a qualitative reproduction of results.
+The forensics community should expect better of their algorithms.
+In the R community, computational reproducibility can be taken for granted due to the accessible, shared ecosystem provided by CRAN and other code repositories.
+In this paper, we have discussed challenges that arise when such an ecosystem does not exist.
+Our experience shows that when faced with ambiguity in how a method is implemented, there are few options available to us apart from performing brute-force searches through combinations of decisions that may have yielded the results reported.
+Unsurprisingly, the process is both time absorbing and computationally intensive from implementation to sifting through a wide variety of decision combinations.
+The failure to ensure computational reproducibility not only imposes a general barrier to scientific progress; in this application, it also highlights the crucial need of open-source, transparent methodology in high-stakes fields such as forensic analysis.
+Our open-source implementation of the Congruent Matching Cells algorithm empowers the wider forensic science community to take part in the discussion of the method's sensitivity.
+We intend the \CRANpkg{cmcR} package to serve as a flexible, easy-to-use foundation upon which transparent improvements to the CMC method can be developed.}
 
-<!-- High CMC & \citet{tong_improved_2015} & 19.46 \\ -->
-<!-- %(Fig. 9b) & & \\ -->
-<!-- \cellcolor{lightgray}{High CMC} & \cellcolor{lightgray}{\citet{chen_convergence_2017}} & \cellcolor{lightgray}{24.11} \\ -->
-<!-- %(Fig. 6c) & & \\ -->
-<!-- \cellcolor{lightgray}{High CMC} & \cellcolor{lightgray}{Zemmels et al. (2021)} &   -->
-<!-- \cellcolor{lightgray}{33.57} \\ -->
-<!-- \hline -->
-<!-- \end{tabular} -->
-<!-- \caption{Variance ratios based on results reported in various CMC papers. The last two rows show the largest variance ratio values for the original and High CMC methods based on the grid search summarized in \autoref{fig:cmc_sensitivityScatter}. This indicates that the CMC method implementation provided in \CRANpkg{cmcR} yields comparable results to previous CMC papers.} -->
-<!-- \label{tab:varRatioTable} -->
-<!-- \end{table} -->
-<!-- ``` -->
+<!-- \jz{For the family of algorithms discussed in this paper, our implementation highlights an extreme sensitivity to parameter choice that hasn't been discussed previously. -->
+<!-- The current standard in the field is to provide a graphical or numerical summary conveying the performance of a method on a particular data set under, presumably, internally optimized parameters. -->
+<!-- While understandable from a readability perspective, broad graphical or numerical summaries do not allow us to contrast different algorithms or parameter choices at the individual comparison level. -->
+<!-- A distinction between two types of reproducibility, \emph{qualitative} vs. \emph{quantitative} reproducibility, can be drawn here. -->
+<!-- Qualitative reproducibility ensures that summary statistics match between implementations of an algorithm. -->
+<!-- In the cartridge case comparison context, quantitative reproducibility ensures that pairwise comparison results match. -->
+<!-- As quantitative reproducibility implies qualitative reproducibility, it's clear that quantitative reproducibility is more stringent. -->
+<!-- Quantitative reproducibility is necessary to truly understand the sensitivity of a method to different parameter choices. -->
+<!-- However, if provided with only graphical or numerical summaries, the best we can hope for is qualitative reproducibility. -->
+<!-- Numerical or graphical summaries prohibit us from verifying whether an implementation quantitatively reproduces results. -->
+<!-- As such, the best we can hope for is qualitative reproducibility. -->
+<!-- In the R community, quantitative reproducibility can be taken for granted due to the accessible, shared ecosystem provided by CRAN and other code repositories. -->
+<!-- In this paper, we discuss challenges that arise when such an ecosystem does not exist. -->
+<!-- Our open-source implementation of the Congruent Matching Cells algorithm empowers the wider forensic science community to take part in the discussion of the method's sensitivity. -->
+<!-- We intend the \CRANpkg{cmcR} package to serve as a flexible, easy-to-use foundation upon which transparent improvements to the CMC method can be developed.} -->
 
+<!-- \jz{It also serves as an example of the implementation barriers which occur when translating textual descriptions of algorithms into detailed source code. -->
+<!-- This process offers some insight into the necessary components which must be available for computational reproducibility. -->
+<!-- Our experience shows that when faced with ambiguity in how a method is implemented, there are few options available to us apart from performing brute-force searches through combinations of decisions that may have yielded the results reported. -->
+<!-- Unsurprisingly, the process is both time absorbing and computationally intensive from implementation to sifting through a wide variety of decision combinations. -->
+<!-- The failure to ensure computational reproducibility not only imposes a general barrier to scientific progress; in this application, it also highlights the crucial need of open-source, transparent methodology in high-stakes fields such as forensic analysis. -->
+<!-- While NIST researchers and collaborators have been able to build on the foundation of the original algorithm, the code and data necessary to reproduce the results have not been made available to external researchers. -->
+<!-- As a result, the findings described in those papers are not computationally reproducible for the research community at large.} -->
 
-## Modularization as a basis for FAIR software {#exploring}
+<!-- \jz{Because publications generally do not contain sufficient detail to reproduce every part of the algorithm, it is necessary to supplement the paper with open code and intermediate forms of the data (after any manual steps have been performed or simply as check points for replications). -->
+<!-- Especially in high-stakes applications like forensic science or medicine, transparency in how a method or algorithm is implemented is necessary \citep{angwin_machine_2016, cino_deploying_2018}. -->
+<!-- It is therefore of the utmost importance that the forensic community does not go only halfway, trading a subjective, human black box for objective, proprietary algorithms that are similarly opaque and unauditable.} -->
 
-Both the original CMC and High CMC methods are complex, multi-step processes that are easier to run and debug when written as a modular pipeline of successive, functionally independent steps. This modular approach makes it easier to describe the algorithm, easier to write the code, easier to modify and improve the method, and easier to show that the improvement has a noticeable impact on the results. Unfortunately, it takes work to explicitly modularize an algorithm. The modularity of the CMC methods is something imposed by the authors of this paper, and is not necessarily obvious from the published CMC literature. In part, we modularize code because it make it more maintainable, but it is also part of the scientific process: refining and improving previous methods by incorporating modern best practices. The modularization creates an explicit framework for assessment of the utility and effectiveness of each piece of the algorithm, and allows us to specifically manipulate each step independently, while monitoring the downstream impact on the results. It also allows future collaborators to improve on pieces of the pipeline, adding additional options and improving the method without having to re-invent the wheel. This provides a huge boost to the efficiency of new developments in the field: it is our hope that the \CRANpkg{cmcR} package will facilitate additional research into the matching of cartridge cases and other pattern evidence.
+<!-- \jz{For ballistics evidence, the \href{https://tsapps.nist.gov/NRBTD/Studies/Search}{NIST Ballistics Toolmark Research Database} created by \citet{nbtrd} provides openly available bullet and cartridge case 2D images and 3D scans. -->
+<!-- However, in the automatic cartridge case comparison literature, it is currently the standard to perform a critical preprocessing step manually. -->
+<!-- Peer-review and scientific progress in the truest sense requires that \emph{all} pre-processed data, code, and results be made openly available \citep{kwongAlgorithmSaysYou2017, desaiTrustVerifyGuide2017}.} -->
 
-As described in \citet{wittenburg_open_2021}, open science and data science depend on FAIR algorithms and data, where FAIR stands for findability, accessibility, interoperability, and reusability. It is easy to see how modular algorithms increase the interoperability and reusability of code and data, and that the addition of an open-source software package leveraging the CRAN platform increases the findability and accessibility of the method and code. While not all developers adhere to reproducible, open-source, or FAIR design principles, we argue that the addition of a modular framework for the CMC algorithm is a valuable addition to the method, as it results in an algorithm that can be more easily tested, examined, and explained. These principles of open, accessible, interoperable code are also critical for a fair (in the legal sense) justice system: the defense must have access to the code to understand the evidence against them, lawyers must be able to assess the utility of the analysis method, and judges must be able to determine whether a method is admissible in court. All of these goals are compatible with a FAIR, open-source, reproducible algorithm, and are fundamentally incompatible with closed-source, closed-data, paper-only scientific advancement.
+\jz{[Discussion here about how neither qualitative nor quantitative reproducibility ensure generalizability of an algorithm. That is, we cannot claim that an two implementations of the same algorithm will yield the same results on a new data set. Open-source algorithms permit and encourage verifying that an method is generalizable.]
+Additionally, our open-source implementation of the Congruent Matching Cells algorithm empowers the wider forensic science community to take part in the discussion of the method's sensitivity.
+We intend the \CRANpkg{cmcR} package to serve as a flexible, easy-to-use foundation upon which transparent improvements to the CMC method can be developed.}
 
-FAIR software standards emphasize open code, but it is just as important in data science applications to have open data. In the CMC example, the original method and application used manually cleaned scans, where the breech face of the cartridge was cut out from the overall scan in a graphical application. We discovered just how important this step of the algorithm was by attempting to automate the cleaning process, and failing to replicate the original results: the precision of the breech face identification significantly affects the results of every subsequent stage in the pipeline. Ideally, when releasing a complicated algorithm such as the CMC process, authors would provide not only code but also intermediate data files which allow others to pick up the process and modify only one stage of the algorithm. This speaks to the modularity of the data as well as the algorithm: at each stage, we must have an eye towards the reproducibility of the results. The availability of intermediate data have made the work that is demonstrated here much easier, but it would also make comparing the CMC algorithm to other alternatives much easier as well by providing a set of benchmarks to compare performance. There is a great need for these types of benchmark data sets, not only in forensics, but across the sphere of greater data science: often, solutions in one application area can be adapted to another area, but data availability ensures that these adaptations are firmly grounded.
+<!-- \jz{It is therefore of the utmost importance that the forensic community does not go only halfway, trading a subjective, human black box for objective, proprietary algorithms that are similarly opaque and unauditable. -->
+<!-- As part of the shift towards objectivity in forensic science, automatic methods have been developed to solve problems such as identifying matching glass shards \citep{park2019}, handwriting \citep{crawford_handwriting_2020}, shoe prints \citep{park_algorithm_2020}, and ballistic evidence \citep{hare_automatic_2016,tai_fully_2018}.} -->
+
+<!-- ## Modularization as a basis for FAIR software {#exploring} -->
+
+<!-- Both the original CMC and High CMC methods are complex, multi-step processes that are easier to run and debug when written as a modular pipeline of successive, functionally independent steps. This modular approach makes it easier to describe the algorithm, easier to write the code, easier to modify and improve the method, and easier to show that the improvement has a noticeable impact on the results. Unfortunately, it takes work to explicitly modularize an algorithm. The modularity of the CMC methods is something imposed by the authors of this paper, and is not necessarily obvious from the published CMC literature. In part, we modularize code because it make it more maintainable, but it is also part of the scientific process: refining and improving previous methods by incorporating modern best practices. The modularization creates an explicit framework for assessment of the utility and effectiveness of each piece of the algorithm, and allows us to specifically manipulate each step independently, while monitoring the downstream impact on the results. It also allows future collaborators to improve on pieces of the pipeline, adding additional options and improving the method without having to re-invent the wheel. This provides a huge boost to the efficiency of new developments in the field: it is our hope that the \CRANpkg{cmcR} package will facilitate additional research into the matching of cartridge cases and other pattern evidence. -->
+
+<!-- As described in \citet{wittenburg_open_2021}, open science and data science depend on FAIR algorithms and data, where FAIR stands for findability, accessibility, interoperability, and reusability. It is easy to see how modular algorithms increase the interoperability and reusability of code and data, and that the addition of an open-source software package leveraging the CRAN platform increases the findability and accessibility of the method and code. While not all developers adhere to reproducible, open-source, or FAIR design principles, we argue that the addition of a modular framework for the CMC algorithm is a valuable addition to the method, as it results in an algorithm that can be more easily tested, examined, and explained. These principles of open, accessible, interoperable code are also critical for a fair (in the legal sense) justice system: the defense must have access to the code to understand the evidence against them, lawyers must be able to assess the utility of the analysis method, and judges must be able to determine whether a method is admissible in court. All of these goals are compatible with a FAIR, open-source, reproducible algorithm, and are fundamentally incompatible with closed-source, closed-data, paper-only scientific advancement. -->
+
+<!-- FAIR software standards emphasize open code, but it is just as important in data science applications to have open data. In the CMC example, the original method and application used manually cleaned scans, where the breech face of the cartridge was cut out from the overall scan in a graphical application. We discovered just how important this step of the algorithm was by attempting to automate the cleaning process, and failing to replicate the original results: the precision of the breech face identification significantly affects the results of every subsequent stage in the pipeline. Ideally, when releasing a complicated algorithm such as the CMC process, authors would provide not only code but also intermediate data files which allow others to pick up the process and modify only one stage of the algorithm. This speaks to the modularity of the data as well as the algorithm: at each stage, we must have an eye towards the reproducibility of the results. The availability of intermediate data have made the work that is demonstrated here much easier, but it would also make comparing the CMC algorithm to other alternatives much easier as well by providing a set of benchmarks to compare performance. There is a great need for these types of benchmark data sets, not only in forensics, but across the sphere of greater data science: often, solutions in one application area can be adapted to another area, but data availability ensures that these adaptations are firmly grounded. -->
 
 # Conclusion {#conclusion}
 
