@@ -79,107 +79,15 @@ library(rgl)
 
 # Introduction {#intro}
 
-\jz{Pattern matching algorithms applied to forensic evidence have recently grown in prevalence. 
-The \citet{council_strengthening_2009} has pushed to complement subjective decisions made by forensic examiners, which are largely unauditable, with automatic algorithms that objectively assess evidence and can be explained during court testimony. 
-However, increased interest in these algorithms has also led many legal experts to question the admissibility and acceptability of these algorithms in court [cite Imwinkelried and Nutter papers]. 
-For example, is it admissible for a forensic examiner to justify an evidentiary conclusion based on the output of an algorithm?
-Proprietary algorithms like TrueAllele [cite], which analyzes DNA mixtures and provide a statistic that helps assess whether a particular defendant was one of the contributors, have so far been considered admissible as long as it is demonstrated that the theory or technique rests on adequate validation [cite Daubert].
-However, validation studies generally provide only broad numerical or graphical summaries of an algorithm's performance on a particular data set rather than its sensitivity to parameter choice or new data.
-An algorithm's sensitivity should be discussed among the forensic science community to come to a consensus on a set of parameters before it is considered admissible evidence.
-In the absence of such a discussion, it is plausible that the prosecution and defense could each choose a set of parameters and arrive at conflicting results.
-As the goal of a forensic examination is to provide an objective assessment of the probative value of a piece of evidence, this is not a desirable outcome.}
+\dfn{Research reproducibility} refers to the ability to use the same procedures and materials as a previous study to arrive at the same results or conclusions. Reproducibility is indispensable for results to be considered valid by the wider scientific community \citep{goodman_what_2016}. Unfortunately, we cannot take reproducibility for granted: recent studies have raised concerns about reproducibility of scientific findings in various fields [\citet{king_replication_1995}, \citet{baker_1500_2016}, \citet{pasquier_if_2017}]. Commonly identified reasons for this lack of reproducibility include (1) ambiguity in how procedures were implemented, (2) missing or incomplete data, and (3) missing or incomplete computer code to replicate all statistical analyses \citep{leek_is_2017}.
 
-\jz{For the family of algorithms discussed in this paper, our implementation highlights an extreme sensitivity to parameter choice that hasn't been discussed previously.
-The current standard in the field is to provide a graphical or numerical summary conveying the performance of a method on a particular data set under, presumably, internally optimized parameters. 
-While understandable from a readability perspective, broad graphical or numerical summaries do not allow us to contrast different algorithms or parameter choices at the individual comparison level.
-A distinction between two types of reproducibility, \emph{qualitative} vs. \emph{quantitative} reproducibility, can be drawn here.
-Qualitative reproducibility ensures that summary statistics match between implementations of an algorithm. 
-In the cartridge case comparison context, quantitative reproducibility ensures that pairwise comparison results match.
-As quantitative reproducibility implies qualitative reproducibility, it's clear that quantitative reproducibility is more stringent.
-Quantitative reproducibility is necessary to truly understand the sensitivity of a method to different parameter choices.
-However, if provided with only graphical or numerical summaries, the best we can hope for is qualitative reproducibility.}
-<!-- [Reproducibility is a pillar of science. Qualitative reproducibility does not fit the definition of reproducibility.] -->
-<!-- Numerical or graphical summaries prohibit us from verifying whether an implementation quantitatively reproduces results. -->
-<!-- As such, the best we can hope for is qualitative reproducibility. -->
-\jz{In the R community, quantitative reproducibility can be taken for granted due to the accessible, shared ecosystem provided by CRAN and other code repositories.
-In this paper, we discuss challenges that arise when such an ecosystem does not exist.
-Our open-source implementation of the Congruent Matching Cells algorithm empowers the wider forensic science community to take part in the discussion of the method's sensitivity.
-We intend the \CRANpkg{cmcR} package to serve as a flexible, easy-to-use foundation upon which transparent improvements to the CMC method can be developed.}
+In computational research, reproducibility of results is commonly translated to mean that the code and data used to produce published results be made publicly available \citep{peng_reproducible_2011}. However, current status quo is that many papers describe the computational methods used in the data analysis in broad terms only. Computational reproducibility requires more details: published results may be numerically sensitive to the particular implementation of a computational method, including such considerations as data processing decisions, parameter settings, and even the chosen programming language. As such, peer-review and scientific progress in the truest sense requires that \emph{all} pre-processed data, code, and results be made openly available. In recognition of the additional requirements of computational reproducibility, some journals have adopted policies encouraging or requiring that authors provide code and data sufficient to reproduce the statistical analyses, with the goal of building a "culture of reproducibility" in their respective fields \citep{peng_reproducible_2009, peng_reproducible_2011, stodden_toward_2013}.
 
-\jz{Apart from issues surrounding the manner in which results are presented, there are also concerns about how forensic pattern matching algorithms themselves are commonly introduced.
-As part of the shift towards objectivity in forensic science, automatic methods have been developed to solve problems such as identifying matching glass shards \citep{park2019}, handwriting \citep{crawford_handwriting_2020}, shoe prints \citep{park_algorithm_2020}, and ballistic evidence \citep{hare_automatic_2016,tai_fully_2018}.
-However, many of the algorithms described in the literature are not transparent or open-source.
-In particular, algorithms for which only a prosaic description is provided generally do not contain sufficient detail to reproduce every part of the algorithm.
-If the written-language description of the method in the publication is the sole source of information about the algorithm, we trade computational reproducibility and transparency for readability.
-For example, we generally do not describe the particular parameter settings used (or how those were derived) when we describe an algorithm in a publication.
-This is an understandable editorial decision, as the purpose of a publication is to demonstrate and justify the method rather than discuss the fine details and parameter settings.
-However, it is then necessary to supplement the paper with open code and intermediate forms of the data (after any manual steps have been performed or simply as check points for replications) to ensure reproducibility of the results.
-For ballistics evidence, the [NIST Ballistics Toolmark Research Database](https://tsapps.nist.gov/NRBTD/Studies/Search) created by \citet{nbtrd} provides openly available bullet and cartridge case 2D images and 3D scans.
-However, in the automatic cartridge case comparison literature, it is currently the standard to perform a critical preprocessing step manually.
-A genuine comparison between different algorithms is hindered if these processed scans and code are not made openly available.}
+The fundamental reason that descriptions of data analysis procedures, combined with the raw data, are not sufficient for reproducibility is that published procedures are described in words rather than algorithmically, and in some cases, steps are performed manually without providing the resulting intermediary outcomes. If the written-language description of the method in the publication is the sole source of information about the algorithm, we trade computational reproducibility for readability. We generally do not describe the particular parameter settings used (or how those were derived) when we describe an algorithm in a publication. This is an understandable editorial decision, as the purpose of a publication is to demonstrate and justify the method rather than discuss the fine details and parameter settings. Because publications generally do not contain sufficient detail to reproduce every part of the algorithm, it is necessary to supplement the paper with open code and intermediate forms of the data (after any manual steps have been performed or simply as check points for replications). Especially in applications like forensic science or medicine, where results from computational methods may directly affect an individual's life, transparency in how a method or algorithm is implemented is necessary \citep{angwin_machine_2016, cino_deploying_2018}.
 
-<!-- [Discussion here about how neither qualitative nor quantitative reproducibility ensure generalizability of an algorithm. That is, we cannot claim that an two implementations of the same algorithm will yield the same results on a new data set. Open-source algorithms permit and encourage verifying that an method is generalizable.] -->
-<!-- Additionally, our open-source implementation of the Congruent Matching Cells algorithm empowers the wider forensic science community to take part in the discussion of the method's sensitivity. -->
-<!-- We intend the \CRANpkg{cmcR} package to serve as a flexible, easy-to-use foundation upon which transparent improvements to the CMC method can be developed. -->
+In this light, computational reproducibility in forensic science, is all the more important because it fundamentally enables discussions about algorithmic transparency and accountability \citep{kwongAlgorithmSaysYou2017, desaiTrustVerifyGuide2017}. Currently, subjective decisions are made by individual examiners -- human beings are the ultimate closed-source, black-box system, and the operations which lead to a decision are largely opaque. The \citet{council_strengthening_2009} has pushed to complement these subjective decisions with automatic algorithms that objectively assess evidence and can be explained during court testimony. It furthermore is of the utmost importance that the community does not go only halfway, trading a subjective, human black box for objective, proprietary algorithms that are similarly opaque and unauditable. As part of the shift towards objectivity in forensic science, automatic methods have been developed to solve problems such as identifying matching glass shards \citep{park2019}, handwriting \citep{crawford_handwriting_2020}, shoe prints \citep{park_algorithm_2020}, and ballistic evidence \citep{hare_automatic_2016,tai_fully_2018}. However, many of the algorithms described in the literature are not reproducible or open-source. In this paper, we will demonstrate the ambiguities present in textual descriptions of algorithms by creating an open-source implementation of one well-known automatic forensic identification method. The Congruent Matching Cells (CMC) algorithm was developed at the National Institute of Standards and Technology (NIST) in 2012 to perform firearm evidence identification using identifiable markings left on spent cartridge cases from a firearm's barrel \citep{song_proposed_2013}. Since then, the method and its numerous extensions \citep{tong_improved_2015,chen_convergence_2017,song_estimating_2018} have shown promise in being able to differentiate between matching and non-matching cartridge cases. While NIST researchers and collaborators have been able to build on the foundation of the original algorithm, the code and data necessary to reproduce the results have not been made available to external researchers. As a result, the findings described in those papers are not computationally reproducible for the research community at large.
 
-<!-- In lieu of divulging an algorithm's source code or other trade secrets, validation studies have been sufficient to establish admissibility and has allowed the unexplainable, black-box nature of these algorithms to persist. -->
-<!-- Legal experts have raised concerns about whether legal triers of fact, judges and jurors, will assign much weight to the results of black-box algorithms that are fundamentally opaque [cite Nutter]. -->
-<!-- The solution to the various concerns raised regarding the use of algorithms in a forensic or legal setting is to rely on validated, intuitive, transparent, open-source algorithms. -->
-
-<!-- It is therefore of the utmost importance that the forensic community does not go only halfway, trading a subjective, human black box for objective, proprietary algorithms that are similarly opaque and unauditable. -->
-<!-- As part of the shift towards objectivity in forensic science, automatic methods have been developed to solve problems such as identifying matching glass shards \citep{park2019}, handwriting \citep{crawford_handwriting_2020}, shoe prints \citep{park_algorithm_2020}, and ballistic evidence \citep{hare_automatic_2016,tai_fully_2018}. -->
-<!-- However, many of the algorithms described in the literature are not transparent or open-source. -->
-<!-- In particular, algorithms for which only a prosaic description is provided generally do not contain sufficient detail to reproduce every part of the algorithm. -->
-<!-- If the written-language description of the method in the publication is the sole source of information about the algorithm, we trade computational reproducibility for readability. -->
-<!-- We generally do not describe the particular parameter settings used (or how those were derived) when we describe an algorithm in a publication. -->
-<!-- This is an understandable editorial decision, as the purpose of a publication is to demonstrate and justify the method rather than discuss the fine details and parameter settings. -->
-<!-- However, it is then necessary to supplement the paper with open code and intermediate forms of the data (after any manual steps have been performed or simply as check points for replications) to ensure reproducibility of the results. -->
-<!-- The [NIST Ballistics Toolmark Research Database](https://tsapps.nist.gov/NRBTD/Studies/Search) created by \citet{nbtrd} provides openly available bullet and cartridge case 2D images and 3D scans. -->
-<!-- However, in the automatic cartridge case comparison literature, it is currently the standard to perform a critical preprocessing step manually. -->
-<!-- A genuine comparison between different algorithms is hindered if these processed scans are not made openly available. -->
-<!-- Especially in applications like forensic science or medicine, where results from computational methods may directly affect an individual's life, transparency in how a method or algorithm is implemented is necessary \citep{angwin_machine_2016, cino_deploying_2018}. -->
-<!-- Peer-review and scientific progress in the truest sense requires that \emph{all} pre-processed data, code, and results be made openly available \citep{kwongAlgorithmSaysYou2017, desaiTrustVerifyGuide2017}. -->
-
-\jz{In this paper, we will demonstrate the ambiguities present in textual descriptions of algorithms by creating an open-source implementation of one well-known automatic forensic identification method. 
-The Congruent Matching Cells (CMC) algorithm was developed at the National Institute of Standards and Technology (NIST) in 2012 to perform firearm evidence identification using identifiable markings left on spent cartridge cases from a firearm's barrel \citep{song_proposed_2013}. 
-Since then, the method and its numerous extensions \citep{tong_improved_2015,chen_convergence_2017,song_estimating_2018} have shown promise in being able to differentiate between matching and non-matching cartridge cases.
-Here, we describe the process of implementing the Congruent Matching Cells (CMC) method for the comparison of marks on spent cartridge cases, using the descriptions from two published papers, \citet{song_3d_2014} and \citet{tong_improved_2015}.
-Our R package, \CRANpkg{cmcR}, provides an open-source implementation of the CMC method.}
-<!-- It also serves as an example of the implementation barriers which occur when translating textual descriptions of algorithms into detailed source code.  -->
-<!-- This process offers some insight into the necessary components which must be available for computational reproducibility. -->
-\jz{Our experience shows that when faced with ambiguity in how a method is implemented, there are few options available to us apart from performing brute-force searches through combinations of decisions that may have yielded the results reported.
-Unsurprisingly, the process is both time absorbing and computationally intensive from implementation to sifting through a wide variety of decision combinations. 
-The failure to ensure computational reproducibility not only imposes a general barrier to scientific progress; in this application, it also highlights the crucial need of open-source, transparent methodology in high-stakes fields such as forensic analysis.}
-<!-- While NIST researchers and collaborators have been able to build on the foundation of the original algorithm, the code and data necessary to reproduce the results have not been made available to external researchers.  -->
-<!-- As a result, the findings described in those papers are not computationally reproducible for the research community at large. -->
-<!-- Unfortunately, we cannot take reproducibility for granted: recent studies have raised concerns about reproducibility of scientific findings in various fields [\citet{king_replication_1995}, \citet{baker_1500_2016}, \citet{pasquier_if_2017}]. -->
-
-<!-- In this light, computational reproducibility in forensic science, is all the more important because it fundamentally enables discussions about algorithmic transparency and accountability \citep{kwongAlgorithmSaysYou2017, desaiTrustVerifyGuide2017}.  -->
-  
-
-<!-- The fundamental reason that descriptions of data analysis procedures, combined with the raw data, are not sufficient for reproducibility is that published procedures are described in words rather than algorithmically, and in some cases, steps are performed manually without providing the resulting intermediary outcomes. -->
-<!-- If the written-language description of the method in the publication is the sole source of information about the algorithm, we trade computational reproducibility for readability. We generally do not describe the particular parameter settings used (or how those were derived) when we describe an algorithm in a publication. -->
-<!-- This is an understandable editorial decision, as the purpose of a publication is to demonstrate and justify the method rather than discuss the fine details and parameter settings. -->
-<!-- Because publications generally do not contain sufficient detail to reproduce every part of the algorithm, it is necessary to supplement the paper with open code and intermediate forms of the data (after any manual steps have been performed or simply as check points for replications). -->
-<!-- Especially in applications like forensic science or medicine, where results from computational methods may directly affect an individual's life, transparency in how a method or algorithm is implemented is necessary \citep{angwin_machine_2016, cino_deploying_2018}. -->
-<!-- It is therefore of the utmost importance that the forensic community does not go only halfway, trading a subjective, human black box for objective, proprietary algorithms that are similarly opaque and unauditable. -->
-
-<!-- \dfn{Research reproducibility} refers to the ability to use the same procedures and materials as a previous study to arrive at the same results or conclusions. Reproducibility is indispensable for results to be considered valid by the wider scientific community \citep{goodman_what_2016}.  -->
-<!-- Unfortunately, we cannot take reproducibility for granted: recent studies have raised concerns about reproducibility of scientific findings in various fields [\citet{king_replication_1995}, \citet{baker_1500_2016}, \citet{pasquier_if_2017}].  -->
-<!-- Commonly identified reasons for this lack of reproducibility include (1) ambiguity in how procedures were implemented, (2) missing or incomplete data, and (3) missing or incomplete computer code to replicate all statistical analyses \citep{leek_is_2017}. -->
-
-<!-- In computational research, reproducibility of results is commonly translated to mean that the code and data used to produce published results be made publicly available \citep{peng_reproducible_2011}.  -->
-<!-- However, current status quo is that many papers describe the computational methods used in the data analysis in broad terms only.  -->
-<!-- Computational reproducibility requires more details: published results may be numerically sensitive to the particular implementation of a computational method, including such considerations as data processing decisions, parameter settings, and even the chosen programming language. -->
-<!-- As such, peer-review and scientific progress in the truest sense requires that \emph{all} pre-processed data, code, and results be made openly available. -->
-<!-- In recognition of the additional requirements of computational reproducibility, some journals have adopted policies encouraging or requiring that authors provide code and data sufficient to reproduce the statistical analyses, with the goal of building a "culture of reproducibility" in their respective fields \citep{peng_reproducible_2009, peng_reproducible_2011, stodden_toward_2013}. -->
-
-<!-- Here, we describe the process of implementing the Congruent Matching Cells (CMC) method for the comparison of marks on spent cartridge cases, using the descriptions from two published papers, \citet{song_3d_2014} and \citet{tong_improved_2015}. -->
-<!-- Our R package, \CRANpkg{cmcR}, provides an open-source implementation of the CMC method, but it also serves as an example of the implementation barriers which occur when translating textual descriptions of algorithms into detailed source code.  -->
-<!-- This process offers some insight into the necessary components which must be available for computational reproducibility. -->
-<!-- Our experience shows that when faced with ambiguity in how a method is implemented, there are few options available to us apart from performing brute-force searches through combinations of decisions that may have yielded the results reported. -->
-<!-- Unsurprisingly, the process is both time absorbing and computationally intensive from implementation to sifting through a wide variety of decision combinations.  -->
-<!-- The failure to ensure computational reproducibility not only imposes a general barrier to scientific progress; in this application, it also highlights the crucial need of open-source, transparent methodology in high-stakes fields such as forensic analysis. -->
+Here, we describe the process of implementing the Congruent Matching Cells (CMC) method for the comparison of marks on spent cartridge cases, using the descriptions from two published papers, \citet{song_3d_2014} and \citet{tong_improved_2015}. Our R package, \CRANpkg{cmcR}, provides an open-source implementation of the CMC method, but it also serves as an example of the implementation barriers which occur when translating textual descriptions of algorithms into detailed source code. This process offers some insight into the necessary components which must be available for computational reproducibility. Our experience shows that when faced with ambiguity in how a method is implemented, there are few options available to us apart from performing brute-force searches through combinations of decisions that may have yielded the results reported. Unsurprisingly, the process is both time absorbing and computationally intensive from implementation to sifting through a wide variety of decision combinations. The failure to ensure computational reproducibility not only imposes a general barrier to scientific progress; in this application, it also highlights the crucial need of open-source, transparent methodology in high-stakes fields such as forensic analysis.
 
 We will use the same data set which is referenced in \citet{song_3d_2014} and \citet{tong_improved_2015} to illustrate usage of the \CRANpkg{cmcR} package. These 3D scans of cartridge cases are available from the NIST Ballistics Toolmark Research Database \citep[NBTRD;][]{nbtrd}. The strings defined below refer to three cartridge case scans available on the NBTRD from \citet{fadul_empirical_2011} and will be used throughout the remainder of this paper.
 
@@ -237,7 +145,7 @@ A \dfn{cartridge case} is the portion of firearm ammunition that encases a proje
 
 During a forensic examination, two pieces of ballistic evidence are placed under a \dfn{comparison microscope}. Comparison microscopes allow for a side-by-side comparison of two objects within the same viewfinder, as seen in \autoref{fig:ccPair_combined}. A pair of breech face images is aligned along the thin black line in the middle of the images. The degree to which these breech face markings can be aligned is used to determine whether the two cartridge cases came from the same source; i.e., were fired from the same firearm. These breech face impressions are considered to be a firearm's unique "fingerprint" left on a cartridge case \citep{firearm_id_thompson}.
 
-  ```{r ,echo=FALSE,fig.cap='\\label{fig:ccPair_combined} A cartridge case pair with visible breech face impressions under a microscrope.  A thin line can be seen separating the two views. The degree to which the markings coincide is used to conclude whether the pair comes from the same source.',fig.pos='htbp',out.width="\\textwidth"}
+```{r ,echo=FALSE,fig.cap='\\label{fig:ccPair_combined} A cartridge case pair with visible breech face impressions under a microscrope.  A thin line can be seen separating the two views. The degree to which the markings coincide is used to conclude whether the pair comes from the same source.',fig.pos='htbp',out.width="\\textwidth"}
 knitr::include_graphics("images/cartridgeCasePair_comparison_with_line.PNG")
 ```
 
@@ -245,7 +153,7 @@ knitr::include_graphics("images/cartridgeCasePair_comparison_with_line.PNG")
 
 # The CMC method {#cmcMethod}
 
-In this section, we examine the process of implementing the CMC method for automatic comparisons of 3D cartridge case scans. At each step, we will compare the description in the published papers with the implementation in code, discussing the gaps in the method description and how we filled in those gaps during the creation of \CRANpkg{cmcR}. \jz{We discuss each stage of the CMC method using excerpts from the original papers. Then, we examine the implementation of each sub-procedure in the \CRANpkg{cmcR} package, considering the differences between the textual description and its algorithmic translation.}
+In this section, we examine the process of implementing the CMC method for automatic comparisons of 3D cartridge case scans. At each step, we will compare the description in the published papers with the implementation in code, discussing the gaps in the method description and how we filled in those gaps during the creation of \CRANpkg{cmcR}.
 
 All of the CMC methods can be broken down into three broad stages: (1) preprocessing, (2) cell-based similarity feature extraction, and (3) application of a decision rule as illustrated in \autoref{fig:overview-flow}. In the following sections we break each of these stages further into a set of modular steps. One advantage of modularizing these algorithms is that we can implement an algorithm as a set of sequential procedures. This allows us to test new variations against the old implementation in a coherent, unified framework.
 
@@ -256,7 +164,9 @@ All of the CMC methods can be broken down into three broad stages: (1) preproces
 \caption{The stages of CMC methods. In the preprocessing stage, each scan is prepared for analysis, removing extraneous information and noise. Then, each scan is broken up into cells, which are numerically compared to cells in the other scan to determine an optimal alignment. Finally, each of the scores arising from the cells in the second stage are compared to a reference distribution to determine whether the scans originate from the same source or from different sources.\label{fig:overview-flow}}
 \end{figure}
 ```
-The primary difference between the original and High CMC methods lies in how the decision rules are utilized to separate matches and non-matches. Beyond that there are also several small differences in the parameters used in the preprocessing and comparison procedures. \jz{Despite using the same validation data from \citet{fadul_empirical_2011} across papers, current authors do not provide justification for changing these parameters.} \jz{At the same time, different conditions have been shown to yield very different results; even when applying the same decision rule. This sensitivity of various methods to different conditions has not been discussed appropriately.}
+The primary difference between the original and High CMC methods lies in how the decision rules are utilized to separate matches and non-matches. Beyond that there are also several small differences in the preprocessing and comparison procedures. Current CMC papers lack justification for changing these procedures. At the same time, different conditions have been shown to yield very different results; even when applying the same decision rule. This sensitivity of various methods to different conditions has also not been discussed appropriately.
+
+In this section, we discuss each stage of the CMC method using excerpts from the original papers. Then, we examine the implementation of each sub-procedure in the \CRANpkg{cmcR} package, considering the differences between the textual description and its algorithmic translation.
 
 ## Initial Data {#initialData}
 
@@ -360,8 +270,8 @@ fadul1.1 <- x3ptools::x3p_read("data/fadul1-1.x3p") %>%
   cmcR::preProcess_crop(region = "interior",
                         radiusOffset = 200) %>%
   cmcR::preProcess_removeTrend(statistic = "quantile",
-                               tau = .5,
-                               method = "fn") %>%
+                                 tau = .5,
+                                 method = "fn") %>%
   cmcR::preProcess_gaussFilter() %>%
   x3ptools::sample_x3p()
 
@@ -371,8 +281,8 @@ fadul1.2 <- x3ptools::x3p_read("data/fadul1-2.x3p") %>%
   cmcR::preProcess_crop(region = "interior",
                         radiusOffset = 200) %>%
   cmcR::preProcess_removeTrend(statistic = "quantile",
-                               tau = .5,
-                               method = "fn") %>%
+                                 tau = .5,
+                                 method = "fn") %>%
   cmcR::preProcess_gaussFilter() %>%
   x3ptools::sample_x3p()
 ```
@@ -401,14 +311,14 @@ kmComparison_cmcs <- kmComparisonFeatures %>%
                                               thetaThresh = 6,
                                               corrThresh = .5),
          highCMCClassif = decision_CMC(cellIndex = cellIndex,
-                                       x = x,
-                                       y = y,
-                                       theta = theta,
-                                       corr = pairwiseCompCor,
-                                       xThresh = 20,
-                                       thetaThresh = 6,
-                                       corrThresh = .5,
-                                       tau = 1))
+                                              x = x,
+                                              y = y,
+                                              theta = theta,
+                                              corr = pairwiseCompCor,
+                                              xThresh = 20,
+                                              thetaThresh = 6,
+                                              corrThresh = .5,
+                                              tau = 1))
 
 kmComparison_cmcs_rev <- kmComparisonFeatures_rev %>%
   mutate(originalMethodClassif = decision_CMC(cellIndex = cellIndex,
@@ -420,14 +330,14 @@ kmComparison_cmcs_rev <- kmComparisonFeatures_rev %>%
                                               thetaThresh = 6,
                                               corrThresh = .5),
          highCMCClassif = decision_CMC(cellIndex = cellIndex,
-                                       x = x,
-                                       y = y,
-                                       theta = theta,
-                                       corr = pairwiseCompCor,
-                                       xThresh = 20,
-                                       thetaThresh = 6,
-                                       corrThresh = .5,
-                                       tau = 1))
+                                              x = x,
+                                              y = y,
+                                              theta = theta,
+                                              corr = pairwiseCompCor,
+                                              xThresh = 20,
+                                              thetaThresh = 6,
+                                              corrThresh = .5,
+                                              tau = 1))
 
 bind_rows(kmComparison_cmcs,
           kmComparison_cmcs_rev) %>%
@@ -452,8 +362,7 @@ The implementation in \citet{tong_fired_2014} describes the preprocessing steps 
 
 > After trimming processing [sic] to remove unrelated correlations areas, the final image size is reduced to 700 × 700 pixel with an estimated pixel spacing of 5.0 $\mu$m. A Gaussian smoothing filter (standard deviation $\sigma$ = 1) was implemented first to remove high frequency noise.
 
-<!-- Complicating the issue of preprocessing the scans, the procedures used to process the surface matrices differ in each of the papers discussed here.  -->
-\citet{song_3d_2014} outline the following preprocessing procedure on 3D scans:
+Complicating the issue of preprocessing the scans, the procedures used to process the surface matrices differ in each of the papers discussed here. \citet{song_3d_2014} outline the following preprocessing procedure:
 
 > Trim off the inside firing pin surface and other areas outside the breech face mark, so that only breech face impression data remain for correlation.
 
@@ -485,9 +394,9 @@ fadul1.1_croppedInt <- cmcR::preProcess_crop(fadul1.1_croppedExt,
                                              radiusOffset = 200)
 
 fadul1.1_medRemoved <-   cmcR::preProcess_removeTrend(fadul1.1_croppedInt,
-                                                      statistic = "quantile",
-                                                      tau = .5,
-                                                      method = "fn")
+                                                        statistic = "quantile",
+                                                        tau = .5,
+                                                        method = "fn")
 
 
 
@@ -506,9 +415,9 @@ preProcessingPlot <- cmcR::x3pListPlot(list(fadul1.1_original,
                                             fadul1.1_medRemoved,
                                             fadul1.1_bpFiltered) %>%
                                          set_names(c("(1) Original \n x3p_read()",
-                                                     "(2) Crop exterior/interior \n preProcess_crop()",
-                                                     "(3) Level surface \n preProcess_removeTrend()",
-                                                     "(4) Band-pass filter \n preProcess_gaussFilter()")),
+                                                    "(2) Crop exterior/interior \n preProcess_crop()",
+                                                    "(3) Level surface \n preProcess_removeTrend()",
+                                                    "(4) Band-pass filter \n preProcess_gaussFilter()")),
                                        type = "list",
                                        legend.quantiles = c(0,.5,1)) %>%
   map2(.x = .,
@@ -558,7 +467,7 @@ fadul1.1_cropped <- fadul1.1 %>%
 
 Three major regions of the scan are identified via a labeling algorithm as described in \citet{hesselink_concurrent_2001} and available in the \CRANpkg{imager} package \citep{imager}. These regions are the circle capturing the exterior of the cartridge case primer, the breech face impression region, and the circle around the firing pin impression hole in the center of the scan.
 
-The goal is to isolate the breech face impression region by removing (i.e., replacing with \code{NA}) the pixels in the other two regions. Upon labeling the different regions of the cartridge case scan, the centers and radii of the cartridge case primer and firing pin impression hole are estimated. This estimation procedure may require some user input depending on how much of the exterior/interior the user wants removed. The resulting breech face scan, like the one shown in step (2) of \autoref{fig:processingPipeline}, is reproducible assuming the same user-specified settings are used. The \code{preProcess\_crop} function removes the exterior and firing pin impression region on the interior based on the \code{region} argument.
+The goal is to isolate the breech face impression region by removing (i.e., replacing with \code{NA}) the pixels in the other two regions. Upon labeling the different regions of the cartridge case scan, the centers and radii of the cartridge case primer and firing pin impression hole are estimated. This estimation procedure may require some user input depending on how much of the exterior/interior the user wants removed. The resulting breech face scan, like the one shown in step (2) of \autoref{fig:processingPipeline}, is reproducible assuming the same user-specified settings are used (if they are used at all). The \code{preProcess\_crop} function removes the exterior and firing pin impression region on the interior based on the \code{region} argument.
 
 ```{r, echo=TRUE,eval=FALSE}
 # Step (3)
@@ -575,7 +484,7 @@ fadul1.1_processed <- fadul1.1_deTrended %>%
   x3ptools::x3p_sample(m = 2)
 ```
 
-In the final preprocessing step, a band-pass filter is applied to the processed breech face scan to reduce the effects of undesired frequencies in the comparison procedure. For example, low frequency (large wavelength) global structure may exist in a cartridge case scan due to manufacturing specifications. In forensics, this type of structure is referred to as a class or subclass characteristic -- it is shared by many objects of the same make and model. Class characteristics are used by forensic practitioners to initially pare down the possible pool of matching cartridge cases \citep{firearm_id_thompson}. While this additional global structure may assist with matching cartridge cases, it can also artificially inflate the similarity between truly non-matching scans. The goal of comparing breech-face scans is to answer the question of source. \jz{Same-sourceness can only be determined by matching individual characteristics, so the global structure is removed by using a high-pass Gaussian filter.} Similarly, a low-pass filter is used to remove noise and outliers from cartridge case scans due to, for example, imperfections in the scanning process. A band-pass Gaussian filter combines the effects of low and high-pass filters; this is the default choice in \CRANpkg{cmcR}. The band-pass filtered breech face scan as returned by the \code{preProcess\_gaussFilter} function is shown in the fourth panel of \autoref{fig:processingPipeline}.
+In the final preprocessing step, a band-pass filter is applied to the processed breech face scan to reduce the effects of undesired frequencies in the comparison procedure. For example, low frequency (large wavelength) global structure may exist in a cartridge case scan due to manufacturing specifications. In forensics, this type of structure is referred to as a class or subclass characteristic -- it is shared by many objects of the same make and model. Class characteristics are used by forensic practitioners to initially pare down the possible pool of matching cartridge cases \citep{firearm_id_thompson}. While this additional global structure may assist with matching cartridge cases, it can also artificially inflate the probability of making a false-positive identification. The goal of comparing breech-face scans is to answer the question of source. Same-sourceness can only be determined by matching individual characteristics, so the global structure is removed by using a high-pass Gaussian filter. Similarly, a low-pass filter is used to remove noise and outliers from cartridge case scans due to, for example, imperfections in the scanning process. A band-pass Gaussian filter combines the effects of low and high-pass filters; this is the default choice in \CRANpkg{cmcR}. The band-pass filtered breech face scan as returned by the \code{preProcess\_gaussFilter} function is shown in the fourth panel of \autoref{fig:processingPipeline}.
 
 There is currently no determination or removal of outliers in the \CRANpkg{cmcR} package's preprocessing procedures. Instead, we rely on the low-pass portion of the Gaussian filter to reduce the effects of any high-frequency noise.
 
@@ -625,7 +534,7 @@ $$ where $-(P-1) \leq m \leq M-1$ and $-(Q-1) \leq n \leq N-1$. By this definiti
 
 Prior to calculating the CCF, the matrices $A$ and $B$ are standardized through subtraction of their respective means and division by their respective standard deviations. This is referred to as the \dfn{Areal Cross-Correlation Function} (ACCF) in some CMC papers \citep{ott_applying_2017}. A direct calculation of the CCF for breech face scans based on the definition above is inhibitingly slow. While computationally feasible alternatives exist, \citet{song_proposed_2013} and other CMC papers do not specify the algorithm used to calculate the CCF.
 
-\jz{\citet{song_3d_2014} describe the comparison process:}
+In \citet{song_3d_2014}, the comparison process is described with characteristic brevity:
 
 > CMC pairs are identified by three types of identification parameters: the correlation value CCF$_{\max}$, registration angle $\theta$ and translation distances $x$, $y$ with thresholds $T_{\text{CCF}}$, $T_\theta$ and $T_x, T_y$, respectively. The correlated cell pairs are considered as CMCs when their correlation value CCF$_{\max}$, $T_{\text{CCF}}$, and their registration angle $\theta$ and $x-y$ registration pattern are within the thresholds $T_\theta$, and $T_x, T_y$.
 
@@ -641,9 +550,7 @@ Published implementations of the CMC algorithm do not describe precisely how the
 (A \star B )[m,n]= \mathcal{F}^{-1}\left(\overline{\mathcal{F}(A)} \odot \mathcal{F}(B)\right)[m,n]
 $$ where $\mathcal{F}$ and $\mathcal{F}^{-1}$ denote the discrete Fourier and inverse discrete Fourier transforms, respectively, and $\overline{\mathcal{F}(A)}$ denotes the complex conjugate \citep{fft_brigham}. Because the product on the right-hand side is calculated pointwise, this result allows us to trade the moving sum computations from the definition of the CCF for two forward Fourier transformation, a pointwise product, and an inverse Fourier transformation. The Fast Fourier Transform (FFT) algorithm can be used to reduce the computational load considerably. Our implementation of this FFT-based CCF calculation is adapted from the \pkg{cartridges3D} package \citep{cartridges3D}.
 
-No computational shortcut comes without some tradeoffs, though, and this FFT-based CCF calculation is no different. The FFT does not tolerate missing values, and breech faces are not continuous surfaces -- all of the white regions in \autoref{fig:cmc_illustration} correspond to missing values. While it is unclear how the CCF is implemented in the CMC papers 
-<!-- (it is not even defined mathematically) -->
-, the \CRANpkg{cmcR} package adopts the following conventions:
+No computational shortcut comes without some tradeoffs, though, and this FFT-based CCF calculation is no different. The FFT does not tolerate missing values, and breech faces are not continuous surfaces -- all of the white regions in \autoref{fig:cmc_illustration} correspond to missing values. While it is unclear how the CCF is implemented in the CMC papers (it is not even defined mathematically), the \CRANpkg{cmcR} package adopts the following conventions:
 
 -   Only cells with a minimum proportion of non-missing pixels are assessed. This minimum threshold differs across CMC papers (15% in \citet{chen_convergence_2017} vs. 10% in \citet{song_estimating_2018}, as shown in \autoref{fig:cmc-schematic}), and is referenced but not specified in several other papers \citep{tong_fired_2014,song_3d_2014,chu_validation_2013}. The \code{comparison\_calcPropMissing} function computes the proportion of a matrix that is missing (\code{NA}-valued).
 
@@ -658,7 +565,7 @@ The code below demonstrates how the \code{comparison\_allTogether} function can 
 ```{r echo=TRUE,eval=FALSE}
 # Fill in most of the arguments first
 comp_w_pars <- purrr::partial(.f = comparison_allTogether, 
-                              numCells = 64, maxMissingProp = .85)
+                               numCells = 64, maxMissingProp = .85)
 
 # Then, map the remaining values to theta
 kmComparisonFeatures <- purrr::map_dfr(
@@ -743,28 +650,28 @@ The CMC count is then defined as the number of matching cell-region pairs (out o
 
 ```{=tex}
 \begin{table}[ht]
-\centering
-\begin{tabular}{|lrrr|}
-\hline
-Paper & Translation $T_x, T_y$ & Rotation $\theta$ & CCF$_{\max}$ \\
-& (in pixels) & (in degrees) \\
-\hline
-\cellcolor{lightgray}{\citet{song_3d_2014}} & \cellcolor{lightgray}{20} & 
-\cellcolor{lightgray}{6} & \cellcolor{lightgray}{.60} \\
-
-\citet{tong_fired_2014} & 30 & 3 & .25 \\
-
-\cellcolor{lightgray}{\citet{tong_improved_2015}} & \cellcolor{lightgray}{15} & 
-\cellcolor{lightgray}{3} & \cellcolor{lightgray}{.55} \\
-
-\citet{chen_convergence_2017} & 20 & 3 & .40 \\
-
-\cellcolor{lightgray}{\citet{song_estimating_2018}} & \cellcolor{lightgray}{20} & 
-\cellcolor{lightgray}{6} & \cellcolor{lightgray}{.50}\\
-\hline
-\end{tabular}
-\caption{Different thresholds for translation, rotation, and CCF$_{\max}$ are used across different papers. The range in CCF$_{\max}$ is particularly notable. There is currently no principled approach to determining these thresholds. Instead, thresholds seem to be chosen by authors through experimentation and selecting thresholds that provide promising results.}
-\label{tab:thresholdTable}
+    \centering
+    \begin{tabular}{|lrrr|}
+      \hline
+        Paper & Translation $T_x, T_y$ & Rotation $\theta$ & CCF$_{\max}$ \\
+              & (in pixels) & (in degrees) \\
+        \hline
+        \cellcolor{lightgray}{\citet{song_3d_2014}} & \cellcolor{lightgray}{20} & 
+        \cellcolor{lightgray}{6} & \cellcolor{lightgray}{.60} \\
+        
+        \citet{tong_fired_2014} & 30 & 3 & .25 \\
+        
+        \cellcolor{lightgray}{\citet{tong_improved_2015}} & \cellcolor{lightgray}{15} & 
+        \cellcolor{lightgray}{3} & \cellcolor{lightgray}{.55} \\
+        
+        \citet{chen_convergence_2017} & 20 & 3 & .40 \\
+        
+        \cellcolor{lightgray}{\citet{song_estimating_2018}} & \cellcolor{lightgray}{20} & 
+        \cellcolor{lightgray}{6} & \cellcolor{lightgray}{.50}\\
+        \hline
+    \end{tabular}
+    \caption{Different thresholds for translation, rotation, and CCF$_{\max}$ are used across different papers. The range in CCF$_{\max}$ is particularly notable. There is currently no principled approach to determining these thresholds. Instead, thresholds seem to be chosen by authors through experimentation and selecting thresholds that provide promising results.}
+    \label{tab:thresholdTable}
 \end{table}
 ```
 Unlike the original CMC method, the High CMC method considers multiple rotations for each cell-region pair.
@@ -805,8 +712,8 @@ fadul2.1 <- x3ptools::x3p_read("data/fadul2-1.x3p") %>%
   cmcR::preProcess_crop(region = "interior",
                         radiusOffset = 200) %>%
   preProcess_removeTrend(statistic = "quantile",
-                         tau = .5,
-                         method = "fn") %>%
+                              tau = .5,
+                              method = "fn") %>%
   cmcR::preProcess_gaussFilter() %>%
   x3ptools::sample_x3p()
 
@@ -834,14 +741,14 @@ knmComparison_cmcs <- knmComparisonFeatures %>%
                                               thetaThresh = 6,
                                               corrThresh = .5),
          highCMCClassif = decision_CMC(cellIndex = cellIndex,
-                                       x = x,
-                                       y = y,
-                                       theta = theta,
-                                       corr = pairwiseCompCor,
-                                       xThresh = 20,
-                                       thetaThresh = 6,
-                                       corrThresh = .5,
-                                       tau = 1))
+                                              x = x,
+                                              y = y,
+                                              theta = theta,
+                                              corr = pairwiseCompCor,
+                                              xThresh = 20,
+                                              thetaThresh = 6,
+                                              corrThresh = .5,
+                                              tau = 1))
 
 knmComparison_cmcs_rev <- knmComparisonFeatures_rev %>%
   mutate(originalMethodClassif = decision_CMC(cellIndex = cellIndex,
@@ -853,14 +760,14 @@ knmComparison_cmcs_rev <- knmComparisonFeatures_rev %>%
                                               thetaThresh = 6,
                                               corrThresh = .5),
          highCMCClassif = decision_CMC(cellIndex = cellIndex,
-                                       x = x,
-                                       y = y,
-                                       theta = theta,
-                                       corr = pairwiseCompCor,
-                                       xThresh = 20,
-                                       thetaThresh = 6,
-                                       corrThresh = .5,
-                                       tau = 1))
+                                              x = x,
+                                              y = y,
+                                              theta = theta,
+                                              corr = pairwiseCompCor,
+                                              xThresh = 20,
+                                              thetaThresh = 6,
+                                              corrThresh = .5,
+                                              tau = 1))
 ```
 
 ```{r echo=TRUE,eval=FALSE}
@@ -882,15 +789,15 @@ We can use the \code{cmcPlot} function to visualize CMCs and non-CMCs. \autoref{
 library(patchwork)
 
 kmCMCPlot <- cmcR::cmcPlot(reference = fadul1.1,
-                           target = fadul1.2,
-                           reference_v_target_CMCs = kmComparison_cmcs,
-                           target_v_reference_CMCs = kmComparison_cmcs_rev,
-                           type = "faceted",
-                           x3pNames = c("Fadul 1-1","Fadul 1-2"),
-                           legend.quantiles = c(0,.01,.2,.5,.8,.99,1),
-                           cell.colors = c("#a60b00","#1b03a3"),
-                           cell.alpha = .15,
-                           na.value = "grey100")
+                            target = fadul1.2,
+                            reference_v_target_CMCs = kmComparison_cmcs,
+                            target_v_reference_CMCs = kmComparison_cmcs_rev,
+                            type = "faceted",
+                            x3pNames = c("Fadul 1-1","Fadul 1-2"),
+                            legend.quantiles = c(0,.01,.2,.5,.8,.99,1),
+                            cell.colors = c("#a60b00","#1b03a3"),
+                            cell.alpha = .15,
+                            na.value = "grey100")
 
 
 
@@ -899,8 +806,8 @@ plt1 <- kmCMCPlot$originalMethodCMCs_reference_v_target
 plt1$layers[[4]]$aes_params$size <- 1.5
 
 plt2 <- kmCMCPlot$originalMethodCMCs_target_v_reference +
-  theme(legend.text = element_text(size = 7),
-        legend.title = element_text(size = 7))
+  theme(legend.text = element_text(size = 4.5),
+        legend.title = element_text(size = 4.5))
 
 plt2$layers[[4]]$aes_params$size <- 1.5
 
@@ -915,7 +822,7 @@ plt1 <- plt1  +
                               type = c("\n(Reference)","\n(Target)"),
                               x = c(1750,1750),
                               y = c(1500,1500)),
-            aes(x = x,y = y,label = paste0(x3p,type)),size = 3)
+            aes(x = x,y = y,label = paste0(x3p,type)),size = 1.75)
 
 plt2 <- plt2  +
   theme(axis.title = element_blank(),
@@ -926,15 +833,15 @@ plt2 <- plt2  +
                               type = c("\n(Target)","\n(Reference)"),
                               x = c(1750,1750),
                               y = c(1500,1500)),
-            aes(x = x,y = y,label = paste0(x3p,type)),size = 3)
+            aes(x = x,y = y,label = paste0(x3p,type)),size = 1.75)
 
 
 plt <- (plt1 / plt2 / plt3) +
   plot_layout(ncol = 1,
-              heights =  c(1.9,2,.5),
-              widths = c(.8,1,1))
+              heights =  c(2,1.8,.5),
+              widths = c(1,.9,1))
 
-ggsave(filename = "figures/kmOriginalMethod.pdf",plot = plt,width = 7,height = 7)
+ggsave(filename = "figures/kmOriginalMethod.pdf",plot = plt)
 
 invisible(knitr::plot_crop("figures/kmOriginalMethod.pdf",quiet = TRUE))
 
@@ -1065,8 +972,7 @@ knitr::include_graphics(path = "figures/knmOriginalMethod.pdf")
 
 During the implementation process we encountered various ambiguities in the descriptions of the various CMC methods. In the following section we investigate ways in which such ambiguities can be rectified by exploring a set of reproducibility principles.
 
-<!-- It is important to note that much of what we have presented as "the CMC method" might not be considered as such by the original authors. In particular, other authors might distinguish proposed methods based only on how their decision rules differ.  -->
-We include the preprocessing and cell-based comparison procedures as part of the CMC methodology to emphasize how much the final results depend on decisions made in these first two steps. The preprocessing and cell-based comparison procedures are discussed only briefly, if at all, in \citet{song_3d_2014}, \citet{tong_fired_2014}, \citet{tong_improved_2015}, or \citet{chen_convergence_2017}, yet, the results reported often indicate a sensitivity to these procedures. An actual sensitivity analysis of proposed CMC methods has yet to be published. Left unchecked, this can lead to results that are difficult to generalize to new data.
+It is important to note that much of what we have presented as "the CMC method" might not be considered as such by the original authors. In particular, other authors might distinguish proposed methods based only on how their decision rules differ. We include the preprocessing and cell-based comparison procedures as part of the CMC methodology to emphasize how much the final results depend on decisions made in these first two steps. The preprocessing and cell-based comparison procedures are discussed only briefly, if at all, in \citet{song_3d_2014}, \citet{tong_fired_2014}, \citet{tong_improved_2015}, or \citet{chen_convergence_2017}, yet, the results reported often indicate a sensitivity to these procedures. An actual sensitivity analysis of proposed CMC methods has yet to be published. Left unchecked, this can lead to results that are difficult to generalize to new data.
 
 Apart from the CMC methods' generalizability, we also simply do not know how the proposed methods are implemented. Ambiguities in the methods range from minor implicit parameter choices (e.g., the convergence criteria for the robust Gaussian regression filter \citep{brinkman_bodschwinna_2003}) to procedures that fundamentally change how similarity features are extracted and compared (e.g., how the cross-correlation is calculated). As discussed in the [introduction](#intro), this is an issue that pervades computational research for which only verbal descriptions of algorithms are provided. The only solution to such ambiguity is to enumerate, implement, and pare-down the possible choices that could have been made to arrive to published results. Unsurprisingly, this process takes a considerable amount of time and resources that would be better spent furthering the state of the field.
 
@@ -1074,11 +980,13 @@ In the next section, we describe the process of resolving these ambiguities in t
 
 # Investigation of cell-based forensic pattern matching methods {#investigation}
 
-As described in the [initial data](#initialData) section, the set of cartridge case scans from \citet{fadul_empirical_2011} is commonly used to compare the performance of various classification methods \citep{song_3d_2014, tong_improved_2015, chen_convergence_2017}. This set consists of 40 cartridge cases and 780 total comparisons: 63 known match comparisons and 717 known non-match comparisons. Scans of each breech face impression were taken with a Nanofocus Confocal Light Microscope at 10 fold magnification for a nominal lateral resolution of 3.125 microns per pixel and published as part of NBTRD \citep{nbtrd}. While the exact procedures by which these scans were processed in the original CMC papers are unavailable, these 3D topographic surface images provide the basis of the comparison between the implementation provided in the \CRANpkg{cmcR} package and published results. However, justification for any differences will ultimately involve educated hypothesization due to the closed-source nature of the original implementations.
+As described in the [initial data](#initialData) section, the set of cartridge case scans from \citet{fadul_empirical_2011} is commonly used to compare the performance of various classification methods \citep{song_3d_2014, tong_improved_2015, chen_convergence_2017}. This set consists of 40 cartridge cases; 63 of which are known match pairs and 717 known non-match pairs. Scans of each of the breech face impression were taken with a Nanofocus Confocal Light Microscope at 10 fold magnification for a nominal lateral resolution of 3.125 microns per pixel and published as part of NBTRD \citep{nbtrd}. While the exact procedures by which these scans are processed are unavailable, these 3D topographic surface images provide the basis of the comparison between the implementation provided in the \CRANpkg{cmcR} package and published results. However, justification for any differences will ultimately involve educated hypothesization due to the closed-source nature of the original implementations.
 
-For any cartridge case pair, the number of CMCs can be determined under the original method and the High CMC method described in the [implementation](#implementation) section. We have applied our implementation of these two methods to the 780 cartridge case pairs available in the \citet{fadul_empirical_2011} data set under a variety of processing conditions to determine which conditions yield the best results while also matching the published results. Perfect identification of all matching and non-matching pairs corresponds to choosing a minimum CMC count threshold that separates the distributions of the matching and non-matching CMC counts. A CMC count threshold of 6 CMCs is generally accepted as the threshold in the published papers [\citet{tong_improved_2015}, \citet{song_estimating_2018}, \citet{song_proposed_2013}]. However, this threshold has been shown to not generalize well to all proposed methods and cartridge case data sets \citep{chen_convergence_2017}. In this section, we demonstrate that the ambiguities in the [CMC method descriptions](cmcMethod) and lack of guidance in the choice of parameter settings propagate through the algorithm and produce highly variable results. Additionally, wildly different parameter settings are used by the same group of authors across different papers as shown in \autoref{tab:thresholdTable}.
+For any cartridge case pair, the number of CMCs can be determined under the original method and the High CMC method described in [implementation](#implementation) section. We have applied our implementation of these two methods to the 780 cartridge case pairs available in the \citet{fadul_empirical_2011} data set under a wide variety of processing conditions to determine which conditions yield the best results while also matching the published results. Perfect identification of all matching and non-matching pairs corresponds to choosing a minimum CMC count threshold that separates the distributions of the matching and non-matching CMC counts. A CMC count threshold of 6 CMCs is generally accepted as the threshold in the published papers [\citet{tong_improved_2015}, \citet{song_estimating_2018}, \citet{song_proposed_2013}]. However, this threshold has been shown to not generalize well to all proposed methods and cartridge case data sets \citep{chen_convergence_2017}. In this section, we demonstrate that the ambiguities in the [CMC method descriptions](cmcMethod) and lack of guidance in the choice of parameter settings propagate through the algorithm and produce highly variable results. Additionally, wildly different parameter settings are used by the same group of authors across different papers as shown in \autoref{tab:thresholdTable}.
 
-In the next section we focus on a discussion of the sensitivity of some of the method's parameters. This presentation is far from exhaustive: we primarily focus on the factors contributing to the most variable results. As a consequence of this investigation we have developed a set of principles designed to reduce the need for brute-force searches across parameter settings when re-implementing algorithms without accompanying code. Adherence to these principles yields not only computationally reproducible results, but also improves a reader's understanding of a proposed method.
+In the next section we focus on a discussion of the sensitivity of some of the method's parameters. This presentation is far from exhaustive: we primarily focus on the factors contributing to the most variable results. As a consequence of this investigation we have developed a set of principles designed to reduce the need for brute-force searches across parameter settings when re-implementing algorithms without accompanying code.
+
+Adherence to these principles yields not only computationally reproducible results, but also improves a reader's understanding of a proposed method.
 
 ## Communicating a method's sensitivity to processing conditions
 
@@ -1156,7 +1064,7 @@ cmcCountData %>%
                                  thetaThresh = c("Theta Thresh.: 3","Theta Thresh.: 6") %>% setNames(c(3,6)),
                                  trendRemoved = c("Trend Removed: TRUE","Trend Removed: FALSE") %>% setNames(c(TRUE,FALSE)))) +
   xlab("Translation Threshold") +
-  ylab("Variance Ratio") +
+  ylab("variance ratio") +
   theme_bw() +
   theme(legend.position = "bottom") +
   guides(colour = guide_colorbar(title = "CCF Threshold",
@@ -1169,200 +1077,9 @@ cmcCountData %>%
 
 As shown in \autoref{fig:cmc_sensitivityScatter}, de-trending breech-scans in the preprocessing stage emerges as a very impactful step to achieve good algorithmic results. This step is not explicitly mentioned in the written-word descriptions of the algorithm in either of the papers by \citet{song_proposed_2013}, \citet{tong_fired_2014}, \citet{tong_improved_2015}, \citet{chen_convergence_2017}, or \citet{song_estimating_2018}, though it appears from their examples that it was used in the process. This highlights, yet again, the dangers of only providing verbal instructions in lieu of code. \autoref{fig:cmc_sensitivityScatter} also shows us the benefits of breaking a method up into modularized steps for an algorithmic analysis. We will expand upon this in the next section.
 
-\jz{\autoref{fig:cmc_varRatioComparison} shows variance ratio values based on results presented in various CMC papers. We can see that the High CMC method yields higher variance ratio values than the original original method. However, as discussed previously, it is difficult to justify differences in these values because the various papers different preprocessing procedures and parameters (e.g., see \autoref{tab:thresholdTable}). The last two rows show the largest variance ratio values for the original and High CMC methods based on the grid search summarized in \autoref{fig:cmc_sensitivityScatter}. In particular, the highest variance ratio value for the original method is associated with translation thresholds $T_x = T_y = 25$, rotation threshold $T_\theta = 6$, and correlation threshold $T_{\text{CCF}} = .45$. The highest variance ratio value for the High CMC method is associated with translation thresholds $T_x = T_y = 20$, rotation threshold $T_\theta = 6$, and correlation threshold $T_{\text{CCF}} = .5$. This demonstrates that the implementation provided in \CRANpkg{cmcR} yields comparable results to previous CMC papers.}
-
-```{r,echo=FALSE, fig.cap='\\label{fig:cmc_varRatioComparison} Variance ratios based on results reported in various CMC papers. The High CMC method tends to outperform the original method. However, it should be emphasized that each paper uses very different parameter settings (e.g., the thresholds used are summarized in \\autoref{tab:thresholdTable}) which makes the results difficult to compare. The values labeled "cmcR" show the largest variance ratio values for the original and High CMC methods based on the grid search summarized in \\autoref{fig:cmc_sensitivityScatter}. These results indicates that the CMC method implementation provided in \\CRANpkg{cmcR} yields comparable results to previous CMC papers.',fig.align='left',fig.pos='htbp',out.width='\\textwidth'}
-calcVarianceRatio <- function(cmcData,similarityCol = "cmcCount"){
-  grand_similarityColAverage <- mean(unlist(cmcData[,similarityCol]))
-  
-  withinGroup_similarityCol <- cmcData %>%
-    group_by(type) %>%
-    summarise(similarityColAverage = mean(!!as.name(similarityCol)),
-              similarityColVar = var(!!as.name(similarityCol)),
-              .groups = "drop")
-  
-  betweenGroupVariability <- withinGroup_similarityCol %>%
-    mutate(similarityColSS = (similarityColAverage - grand_similarityColAverage)^2) %>%
-    pull(similarityColSS) %>%
-    sum()
-  
-  withinGroupVariability <- withinGroup_similarityCol %>%
-    pull(similarityColVar) %>%
-    sum()
-  
-  cmcData <- cmcData %>%
-    mutate(varRatio = betweenGroupVariability/withinGroupVariability)
-  
-  return(cmcData)
-}
-
-data.frame(study = factor(c("Tong et al. (2014)",
-                       "Song et al. (2014)",
-                       "Tong et al. (2015)","Tong et al. (2015)",
-                       "Chen et al. (2017)","Chen et al. (2017)",
-                       "Song et al. (2018)",
-                       "cmcR","cmcR"),
-                       levels = rev(c("Tong et al. (2014)",
-                       "Song et al. (2014)","Tong et al. (2015)",
-                       "Chen et al. (2017)",
-                       "Song et al. (2018)",
-                       "cmcR"))),
-           decisionRule = factor(c("Original Method",
-                        "Original Method",
-                        "Original Method","High CMC",
-                        "Original Method","High CMC",
-                        "Original Method",
-                        "Original Method","High CMC"),
-                        levels = c("Original Method","High CMC")),
-           corThresh = c(.6,
-                          .25,
-                          .55,.55,
-                          .4,.4,
-                          .5,
-                          .45,.5),
-           transThresh = c(20,
-                           30,
-                           15,15,
-                           20,20,
-                           20,
-                           25,20),
-           thetaThresh = c(6,
-                           3,
-                           3,3,
-                           3,3,
-                           6,
-                           6,6),
-           varRatio = c(
-             # original method results from Tong et al. (2014)
-             data.frame(cmcCount = c(rep(c(0:5),times = c(341,247,88,29,9,3)),
-                                     rep(c(6:7,9:21,26,28),times = c(2,4,2,2,6,5,3,4,4,5,5,7,3,5,3,2,1)))) %>%
-               mutate(type = ifelse(cmcCount <= 6,"non-match","match")) %>%
-               calcVarianceRatio() %>%
-               pull(varRatio) %>%
-               unique(),
-             # original method results from Song et al. (2014)
-             data.frame(cmcCount = c(rep(c(0:2),times = c(639,70,8)),
-                                     rep(c(7,9:12,14:29),times = c(2,1,1,3,1,1,4,6,5,5,6,3,2,8,2,2,4,4,1,1,1)))) %>%
-               mutate(type = ifelse(cmcCount <= 6,"non-match","match")) %>%
-               calcVarianceRatio() %>%
-               pull(varRatio) %>%
-               unique(),
-             # original method results from Tong et al. (2015)
-             data.frame(cmcCount = c(rep(c(0:3),times = c(525,147,36,9)),
-                                     rep(c(8,10:22,24:26,28),times = c(1,3,2,7,5,6,2,7,4,4,3,5,2,3,3,4,1,1)))) %>%
-               mutate(type = ifelse(cmcCount <= 6,"non-match","match")) %>%
-               calcVarianceRatio() %>%
-               pull(varRatio) %>%
-               unique(),
-             # high CMC method results from Tong et al. (2015)
-             data.frame(cmcCount = c(rep(c(0:2),times = c(653,54,8)),
-                                     rep(c(12:16,18:29),times = c(1,2,3,3,4,4,3,11,2,8,2,1,7,5,5,1,1)))) %>%
-               mutate(type = ifelse(cmcCount <= 6,"non-match","match")) %>%
-               calcVarianceRatio() %>%
-               pull(varRatio) %>%
-               unique(),
-             # original method results from Chen (2017)
-             data.frame(cmcCount = c(rep(c(0:3),times = c(508,164,37,8)),
-                                     rep(c(6,13:31),times = c(1,1,1,2,1,2,5,5,4,3,11,2,5,4,2,6,1,4,1,2)))) %>%
-               mutate(type = ifelse(cmcCount <= 6,"non-match","match")) %>%
-               calcVarianceRatio() %>%
-               pull(varRatio) %>%
-               unique(),
-             # High CMC results from Chen (2017)
-             data.frame(cmcCount = c(rep(c(0:4,6),times = c(504,169,34,7,1,2)),
-                                     rep(c(15:28,30:32),times = c(2,2,1,2,3,3,6,3,4,7,8,4,3,6,3,3,3)))) %>%
-               mutate(type = ifelse(cmcCount <= 6,"non-match","match")) %>%
-               calcVarianceRatio() %>%
-               pull(varRatio) %>%
-               unique(),
-             # Original method results from Song et al. (2018)
-             data.frame(cmcCount = c(rep(c(0:2),times = c(651,61,5)),
-                                     rep(c(9,11:26),times = c(1,5,2,2,1,3,1,4,2,5,8,7,6,5,4,5,1)))) %>%
-               mutate(type = ifelse(cmcCount <= 6,"non-match","match")) %>%
-               calcVarianceRatio() %>%
-               pull(varRatio) %>%
-               unique(),
-              8.781472,
-             33.567344
-           )) %>%
-  ggplot(aes(x = varRatio,
-             y = study)) +
-  geom_point() +
-  # geom_point(aes(colour = corThresh)) +
-  geom_segment(aes(xend = 0,yend = study)) +
-  # ggrepel::geom_text_repel(aes(label = study)) +
-  scale_colour_gradient(low = "#a1d99b",
-                        high = "#00441b",
-                        breaks = seq(.2,.6,by = .1)) +
-  facet_grid(rows = vars(decisionRule),
-             space = "free",scales = "free",
-             labeller = labeller(decisionRule = c("High CMC","Original Method") %>% set_names(c("High CMC","Original Method")),
-                                 thetaThresh = c("Theta Thresh.: 3","Theta Thresh.: 6") %>% setNames(c(3,6)),
-                                 trendRemoved = c("Trend Removed: TRUE","Trend Removed: FALSE") %>% setNames(c(TRUE,FALSE)))) +
-  # scale_y_continuous(limits = c(0,NA)) +
-  # facet_grid(rows = vars(theta),
-  #            cols = vars(decisionRule),
-             # labeller = labeller(decisionRule = c("High CMC","Original Method") %>% set_names(c("High CMC","Original Method")),
-             #                     thetaThresh = c("Theta Thresh.: 3","Theta Thresh.: 6") %>% setNames(c(3,6)),
-             #                     trendRemoved = c("Trend Removed: TRUE","Trend Removed: FALSE") %>% setNames(c(TRUE,FALSE)))) +
-  xlab("Variance Ratio") +
-  # ylab("Study") +
-  theme_bw() +
-  theme(legend.position = "bottom",
-        axis.title.y = element_blank()) +
-  guides(colour = guide_colorbar(title = "CCF Threshold",
-                                 barwidth =  8,
-                                 title.hjust = -1,
-                                 title.vjust = .825,
-                                 frame.colour = "black",
-                                 ticks.colour = "black"))
-```
-
-<!-- ```{=tex} -->
-<!-- \begin{table}[ht] -->
-<!-- \centering -->
-<!-- \begin{tabular}{|llr|} -->
-<!-- \hline -->
-<!-- Method & Paper & Variance Ratio \\ -->
-<!-- %(Figure) &  &  \\ -->
-<!-- \hline -->
-<!-- \cellcolor{lightgray}{Original} & \cellcolor{lightgray}{\citet{song_3d_2014}} &   -->
-<!-- \cellcolor{lightgray}{11.50} \\ -->
-<!-- %\cellcolor{lightgray}{(Fig. 6)} & \cellcolor{lightgray}{} & \cellcolor{lightgray}{} \\ -->
-
-<!-- Original & \citet{tong_fired_2014} &  8.00 \\ -->
-<!-- %(Fig. 7b) & & \\ -->
-
-<!-- \cellcolor{lightgray}{Original} & \cellcolor{lightgray}{\citet{tong_improved_2015}} &   -->
-<!-- \cellcolor{lightgray}{10.21} \\ -->
-<!-- % \cellcolor{lightgray}{(Fig. 9a)} & \cellcolor{lightgray}{} & \cellcolor{lightgray}{} & \\ -->
-
-<!-- Original & \citet{chen_convergence_2017} & 21.46 \\ -->
-<!-- %\cellcolor{lightgray}{(Fig. 6a)} & \cellcolor{lightgray}{} & \cellcolor{lightgray}{} \\ -->
-
-<!-- \cellcolor{lightgray}{Original} & \cellcolor{lightgray}{\citet{song_estimating_2018}} &  -->
-<!-- \cellcolor{lightgray}{15.88} \\ -->
-<!-- %\cellcolor{lightgray}{(Fig. 6)} & \cellcolor{lightgray}{} & \cellcolor{lightgray}{} \\ -->
-
-<!-- Original & Zemmels et al. (2021) & 8.78 \\ -->
-
-<!-- High CMC & \citet{tong_improved_2015} & 19.46 \\ -->
-<!-- %(Fig. 9b) & & \\ -->
-<!-- \cellcolor{lightgray}{High CMC} & \cellcolor{lightgray}{\citet{chen_convergence_2017}} & \cellcolor{lightgray}{24.11} \\ -->
-<!-- %(Fig. 6c) & & \\ -->
-<!-- \cellcolor{lightgray}{High CMC} & \cellcolor{lightgray}{Zemmels et al. (2021)} &   -->
-<!-- \cellcolor{lightgray}{33.57} \\ -->
-<!-- \hline -->
-<!-- \end{tabular} -->
-<!-- \caption{Variance ratios based on results reported in various CMC papers. The last two rows show the largest variance ratio values for the original and High CMC methods based on the grid search summarized in \autoref{fig:cmc_sensitivityScatter}. This indicates that the CMC method implementation provided in \CRANpkg{cmcR} yields comparable results to previous CMC papers.} -->
-<!-- \label{tab:varRatioTable} -->
-<!-- \end{table} -->
-<!-- ``` -->
-
-
 ## Modularization as a basis for FAIR software {#exploring}
 
-Both the original CMC and High CMC methods are complex, multi-step processes that are easier to run and debug when written as a modular pipeline of successive, functionally independent steps. This modular approach makes it easier to describe the algorithm, easier to write the code, easier to modify and improve the method, and easier to show that the improvement has a noticeable impact on the results. Unfortunately, it takes work to explicitly modularize an algorithm. The modularity of the CMC methods is something imposed by the authors of this paper, and is not necessarily obvious from the published CMC literature. In part, we modularize code because it make it more maintainable, but it is also part of the scientific process: refining and improving previous methods by incorporating modern best practices. The modularization creates an explicit framework for assessment of the utility and effectiveness of each piece of the algorithm, and allows us to specifically manipulate each step independently, while monitoring the downstream impact on the results. It also allows future collaborators to improve on pieces of the pipeline, adding additional options and improving the method without having to re-invent the wheel. This provides a huge boost to the efficiency of new developments in the field: it is our hope that the \CRANpkg{cmcR} package will facilitate additional research into the matching of cartridge cases and other pattern evidence.
+Both the CMC and High CMC methods are complex, multi-step processes that are easier to run and debug when written as a modular pipeline of successive, functionally independent steps. This modular approach makes it easier to describe the algorithm, easier to write the code, easier to modify and improve the method, and easier to show that the improvement has a noticeable impact on the results. Unfortunately, it takes work to explicitly modularize an algorithm. The modularity of the CMC methods is something imposed by the authors of this paper, and is not necessarily obvious from the published CMC literature. In part, we modularize code because it make it more maintainable, but it is also part of the scientific process: refining and improving previous methods by incorporating modern best practices. The modularization creates an explicit framework for assessment of the utility and effectiveness of each piece of the algorithm, and allows us to specifically manipulate each step independently, while monitoring the downstream impact on the results. It also allows future collaborators to improve on pieces of the pipeline, adding additional options and improving the method without having to re-invent the wheel. This provides a huge boost to the efficiency of new developments in the field: it is our hope that the \CRANpkg{cmcR} package will facilitate additional research into the matching of cartridge cases and other pattern evidence.
 
 As described in \citet{wittenburg_open_2021}, open science and data science depend on FAIR algorithms and data, where FAIR stands for findability, accessibility, interoperability, and reusability. It is easy to see how modular algorithms increase the interoperability and reusability of code and data, and that the addition of an open-source software package leveraging the CRAN platform increases the findability and accessibility of the method and code. While not all developers adhere to reproducible, open-source, or FAIR design principles, we argue that the addition of a modular framework for the CMC algorithm is a valuable addition to the method, as it results in an algorithm that can be more easily tested, examined, and explained. These principles of open, accessible, interoperable code are also critical for a fair (in the legal sense) justice system: the defense must have access to the code to understand the evidence against them, lawyers must be able to assess the utility of the analysis method, and judges must be able to determine whether a method is admissible in court. All of these goals are compatible with a FAIR, open-source, reproducible algorithm, and are fundamentally incompatible with closed-source, closed-data, paper-only scientific advancement.
 
@@ -1370,37 +1087,17 @@ FAIR software standards emphasize open code, but it is just as important in data
 
 # Conclusion {#conclusion}
 
-The results shared in this manuscript indicate that the implementation of the CMC method in the \CRANpkg{cmcR} package is qualitatively similar to those published in \citet{song_3d_2014}, \citet{tong_improved_2015}, \citet{chen_convergence_2017}, and \citet{song_estimating_2018}.
-This is despite some ambiguities in the implementation of these procedures due to the descriptive nature of the original descriptions of the algorithms.
-The fundamental reason that descriptions of data analysis procedures, combined with the raw data, are not sufficient for reproducibility is that published procedures are described in words rather than algorithmically, and in some cases, steps are performed manually without providing the resulting intermediary outcomes.
-Because publications generally do not contain sufficient detail to reproduce every part of the algorithm, it is necessary to supplement the paper with open code and intermediate forms of the data (after any manual steps have been performed or simply as check points for replications).
-Especially in applications like forensic science, where results from computational methods may be used as evidence to support legal conclusions, transparency in how a method is implemented and data are processed is necessary \citep{angwin_machine_2016, cino_deploying_2018}.
-It is therefore of the utmost importance that the forensic community does not go only halfway, trading a subjective, human black box for objective, proprietary algorithms that are similarly opaque and unauditable.
-<!-- As such methods could potentially be used in the future as evidence to support legal conclusions, it is imperative that specific implementations be openly available for assessment and validation. -->
-<!-- Furthermore, reproducibility of results hinges on automating as much of the comparison process as possible. -->
-<!-- We have discussed the ways in which the prosaic descriptions of CMC procedures fail to adequately detail implementations that yield reproducible results. Ambiguity in the implementation stems mainly from implicit parameters and processing choices in the written-language descriptions. While admissible from a readability perspective, anything short of making the original code available renders published results not reproducible.  -->
-<!-- This is compounded by the fact that a critical preprocessing step is performed manually and that preprocessed data are not publicly available. -->
+The results shared in this manuscript indicate that the implementation of the CMC method in the \CRANpkg{cmcR} package is qualitatively similar to those published in \citet{song_3d_2014}, \citet{tong_improved_2015}, \citet{chen_convergence_2017}, and \citet{song_estimating_2018}. As such methods could potentially be used in the future as evidence to support legal conclusions, it is imperative that specific implementations be openly available for assessment and validation. Furthermore, reproducibility of results hinges on automating as much of the comparison process as possible. We have discussed the ways in which the prosaic descriptions of CMC procedures fail to adequately detail implementations that yield reproducible results. Ambiguity in the implementation stems mainly from implicit parameters and processing choices in the written-language descriptions. While admissible from a readability perspective, anything short of making the original code available renders published results not reproducible. This is compounded by the fact that a critical preprocessing step is performed manually and that preprocessed data are not publicly available.
 
-At one time, it was common to publish the specific implementation of an algorithm as raw source code \citep{bron_merge_1972} within the journal article, or at minimum, in the appendix \citep{friend_sorting_1956} if the article contained a significant amount of analysis. 
-While it is still relatively common to provide access to a github repository or other repository for source code, these repositories are not guaranteed to exist in perpetuity; certainly, when compared to \citep{bron_merge_1972}, the likelihood of being able to find the source code for an article is higher when the code is included in the article or made readily accessible in another format. 
-In many cases, though, authors do not make their code available for analysis; this provides a substantial hurdle when attempting to use, replicate, or compare the published method and represents a significant barrier to scientific progress. 
-A pure \`re-implementation' of existing work generally does not count as research. 
-Unfortunately, this deters to build on one another's work, discourages comparisons across approaches from different research groups, and favors 'one-off' ideas over a collaborative effort to achieve real solutions.
-Re-implementations often require enumerating and implementing a variety of processing options, likely larger than the scope of the original implementation, and yield a deeper understanding of a method's sensitivity \citep{Stodden2013SettingTD}.
-The forensic community needs to be aware of an algorithm's sensitivity and agree on a set of reasonable parameters before it is considered admissible.
-Transparent and intuitive open-source algorithms, such as \CRANpkg{cmcR}, should be considered the gold standard in allowing the forensic science community to validate a method.
-<!-- The process by which the CMC method was implemented in the \CRANpkg{cmcR} package testifies to how important the recent push for open-source development is to forensic transparency. -->
+At one time, it was common to publish the specific implementation of an algorithm as raw source code \citep{bron_merge_1972} within the journal article, or at minimum, in the appendix \citep{friend_sorting_1956} if the article contained a significant amount of analysis. While it is still relatively common to provide access to a github repository or other repository for source code, these repositories are not guaranteed to exist in perpetuity; certainly, when compared to \citep{bron_merge_1972}, the likelihood of being able to find the source code for an article is higher when the code is included in the article or made readily accessible in another format. In many cases, though, authors do not make their code available for analysis; this provides a substantial hurdle when attempting to use, replicate, or compare the published method and represents a significant barrier to scientific progress. A pure \`re-implementation' of existing work generally does not count as research. Unfortunately, this deters to build on one another's work, discourages comparisons across approaches from different research groups, and favors 'one-off' ideas over a collaborative effort to achieve real solutions. Re-implementations often require enumerating and implementing a wide variety of processing options, likely larger than the scope of the original implementation, and yield a deeper understanding of a method's proficiency \citep{Stodden2013SettingTD}. The process by which the CMC method was implemented in the \CRANpkg{cmcR} package testifies to how important the recent push for open-source development is to scientific progress.
 
-If code is not open-sourced, at a minimum, authors should be willing to publish the data at every intermediate stage of the analysis, to allow those who would re-implement algorithms the ability to check the validity of the re-implementation against the output of the published paper. 
-This simple step protects both the authors' interest in the code and the scientific community's interest in replication and verification of previously posed methods. 
-In addition, publishing original, intermediate, and final results allows new algorithms to benchmark against previously proposed solutions to the same problem, providing a much more even basis for comparison of different algorithms. 
-This minimum standard of openness and reproducibility is essential to evaluating algorithms, and in consequential applications such as forensics, these validation results are also important when methods are introduced in a legal setting.
+If code is not open-sourced, at a minimum, authors should be willing to publish the data at every intermediate stage of the analysis, to allow those who would re-implement algorithms the ability to check the validity of the re-implementation against the output of the published paper. This simple step protects both the authors' interest in the code and the scientific community's interest in replication and verification of previously posed methods. In addition, publishing original, intermediate, and final results allows new algorithms to benchmark against previously proposed solutions to the same problem, providing a much more even basis for comparison of different algorithms. This minimum standard of openness and reproducibility is essential to evaluating algorithms, and in consequential applications such as forensics, these validation results are also important when methods are introduced in a legal setting.
 
 # Acknowledgement
 
 This work was partially funded by the Center for Statistics and Applications in Forensic Evidence (CSAFE) through Cooperative Agreement 70NANB20H019 between NIST and Iowa State University, which includes activities carried out at Carnegie Mellon University, Duke University, University of California Irvine, University of Virginia, West Virginia University, University of Pennsylvania, Swarthmore College and University of Nebraska, Lincoln.
 
-We greatly appreciate the constructive feedback from the two anonymous reviewers. Special thanks also to all the developers and open-source contributors of R [@R], knitr [@knitr1; @knitr2], rticles [@rticles], and the tidyverse [@tidyverse], without whom this project would not have been possible.
+Special thanks also to all the developers and open-source contributors of R [@R], knitr [@knitr1; @knitr2], rticles [@rticles], and the tidyverse [@tidyverse], without whom this project would not have been possible.
 
 # Computational details
 
