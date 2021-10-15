@@ -10,25 +10,25 @@ The manuscript describes the authors’ development of an open-source implementa
 The authors contend that the NIST papers were insufficient for the advancement of science and for the implementation of their methods; however, the fact that the authors were able to create the described implementation disproves this assertion. 
 The NIST CMC people are not listed as co-authors on this paper and thus the reader is left to assume that the authors obtained all the information they needed for CMC implementation from the published CMC papers.
 
-**We were not able to obtain  all the information [we] needed for the CMC implementation from the published CMC papers." Our implementation, while providing qualitatively similar results to those in published papers on the Fadul data set, is based on a large amount of guesswork and lengthy experimentation due to the ambiguity in the original CMC papers. We have no reason to believe that our implementation will behave the same on different data sets.**
+**We agree that we have been able to *qualitatively* reproduce the results of the original implementations. However, we argue that qualitative reproducibility is not sufficient to legally or ethically justify the use of an algorithm in forensics. We were not able to obtain "all the information [we] needed for the CMC implementation from the published CMC papers." Our implementation, while providing qualitatively similar results to those in published papers on the Fadul data set, is based on a large amount of guesswork and lengthy experimentation due to the ambiguity in the original CMC papers. We, for example, have no reason to believe that our implementation will behave the same on different data sets. We appreciate this feedback as it has helped us hone our argument more precisely.**
 
 The authors are a bit harsh on the NIST authors, using phrases like “the comparison process is described with characteristic brevity” and highly criticizing the NIST authors’ lack of detail in their papers. 
 
-**We've addressed this comment by changing XYZ**
+**We appreciate and agree with this feedback. Our original language was overly critical of the NIST authors. Our intention was to highlight and discuss the consequences of the lack of details in the original papers, not to attack the authors themselves. We have removed phrases like "characteristic brevity" that may be interpreted as criticism of the NIST authors.**
 
 CMC is described by the NIST developers as a family of methods, still under development, and not a single finalized approach (thus the series of CMC papers).
 Thus it is understandable that NIST papers not spell out a perfect step by step approach.
 Computational methods, like CMC, evolve and improve over time. 
 Some preprocessing steps that might work for one approach do not work for another approach. 
-Some steps will work for one type of data, or data from a specific type of firearm. 
+Some steps will work for one type of data, or data from a specific type of firearm.
 For example, different preprocessing steps may be needed for data from different sources. 
 It is therefore not clear why the authors appear confused that different CMC papers would have different processing steps “Complicating the issue of preprocessing the scans, the procedures used to process the surface matrices differ in each of the papers discussed here.”.
 
-
+**We agree that authors should not be criticized for publishing methods that are still in-development. Our intended criticism here is not that the CMC method wasn't fully-formed at conception, but rather that there is no discussion of why certain processing choices were made over others. As a specific example, Song et al. (2014) use a standard bandpass Gaussian filter with a short/long wavelength cutoff of 40/400 $\mu$m, respectively, Chen et al. (2017) use a 2nd order robust bandpass Gaussian regression filter (of which a standard Gaussian bandpass filter is a special case) with a short/long wavelength cutoff  of 16/250 $\mu$m, respectively, and Song et al. (2018) return to using a standard bandpass Gaussian filter with a short/long wavelength cutoff of 16/250 $\mu$m, respectively. Additionally, it should be noted that all three of these papers share authors and use the 3D scans of the Fadul et al. (2011) cartridge cases for validation. Based on the changes between papers, it's clear that an internal validation has occurred. For the sake of transparency in forensics, we argue that a necessary component of any proposed pattern-matching algorithm is a discussion of the algorithm's sensitivity to different processing choices. Additionally, we argue that it is not acceptable in a forensics/legal setting to provide a conceptual description of an algorithm for which there clearly exists an actual implementation (i.e., a "step by step approach").**
 
 It is well known that differences in preprocessing, CMC gridding, thresholds, and parameters can affect the final CMC scores. 
 
-**Previous studies do not provide a sensitivity analysis to demonstrate how various processing decisions affect the final CMC scores. We can only surmise as much by comparing results across CMC papers where various parameters inexplicably change even though the same method (e.g., the High CMC decision rule) is applied to the same data (the Fadul scans). One of our goals in this paper was to provide the first demonstration of the sensitivity of the final CMC scores to (a limited grid of) processing decisions.**
+**Previous studies do not provide a sensitivity analysis to demonstrate how various processing decisions affect the final CMC scores. We can only surmise as much by comparing results across CMC papers where various parameters inexplicably change even though the same NIST authors apply the same methods (e.g., the original or High CMC decision rules) are applied to the same data (the Fadul scans). One of our goals in this paper was to provide the first demonstration of the sensitivity of the final CMC scores to (a limited grid of) processing decisions and argue that such a sensitivity discussion is necessary in any forensic pattern-matching algorithm proposal.**
 
 The optimal set of parameters and algorithmic steps may be dataset specific and those searching among these parameters (such as the authors) need to be careful about over-fitting. 
 There did not appear to be anything in the paper about prevention of over-fitting.
@@ -40,7 +40,7 @@ For example, the authors criticize NIST for not describing how scan rotation was
 This is a minor point and not one that should not cause issue with any implementation.
 It is completely reasonable that the NIST authors left out this detail for including minutia at this level would cause all CMC papers to be unnecessarily long.
 
-**We agree that not including minor details in the prosaic description of the algorithm is admissible from a readability perspective. While any one of such decisions *shouldn't* affect results, our purpose in bringing up such minutiae is to emphasize that en-masse, without access to the processed data or code, they compound and ultimately yield opaque results.**
+**We agree that not including minor details in the prosaic description of the algorithm is admissible from a readability perspective (and say as much in the introduction/conclusion of the paper). It is, however, a fact that rotating the contents of a 2D array by any angle other than a multiple of 90 degrees requires interpolation of, and therefore a change in, the values of the array. While any one of such decisions *may* not affect results, our purpose in bringing up such minutiae is to emphasize that en-masse, without access to the processed data or code, they compound and ultimately yield opaque, irreproducible results.**
 
 Overall, the largest contribution of this paper is the open-source implementation provided by the authors. 
 The authors were able to assemble a set of algorithmic steps and parameters that fully implement one (or two) of the CMC methods. 
@@ -49,7 +49,7 @@ This is indeed a useful contribution to the community.
 My main criticism is the authors over-stating of the issues in the original CMC papers. 
 As stated above, the fact that the authors were able to produce their implementation demonstrates that sufficient information was available. 
 
-**The fact that we were able to create an implementation does not mean that the original methods are reproducible. For example, to reiterate a point made above, there is no reason to believe that our implementation will behave the same on a new data set. We agree that some of our language was overly harsh and have changed both the language and underlying points we were trying to make.**
+**The fact that we were able to create an implementation does not mean that the original methods are reproducible. For example, to reiterate a point made above, there is no reason to believe that our implementation will behave the same on a new data set. We agree that some of our language was overly harsh and misdirected and have changed both the language and underlying points we were trying to make.**
 
 In the conclusion the authors state “The results shared in thi manuscript indicate that the implementation of the CMC method in the cmcR package is qualitatively similar to those published in Song et al. (2014), Tong et al. (2015), Chen et al. (2017), and Song et al. (2018).” but I did not see any of these results?
 Perhaps there were missing tables in my manuscript?
@@ -58,7 +58,7 @@ Perhaps there were missing tables in my manuscript?
 
 One reference I wanted to examine was the Zemmels 2020 reference however it does not appear in the bibliography.
 
-**We recognized that this was a typo in the paper. The "Zemmels 2020" reference was actually meant to refer to the current manuscript (which we began writing in 2020). We have clarified this by changing references in the paper to "Zemmels et al. (2020)" to "cmcR Implementation."**
+**We recognized that this was a typo in the paper. The "Zemmels 2020" reference in Figures 4 and 8 was actually meant to refer to the current manuscript (which we began writing in 2020). We have clarified this by changing references in the paper to "Zemmels et al. (2020)" to "cmcR Implementation." We appreciate the reviewer pointing out this error.**
 
 The level of criticism should be toned down to reflect the reality of the CMC method as being a family of approaches still under active development and one that the authors were able to implement. 
 Missing references (Zemmels) and results (comparison with the NIST published results as stated in the conclusion; missing table?) should be added.
@@ -69,10 +69,12 @@ Missing references (Zemmels) and results (comparison with the NIST published res
 However it is a good paper and the application is interesting. 
 I would like you to remove the RR focus, and rather concentrate on the motivation for a parallel implementation (freedom of use, ease of extension, research platform, forensic transparency), and the implementation itself.
 
-**We have changed the focus of the paper to instead be on the importance of open-source algorithms for the sake of transparency in forensics.**
+> **While perhaps not a standard contribution to the field of reproducible research, we argue that a critical component of forensic transparency, or transparency in any high-stakes applications, *is* reproducibility of results. The paper is intended to demonstrate how an initially irreproducible algorithm can lead to highly divergent final results. We appreciate this comment as it has helped us clarify our argument.**
 
 2.  It would be good to know if you actually tried to contact the original authors – especially since they appear to be NIST researchers, and NIST funds your research
 
+> **We appreciate and agree with this comment. We have reached out to the original NIST authors and [...]**
+
 3.  Comparison of your package with published results is a must.
 
-**We've addressed this comment by including Figure 14 showing variance ratio values across the various CMC papers.**
+> **We appreciate and agree with this point. We've addressed this comment by including Figure 14 showing variance ratio values across the various CMC papers.**
