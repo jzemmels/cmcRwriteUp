@@ -1,0 +1,25 @@
+---
+title: "Letter to R Journal Editor for Resubmission of 2021-73"
+author: "Joe Zemmels, Susan VanderPlas, and Heike Hofmann"
+output: pdf_document
+---
+
+Given our proximity to the forensic science community, we are noticing an absence of open-source a lot more than people who are entrenched in an open-source community. 
+This might explain some of the feedback from the reviewers. 
+For example, Reviewer #2 requested that we change the motivation of the paper from research reproducibility to the need for "a parallel implementation (freedom of use, ease of extension, research platform, forensic transparency)."
+We strongly agree that these are important motivations for our open-source implementation of the Congruent Matching Cells method.
+However, we assert computational reproducibility is an integral part forensic transparency.
+One cannot achieve transparency in a forensic pattern matching algorithm without being able to reproduce published results. 
+In our paper, we have argued that we can achieve at best a qualitative reproduction of previous results with our implementation specifically because there was a great deal of ambiguity in the original papers.
+Further, we argue that mere qualitative reproducibility is not acceptable in forensics.
+While we agree with Reviewer #1 that an algorithm need not be "fully-formed" at initial conception and that it is understandable to omit minor details in a written-word description the algorithm, we have demonstrated in this paper that a text description of an algorithm is not sufficient to achieve genuine computational reproducibilty.
+
+We were surprised by Reviewer #1's claim that "the fact that [we] were able to produce [our] implementation demonstrates that sufficient information was available [in the original papers]."
+We thought that it was clear that our qualitative reproduction of results did not meet the definition of computational reproducibility provided in the paper.
+Additionally, there is the more important question of how well our implementation generalized to new data sets.
+We argue that the process of creating a new implementation is perhaps beneficial as an academic exercise, but not for furthering a scientific field.
+In high-stakes fields such as forensics, we need to develop algorithms with the intention that they *should* be heavily studied and scrutinized by the wider community.
+This does not mean that an algorithm needs to be perfect at initial creation; of course this is an impossible task.
+Rather, to stimulate discussion and collaboration, even if an algorithm is initially rough or inefficient, it is critical that it least be available to the forensic science community.
+In our ideal situation, we would not have even needed to create this implementation.
+Certainly, we would have rather spent our time *improving* upon the methodology rather than performing lengthy experimentation to determine what the original descriptions were trying to convey.

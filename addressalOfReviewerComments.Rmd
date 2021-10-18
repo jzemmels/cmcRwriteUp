@@ -28,7 +28,7 @@ It is therefore not clear why the authors appear confused that different CMC pap
 
 It is well known that differences in preprocessing, CMC gridding, thresholds, and parameters can affect the final CMC scores. 
 
-**Previous studies do not provide a sensitivity analysis to demonstrate how various processing decisions affect the final CMC scores. We can only surmise as much by comparing results across CMC papers where various parameters inexplicably change even though the same NIST authors apply the same methods (e.g., the original or High CMC decision rules) are applied to the same data (the Fadul scans). One of our goals in this paper was to provide the first demonstration of the sensitivity of the final CMC scores to (a limited grid of) processing decisions and argue that such a sensitivity discussion is necessary in any forensic pattern-matching algorithm proposal.**
+**We respectfully disagree with the reviewer's claim that the CMC method sensitivity is "well known." Previous studies do not provide a sensitivity analysis to demonstrate how various processing decisions affect the final CMC scores. We can only surmise as much by comparing results across CMC papers where various parameters inexplicably change even though the same NIST authors apply the same methods (e.g., the original or High CMC decision rules) to the same data set (the Fadul scans). One of our goals in this paper was to provide the first demonstration of the sensitivity of the final CMC scores to (a limited grid of) processing decisions and argue that such a sensitivity discussion is necessary in any forensic pattern-matching algorithm proposal.**
 
 The optimal set of parameters and algorithmic steps may be dataset specific and those searching among these parameters (such as the authors) need to be careful about over-fitting. 
 There did not appear to be anything in the paper about prevention of over-fitting.
@@ -62,6 +62,8 @@ One reference I wanted to examine was the Zemmels 2020 reference however it does
 
 The level of criticism should be toned down to reflect the reality of the CMC method as being a family of approaches still under active development and one that the authors were able to implement. 
 Missing references (Zemmels) and results (comparison with the NIST published results as stated in the conclusion; missing table?) should be added.
+
+**We greatly appreciate the feedback.**
 
 ## Reviwer Comments \#2
 
