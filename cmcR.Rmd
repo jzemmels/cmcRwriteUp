@@ -1,5 +1,5 @@
 ---
-title: "A Study in Reproducibility: The Congruent Matching Cells Algorithm and cmcR package"
+title: "A Study in Forensic Transparency: The Congruent Matching Cells Algorithm and cmcR package"
 author:
   - name: Joseph Zemmels
     affiliation: Center for Statistics and Applications in Forensic Evidence
@@ -131,19 +131,39 @@ These breech face impressions are considered to be a firearm's unique "fingerpri
 knitr::include_graphics("images/cartridgeCasePair_comparison_with_line.PNG")
 ```
 
+\jz{To clarify language used in the remainder of the paper, we now define a (non-exhaustive) \dfn{taxonomy of algorithmic transparency} meant to classify different formats in which algorithms are commonly presented.
+Ascending this taxonomy results in more transparent algorithms in the sense that it is easier to computationally reproduce results derived from an algorithm presented in the associated format.
+Level 1 of the taxonomy is a \dfn{conceptual description} of an algorithm.
+This format can be considered the ``big-picture" of an algorithm and is most often presented in the form of prose or a diagram.
+A conceptual description of an algorithm is undoubtedly important as it can be difficult to understand an algorithm solely by reading through its source code.
+However, we generally do not describe the particular parameter or processing choices made (or how they were decided) when we describe an algorithm in a publication.
+It is therefore extremely difficult, if not impossible, to computationally reproduce the results of an algorithm that is only described in prose.
+Level 2 is \dfn{pseudocode} of an algorithm.
+While still written in plain language, pseudocode provides more algorithmic structure than conceptual descriptions and often highlights important subroutines or even parameter settings used in an algorithm.
+However, reproducibility of results is still challenging as translating pseudocode to a working implementation may depend on the creator's programming habits or the programming language used.
+Widely-known algorithms may be implemented differently between different languages, different libraries written in the same language, or even different versions of the same library/language (for instance, the recent change to the psuedorandom number generation algorithm used in the popular \texttt{sample()} function in R version 3.6.0).
+This fact clearly also applies to implementations that are based on a conceptual description of an algorithm.
+Level 3 is \dfn{open-source} algorithms.
+At one time, it was common to publish the specific implementation of an algorithm as raw source code \citep{bron_merge_1972} within the journal article, or at minimum, in the appendix \citep{friend_sorting_1956} if the article contained a significant amount of analysis.
+As algorithms have grown in complexity, often using older, simpler algorithms as building-blocks, the use of public code repositories, such as GitHub or CRAN, has become more popular.
+Open-source algorithms, accompanied with documentation detailing language/package versions, random seeds, etc., most clearly ensures computationally reproducible results in this taxonomy.
+Unfortunately, it is most common in the forensic pattern-matching literature to only provide conceptual descriptions of an algorithm.}
+
+\jz{Ancillary to this taxonomy of algorithmic transparency and necessary to ensure computationally reproducible results is the availability of the data used to produce the original results.
+In particular, we consider it important to draw a distinction here between raw and processed data.
+For cartridge case comparison algorithms, cartridge case images are often manually processed by practitioners to isolate what they consider to be the breech face impression region.
+This implies that the data to which an algorithm is applied is effectively unique to the individual who is processing the data.
+If the processed data aren't made openly available, then computational reproduction of derivative results is suspect.}
+
 <!--\jz{Paragraph 3: Introduce problem that the paper addresses. "The CMC algorithm has been only introduced conceptually..." Briefly touch on issues of reproducibility.}-->
 
-The Congruent Matching Cells (CMC) methods are one family of cartridge case comparison algorithms, originally developed at the National Institute of Standards and Technology (NIST) in 2012 to perform firearm evidence identification using identifiable markings left on spent cartridge cases from a firearm's barrel \citep{song_proposed_2013}. 
-Since then, the method and its numerous extensions \citep{tong_improved_2015,chen_convergence_2017,song_estimating_2018} have shown promise in being able to differentiate between matching and non-matching cartridge cases.
-However, so far the CMC algorithms have only been introduced conceptually in the form of written-word descriptions.
-\jz{
-While it is clear that the creators of the CMC method have a working implementation, the wider forensic science community has access to only textual description of the algorithm and some summary statistics describing its performance.
-A conceptual description of an algorithm is clearly the most significant contribution of these papers, yet, in-general, it is not sufficient to enable the wider scientific community to reproduce results.
-For example, we generally do not describe the particular parameter settings used (or how those were derived) when we describe an algorithm in a publication.
-This is an understandable editorial decision, as the purpose of a publication is to demonstrate and justify the method rather than discuss the fine details and parameter settings.
-However, genuine validation of a method requires a thorough analysis of its sensitivity to different processing and parameter choices.
-It is therefore necessary to supplement the paper with open code and intermediate forms of the data (after any manual steps have been performed or simply as check points for replications) to ensure transparency and reproducibility of the results.
-}
+The Congruent Matching Cells (CMC) \jz{pipeline is a collection of algorithms developed at the National Institute of Standards and Technology (NIST) in 2012 to process and compare cartridge case evidence \citep{song_proposed_2013}.}
+Since then, the \jz{pipeline} and its numerous extensions \citep{tong_improved_2015,chen_convergence_2017,song_estimating_2018} have shown promise in being able to differentiate between matching and non-matching cartridge cases.
+However, so far the CMC \jz{pipelines} have only been introduced conceptually in the form of written-word descriptions.
+\jz{Further, the cartridge case scans used to validate the pipelines are only available in their raw, unprocessed forms on the NIST Ballistics Research Database \citep{nbtrd}.
+While it is clear that the creators of the CMC method have a working implementation, the wider forensic science community only has access to conceptual descriptions of the pipeline and some summary statistics describing its performance.
+It is necessary to supplement the paper with open code and intermediate forms of the data (after any manual steps have been performed or simply as check points for replications) to ensure transparency and reproducibility of the results.}
+
 \jz{Here, we describe the process of implementing the CMC method for the comparison of marks on spent cartridge cases, using the descriptions from two published papers, \citet{song_3d_2014} and \citet{tong_improved_2015}.
 Our R package, \CRANpkg{cmcR}, provides an open-source implementation of the CMC method.
 We use \CRANpkg{cmcR} to illustrate how ambiguities in the textual description of an algorithm can lead to highly divergent results.
@@ -1303,8 +1323,7 @@ The current standard in the field is to provide a graphical or numerical summary
 While understandable from a readability perspective, broad graphical or numerical summaries do not allow us to contrast different algorithms or parameter choices at the individual comparison level.
 If provided with only graphical or numerical summaries, the best we can hope for is a qualitative reproduction of results.
 The forensics community should expect better of their algorithms.
-At one time, it was common to publish the specific implementation of an algorithm as raw source code \citep{bron_merge_1972} within the journal article, or at minimum, in the appendix \citep{friend_sorting_1956} if the article contained a significant amount of analysis. 
-While it is still relatively common to provide access to a github repository or other repository for source code, these repositories are not guaranteed to exist in perpetuity; certainly, when compared to \citep{bron_merge_1972}, the likelihood of being able to find the source code for an article is higher when the code is included in the article or made readily accessible in another format.
+While it is still relatively common to provide access to a GitHub repository or other repository for source code, these repositories are not guaranteed to exist in perpetuity; certainly, when compared to \citep{bron_merge_1972}, the likelihood of being able to find the source code for an article is higher when the code is included in the article or made readily accessible in another format.
 In the R community, computational reproducibility can be taken for granted due to the accessible, shared ecosystem provided by CRAN and other code repositories.
 In many cases, though, authors do not make their code available for analysis; this provides a substantial hurdle when attempting to use, replicate, or compare the published method and represents a significant barrier to scientific progress.}
 
