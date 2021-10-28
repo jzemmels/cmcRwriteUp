@@ -127,7 +127,7 @@ A pair of breech face images is aligned along the thin black line in the middle 
 The degree to which these breech face markings can be aligned is used to determine whether the two cartridge cases came from the same source; i.e., were fired from the same firearm. 
 These breech face impressions are considered to be a firearm's unique "fingerprint" left on a cartridge case \citep{firearm_id_thompson}.
 
-  ```{r ,echo=FALSE,fig.cap='\\label{fig:ccPair_combined} A cartridge case pair with visible breech face impressions under a microscrope.  A thin line can be seen separating the two views. The degree to which the markings coincide is used to conclude whether the pair comes from the same source.',fig.pos='htbp',out.width="\\textwidth"}
+```{r ,echo=FALSE,fig.cap='\\label{fig:ccPair_combined} A cartridge case pair with visible breech face impressions under a microscrope.  A thin line can be seen separating the two views. The degree to which the markings coincide is used to conclude whether the pair comes from the same source.',fig.pos='htbp',out.width="\\textwidth"}
 knitr::include_graphics("images/cartridgeCasePair_comparison_with_line.PNG")
 ```
 
@@ -1111,7 +1111,9 @@ cmcCountData %>%
   ylab("Relative Frequency")
 ```
 
-```{r echo=FALSE,fig.cap='\\label{fig:fadul_nist} CMC count relative frequencies under the original \\jz{decision rule} and the High CMC \\jz{decision rule} for $T_{\\Delta x} = 20 = T_{\\Delta y}$ pixels, $T_{\\text{CCF}} = .5$, and $T_{\\theta} = 6$ degrees. AUC $= 1.00$ corresponds to perfect separation of the match and non-match CMC count distributions. We can see that, for this set of processing parameters, the High CMC \\jz{decision rule} yields higher CMC counts for known matches that the original \\jz{decision rule} while known non-matches have the same distribution under both methods.', fig.align='left',fig.pos='htbp',out.width='\\textwidth'}
+\autoref{fig:fadul_nist} shows the CMC counts from the "revised analysis" applied to the \citet{fadul_empirical_2011} data set in \citet{song_estimating_2018}.
+
+```{r echo=FALSE,fig.cap='\\label{fig:fadul_nist} CMC count relative frequencies under the original \\jz{decision rule} applied to the \\citet{fadul_empirical_2011} dataset courtesy of Johannes Soons \\citep{song_estimating_2018}.', fig.align='left',fig.pos='htbp',out.width='\\textwidth',warning=FALSE,message=FALSE}
 calcVarianceRatio <- function(cmcData,similarityCol = "cmcCount"){
   grand_similarityColAverage <- mean(unlist(cmcData[,similarityCol]))
   
@@ -1168,6 +1170,102 @@ fadul_nist %>%
   ylab("Relative Frequency")
 ```
 
+\autoref{fig:weller_nist} shows the CMC counts from the "revised analysis" applied to the \citet{weller_2012} data set in \citet{song_estimating_2018}.
+
+```{r echo=FALSE,fig.cap='\\label{fig:weller_nist} CMC count relative frequencies under the original \\jz{decision rule} applied to the \\citet{weller_2012} data set courtesy of Johannes Soons \\citep{song_estimating_2018}.', fig.align='left',fig.pos='htbp',out.width='\\textwidth',warning=FALSE,message=FALSE}
+weller_nist <- read_csv("data/weller_cmc_nist.csv")
+
+weller_nist %>%
+  rename(numCells = `# Cells`,
+         cmcCount = `# CMCs`) %>%
+  mutate(type = ifelse(`KM or KNM` == "KM","match","non-match")) %>%
+  calcVarianceRatio() %>%
+  group_by(cmcCount,type) %>%
+  tally() %>%
+  group_by(type) %>%
+  mutate(n = n/sum(n)) %>%
+  mutate(label = sprintf("AUC: %.2f\nVar. Ratio: %.2f", 1, 60.3593)) %>%
+  ggplot() +
+  geom_bar(aes(x = cmcCount,
+               y = n,
+               fill = type),
+           stat = "identity",
+           alpha = .7) +
+  geom_label(aes(x = 22.5,
+                 y = .75,
+                 label = label),
+             size = 4) +
+  scale_fill_manual(values = c("#40B0A6","#E1BE6A")) +
+  guides(fill = guide_legend(title = "Type",
+                             override.aes = list(alpha = 1))) +
+  theme_bw() + 
+  theme(legend.position = "bottom",
+        strip.text = element_text(size = 7)) +
+  xlab("CMC Count") +
+  ylab("Relative Frequency")
+```
+
+
+
+```{r,echo = FALSE}
+load("data/cmc_allResults.RData")
+
+cmc_comb <- cmc_allResults %>%
+  filter(thetaThresh == 6 & 
+           corThresh == .5 &
+           transThresh == 20 &
+           trendRemoved == TRUE
+         # ,decisionRule == "highCMCs"
+         ,decisionRule == "originalMethodCMCs") %>%
+  mutate(pairName = str_remove_all(pairName,"firearm[0-9]{1,}_")) %>%
+  separate(col = pairName,into = c("Reference","Compare"),sep = "_") %>%
+  select(Reference,Compare,type,cmcCount) %>%
+  mutate(Reference = gsub("([a-z])([A-Z]|[0-9])", "\\1 \\2", Reference),
+         Compare = gsub("([a-z])([A-Z]|[0-9])", "\\1 \\2", Compare)) %>%
+  rename(cmcrCount = cmcCount) %>%
+  left_join(fadul_nist %>%
+              rename(numCells = `# Cells`,
+                     cmcCount = `# CMCs`) %>%
+              mutate(type = ifelse(`KM or KNM` == "KM","match","non-match")) %>%
+              select(Reference,Compare,cmcCount,type) %>%
+              rename(nistCount = cmcCount),
+            by = c("Reference","Compare","type"))
+
+cmc_combined <- 
+  bind_rows(cmc_comb %>%
+              filter(!(is.na(cmcrCount) | is.na(nistCount))),
+            cmc_comb %>%
+              filter(is.na(cmcrCount) | is.na(nistCount)) %>%
+              rename(Reference_new = Compare,
+                     Compare_new = Reference) %>%
+              rename(Reference = Reference_new,
+                     Compare = Compare_new) %>%
+              select(-nistCount) %>%
+              left_join(fadul_nist %>%
+                          rename(numCells = `# Cells`,
+                                 cmcCount = `# CMCs`) %>%
+                          mutate(type = ifelse(`KM or KNM` == "KM","match","non-match")) %>%
+                          select(Reference,Compare,cmcCount,type) %>%
+                          rename(nistCount = cmcCount),
+                        by = c("Reference","Compare","type")) %>%
+              rename(Reference_new = Compare,
+                     Compare_new = Reference) %>%
+              rename(Reference = Reference_new,
+                     Compare = Compare_new))
+
+cmc_combined %>%
+  ggplot(aes(x = cmcrCount,y = nistCount,colour = type)) +
+  geom_jitter() +
+  geom_abline(slope = 1,intercept = 0) +
+  coord_fixed() +
+  theme_bw() +
+  theme(legend.position = "bottom") +
+  labs(x = "cmcR Count",
+       y = "NIST Count") +
+  scale_colour_manual(values = c("#40B0A6","#E1BE6A"))
+```
+
+
 
 We consider five dimensions that have a demonstrable impact on the effectiveness of the CMC \jz{pipeline}. These include:
 
@@ -1216,29 +1314,29 @@ As shown in \autoref{fig:cmc_sensitivityScatter}, de-trending breech-scans in th
 ```{r,echo=FALSE, fig.cap='\\label{fig:cmc_varRatioComparison} Variance ratios based on results reported in various CMC papers. The High CMC \\jz{decision rule} tends to outperform the original \\jz{decision rule}. However, it should be emphasized that each paper uses very different parameter settings (e.g., the thresholds used are summarized in \\autoref{tab:thresholdTable}) which makes the results difficult to compare. The values labeled "cmcR" show the largest variance ratio values for the original and High CMC \\jz{decision rule}s based on the grid search summarized in \\autoref{fig:cmc_sensitivityScatter}. These results indicates that the CMC \\jz{pipeline} implementation provided in \\CRANpkg{cmcR} yields comparable results to previous CMC papers.',fig.align='left',fig.pos='htbp',out.width='\\textwidth'}
 
 data.frame(study = factor(c("Tong et al. (2014)",
-                       "Song et al. (2014)",
-                       "Tong et al. (2015)","Tong et al. (2015)",
-                       "Chen et al. (2017)","Chen et al. (2017)",
-                       "Song et al. (2018)",
-                       "cmcR","cmcR"),
-                       levels = rev(c("Tong et al. (2014)",
-                       "Song et al. (2014)","Tong et al. (2015)",
-                       "Chen et al. (2017)",
-                       "Song et al. (2018)",
-                       "cmcR"))),
+                            "Song et al. (2014)",
+                            "Tong et al. (2015)","Tong et al. (2015)",
+                            "Chen et al. (2017)","Chen et al. (2017)",
+                            "Song et al. (2018)",
+                            "cmcR","cmcR"),
+                          levels = rev(c("Tong et al. (2014)",
+                                         "Song et al. (2014)","Tong et al. (2015)",
+                                         "Chen et al. (2017)",
+                                         "Song et al. (2018)",
+                                         "cmcR"))),
            decisionRule = factor(c("Original",
-                        "Original",
-                        "Original","High CMC",
-                        "Original","High CMC",
-                        "Original",
-                        "Original","High CMC"),
-                        levels = c("Original","High CMC")),
+                                   "Original",
+                                   "Original","High CMC",
+                                   "Original","High CMC",
+                                   "Original",
+                                   "Original","High CMC"),
+                                 levels = c("Original","High CMC")),
            corThresh = c(.6,
-                          .25,
-                          .55,.55,
-                          .4,.4,
-                          .5,
-                          .45,.5),
+                         .25,
+                         .55,.55,
+                         .4,.4,
+                         .5,
+                         .45,.5),
            transThresh = c(20,
                            30,
                            15,15,
@@ -1301,7 +1399,7 @@ data.frame(study = factor(c("Tong et al. (2014)",
                calcVarianceRatio() %>%
                pull(varRatio) %>%
                unique(),
-              8.781472,
+             8.781472,
              33.567344
            )) %>%
   ggplot(aes(x = varRatio,
@@ -1323,9 +1421,9 @@ data.frame(study = factor(c("Tong et al. (2014)",
   # scale_y_continuous(limits = c(0,NA)) +
   # facet_grid(rows = vars(theta),
   #            cols = vars(decisionRule),
-             # labeller = labeller(decisionRule = c("High CMC","Original Method") %>% set_names(c("High CMC","Original Method")),
-             #                     thetaThresh = c("Theta Thresh.: 3","Theta Thresh.: 6") %>% setNames(c(3,6)),
-             #                     trendRemoved = c("Trend Removed: TRUE","Trend Removed: FALSE") %>% setNames(c(TRUE,FALSE)))) +
+  # labeller = labeller(decisionRule = c("High CMC","Original Method") %>% set_names(c("High CMC","Original Method")),
+  #                     thetaThresh = c("Theta Thresh.: 3","Theta Thresh.: 6") %>% setNames(c(3,6)),
+  #                     trendRemoved = c("Trend Removed: TRUE","Trend Removed: FALSE") %>% setNames(c(TRUE,FALSE)))) +
   xlab("Variance Ratio") +
   scale_x_continuous(limits = c(0,35),
                      expand = expansion(0)) +
