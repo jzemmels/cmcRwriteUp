@@ -142,6 +142,8 @@ Ascending this hierarchy results in more transparent algorithms in the sense tha
 \item \jz{\dfn{open-source}: an algorithm's source code is available on a public code repository like CRAN or GitHub.}
 \end{enumerate}
 
+\jz{To aid in comprehension of an algorithm, it is useful to supplement pseudo or source code with a conceptual description. However, a conceptual description by itself generally does not contain sufficient detail (e.g., parameter settings) to ensure computational reproducibility.}
+
 \jz{Ancillary to this hierarchy and necessary to ensure computational reproducibility is the availability of the data used to produce the original results.
 In particular, we consider it important to draw a distinction here between raw and processed data.
 For cartridge case comparison algorithms, cartridge case images are often manually preprocessed by practitioners to isolate what they consider to be the breech face impression region.
@@ -1326,7 +1328,8 @@ data.frame(study = factor(c("Tong et al. (2014)",
 
 \jz{Reproducibility is indispensable for results to be considered valid by the wider scientific community \citep{goodman_what_2016}.
 Commonly identified reasons for this lack of reproducibility include (1) ambiguity in how procedures were implemented, (2) missing or incomplete data, and (3) missing or incomplete computer code to replicate all statistical analyses \citep{leek_is_2017}.
-[Outline points made below]}
+We have demonstrated here that all three of these factors are applicable to the Congruent Matching Cells pipeline.
+Reproducibility is critical to ensure algorithmic transparency in forensics, which in turn empowers the wider forensic science community to better understand an algorithm's strengths and weaknesses.}
 
 \jz{\textbf{Refer back to hierarchy of algorithmic transparency with additional discussion. Conclude that, in-general, open-source and open data is the best way to ensure algorithmic transparency}}
 
