@@ -1346,6 +1346,18 @@ Unfortunately, it is most common in the forensic pattern-matching literature to 
 Additionally, if the processed data aren't made openly available, then computational reproduction of derivative results is suspect.
 It is necessary to supplement a paper with open code and intermediate forms of the data (after any manual steps have been performed or simply as check points for replications) to ensure transparency and reproducibility of the results.}
 
+\jz{\autoref{tab:transparencyHierarchy} ties various aspects of computationally reproducible results to analogues in forensic science.
+Fundamentally, we can think of an algorithm as being analogous to an examiner (although, in-practice, an algorithm would \emph{supplement} the examiner's decision).
+Just as a conceptual description describes the "big-picture" of an algorithm, an examiner might describe their analysis process during expert testimony.
+Algorithmic results and proficiency tests aim to estimate the error rate of algorithms and examiners, respectively.
+Code, which enables us to closely analyze the decision-making process of an algorithm, does not have an analogue in forensics.
+This is because the process by which examiners arrive to evidentiary conclusions is largely opaque and unauditable.
+Raw, unprocessed data are akin to the physical object (e.g., a cartridge case) under consideration.
+As it is difficult for both examiner and machine to analyze a physical object, we often rely on alternative representations of the object such as its depiction under a microscope, which is dependent on lighting conditions among other factors, or scans of the object, which does not depend on light conditions but does have inherent noise
+Manually processing data, such as isolating the breech face impression region, permits a new perspective on data compared to their raw format (as can be observed in stages in \autoref{fig:processingPipeline}).
+This is analogous to, for example, tuning a microscope to particular lighting conditions to emphasize breech face impressions.
+As the representation of an object under a microscope will change under different machine settings, so too will manually processed data change depending on the individual performing the processing.}
+
 ```{=tex}
 \begin{table}[ht]
 \centering
