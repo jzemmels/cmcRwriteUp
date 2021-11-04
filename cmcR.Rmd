@@ -1485,7 +1485,7 @@ data.frame(study = factor(c("Tong et al. (2014)",
 
 ## Discussion {#discussion}
 
-<!-- \jz{\textbf{Intro to discussion}} -->
+\jz{\textbf{Intro to discussion}}
 
 ```{=tex}
 \jz{Reproducibility is indispensable for results to be considered valid by the wider scientific community \citep{goodman_what_2016}.
@@ -1493,17 +1493,25 @@ We have demonstrated that the three common reasons for unreproducible results th
 Our open-source implementation provided in \CRANpkg{cmcR}, paired with the open-source cartridge case data available in the NIST Ballistics Toolmark Research Database \citep{nbtrd}, avoids these problems and encourages validation and improvement from the wider forensics community.}
 ```
 
-<!-- \jz{\textbf{Paragraph 1: Refer back to hierarchy of algorithmic transparency with additional discussion}} -->
+\jz{\textbf{Paragraph 1: Refer back to hierarchy of algorithmic transparency with additional discussion}}
 
 ```{=tex}
-\jz{At the moment, we have a conceptual description  of the CMC pipeline.
+\jz{\textbf{Review the hierarhcy of algorithmic transparency and re-assert the need for computational reproducibility.}}
+
+\jz{At the moment, we have a conceptual description of the CMC pipeline.
 This conceptual description is undoubtedly important as it can be difficult to understand the pipeline solely by reading through its source code.
 However, the conceptual description provides only enough detail to qualitatively reproduce the original results.
 To ensure forensic transparency, the wider forensics community needs to be able to computationally reproduce the original results.
-As we have seen, we have neither the original source code nor the manually-processed input data to do so.
-When translating an algorithm from a conceptual description or pseudocode, reproducibility of results is challenging as an implementation may depend on the creator's programming habits or the programming language used.
-Widely-known algorithms may be implemented differently between different languages, different libraries written in the same language, or even different versions of the same library/language (for instance, the recent change to the psuedorandom number generation algorithm used in the popular \texttt{sample()} function in R version 3.6.0).
-Open-source algorithms and data, accompanied with documentation detailing language/package versions, random seeds, metadata, etc., most clearly ensures computationally reproducible results in this hierarchy.}
+As we have seen, we have neither the original source code nor the manually-processed input data to do so.}
+
+\jz{\textbf{Describe factors that cause unreproducibile results if only conceptual descriptions or pseudocode are provided.}}
+
+\jz{When translating an algorithm from a conceptual description or pseudocode, reproducibility of results is challenging as an implementation may depend on the creator's programming habits or the programming language used.
+Widely-known algorithms may be implemented differently between different languages, different libraries written in the same language, or even different versions of the same library/language (for instance, the recent change to the psuedorandom number generation algorithm used in the popular \texttt{sample()} function in R version 3.6.0).}
+
+\jz{\textbf{Conclude that, in-general, open-source and open data is the best way to ensure algorithmic transparency}}
+
+\jz{Open-source algorithms and data, accompanied with documentation detailing language/package versions, random seeds, metadata, etc., most clearly ensures computationally reproducible results in this hierarchy.}
 ```
 
 <!-- \jz{XXX I don't really know where to put this next paragraph and table. Susan: were you thinking that would fit well in the intro or in the discussion? XXX} -->
@@ -1540,20 +1548,26 @@ Open-source algorithms and data, accompanied with documentation detailing langua
 <!-- \end{table} -->
 <!-- ``` -->
 
-<!-- \jz{\textbf{Paragraph 2: Discuss how the manner in which the pipeline is currently presented doesn't lead to community-wide acceptance.}} -->
+\jz{\textbf{Paragraph 2: Discuss how the manner in which the pipeline is currently presented doesn't lead to community-wide acceptance.}}
 
 ```{=tex}
 \jz{The Daubert Standard requires that a scientific method be widely accepted by a relevant scientific community before it can be used in an expert witness's testimony.
 Prior to acceptance, the relevant scientific community must validate a method, which includes a careful study of the method's sensitivites to different processing choices.
-In computational research, a lack of computational reproducibilty makes it impossible to perform such an analysis.
-For example, we have highlighted a sensitivity of the CMC pipeline to parameter choice that hasn't been discussed prior to our implementation.
-The broad graphical or numerical summaries currently used to summarize the performance of the CMC pipeline, while admissible from a readability perspective, do not allow us to contrast different algorithms or parameter choices at the individual comparison level.
-In recognition of the additional requirements of computational reproducibility, some journals have adopted policies encouraging or requiring that authors provide code and data sufficient to reproduce the statistical analyses, with the goal of building a "culture of reproducibility" in their respective fields \citep{peng_reproducible_2009, peng_reproducible_2011, stodden_toward_2013}.
+In computational research, a lack of computational reproducibilty makes it impossible to perform such an analysis.}
+
+\jz{\textbf{In particular, point to the sensitivity of the method to various parameter choices.}}
+
+\jz{For example, we have highlighted a sensitivity of the CMC pipeline to parameter choice that hasn't been discussed prior to our implementation.
+The broad graphical or numerical summaries currently used to summarize the performance of the CMC pipeline, while admissible from a readability perspective, do not allow us to contrast different algorithms or parameter choices at the individual comparison level.}
+
+\jz{\textbf{Conclude that the forensic science community should adopt a "culture of reproducibility" by using open-source platforms}}
+
+\jz{In recognition of the additional requirements of computational reproducibility, some journals have adopted policies encouraging or requiring that authors provide code and data sufficient to reproduce the statistical analyses, with the goal of building a "culture of reproducibility" in their respective fields \citep{peng_reproducible_2009, peng_reproducible_2011, stodden_toward_2013}.
 Peer-review and scientific progress in the truest sense requires that \emph{all} pre-processed data, code, and results be made openly available \citep{kwongAlgorithmSaysYou2017, desaiTrustVerifyGuide2017}.
 We argue that these standards should be adopted by the forensic science community by leveraging open-source ecosystems like the R and GitHub communities.}
 ```
 
-<!-- \jz{\textbf{Paragraph 3: Describe how our implementation can be used as a foundation for further improvements upon the CMC method and how the package overall can be used as a template.}} -->
+\jz{\textbf{Paragraph 3: Describe how our implementation can be used as a foundation for further improvements upon the CMC method and how the package overall can be used as a template.}}
 
 ```{=tex}
 \jz{The modular approach used in \CRANpkg{cmcR} makes it easier to describe the algorithm, easier to write the code, modify and improve the method, and show that the improvement has a noticeable impact on the results. 
