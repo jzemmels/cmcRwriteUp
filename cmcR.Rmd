@@ -143,7 +143,7 @@ Obviously, in many situations, this level of reproducibility is not provided. Th
 \item[Full reproducibility] The algorithm is described and demonstrated in a scientific publication, and the input data, source code, parameter settings, and numerical results are provided in supplementary material.
 \end{description}
 \end{definition}
-\jz{To aid in comprehension of an algorithm, it is useful to supplement conceptual descriptions with pseudocode. However, a conceptual description and pseudocode alone does not contain sufficient detail (e.g., parameter settings) to ensure computational reproducibility.
+\jz{To aid in comprehension of an algorithm, it is useful to supplement conceptual descriptions with pseudocode. However, a conceptual description and pseudocode alone do not contain sufficient detail (e.g., parameter settings) to ensure computational reproducibility.
 Commonly identified reasons for unreproducible results include (1) ambiguity in how procedures were implemented, (2) missing or incomplete data, and (3) missing or incomplete computer code to replicate all statistical analyses \citep{leek_is_2017}.}
 \svp{In particular, for statistical algorithms which depend on input data, we find that full reproducibility depends on the provision of both original data and any manual preprocessing applied to said data, as this manual process is not reproducible by itself. In combination with the code, the algorithm description, and the numerical results presented in the paper, it should be possible to fully reproduce the results of a paper.}
 
