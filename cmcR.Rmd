@@ -110,7 +110,7 @@ To achieve this standard for forensic pattern-matching algorithms, we need to be
 <!-- Unfortunately, we cannot take reproducibility for granted: recent studies have raised concerns about reproducibility of scientific findings in various fields \citep{king_replication_1995,baker_1500_2016,pasquier_if_2017}. -->
 \jz{While a reproduction of results by the original research group is the bare minimum to achieve scientific rigor, it is not particularly helpful in consequential fields like forensic science where results need to be precisely reproducible by forensic practitioners and other research groups.} 
 In computational research, reproducibility of results is commonly used to mean that the code and data used to produce published results be made publicly available \citep{peng_reproducible_2011}. <!-- \hh{XXX we also need to talk about 'who is able to reproduce' - reproducibility of research by the research group who published the finding should be considered a minimum of scientific rigor, but it is not particularly helpful in a high-stakes field such as forensic science.} --> 
-Published results may be numerically sensitive to the particular implementation of a computational method, including such considerations as data processing decisions, parameter settings, and even the chosen programming language. 
+Published results may be numerically sensitive to the particular implementation of a computational method, including such considerations as data processing decisions, parameter settings, and even the chosen programming language.
 <!-- \svp{We may need to rephrse this -- we're saying "in computational research, reproducibility means..." and then using the phrase "computational reproducibility" to mean something different}  -->
 In this light, computational reproducibility in forensic science is all the more salient because it enables discussions about algorithmic transparency and accountability \citep{kwongAlgorithmSaysYou2017, desaiTrustVerifyGuide2017}.
 <!-- \jz{This sentence sounds better in the conclusion, I think:} -->
@@ -147,7 +147,8 @@ Ascending this hierarchy results in more transparent algorithms in the sense tha
 \item \jz{\dfn{open-source}: an algorithm's source code is available on a public code repository like CRAN or GitHub.}
 \end{enumerate}
 ```
-\jz{To aid in comprehension of an algorithm, it is useful to supplement pseudo or source code with a conceptual description. However, a conceptual description by itself generally does not contain sufficient detail (e.g., parameter settings) to ensure computational reproducibility.}
+\jz{To aid in comprehension of an algorithm, it is useful to supplement pseudo or source code with a conceptual description. However, a conceptual description by itself generally does not contain sufficient detail (e.g., parameter settings) to ensure computational reproducibility.
+Commonly identified reasons for unreproducible results include (1) ambiguity in how procedures were implemented, (2) missing or incomplete data, and (3) missing or incomplete computer code to replicate all statistical analyses \citep{leek_is_2017}.}
 
 ```{=tex}
 \jz{Ancillary to this hierarchy and necessary to ensure computational reproducibility is the availability of the data used to produce the original results.
@@ -1484,98 +1485,96 @@ data.frame(study = factor(c("Tong et al. (2014)",
 
 ## Discussion {#discussion}
 
-\jz{\textbf{Intro to discussion}}
+<!-- \jz{\textbf{Intro to discussion}} -->
 
 ```{=tex}
 \jz{Reproducibility is indispensable for results to be considered valid by the wider scientific community \citep{goodman_what_2016}.
-Commonly identified reasons for this lack of reproducibility include (1) ambiguity in how procedures were implemented, (2) missing or incomplete data, and (3) missing or incomplete computer code to replicate all statistical analyses \citep{leek_is_2017}.
-We have demonstrated here that all three of these factors are applicable to the Congruent Matching Cells pipeline.
-Reproducibility is critical to ensure algorithmic transparency in forensics, which in turn empowers the wider forensic science community to better understand an algorithm's strengths and weaknesses.}
+We have demonstrated that the three common reasons for unreproducible results that are discussed in the introduction: ambiguity in how procedures are implemented, missing or incomplete data, and missing or incomplete code, are all applicable to the Congruent Matching Cells pipeline.
+Our open-source implementation provided in \CRANpkg{cmcR}, paired with the open-source cartridge case data available in the NIST Ballistics Toolmark Research Database \citep{nbtrd}, avoids these problems and encourages validation and improvement from the wider forensics community.}
 ```
-\jz{\textbf{Refer back to hierarchy of algorithmic transparency with additional discussion. Conclude that, in-general, open-source and open data is the best way to ensure algorithmic transparency}}
+
+<!-- \jz{\textbf{Paragraph 1: Refer back to hierarchy of algorithmic transparency with additional discussion}} -->
 
 ```{=tex}
-\jz{A conceptual description of an algorithm is undoubtedly important as it can be difficult to understand an algorithm solely by reading through its source code.
-However, we generally do not describe the particular parameter or processing choices made (or how they were decided) when we describe an algorithm in a publication.
-It is therefore extremely difficult, if not impossible, to computationally reproduce the results of an algorithm that is only described in prose.
-When translating an algorithm from pseudocode, reproducibility of results is still challenging as an implementation may depend on the creator's programming habits or the programming language used.
+\jz{At the moment, we have a conceptual description  of the CMC pipeline.
+This conceptual description is undoubtedly important as it can be difficult to understand the pipeline solely by reading through its source code.
+However, the conceptual description provides only enough detail to qualitatively reproduce the original results.
+To ensure forensic transparency, the wider forensics community needs to be able to computationally reproduce the original results.
+As we have seen, we have neither the original source code nor the manually-processed input data to do so.
+When translating an algorithm from a conceptual description or pseudocode, reproducibility of results is challenging as an implementation may depend on the creator's programming habits or the programming language used.
 Widely-known algorithms may be implemented differently between different languages, different libraries written in the same language, or even different versions of the same library/language (for instance, the recent change to the psuedorandom number generation algorithm used in the popular \texttt{sample()} function in R version 3.6.0).
-This fact clearly also applies to implementations that are based on a conceptual description of an algorithm.
-At one time, it was common to publish the specific implementation of an algorithm as raw source code \citep{bron_merge_1972} within the journal article, or at minimum, in the appendix \citep{friend_sorting_1956} if the article contained a significant amount of analysis.
-As algorithms have grown in complexity, often using older, simpler algorithms as building-blocks, the use of public code repositories, such as GitHub or CRAN, has become more popular.
-Open-source algorithms, accompanied with documentation detailing language/package versions, random seeds, etc., most clearly ensures computationally reproducible results in this hierarchy.
-Unfortunately, it is most common in the forensic pattern-matching literature to only provide conceptual descriptions of an algorithm.
-Additionally, if the processed data aren't made openly available, then computational reproduction of derivative results is suspect.
-It is necessary to supplement a paper with open code and intermediate forms of the data (after any manual steps have been performed or simply as check points for replications) to ensure transparency and reproducibility of the results.}
+Open-source algorithms and data, accompanied with documentation detailing language/package versions, random seeds, metadata, etc., most clearly ensures computationally reproducible results in this hierarchy.}
 ```
-```{=tex}
-\jz{\autoref{tab:transparencyHierarchy} ties various aspects of computationally reproducible results to analogues in forensic science.
-Fundamentally, we can think of an algorithm as being analogous to an examiner (although, in-practice, an algorithm would \emph{supplement} the examiner's decision).
-Just as a conceptual description describes the "big-picture" of an algorithm, an examiner might describe their analysis process during expert testimony.
-Algorithmic results and proficiency tests aim to estimate the error rate of algorithms and examiners, respectively.
-Code, which enables us to closely analyze the decision-making process of an algorithm, does not have an analogue in forensics.
-This is because the process by which examiners arrive to evidentiary conclusions is largely opaque and unauditable.
-Raw, unprocessed data are akin to the physical object (e.g., a cartridge case) under consideration.
-As it is difficult for both examiner and machine to analyze a physical object, we often rely on alternative representations of the object such as its depiction under a microscope, which is dependent on lighting conditions among other factors, or scans of the object, which does not depend on light conditions but does have inherent noise
-Manually processing data, such as isolating the breech face impression region, permits a new perspective on data compared to their raw format (as can be observed in stages in \autoref{fig:processingPipeline}).
-This is analogous to, for example, tuning a microscope to particular lighting conditions to emphasize breech face impressions.
-As the representation of an object under a microscope will change under different machine settings, so too will manually processed data change depending on the individual performing the processing.}
-```
-```{=tex}
-\begin{table}[ht]
-\centering
-\begin{tabular}{|l|l|}
-\hline
-Algorithm & Forensic Examiner \\
-\hline
-Conceptual Description & Expert Testimony \\
-Results & Proficiency Test \\
-Code & N/A - not observable \\
-Raw Data & Physical object or virtual microscopy data file \\
-Manually Processed Data & Machine settings for lighting, etc. \\
-\hline
-\end{tabular}
-\caption{Various aspects of algorithmic transparency with analogues to forensic examinations.}
-\label{tab:transparencyHierarchy}
-\end{table}
-```
-\jz{\textbf{Transition from previous paragraphs by narrowing focus to CMC algorithm. Discuss how what is currently presented isn't sufficient for replication and how the forensic science community should adopt a "culture of reproducibility."}}
+
+<!-- \jz{XXX I don't really know where to put this next paragraph and table. Susan: were you thinking that would fit well in the intro or in the discussion? XXX} -->
+
+<!-- ```{=tex} -->
+<!-- \jz{\autoref{tab:transparencyHierarchy} ties various aspects of computationally reproducible results to analogues in forensic science. -->
+<!-- Fundamentally, we can think of an algorithm as being analogous to an examiner (although, in-practice, an algorithm would \emph{supplement} the examiner's decision). -->
+<!-- Just as a conceptual description describes the "big-picture" of an algorithm, an examiner might describe their analysis process during expert testimony. -->
+<!-- Algorithmic results and proficiency tests aim to estimate the error rate of algorithms and examiners, respectively. -->
+<!-- Code, which enables us to closely analyze the decision-making process of an algorithm, does not have an analogue in forensics. -->
+<!-- This is because the process by which examiners arrive to evidentiary conclusions is largely opaque and unauditable. -->
+<!-- Raw, unprocessed data are akin to the physical object (e.g., a cartridge case) under consideration. -->
+<!-- As it is difficult for both examiner and machine to analyze a physical object, we often rely on alternative representations of the object such as its depiction under a microscope, which is dependent on lighting conditions among other factors, or scans of the object, which does not depend on light conditions but does have inherent noise -->
+<!-- Manually processing data, such as isolating the breech face impression region, permits a new perspective on data compared to their raw format (as can be observed in stages in \autoref{fig:processingPipeline}). -->
+<!-- This is analogous to, for example, tuning a microscope to particular lighting conditions to emphasize breech face impressions. -->
+<!-- As the representation of an object under a microscope will change under different machine settings, so too will manually processed data change depending on the individual performing the processing.} -->
+<!-- ``` -->
+<!-- ```{=tex} -->
+<!-- \begin{table}[ht] -->
+<!-- \centering -->
+<!-- \begin{tabular}{|l|l|} -->
+<!-- \hline -->
+<!-- Algorithm & Forensic Examiner \\ -->
+<!-- \hline -->
+<!-- Conceptual Description & Expert Testimony \\ -->
+<!-- Results & Proficiency Test \\ -->
+<!-- Code & N/A - not observable \\ -->
+<!-- Raw Data & Physical object or virtual microscopy data file \\ -->
+<!-- Manually Processed Data & Machine settings for lighting, etc. \\ -->
+<!-- \hline -->
+<!-- \end{tabular} -->
+<!-- \caption{Various aspects of algorithmic transparency with analogues to forensic examinations.} -->
+<!-- \label{tab:transparencyHierarchy} -->
+<!-- \end{table} -->
+<!-- ``` -->
+
+<!-- \jz{\textbf{Paragraph 2: Discuss how the manner in which the pipeline is currently presented doesn't lead to community-wide acceptance.}} -->
 
 ```{=tex}
-\jz{In the case of the CMC algorithm, a lack of computational reproducibilty makes it impossible to truly validate, and therefore trust, the pipeline.
-For example, our implementation highlights an extreme sensitivity to parameter choice that hasn't been discussed previously.
-The current standard in the field is to provide a graphical or numerical summary conveying the performance of a pipeline on a particular data set under, presumably, internally optimized parameters.
-While understandable from a readability perspective, broad graphical or numerical summaries do not allow us to contrast different algorithms or parameter choices at the individual comparison level.
-If provided with only graphical or numerical summaries, the best we can hope for is a qualitative reproduction of results.
+\jz{The Daubert Standard requires that a scientific method be widely accepted by a relevant scientific community before it can be used in an expert witness's testimony.
+Prior to acceptance, the relevant scientific community must validate a method, which includes a careful study of the method's sensitivites to different processing choices.
+In computational research, a lack of computational reproducibilty makes it impossible to perform such an analysis.
+For example, we have highlighted a sensitivity of the CMC pipeline to parameter choice that hasn't been discussed prior to our implementation.
+The broad graphical or numerical summaries currently used to summarize the performance of the CMC pipeline, while admissible from a readability perspective, do not allow us to contrast different algorithms or parameter choices at the individual comparison level.
 In recognition of the additional requirements of computational reproducibility, some journals have adopted policies encouraging or requiring that authors provide code and data sufficient to reproduce the statistical analyses, with the goal of building a "culture of reproducibility" in their respective fields \citep{peng_reproducible_2009, peng_reproducible_2011, stodden_toward_2013}.
 Peer-review and scientific progress in the truest sense requires that \emph{all} pre-processed data, code, and results be made openly available \citep{kwongAlgorithmSaysYou2017, desaiTrustVerifyGuide2017}.
-We argue that these standards should be adopted by the forensic science community.
-Further, in the R community, computational reproducibility can largely be taken for granted due to the accessible, shared ecosystem provided by CRAN and other code repositories.
-In many cases, though, authors do not make their code available for analysis; this provides a substantial hurdle when attempting to use, replicate, or compare the published pipeline and represents a significant barrier to scientific progress.}
+We argue that these standards should be adopted by the forensic science community by leveraging open-source ecosystems like the R and GitHub communities.}
 ```
-\jz{\textbf{Narrow focus further to *our* implementation in cmcR and highlight a major benefit being the modularization of the pipeline.}}
+
+<!-- \jz{\textbf{Paragraph 3: Describe how our implementation can be used as a foundation for further improvements upon the CMC method and how the package overall can be used as a template.}} -->
 
 ```{=tex}
-\jz{Both the original CMC and High CMC methods are complex, multi-step processes that are easier to run and debug when written as a modular pipeline of successive, functionally independent steps. 
-This modular approach makes it easier to describe the algorithm, easier to write the code, easier to modify and improve the method, and easier to show that the improvement has a noticeable impact on the results. 
-Unfortunately, it takes work to explicitly modularize an algorithm. 
+\jz{The modular approach used in \CRANpkg{cmcR} makes it easier to describe the algorithm, easier to write the code, modify and improve the method, and show that the improvement has a noticeable impact on the results. 
 The modularization creates an explicit framework for assessment of the utility and effectiveness of each piece of the algorithm, and allows us to specifically manipulate each step independently, while monitoring the downstream impact on the results. 
-It also allows future collaborators to improve on pieces of the pipeline, adding additional options and improving the method without having to re-invent the wheel. 
-It is easy to see how modular algorithms increase the interoperability and reusability of code and data, and that the addition of an open-source software package leveraging the CRAN platform increases the findability and accessibility of the method and code.
-These principles of open, accessible, interoperable code are also critical for a fair (in the legal sense) justice system: the defense must have access to the code to understand the evidence against them, lawyers must be able to assess the utility of the analysis method, and judges must be able to determine whether a method is admissible in court.}
-```
-\jz{\textbf{Conclusion to discussion}}
-
-```{=tex}
-\jz{In this paper, we have discussed challenges that arise when an ecosystem of reproducibility does not exist.
-A pure `re-implementation' of existing work generally does not count as research.
-Unfortunately, this deters to build on one another's work, discourages comparisons across approaches from different research groups, and favors 'one-off' ideas over a collaborative effort to achieve real solutions.
-Re-implementations often require enumerating and implementing a variety of processing options, likely larger than the scope of the original implementation, and yield a deeper understanding of a pipeline's sensitivity \citep{Stodden2013SettingTD}.
-The forensic community needs to be aware of an algorithm's sensitivity and agree on a set of reasonable parameters before it is considered admissible.
-Our open-source implementation of the Congruent Matching Cells algorithm empowers the wider forensic science community to take part in the discussion of the pipeline's sensitivity.
+Additionally, it allows future collaborators to improve on pieces of the pipeline, adding additional options and improving the method without having to re-invent the wheel.
+These principles of open, accessible, interoperable code are also critical for a fair (in the legal sense) justice system: the defense has access to the code to understand the evidence against them, lawyers and examiners can assess the utility of the analysis method, and judges can determine whether a method is admissible in court.
 Transparent and intuitive open-source algorithms, such as \CRANpkg{cmcR}, should be considered the gold standard in allowing the forensic science community to validate a pipeline.
 We intend the \CRANpkg{cmcR} package to serve as a flexible, easy-to-use foundation upon which transparent improvements to the CMC pipeline can be developed.}
 ```
+
+
+<!-- \jz{XXX I think some of the ideas in the following paragraph should go into the conclusion instead XXX} -->
+<!-- \jz{\textbf{Conclusion to discussion}} -->
+<!-- ```{=tex} -->
+<!-- \jz{In this paper, we have discussed challenges that arise when an ecosystem of reproducibility does not exist. -->
+<!-- A pure `re-implementation' of existing work generally does not count as research. -->
+<!-- Unfortunately, this deters to build on one another's work, discourages comparisons across approaches from different research groups, and favors 'one-off' ideas over a collaborative effort to achieve real solutions. -->
+<!-- Re-implementations often require enumerating and implementing a variety of processing options, likely larger than the scope of the original implementation, and yield a deeper understanding of a pipeline's sensitivity \citep{Stodden2013SettingTD}. -->
+<!-- The forensic community needs to be aware of an algorithm's sensitivity and agree on a set of reasonable parameters before it is considered admissible. -->
+<!-- Our open-source implementation of the Congruent Matching Cells algorithm empowers the wider forensic science community to take part in the discussion of the pipeline's sensitivity.} -->
+<!-- ``` -->
 # Conclusion {#conclusion}
 
 ```{=tex}
