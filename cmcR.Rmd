@@ -1519,19 +1519,18 @@ data.frame(study = factor(c("Tong et al. (2014)",
 
 \newpage
 
-## Discussion {#discussion}
+# Discussion {#discussion}
 
 \jz{\textbf{Intro to discussion}}
-
-```{=tex}
-\jz{Reproducibility is indispensable for results to be considered valid by the wider scientific community \citep{goodman_what_2016}.
-We have demonstrated that the three common reasons for unreproducible results: ambiguity in how procedures are implemented, missing or incomplete data, and missing or incomplete code, are all applicable to the Congruent Matching Cells pipeline.
-Our open-source implementation provided in \CRANpkg{cmcR}, paired with the open-source cartridge case data available in the NIST Ballistics Toolmark Research Database \citep{nbtrd}, avoids these problems and encourages validation and improvement from the wider forensics community.}
-```
+\svp{Reproducibility is an indispensable component of scientific validity\citep{goodman_what_2016}. 
+In this paper, we demonstrate at least three ways reproducibility can go awry: ambiguity in procedural implementation, missing or incomplete data, and missing or incomplete code. 
+The papers which present the CMC algorithm provide human-friendly descriptions of the CMC pipeline, but fail to provide sufficient details for an outside group to easily reproduce the work. 
+Our contribution to the CMC literature is the open-source implementation, which removes any descriptive ambiguity in the human-friendly descriptions in the original papers; we provide more detailed, hardware-friendly code. 
+While we have largely succeeded in reproducing the published results of the CMC algorithm, some uncertainty remains that our pipeline is similar enough to reproduce any results on an external data set \citep{vanderplasComparisonThreeSimilarity2020}. 
+It is worth considering the obstacles we encountered, because they are common when attempting to implement a solution to paper published without code, pseudocode, or data, as documented in \ref{reprod-defn}.}
 
 \jz{\textbf{Paragraph 1: Refer back to hierarchy of algorithmic transparency. Assert that we currently have a conceptual description when we really need comparable results (at a minimum) or, optimally, fully reproducible results.}}
 
-```{=tex}
 \jz{\textbf{Review the hierarhcy of algorithmic transparency and re-assert the need for computational reproducibility.}}
 
 \jz{At the moment, we have a conceptual description of the CMC pipeline.
@@ -1548,11 +1547,10 @@ Widely-known algorithms may be implemented differently between different languag
 \jz{\textbf{Conclude that, in-general, open-source and open data is the best way to ensure algorithmic transparency}}
 
 \jz{Open-source algorithms and data, accompanied with documentation detailing language/package versions, random seeds, metadata, etc., most clearly ensures fully reproducible results.}
-```
+
 
 \jz{\textbf{Paragraph 2: Discuss how the manner in which the pipeline is currently presented doesn't lead to community-wide acceptance. This isn't just important from a scientific standpoint, there is a legal imperative (Daubert) to achieving community-wide acceptance.}}
 
-```{=tex}
 \jz{The Daubert Standard requires that a scientific method be widely accepted by a relevant scientific community before it can be used in an expert witness's testimony \citep{daubert}.
 Prior to acceptance, the relevant scientific community must validate a method, which includes a careful study of the method's sensitivites to different processing choices.
 In computational research, a lack of computational reproducibilty makes it impossible to perform such an analysis.}
@@ -1567,18 +1565,17 @@ The broad graphical or numerical summaries currently used to summarize the perfo
 \jz{In recognition of the additional requirements of full reproducibility, some journals have adopted policies encouraging or requiring that authors provide code and data sufficient to reproduce the statistical analyses, with the goal of building a "culture of reproducibility" in their respective fields \citep{peng_reproducible_2009, peng_reproducible_2011, stodden_toward_2013}.
 Peer-review and scientific progress in the truest sense requires that \emph{all} pre-processed data, code, and results be made openly available \citep{kwongAlgorithmSaysYou2017, desaiTrustVerifyGuide2017}.
 We argue that these standards should be adopted by the forensic science community by leveraging open-source ecosystems like the R and GitHub communities.}
-```
+
 
 \jz{\textbf{Paragraph 3: Describe how our implementation can be used as a foundation for further improvements upon the CMC method and how the package overall can be used as a template for future open-source implementations.}}
 
-```{=tex}
 \jz{The modular approach used in \CRANpkg{cmcR} makes it easier to describe the algorithm, easier to write the code, modify and improve the method, and show that the improvement has a noticeable impact on the results. 
 The modularization creates an explicit framework for assessment of the utility and effectiveness of each piece of the algorithm, and allows us to specifically manipulate each step independently, while monitoring the downstream impact on the results. 
 Additionally, it allows future collaborators to improve on pieces of the pipeline, adding additional options and improving the method without having to re-invent the wheel.
 These principles of open, accessible, interoperable code are also critical for a fair (in the legal sense) justice system: the defense has access to the code to understand the evidence against them, lawyers and examiners can assess the utility of the analysis method, and judges can determine whether a method is admissible in court.
 Transparent and intuitive open-source algorithms, such as \CRANpkg{cmcR}, should be considered the gold standard in allowing the forensic science community to validate a pipeline.
 We intend the \CRANpkg{cmcR} package to serve as a flexible, easy-to-use foundation upon which improvements to the CMC pipeline can be developed.}
-```
+
 
 
 <!-- \jz{XXX I think some of the ideas in the following paragraph should go into the conclusion instead XXX} -->
