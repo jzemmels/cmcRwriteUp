@@ -1529,7 +1529,7 @@ We have demonstrated that the three common reasons for unreproducible results: a
 Our open-source implementation provided in \CRANpkg{cmcR}, paired with the open-source cartridge case data available in the NIST Ballistics Toolmark Research Database \citep{nbtrd}, avoids these problems and encourages validation and improvement from the wider forensics community.}
 ```
 
-\jz{\textbf{Paragraph 1: Refer back to hierarchy of algorithmic transparency with additional discussion}}
+\jz{\textbf{Paragraph 1: Refer back to hierarchy of algorithmic transparency. Assert that we currently have a conceptual description when we really need comparable results (at a minimum) or, optimally, fully reproducible results.}}
 
 ```{=tex}
 \jz{\textbf{Review the hierarhcy of algorithmic transparency and re-assert the need for computational reproducibility.}}
@@ -1550,7 +1550,7 @@ Widely-known algorithms may be implemented differently between different languag
 \jz{Open-source algorithms and data, accompanied with documentation detailing language/package versions, random seeds, metadata, etc., most clearly ensures fully reproducible results.}
 ```
 
-\jz{\textbf{Paragraph 2: Discuss how the manner in which the pipeline is currently presented doesn't lead to community-wide acceptance.}}
+\jz{\textbf{Paragraph 2: Discuss how the manner in which the pipeline is currently presented doesn't lead to community-wide acceptance. This isn't just important from a scientific standpoint, there is a legal imperative (Daubert) to achieving community-wide acceptance.}}
 
 ```{=tex}
 \jz{The Daubert Standard requires that a scientific method be widely accepted by a relevant scientific community before it can be used in an expert witness's testimony \citep{daubert}.
@@ -1569,7 +1569,7 @@ Peer-review and scientific progress in the truest sense requires that \emph{all}
 We argue that these standards should be adopted by the forensic science community by leveraging open-source ecosystems like the R and GitHub communities.}
 ```
 
-\jz{\textbf{Paragraph 3: Describe how our implementation can be used as a foundation for further improvements upon the CMC method and how the package overall can be used as a template.}}
+\jz{\textbf{Paragraph 3: Describe how our implementation can be used as a foundation for further improvements upon the CMC method and how the package overall can be used as a template for future open-source implementations.}}
 
 ```{=tex}
 \jz{The modular approach used in \CRANpkg{cmcR} makes it easier to describe the algorithm, easier to write the code, modify and improve the method, and show that the improvement has a noticeable impact on the results. 
