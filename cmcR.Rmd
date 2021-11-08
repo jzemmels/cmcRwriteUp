@@ -476,12 +476,11 @@ The goal of this process is to remove the edges and center of the scan which did
 The different iterations of the CMC algorithm describe different variations of these steps.
 A summary of these steps is shown in \autoref{fig:preprocessing-schematic}.
 
-```{=tex}
 \begin{figure}
 \includegraphics[width=\linewidth]{images/preprocessing_flow.png}
 \caption{Overview of the set of pre-processing steps used in the CMC algorithms. Where a procedure step is not discussed or explicitly not applied in the paper, the path traverses empty space.}\label{fig:preprocessing-schematic}
 \end{figure}
-```
+
 The implementation in \citet{tong_fired_2014} describes the preprocessing steps (for the 2D images) as:
 
 > After trimming processing \[sic\] to remove unrelated correlations areas, the final image size is reduced to 700 × 700 pixel with an estimated pixel spacing of 5.0 $\mu$m.
@@ -1522,22 +1521,30 @@ data.frame(study = factor(c("Tong et al. (2014)",
 # Discussion {#discussion}
 
 \jz{\textbf{Intro to discussion}}
+```{=tex}
+\jz{\textbf{Paragraph 1: Refer back to hierarchy of algorithmic transparency. Assert that we currently have a conceptual description when we really need comparable results (at a minimum) or, optimally, fully reproducible results.}}
+```
+```{=tex}
 \svp{Reproducibility is an indispensable component of scientific validity\citep{goodman_what_2016}. 
 In this paper, we demonstrate at least three ways reproducibility can go awry: ambiguity in procedural implementation, missing or incomplete data, and missing or incomplete code. 
 The papers which present the CMC algorithm provide human-friendly descriptions of the CMC pipeline, but fail to provide sufficient details for an outside group to easily reproduce the work. 
-Our contribution to the CMC literature is the open-source implementation, which removes any descriptive ambiguity in the human-friendly descriptions in the original papers; we provide more detailed, hardware-friendly code. 
-While we have largely succeeded in reproducing the published results of the CMC algorithm, some uncertainty remains that our pipeline is similar enough to reproduce any results on an external data set \citep{vanderplasComparisonThreeSimilarity2020}. 
-It is worth considering the obstacles we encountered, because they are common when attempting to implement a solution to paper published without code, pseudocode, or data, as documented in \ref{reprod-defn}.}
-
-\jz{\textbf{Paragraph 1: Refer back to hierarchy of algorithmic transparency. Assert that we currently have a conceptual description when we really need comparable results (at a minimum) or, optimally, fully reproducible results.}}
-
+Our contribution to the CMC literature is the open-source implementation, which removes any descriptive ambiguity in the human-friendly descriptions in the original papers; we provide more detailed, hardware-friendly code which serves as a companion to the original papers. 
+While we have largely succeeded in reproducing the published results of the CMC algorithm, some uncertainty remains. It is possible that our pipeline may not sufficiently reproduce the original authors' results on an external data set, which is an important assessment for any computational algorithm\citep{vanderplasComparisonThreeSimilarity2020}.
+It is worth considering the obstacles we encountered during the implementation, because they are common when attempting to recreate the computational steps in a paper published without code, pseudocode, or data, as described in \ref{reprod-defn}.}
+```
+```{=tex}
 \jz{\textbf{Review the hierarhcy of algorithmic transparency and re-assert the need for computational reproducibility.}}
 
-\jz{At the moment, we have a conceptual description of the CMC pipeline.
-This conceptual description is undoubtedly important as it can be difficult to understand the pipeline solely by reading through its source code.
-However, we have observed that the conceptual description provides only enough detail to qualitatively reproduce the original results.
-To truly compare two different algorithms, including two different implementations of the same algorithm, at a minimum comparable results must be provided in supplementary material.
-However, even comparable results do not ensure full computational reproducibility.}
+\svp{Initially, we began by comparing the published CMC papers to develop the preprocessing and decision rule charts shown in Figures \ref{fig:preprocessing-schematic} and \ref{fig:processingPipeline}.
+The most troublesome portion of the process was that we had to replicate the manual preprocessing of the scans before the algorithmic steps were applied: this step in particular could have been easily avoided had the authors shared the manually processed data along with their paper. 
+There were additionally some difficulties with the availability of band pass filters -- the R equivalents of these filters may or may not precisely emulate the MatLab filters which were applied in the CMC papers, however, we think it likely that the primary issue with reproducing this step of the pipeline is in the manual data cleaning component. 
+}
+```
+<!-- \jz{At the moment, we have a conceptual description of the CMC pipeline. -->
+<!-- This conceptual description is undoubtedly important as it can be difficult to understand the pipeline solely by reading through its source code. -->
+<!-- However, we have observed that the conceptual description provides only enough detail to qualitatively reproduce the original results. -->
+<!-- To truly compare two different algorithms, including two different implementations of the same algorithm, at a minimum comparable results must be provided in supplementary material. -->
+<!-- However, even comparable results do not ensure full computational reproducibility.} -->
 
 \jz{\textbf{Describe factors that cause unreproducibile results if only conceptual descriptions or pseudocode are provided.}}
 
@@ -1546,7 +1553,7 @@ Widely-known algorithms may be implemented differently between different languag
 
 \jz{\textbf{Conclude that, in-general, open-source and open data is the best way to ensure algorithmic transparency}}
 
-\jz{Open-source algorithms and data, accompanied with documentation detailing language/package versions, random seeds, metadata, etc., most clearly ensures fully reproducible results.}
+\svp{A completely reproducible paper requires not only algorithm descriptions, but also \jz{open-source code,}\svp{initial and any manually processed} \jz{data, documentation detailing language/package versions, random seeds, metadata,} \svp{and other essential details.}
 
 
 \jz{\textbf{Paragraph 2: Discuss how the manner in which the pipeline is currently presented doesn't lead to community-wide acceptance. This isn't just important from a scientific standpoint, there is a legal imperative (Daubert) to achieving community-wide acceptance.}}
