@@ -1552,9 +1552,9 @@ There were additionally some difficulties with the availability of band pass fil
 Widely-known algorithms may be implemented differently between different languages, different libraries written in the same language, or even different versions of the same library/language (for instance, the recent change to the psuedorandom number generation algorithm used in the popular \texttt{sample()} function in R version 3.6.0).}
 
 \jz{\textbf{Conclude that, in-general, open-source and open data is the best way to ensure algorithmic transparency}}
-
-\svp{A completely reproducible paper requires not only algorithm descriptions, but also \jz{open-source code,}\svp{initial and any manually processed} \jz{data, documentation detailing language/package versions, random seeds, metadata,} \svp{and other essential details.}
-
+```{=tex}
+\svp{A completely reproducible paper requires not only algorithm descriptions, but also} \jz{open-source code,}\svp{initial and any manually processed} \jz{data, documentation detailing language/package versions, random seeds, metadata,} \svp{and other essential details.}
+```
 
 \jz{\textbf{Paragraph 2: Discuss how the manner in which the pipeline is currently presented doesn't lead to community-wide acceptance. This isn't just important from a scientific standpoint, there is a legal imperative (Daubert) to achieving community-wide acceptance.}}
 
