@@ -1546,35 +1546,46 @@ There were additionally some difficulties with the availability of band pass fil
 <!-- To truly compare two different algorithms, including two different implementations of the same algorithm, at a minimum comparable results must be provided in supplementary material. -->
 <!-- However, even comparable results do not ensure full computational reproducibility.} -->
 
-\jz{\textbf{Describe factors that cause unreproducibile results if only conceptual descriptions or pseudocode are provided.}}
+\svp{While none of these factors are unique to the CMC algorithm, what is unique is the particular combination of an algorithm with many parameters that is extremely sensitive to the parameter settings and the gravity of the material the algorithm is intended to process.
+The extreme sensitivity of the CMC algorithm to parameter settings is problematic precisely because the data processed by the algorithm is eventually intended to support forensic examiner decision making and eventually, courtroom testimony. 
+If many parameter settings are valid but only a narrow range lead to the same conclusion, it is entirely possible that witnesses for the prosecution and defense may come to different conclusions. 
+In order to prevent such misunderstandings, it is not enough to have guidelines for parameter settings and/or a sensitivity study -- it is also necessary to standardize the specific computer code, because the parameter values are only useful within the context of a single software package or pipeline. 
+The papers presenting the CMC algorithm are not sufficient to ensure this level of reproducibility in the results, even though the papers themselves provide a solid foundation. 
+Rather, the CMC algorithm itself highlights the importance of open software and full reproducibility: the algorithm is not useful in the context of the wider problem it is hoping to solve unless there is a software implementation and documented results on data provided for general consumption.}
 
-\jz{When translating an algorithm from a description, reproducibility of results is challenging as an implementation may depend on the creator's programming habits or the programming language used.
-Widely-known algorithms may be implemented differently between different languages, different libraries written in the same language, or even different versions of the same library/language (for instance, the recent change to the psuedorandom number generation algorithm used in the popular \texttt{sample()} function in R version 3.6.0).}
+<!-- \jz{\textbf{Describe factors that cause unreproducibile results if only conceptual descriptions or pseudocode are provided.}} -->
 
-\jz{\textbf{Conclude that, in-general, open-source and open data is the best way to ensure algorithmic transparency}}
+<!-- \jz{When translating an algorithm from a description, reproducibility of results is challenging as an implementation may depend on the creator's programming habits or the programming language used. -->
+<!-- Widely-known algorithms may be implemented differently between different languages, different libraries written in the same language, or even different versions of the same library/language (for instance, the recent change to the psuedorandom number generation algorithm used in the popular \texttt{sample()} function in R version 3.6.0).} -->
+
+<!-- \jz{\textbf{Conclude that, in-general, open-source and open data is the best way to ensure algorithmic transparency}} -->
 ```{=tex}
 \svp{A completely reproducible paper requires not only algorithm descriptions, but also} \jz{open-source code,}\svp{ initial and any manually processed} \jz{data, documentation detailing language/package versions, random seeds, metadata,} \svp{and other essential details.}
 ```
 
-\jz{\textbf{Paragraph 2: Discuss how the manner in which the pipeline is currently presented doesn't lead to community-wide acceptance. This isn't just important from a scientific standpoint, there is a legal imperative (Daubert) to achieving community-wide acceptance.}}
+<!-- \jz{\textbf{Paragraph 2: Discuss how the manner in which the pipeline is currently presented doesn't lead to community-wide acceptance. This isn't just important from a scientific standpoint, there is a legal imperative (Daubert) to achieving community-wide acceptance.}} -->
 
-\jz{The Daubert Standard requires that a scientific method be widely accepted by a relevant scientific community before it can be used in an expert witness's testimony \citep{daubert}.
-Prior to acceptance, the relevant scientific community must validate a method, which includes a careful study of the method's sensitivites to different processing choices.
-In computational research, a lack of computational reproducibilty makes it impossible to perform such an analysis.}
+<!-- \jz{The Daubert Standard requires that a scientific method be widely accepted by a relevant scientific community before it can be used in an expert witness's testimony \citep{daubert}. -->
+<!-- Prior to acceptance, the relevant scientific community must validate a method, which includes a careful study of the method's sensitivites to different processing choices. -->
+<!-- In computational research, a lack of computational reproducibilty makes it impossible to perform such an analysis.} -->
 
-\jz{\textbf{In particular, point to the sensitivity of the method to various parameter choices.}}
+<!-- \jz{\textbf{In particular, point to the sensitivity of the method to various parameter choices.}} -->
 
-\jz{For example, we have highlighted a sensitivity of the CMC pipeline to parameter choice that hasn't been discussed prior to our implementation.
-The broad graphical or numerical summaries currently used to summarize the performance of the CMC pipeline, while admissible from a readability perspective, do not allow us to contrast different algorithms or parameter choices at the individual comparison level.}
+<!-- \jz{For example, we have highlighted a sensitivity of the CMC pipeline to parameter choice that hasn't been discussed prior to our implementation. -->
+<!-- The broad graphical or numerical summaries currently used to summarize the performance of the CMC pipeline, while admissible from a readability perspective, do not allow us to contrast different algorithms or parameter choices at the individual comparison level.} -->
 
-\jz{\textbf{Conclude that the forensic science community should adopt a "culture of reproducibility" by using open-source platforms}}
+<!-- \jz{\textbf{Conclude that the forensic science community should adopt a "culture of reproducibility" by using open-source platforms}} -->
 
-\jz{In recognition of the additional requirements of full reproducibility, some journals have adopted policies encouraging or requiring that authors provide code and data sufficient to reproduce the statistical analyses, with the goal of building a "culture of reproducibility" in their respective fields \citep{peng_reproducible_2009, peng_reproducible_2011, stodden_toward_2013}.
+\svp{While this example is compelling, it is far from unique: }
+
+<!-- In recognition of the additional requirements of full reproducibility,  -->
+\jz{some journals have adopted policies encouraging or requiring that authors provide code and data sufficient to reproduce the statistical analyses, with the goal of building a "culture of reproducibility" in their respective fields \citep{peng_reproducible_2009, peng_reproducible_2011, stodden_toward_2013}.
 Peer-review and scientific progress in the truest sense requires that \emph{all} pre-processed data, code, and results be made openly available \citep{kwongAlgorithmSaysYou2017, desaiTrustVerifyGuide2017}.
-We argue that these standards should be adopted by the forensic science community by leveraging open-source ecosystems like the R and GitHub communities.}
+Our experience with the CMC algorithm suggests that these standards should be adopted by the forensic science community, leveraging open-source ecosystems like R and software sharing platforms such as Github.
+}
 
 
-\jz{\textbf{Paragraph 3: Describe how our implementation can be used as a foundation for further improvements upon the CMC method and how the package overall can be used as a template for future open-source implementations.}}
+<!-- \jz{\textbf{Paragraph 3: Describe how our implementation can be used as a foundation for further improvements upon the CMC method and how the package overall can be used as a template for future open-source implementations.}} -->
 
 \jz{The modular approach used in \CRANpkg{cmcR} makes it easier to describe the algorithm, easier to write the code, modify and improve the method, and show that the improvement has a noticeable impact on the results. 
 The modularization creates an explicit framework for assessment of the utility and effectiveness of each piece of the algorithm, and allows us to specifically manipulate each step independently, while monitoring the downstream impact on the results. 
@@ -1583,6 +1594,8 @@ These principles of open, accessible, interoperable code are also critical for a
 Transparent and intuitive open-source algorithms, such as \CRANpkg{cmcR}, should be considered the gold standard in allowing the forensic science community to validate a pipeline.
 We intend the \CRANpkg{cmcR} package to serve as a flexible, easy-to-use foundation upon which improvements to the CMC pipeline can be developed.}
 
+\svp{In addition to the benefits to forensic examiners who may use CMC algorithms to support decisions made about evidence, the full reproducibility standard benefits the wider research community. 
+Open, fully reproducible packages like \CRANpkg{cmcR} allow research groups to make incremental changes, compare different approaches, and accelerate the pace of research and development. }
 
 
 <!-- \jz{XXX I think some of the ideas in the following paragraph should go into the conclusion instead XXX} -->
