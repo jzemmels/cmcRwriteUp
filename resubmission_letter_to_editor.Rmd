@@ -4,22 +4,30 @@ author: "Joe Zemmels, Susan VanderPlas, and Heike Hofmann"
 output: pdf_document
 ---
 
-Given our proximity to the forensic science community, we are noticing an absence of open-source a lot more than people who are entrenched in an open-source community. 
-This might explain some of the feedback from the reviewers. 
-For example, Reviewer #2 requested that we change the motivation of the paper from research reproducibility to the need for "a parallel implementation (freedom of use, ease of extension, research platform, forensic transparency)."
-We strongly agree that these are important motivations for our open-source implementation of the Congruent Matching Cells method.
-However, we assert computational reproducibility is an integral part forensic transparency.
-One cannot achieve transparency in a forensic pattern matching algorithm without being able to reproduce published results. 
-In our paper, we have argued that we can achieve at best a qualitative reproduction of previous results with our implementation specifically because there was a great deal of ambiguity in the original papers.
-Further, we argue that mere qualitative reproducibility is not acceptable in forensics.
-While we agree with Reviewer #1 that an algorithm need not be "fully-formed" at initial conception and that it is understandable to omit minor details in a written-word description the algorithm, we have demonstrated in this paper that a text description of an algorithm is not sufficient to achieve genuine computational reproducibilty.
+Dear Professor Catherine Hurley,
 
-We were surprised by Reviewer #1's claim that "the fact that [we] were able to produce [our] implementation demonstrates that sufficient information was available [in the original papers]."
-We thought that it was clear that our qualitative reproduction of results did not meet the definition of computational reproducibility provided in the paper.
-Additionally, there is the more important question of how well our implementation generalized to new data sets.
-We argue that the process of creating a new implementation is perhaps beneficial as an academic exercise, but not for furthering a scientific field.
-In high-stakes fields such as forensics, we need to develop algorithms with the intention that they *should* be heavily studied and scrutinized by the wider community.
-This does not mean that an algorithm needs to be perfect at initial creation; of course this is an impossible task.
-Rather, to stimulate discussion and collaboration, even if an algorithm is initially rough or inefficient, it is critical that it least be available to the forensic science community.
-In our ideal situation, we would not have even needed to create this implementation.
-Certainly, we would have rather spent our time *improving* upon the methodology rather than performing lengthy experimentation to determine what the original descriptions were trying to convey.
+We are requesting a reconsideration of our R Journal submission 2021-73. 
+We have made substantial changes to our submission in response to the reviewers' constructive feedback.
+
+Both reviewers pointed out that we did not compare results derived with our implementation to previously published results.
+We have rectified this by including Figure 14 (pg. 20) showing performance summary statistics of our implementation's results alongside those of previous CMC papers.
+Additionally, one reviewer pointed out that our criticisms were overly harsh of the original NIST authors.
+It was never our intention to be critical of the authors themselves, but instead to argue that the original papers lack sufficient detail to enable a reproduction of their results.
+As such, we have removed or edited any points made in the manuscript that may be interpreted as criticism of the NIST authors.
+
+The most substantive changes to the manuscript are in the introduction and discussion/conclusion.
+These changes are made to clarify our arguments in response to comments made by both reviewers.
+Namely, one reviewer requested that we change the motivation of the paper from research reproducibility to the need for "a parallel implementation (freedom of use, ease of extension, research platform, forensic transparency)."
+We argue that all of these factors require that results from an implementation be reproducible.
+We have shifted the motivation of our paper from being a novel contribution to the field of research reproducibility to being a demonstration of how the forensics community can and should promote more rigorous reproducibility standards by adopting FAIR (findability, accessibility, interoperability, and reusability) principles.
+
+Additionally, our changes to the introduction and discussion are intended to address a reviewer's comments that because we were able to create an implementation that there was sufficient detail in the original papers to reproduce the methods.
+Clearly this reviewer's definition of reproducibility is different from ours.
+We have changed our definition of reproducibility to the definition provided by the National Academy of Sciences, Engineering, and Medicine and also introduced a "Hierarchy of Reproducibility." 
+Together, these clarify our argument that the conceptual description provided in the original CMC papers are not sufficient to enable reproducible of results.
+
+
+Thank you again for your consideration,
+
+Joseph Zemmels, Susan Vanderplas, and Heike Hofmann
+
