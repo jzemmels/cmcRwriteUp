@@ -106,7 +106,7 @@ Algorithms are generally described on two levels: we need both the conceptual de
 As with SOPs in lab settings, the code parameters function like specific chemical concentrations; without those details, the SOP would be incomplete and the results produced would be too variable to be accepted in court.}
 
 \citet{nas_2019} defines \dfn{reproducibility} as  "obtaining consistent computational results using the same input data, computational steps, methods, code, and conditions of analysis."
-\svp{This form of reproducibility requires that the input data, code, method, and computational environment are all described and made available to the community. 
+\svp{This form of reproducibility requires that the input data, code, method, and computational environment are all described and made available to the community
 <!--I'm actually fudging  a bit here, since it doesn't require that the results are repeatable by others... -->
 Obviously, in many situations, this level of reproducibility is not provided. There are only a few open-source pattern-matching algorithms in forensics (glass \citep{park2019}, handwriting \citep{crawford_handwriting_2020}, shoe prints \citep{park_algorithm_2020}, and ballistic evidence \citep{hare_automatic_2016,tai_fully_2018}); the vast majority of proposed methods do not adhere to the definition of reproducibility in \citet{nas_2019}.}
 
@@ -1521,118 +1521,45 @@ data.frame(study = factor(c("Tong et al. (2014)",
 
 \newpage
 
-# Discussion {#discussion}
+# Discussion and Conclusion{#discussion}
 
-\jz{\textbf{Intro to discussion}}
-```{=tex}
-\jz{\textbf{Paragraph 1: Refer back to hierarchy of algorithmic transparency. Assert that we currently have a conceptual description when we really need comparable results (at a minimum) or, optimally, fully reproducible results.}}
-```
-```{=tex}
-\svp{Reproducibility is an indispensable component of scientific validity\citep{goodman_what_2016}. 
+\svp{Reproducibility is an indispensable component of scientific validity \citep{goodman_what_2016}. 
 In this paper, we demonstrate at least three ways reproducibility can go awry: ambiguity in procedural implementation, missing or incomplete data, and missing or incomplete code. 
 The papers which present the CMC algorithm provide human-friendly descriptions of the CMC pipeline, but fail to provide sufficient details for an outside group to easily reproduce the work. 
 Our contribution to the CMC literature is the open-source implementation, which removes any descriptive ambiguity in the human-friendly descriptions in the original papers; we provide more detailed, hardware-friendly code which serves as a companion to the original papers. 
-While we have largely succeeded in reproducing the published results of the CMC algorithm, some uncertainty remains. It is possible that our pipeline may not sufficiently reproduce the original authors' results on an external data set, which is an important assessment for any computational algorithm\citep{vanderplasComparisonThreeSimilarity2020}.
+While we have largely succeeded in reproducing the published results of the CMC algorithm, some uncertainty remains. It is possible that our pipeline may not sufficiently reproduce the original authors' results on an external data set, which is an important assessment for any computational algorithm \citep{vanderplasComparisonThreeSimilarity2020}.
 It is worth considering the obstacles we encountered during the implementation, because they are common when attempting to recreate the computational steps in a paper published without code, pseudocode, or data, as described in \ref{reprod-defn}.}
-```
-```{=tex}
-\jz{\textbf{Review the hierarhcy of algorithmic transparency and re-assert the need for computational reproducibility.}}
 
 \svp{Initially, we began by comparing the published CMC papers to develop the preprocessing and decision rule charts shown in Figures \ref{fig:preprocessing-schematic} and \ref{fig:processingPipeline}.
 The most troublesome portion of the process was that we had to replicate the manual preprocessing of the scans before the algorithmic steps were applied: this step in particular could have been easily avoided had the authors shared the manually processed data along with their paper. 
 There were additionally some difficulties with the availability of band pass filters -- the R equivalents of these filters may or may not precisely emulate the MatLab filters which were applied in the CMC papers, however, we think it likely that the primary issue with reproducing this step of the pipeline is in the manual data cleaning component. 
 }
-```
-<!-- \jz{At the moment, we have a conceptual description of the CMC pipeline. -->
-<!-- This conceptual description is undoubtedly important as it can be difficult to understand the pipeline solely by reading through its source code. -->
-<!-- However, we have observed that the conceptual description provides only enough detail to qualitatively reproduce the original results. -->
-<!-- To truly compare two different algorithms, including two different implementations of the same algorithm, at a minimum comparable results must be provided in supplementary material. -->
-<!-- However, even comparable results do not ensure full computational reproducibility.} -->
 
 \svp{While none of these factors are unique to the CMC algorithm, what is unique is the particular combination of an algorithm with many parameters that is extremely sensitive to the parameter settings and the gravity of the material the algorithm is intended to process.
 The extreme sensitivity of the CMC algorithm to parameter settings is problematic precisely because the data processed by the algorithm is eventually intended to support forensic examiner decision making and eventually, courtroom testimony. 
 If many parameter settings are valid but only a narrow range lead to the same conclusion, it is entirely possible that witnesses for the prosecution and defense may come to different conclusions. 
 In order to prevent such misunderstandings, it is not enough to have guidelines for parameter settings and/or a sensitivity study -- it is also necessary to standardize the specific computer code, because the parameter values are only useful within the context of a single software package or pipeline. 
 The papers presenting the CMC algorithm are not sufficient to ensure this level of reproducibility in the results, even though the papers themselves provide a solid foundation. 
-Rather, the CMC algorithm itself highlights the importance of open software and full reproducibility: the algorithm is not useful in the context of the wider problem it is hoping to solve unless there is a software implementation and documented results on data provided for general consumption.}
+Rather, the CMC algorithm itself highlights the importance of open software and full reproducibility: the algorithm is not useful in the context of the wider problem it is hoping to solve unless there is a software implementation and documented results on data provided for general consumption.
+A completely reproducible paper requires not only algorithm descriptions, but also} \jz{open-source code,} \svp{initial and any manually processed} \jz{data, documentation detailing language/package versions, random seeds, metadata,} \svp{and other essential details.}
 
-<!-- \jz{\textbf{Describe factors that cause unreproducibile results if only conceptual descriptions or pseudocode are provided.}} -->
 
-<!-- \jz{When translating an algorithm from a description, reproducibility of results is challenging as an implementation may depend on the creator's programming habits or the programming language used. -->
-<!-- Widely-known algorithms may be implemented differently between different languages, different libraries written in the same language, or even different versions of the same library/language (for instance, the recent change to the psuedorandom number generation algorithm used in the popular \texttt{sample()} function in R version 3.6.0).} -->
-
-<!-- \jz{\textbf{Conclude that, in-general, open-source and open data is the best way to ensure algorithmic transparency}} -->
-```{=tex}
-\svp{A completely reproducible paper requires not only algorithm descriptions, but also} \jz{open-source code,}\svp{ initial and any manually processed} \jz{data, documentation detailing language/package versions, random seeds, metadata,} \svp{and other essential details.}
-```
-
-<!-- \jz{\textbf{Paragraph 2: Discuss how the manner in which the pipeline is currently presented doesn't lead to community-wide acceptance. This isn't just important from a scientific standpoint, there is a legal imperative (Daubert) to achieving community-wide acceptance.}} -->
-
-<!-- \jz{The Daubert Standard requires that a scientific method be widely accepted by a relevant scientific community before it can be used in an expert witness's testimony \citep{daubert}. -->
-<!-- Prior to acceptance, the relevant scientific community must validate a method, which includes a careful study of the method's sensitivites to different processing choices. -->
-<!-- In computational research, a lack of computational reproducibilty makes it impossible to perform such an analysis.} -->
-
-<!-- \jz{\textbf{In particular, point to the sensitivity of the method to various parameter choices.}} -->
-
-<!-- \jz{For example, we have highlighted a sensitivity of the CMC pipeline to parameter choice that hasn't been discussed prior to our implementation. -->
-<!-- The broad graphical or numerical summaries currently used to summarize the performance of the CMC pipeline, while admissible from a readability perspective, do not allow us to contrast different algorithms or parameter choices at the individual comparison level.} -->
-
-<!-- \jz{\textbf{Conclude that the forensic science community should adopt a "culture of reproducibility" by using open-source platforms}} -->
-
-\svp{While this example is compelling, it is far from unique: }
-
-<!-- In recognition of the additional requirements of full reproducibility,  -->
-\jz{some journals have adopted policies encouraging or requiring that authors provide code and data sufficient to reproduce the statistical analyses, with the goal of building a "culture of reproducibility" in their respective fields \citep{peng_reproducible_2009, peng_reproducible_2011, stodden_toward_2013}.
+\svp{While this example is compelling, it is far from unique: }\jz{some journals have adopted policies encouraging or requiring that authors provide code and data sufficient to reproduce the statistical analyses, with the goal of building a "culture of reproducibility" in their respective fields \citep{peng_reproducible_2009, peng_reproducible_2011, stodden_toward_2013}.
 Peer-review and scientific progress in the truest sense requires that \emph{all} pre-processed data, code, and results be made openly available \citep{kwongAlgorithmSaysYou2017, desaiTrustVerifyGuide2017}.
-Our experience with the CMC algorithm suggests that these standards should be adopted by the forensic science community, leveraging open-source ecosystems like R and software sharing platforms such as Github.
-}
-
-
-<!-- \jz{\textbf{Paragraph 3: Describe how our implementation can be used as a foundation for further improvements upon the CMC method and how the package overall can be used as a template for future open-source implementations.}} -->
+Our experience with the CMC algorithm suggests that these standards should be adopted by the forensic science community, leveraging open-source ecosystems like R and software sharing platforms such as Github.}
 
 \jz{The modular approach used in \CRANpkg{cmcR} makes it easier to describe the algorithm, easier to write the code, modify and improve the method, and show that the improvement has a noticeable impact on the results. 
 The modularization creates an explicit framework for assessment of the utility and effectiveness of each piece of the algorithm, and allows us to specifically manipulate each step independently, while monitoring the downstream impact on the results. 
 Additionally, it allows future collaborators to improve on pieces of the pipeline, adding additional options and improving the method without having to re-invent the wheel.
+Indeed, re-implementing steps of the pipeline is at best a useful academic exercise and at worst a waste of time and resources that could be spent actually improving the pipeline.
 These principles of open, accessible, interoperable code are also critical for a fair (in the legal sense) justice system: the defense has access to the code to understand the evidence against them, lawyers and examiners can assess the utility of the analysis method, and judges can determine whether a method is admissible in court.
 Transparent and intuitive open-source algorithms, such as \CRANpkg{cmcR}, should be considered the gold standard in allowing the forensic science community to validate a pipeline.
 We intend the \CRANpkg{cmcR} package to serve as a flexible, easy-to-use foundation upon which improvements to the CMC pipeline can be developed.}
 
+\jz{We firmly believe that the forensic community does not go only halfway, trading a subjective, human black box for objective, proprietary algorithms that are similarly opaque and unauditable.}
 \svp{In addition to the benefits to forensic examiners who may use CMC algorithms to support decisions made about evidence, the full reproducibility standard benefits the wider research community. 
-Open, fully reproducible packages like \CRANpkg{cmcR} allow research groups to make incremental changes, compare different approaches, and accelerate the pace of research and development. }
+Open, fully reproducible packages like \CRANpkg{cmcR} allow research groups to make incremental changes, compare different approaches, and accelerate the pace of research and development.}
 
-
-<!-- \jz{XXX I think some of the ideas in the following paragraph should go into the conclusion instead XXX} -->
-<!-- \jz{\textbf{Conclusion to discussion}} -->
-<!-- ```{=tex} -->
-<!-- \jz{In this paper, we have discussed challenges that arise when an ecosystem of reproducibility does not exist. -->
-<!-- A pure `re-implementation' of existing work generally does not count as research. -->
-<!-- Unfortunately, this deters to build on one another's work, discourages comparisons across approaches from different research groups, and favors 'one-off' ideas over a collaborative effort to achieve real solutions. -->
-<!-- Re-implementations often require enumerating and implementing a variety of processing options, likely larger than the scope of the original implementation, and yield a deeper understanding of a pipeline's sensitivity \citep{Stodden2013SettingTD}. -->
-<!-- The forensic community needs to be aware of an algorithm's sensitivity and agree on a set of reasonable parameters before it is considered admissible. -->
-<!-- Our open-source implementation of the Congruent Matching Cells algorithm empowers the wider forensic science community to take part in the discussion of the pipeline's sensitivity.} -->
-<!-- ``` -->
-# Conclusion {#conclusion}
-
-<!-- The results shared in this manuscript indicate that the implementation of the CMC pipeline in the \CRANpkg{cmcR} package is qualitatively similar to those published in \citet{song_3d_2014}, \citet{tong_improved_2015}, \citet{chen_convergence_2017}, and \citet{song_estimating_2018}. -->
-
-```{=tex}
-\jz{Our implementation serves as an example of the barriers which occur when translating textual descriptions of algorithms into detailed source code.
-This process offers some insight into the necessary components which must be available for full reproducibility of results.
-Our experience shows that when faced with ambiguity in how a method is implemented, there are few options available to us apart from performing brute-force searches through combinations of decisions that may have yielded the results reported.
-Unsurprisingly, the process is both time absorbing and computationally intensive from implementation to sifting through a wide variety of decision combinations.
-The failure to ensure full reproducibility not only imposes a general barrier to scientific progress; in this application, it also highlights the crucial need of open-source, transparent methodology in high-stakes fields such as forensic analysis.
-While NIST researchers and collaborators have been able to build on the foundation of the original algorithm, the code and data necessary to reproduce the results have not been made available to external researchers.
-As a result, the findings described in those papers are not computationally reproducible for the research community at large.}
-```
-
-```{=tex}
-\jz{Because publications generally do not contain sufficient detail to reproduce every part of the algorithm, it is necessary to supplement the paper with open code and intermediate forms of the data (after any manual steps have been performed or simply as check points for replications).
-We firmly believe that the forensic community does not go only halfway, trading a subjective, human black box for objective, proprietary algorithms that are similarly opaque and unauditable.
-If code is not open-sourced, at a minimum, authors should be willing to publish the data at every intermediate stage of the analysis, to allow those who would re-implement algorithms the ability to check the validity of the re-implementation against the output of the published paper.
-This simple step protects both the authors' interest in the code and the scientific community's interest in replication and verification of previously posed pipelines.
-In addition, publishing original, intermediate, and final results allows new algorithms to benchmark against previously proposed solutions to the same problem, providing a much more even basis for comparison of different algorithms.
-This minimum standard of openness and reproducibility is essential to evaluating algorithms, and in consequential applications such as forensics, these validation results are also important when pipelines are introduced in a legal setting.}
-```
 # Acknowledgement
 
 This work was partially funded by the Center for Statistics and Applications in Forensic Evidence (CSAFE) through Cooperative Agreement 70NANB20H019 between NIST and Iowa State University, which includes activities carried out at Carnegie Mellon University, Duke University, University of California Irvine, University of Virginia, West Virginia University, University of Pennsylvania, Swarthmore College and University of Nebraska, Lincoln.
