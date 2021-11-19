@@ -16,7 +16,7 @@ It was never our intention to be critical of the authors themselves, but instead
 As such, we have removed or edited any points made in the manuscript that may be interpreted as criticism of the NIST authors.
 
 We interpreted some of the reviewer comments to be a misunderstanding of our original arguments made in the introduction and discussion/conclusion.
-As such, we have made substantial changes to these sections to better communicate our stance. 
+As such, we have made substantial changes to these sections to better communicate our position. 
 One reviewer requested that we change the motivation of the paper from research reproducibility to the need for "a parallel implementation (freedom of use, ease of extension, research platform, forensic transparency)."
 We argue that all of these factors require that results from an implementation be reproducible.
 We have shifted the emphasis of the paper from being a novel contribution to the field of research reproducibility to being a demonstration of how the forensics community can and should promote more rigorous reproducibility standards by adopting open-source and open-data principles.

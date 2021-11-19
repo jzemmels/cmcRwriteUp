@@ -1,5 +1,5 @@
 ---
-title: "A Study in Forensic Transparency: The Congruent Matching Cells Algorithm and cmcR package"
+title: "A Study in Reproducibility: The Congruent Matching Cells Algorithm and cmcR package"
 author:
   - name: Joseph Zemmels
     affiliation: Center for Statistics and Applications in Forensic Evidence
