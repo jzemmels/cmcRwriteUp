@@ -15,11 +15,11 @@ Additionally, one reviewer pointed out that our criticisms were overly harsh of 
 It was never our intention to be critical of the authors themselves, but instead to argue that the original papers lack sufficient detail to enable a reproduction of their results.
 As such, we have removed or edited any points made in the manuscript that may be interpreted as criticism of the NIST authors.
 
-The most substantive changes to the manuscript are in the introduction and discussion/conclusion.
-These changes are made to clarify our arguments in response to comments made by both reviewers.
-Namely, one reviewer requested that we change the motivation of the paper from research reproducibility to the need for "a parallel implementation (freedom of use, ease of extension, research platform, forensic transparency)."
+We interpreted some of the reviewer comments to be a misunderstanding of our original arguments made in the introduction and discussion/conclusion.
+As such, we have made substantial changes to these sections to better communicate our stance. 
+One reviewer requested that we change the motivation of the paper from research reproducibility to the need for "a parallel implementation (freedom of use, ease of extension, research platform, forensic transparency)."
 We argue that all of these factors require that results from an implementation be reproducible.
-We have shifted the motivation of our paper from being a novel contribution to the field of research reproducibility to being a demonstration of how the forensics community can and should promote more rigorous reproducibility standards by adopting FAIR (findability, accessibility, interoperability, and reusability) principles.
+We have shifted the emphasis of the paper from being a novel contribution to the field of research reproducibility to being a demonstration of how the forensics community can and should promote more rigorous reproducibility standards by adopting open-source and open-data principles.
 
 Additionally, our changes to the introduction and discussion are intended to address a reviewer's comments that because we were able to create an implementation that there was sufficient detail in the original papers to reproduce the methods.
 Clearly this reviewer's definition of reproducibility is different from ours.
