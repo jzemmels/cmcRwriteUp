@@ -25,7 +25,7 @@ author:
     - Ames, IA 50011
     email: hofmann@iastate.edu
 abstract: > 
-  Scientific research is driven by our ability to use methods, procedures, and materials from previous studies and further this research by adding to it. As the need for computationally-intensive methods to analyze large amounts of data grows, the criteria needed to achieve reproducibility, specifically computational reproducibility, have become more sophisticated. In general, prosaic descriptions of algorithms are not detailed or precise enough to ensure complete reproducibility of a method. Results may be sensitive to conditions not commonly specified in written-word descriptions such as implicit parameter settings or the programming language used. To achieve true computational reproducibility, it is necessary to provide all intermediate data and code used to produce published results. In this paper, we consider a class of algorithms developed at the National Institute of Standards and Technology (NIST) to perform firearm evidence identification on cartridge case evidence known as the \dfn{Congruent Matching Cells} (CMC) methods. To date, only textual descriptions of these algorithms have been published. We introduce the first open-source implementation of the Congruent Matching Cells methods in the R package \CRANpkg{cmcR}. We have structured the \CRANpkg{cmcR} package as a set of sequential, modularized functions intended to ease the process of parameter experimentation. We use \CRANpkg{cmcR} and a novel variance ratio statistic to explore the CMC methodology and illustrate problems that arise when  computationally ambiguous algorithms descriptions   are provided.
+  Scientific research is driven by our ability to use methods, procedures, and materials from previous studies and further this research by adding to it. As the need for computationally-intensive methods to analyze large amounts of data grows, the criteria needed to achieve reproducibility, specifically computational reproducibility, have become more sophisticated. In general, prosaic descriptions of algorithms are not detailed or precise enough to ensure complete reproducibility of a method. Results may be sensitive to conditions not commonly specified in written-word descriptions such as implicit parameter settings or the programming language used. To achieve true computational reproducibility, it is necessary to provide all intermediate data and code used to produce published results. In this paper, we consider a class of algorithms developed at the National Institute of Standards and Technology (NIST) to perform firearm evidence identification on cartridge case evidence known as the \dfn{Congruent Matching Cells} (CMC) methods. To date, only textual descriptions of these algorithms have been published. We introduce the first open-source implementation of the Congruent Matching Cells methods in the R package \CRANpkg{cmcR}. We have structured the \CRANpkg{cmcR} package as a set of sequential, modularized functions intended to ease the process of parameter experimentation. We use \CRANpkg{cmcR} and a novel variance ratio statistic to explore the CMC methodology and illustrate problems that arise when  computationally ambiguous descriptions of algorithms are provided.
 preamble: | 
   \PassOptionsToPackage{table}{xcolor}
   \usepackage[utf8]{inputenc}
@@ -97,7 +97,7 @@ library(rgl)
 
 Forensic examinations are intended to provide an objective assessment of the probative value of a piece of evidence.
 Typically, this assessment of probative value is performed by a forensic examiner who visually inspects the evidence to determine whether it matches evidence found on a suspect. 
-The process by which an examiner arrives at their evidentiary conclusion is largely opaque and has been criticized \citepalias{pcast} because its' subjectivity does not allow for an estimation of error rates.
+The process by which an examiner arrives at their evidentiary conclusion is largely opaque and has been criticized \citepalias{pcast} because its subjectivity does not allow for an estimation of error rates.
 In response, \citet{council_strengthening_2009} pushed to augment subjective decisions made by forensic examiners with automatic algorithms that objectively assess evidence and can be explained during court testimony.
 In addition to the objectivity of these algorithms, there is an additional benefit: we expect that an algorithm  with the same random seed run on the same data multiple times will produce the same answer; that is, that the results are repeatable. This is extremely beneficial because it allows the prosecution and defense to come to the same conclusion given objective evidence or data.
 
@@ -1590,7 +1590,7 @@ cmcCountData %>%
 As shown in \autoref{fig:cmc_sensitivityScatter}, de-trending breech-scans in the preprocessing stage emerges as a very impactful step to achieve good algorithmic results.
 This step is not explicitly mentioned in the written-word descriptions of the algorithm in either of the papers by \citet{song_proposed_2013}, \citet{tong_fired_2014}, \citet{tong_improved_2015}, \citet{chen_convergence_2017}, or \citet{song_estimating_2018}, though it appears from their examples that it was used in the process.
 <!-- This highlights, yet again, the dangers of only providing verbal instructions in lieu of code. -->
-\autoref{fig:cmc_sensitivityScatter} also illustrates breaking a pipeline up into modularized steps eases experimentation.
+\autoref{fig:cmc_sensitivityScatter} also illustrates how breaking a pipeline up into modularized steps eases experimentation.
 We will expand upon this idea in the next section.
 
 \jz{End CMC-related criticism}
@@ -1755,10 +1755,12 @@ Reproducibility is an indispensable component of scientific validity \citep{good
 In this paper, we demonstrate at least three ways reproducibility can go awry: ambiguity in procedural implementation, missing or incomplete data, and missing or incomplete code.
 \jz{In forensics, many matching algorithms are presented in the form of conceptual descriptions.
 There is sound reasoning to this; conceptual descriptions are more easily understood by humans compared to computer code.
-However, using the CMC pipelines as an example we have observed that conceptual descriptions only enable a qualitative reproduction of results.}
-If many parameter settings are valid but only a narrow range lead to the same conclusion, it is entirely possible that expert witnesses for the prosecution and defense may come to different conclusions. 
+However, using the CMC pipelines as an example we have observed that conceptual descriptions only enable a qualitative reproduction of results.
+This is largely due to the fact that conceptual descriptions rarely detail implicit parameter choices required to run an algorithm.
+Consequently, there are multiple choices that satisfy the same vague definition of the algorithm.
+This is dangerous in a forensics context because i}f many parameter settings are valid but only a narrow range lead to the same conclusion, it is entirely possible that witnesses for the prosecution and defense may come to different conclusions. 
 In order to prevent such misunderstandings, it is not enough to have guidelines for parameter settings and/or a sensitivity study -- it is also necessary to standardize the specific computer code, because the parameter values are only useful within the context of a single software package or pipeline.
-The CMC algorithm highlights the importance of open software and full reproducibility: the algorithm is not useful in the context of the wider problem it is hoping to solve unless there is a software implementation and documented results on data provided for general consumption.
+<!-- The CMC algorithm highlights the importance of open software and full reproducibility: the algorithm is not useful in the context of the wider problem it is hoping to solve unless there is a software implementation and documented results on data provided for general consumption. -->
 
 <!-- Initially, we began by comparing the published CMC papers to develop the preprocessing and decision rule charts shown in Figures \ref{fig:preprocessing-schematic} and \ref{fig:processingPipeline}. -->
 <!-- The most troublesome portion of the process was in replicating the manual preprocessing of the scans before the algorithmic steps were applied: this step in particular could have been easily avoided had the authors shared the manually processed data along with their paper.  -->
@@ -1773,6 +1775,7 @@ The CMC algorithm highlights the importance of open software and full reproducib
 <!-- A completely reproducible paper requires not only algorithm descriptions, but also open-source code, initial and any manually processed data, documentation detailing language/package versions, random seeds, metadata, and other essential details. -->
 
 Our contribution to the CMC literature is the open-source implementation, which removes any descriptive ambiguity in the human-friendly descriptions in the original papers; we provide more detailed, hardware-friendly code which serves as a companion to the original papers. 
+\jz{Our contribution to the forensics community at-large is the modularized pipeline structure used to create \CRANpkg{cmcR}.}
 The modular approach used in \CRANpkg{cmcR} makes it easier to describe the algorithm, easier to write the code, modify and improve the method, and show that the improvement has a noticeable impact on the results. 
 The modularization creates an explicit framework for assessment of the utility and effectiveness of each piece of the algorithm, and allows us to specifically manipulate each step independently, while monitoring the downstream impact on the results. 
 Additionally, it allows future collaborators to improve on pieces of the pipeline, adding additional options and improving the method without having to re-invent the wheel.
@@ -1781,7 +1784,7 @@ Indeed, re-implementing steps of the pipeline is at best a useful academic exerc
 These principles of open, accessible, interoperable code are also critical for a fair (in the legal sense) justice system: the defense has access to the code to understand the evidence against them, lawyers and examiners can assess the utility of the analysis method, and judges can determine whether a method is admissible in court.
 Transparent and intuitive open-source algorithms, such as \CRANpkg{cmcR}, should be considered the gold standard in allowing the forensic science community to validate a pipeline.
 We intend the \CRANpkg{cmcR} package to serve as a flexible, easy-to-use foundation upon which improvements to the CMC pipeline can be developed.
-\jz{Nonetheless,} it is possible that our pipeline may not sufficiently reproduce the original authors' results on an external data set, which is an important assessment for any computational algorithm \citep{vanderplasComparisonThreeSimilarity2020}.
+\jz{Nonetheless,} it is possible that our pipeline may not sufficiently reproduce the original authors' results on an external data set, which is an important assessment for any computational algorithm \jz{and should be explored further in the future} \citep{vanderplasComparisonThreeSimilarity2020}.
 
 <!-- While we have largely succeeded in qualitatively reproducing the published results of the CMC algorithm, some uncertainty remains.  -->
 <!-- It is possible that our pipeline may not sufficiently reproduce the original authors' results on an external data set, which is an important assessment for any computational algorithm \citep{vanderplasComparisonThreeSimilarity2020}. -->

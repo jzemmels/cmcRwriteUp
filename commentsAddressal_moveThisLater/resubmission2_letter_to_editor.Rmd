@@ -1,0 +1,33 @@
+---
+title: "Letter to R Journal Editor for Resubmission of 2021-73"
+author: "Joe Zemmels, Susan VanderPlas, and Heike Hofmann"
+output: pdf_document
+---
+
+Dear Professor Catherine Hurley,
+
+We are requesting a reconsideration of our R Journal submission 2021-73. 
+We have made substantial changes to our submission in response to the reviewers' constructive feedback.
+
+Both reviewers pointed out that we did not compare results derived with our implementation to previously published results.
+We have rectified this by including Figure 14 (pg. 20) showing performance summary statistics of our implementation's results alongside those of previous CMC papers.
+Additionally, one reviewer pointed out that our criticisms were overly harsh of the original NIST authors.
+It was never our intention to be critical of the authors themselves, but instead to argue that the original papers lack sufficient detail to enable a reproduction of their results.
+As such, we have removed or edited any points made in the manuscript that may be interpreted as criticism of the NIST authors.
+
+We interpreted some of the reviewer comments to be a misunderstanding of our original arguments made in the introduction and discussion/conclusion.
+As such, we have made substantial changes to these sections to better communicate our position. 
+One reviewer requested that we change the motivation of the paper from research reproducibility to the need for "a parallel implementation (freedom of use, ease of extension, research platform, forensic transparency)."
+We argue that all of these factors require that results from an implementation be reproducible.
+We have shifted the emphasis of the paper from being a novel contribution to the field of research reproducibility to being a demonstration of how the forensics community can and should promote more rigorous reproducibility standards by adopting open-source and open-data principles.
+
+Additionally, our changes to the introduction and discussion are intended to address a reviewer's comments that because we were able to create an implementation that there was sufficient detail in the original papers to reproduce the methods.
+Clearly this reviewer's definition of reproducibility is different from ours.
+We have changed our definition of reproducibility to the definition provided by the National Academy of Sciences, Engineering, and Medicine and also introduced a "Hierarchy of Reproducibility." 
+Together, these clarify our argument that the conceptual descriptions provided in the original CMC papers are not sufficient to enable reproducible of results.
+
+
+Thank you again for your consideration,
+
+Joseph Zemmels, Susan Vanderplas, and Heike Hofmann
+
