@@ -25,7 +25,7 @@ author:
     - Ames, IA 50011
     email: hofmann@iastate.edu
 abstract: > 
-  Scientific research is driven by our ability to use methods, procedures, and materials from previous studies and further this research by adding to it. As the need for computationally-intensive methods to analyze large amounts of data grows, the criteria needed to achieve reproducibility, specifically computational reproducibility, have become more sophisticated. In general, prosaic descriptions of algorithms are not detailed or precise enough to ensure complete reproducibility of a method. Results may be sensitive to conditions not commonly specified in written-word descriptions such as implicit parameter settings or the programming language used. To achieve true computational reproducibility, it is necessary to provide all intermediate data and code used to produce published results. In this paper, we consider a class of algorithms developed at the National Institute of Standards and Technology (NIST) to perform firearm evidence identification on cartridge case evidence known as the \dfn{Congruent Matching Cells} (CMC) methods. To date, only textual descriptions of these algorithms have been published. We introduce the first open-source implementation of the Congruent Matching Cells methods in the R package \CRANpkg{cmcR}. We have structured the \CRANpkg{cmcR} package as a set of sequential, modularized functions intended to ease the process of parameter experimentation. We use \CRANpkg{cmcR} and a novel variance ratio statistic to explore the CMC methodology and illustrate problems that arise when  computationally ambiguous descriptions of algorithms are provided.
+  Scientific research is driven by our ability to use methods, procedures, and materials from previous studies and further this research by adding to it. As the need for computationally-intensive methods to analyze large amounts of data grows, the criteria needed to achieve reproducibility, specifically computational reproducibility, have become more sophisticated. In general, prosaic descriptions of algorithms are not detailed or precise enough to ensure complete reproducibility of a method. Results may be sensitive to conditions not commonly specified in written-word descriptions such as implicit parameter settings or the programming language used. To achieve true computational reproducibility, it is necessary to provide all intermediate data and code used to produce published results. In this paper, we consider a class of algorithms developed by researchers at the National Institute of Standards and Technology (NIST) to perform firearm evidence identification on cartridge case evidence known as the \dfn{Congruent Matching Cells} (CMC) methods. To date, only textual descriptions of these algorithms have been published. We introduce the first open-source implementation of the Congruent Matching Cells methods in the R package \CRANpkg{cmcR}. We have structured the \CRANpkg{cmcR} package as a set of sequential, modularized functions intended to ease the process of parameter experimentation. We use \CRANpkg{cmcR} and a novel variance ratio statistic to explore the CMC methodology and illustrate problems that arise when  computationally ambiguous descriptions of algorithms are provided.
 preamble: | 
   \PassOptionsToPackage{table}{xcolor}
   \usepackage[utf8]{inputenc}
@@ -148,17 +148,19 @@ These breech face impressions are considered analogous to a firearm's "fingerpri
 knitr::include_graphics("images/cartridgeCasePair_comparison_with_line.PNG")
 ```
 
-\jz{Starting to get into CMC-specific criticism here XXX I've attempted to add a more "aspirational" tone to this paragraph and address some of R1's comments, but it might feel a bit too much like a discussion/conclusion paragraph.}
+\jz{Starting to get into CMC-specific criticism here XXX I've attempted to add a more "aspirational" tone to this paragraph and address some of R1's comments, but it might feel a bit too much like a discussion/conclusion paragraph. I'm not sure how to phrase the criticism so that it doesn't sound like we're criticizing NIST overall and instead focusing on a set of papers from a small group of researchers.}
 
-The Congruent Matching Cells (CMC) pipeline is a collection of algorithms developed at the National Institute of Standards and Technology (NIST) in 2012 to process and compare cartridge case evidence \citep{song_proposed_2013}. Since then, the pipeline and its numerous extensions \citep{tong_improved_2015,chen_convergence_2017,song_estimating_2018} have shown promise in being able to differentiate between matching and non-matching cartridge cases.
+The Congruent Matching Cells (CMC) pipeline is a collection of algorithms developed \jz{by a group of researchers} at the National Institute of Standards and Technology (NIST) in 2012 to process and compare cartridge case evidence \citep{song_proposed_2013}. Since then, the pipeline and its numerous extensions \citep{tong_improved_2015,chen_convergence_2017,song_estimating_2018} have shown promise in being able to differentiate between matching and non-matching cartridge cases.
 \jz{The numerous publications since the initial CMC method proposal in \citet{song_proposed_2013} reflect that its creators and collaborators are committed to improving the method.
 Despite these improvements, we recognize that the method is not, and perhaps never will be, a "completed" algorithm.
 This is an ethic that the forensics community at-large should strive to emulate. 
 Especially in such a high-stakes application, it is imperative that we continually seek incremental improvements upon previously-developed work.
 Therefore, open-sourcing code should be considered essential in forensics as it both enables and encourages others to validate, experiment with, and improve upon previous work.
-This accelerates the speed of development which leads to more effective algorithms and more accurate evidentiary conclusions.}
+This accelerates the speed of development which leads to more effective algorithms and more accurate evidentiary conclusions.
+There is already precedence for open-sourcing NIST-developed code as evidenced by the many public Github repositories accessible at <https://github.com/usnistgov>.}
 
-\jz{The content of this paragraph hasn't changed from the last re-submission. I'm not quite sure if/how an aspirational tone should be added.}
+<!-- \jz{The content of this paragraph hasn't changed from the last re-submission. I'm not quite sure if/how an aspirational tone should be added.} -->
+\jz{XXX The paragraph below is the first time we assert that the CMC methods are not reproducible. We won't re-iterate this point until the discussion/conclusion.}
 
 However, so far the CMC pipelines have only been introduced in the form of conceptual descriptions.
 Further, the cartridge case scans used to validate the pipelines are only available in their raw, unprocessed forms on the NIST Ballistics Research Database \citep{nbtrd}.
@@ -196,11 +198,15 @@ This allows us to test new variations against the old implementation in a cohere
 \end{figure}
 ```
 
+\jz{CMC-related criticism here}
+
 The primary difference between the two pipelines presented here, using the original and High CMC decision rules, lies in how the decision rules are utilized to separate matches and non-matches.
 Beyond that there are also several small differences in the parameters used in the preprocessing and comparison procedures.
 Despite using the same validation data from \citet{fadul_empirical_2011} across papers, current authors do not provide justification for changing these parameters. 
 At the same time, different parameter choices have been shown to yield very different results; even when applying the same decision rule.
 This sensitivity of various pipelines to different conditions has not previously been discussed in detail.
+
+\jz{End CMC-related criticism}
 
 ## Initial Data {#initialData}
 
@@ -464,11 +470,10 @@ The implementation in \citet{tong_fired_2014} describes the preprocessing steps 
 \jz{Start CMC-specific criticism}
 
 While not explicitly mentioned in \citet{song_3d_2014}, \citet{song_estimating_2018} indicates that the "trimming" of the unwanted regions of the scan is performed manually.
-No further information is given in the paper describing what criteria were used for this process; nor are the trimmed scans provided as intermediate data for the sake of reproducibility.
+No further information is given in the paper describing what criteria were used for this process; nor are the trimmed scans provided as intermediate data.
 It is also unclear how the dropouts and outliers are "removed" from the scan or even how outliers are defined; many different methods for outlier detection and removal are used in surface metrology \citep{outlierdetection}.
-Most of these algorithms require the user to select thresholds or parameters; thus, without any details about how the outlier detection process was implemented, this portion of \citet{song_3d_2014} is not reproducible.
 We are not aware of an open-source implementation of the multivariate band-pass Gaussian regression filter used in surface metrology \citep{ISO16610-71}.
-Further, there are various parameters requiring specification to implement a Gaussian regression filter and it is not clear how these parameters were chosen \citep{brinkman_bodschwinna_2003}.
+Further, there are various parameters requiring specification to implement an outlier imputation procedure or Gaussian regression filter and it is not clear how these parameters were chosen \citep{brinkman_bodschwinna_2003}.
 
 As a result of these ambiguities, during our implementation of the preprocessing algorithm, we had to make several educated guesses in order to match the described procedure (and reported results) as closely as possible.
 
@@ -1407,13 +1412,13 @@ knitr::include_graphics(path = "figures/knmOriginalMethod.pdf")
 
 ## Ambiguity in algorithmic descriptions {#ambiguities}
 
-<!-- \jz{This whole section could be considered CMC-related criticism. Once we figure out the introduction, then the tone of this section could be tuned to match.} -->
+\jz{XXX This whole section could be viewed as criticism. Should this be outright removed?}
 
 During the implementation process we encountered various ambiguities in the descriptions of the various CMC pipelines.
 We include the preprocessing and cell-based comparison procedures as part of the CMC methodology to emphasize how much the final results depend on decisions made in these first two steps.
 The preprocessing and cell-based comparison procedures are discussed only briefly, if at all, in \citet{song_3d_2014}, \citet{tong_fired_2014}, \citet{tong_improved_2015}, or \citet{chen_convergence_2017}, yet, the results reported often indicate a sensitivity to these procedures.
 Ambiguities in the pipelines range from minor implicit parameter choices (e.g., the convergence criteria for the robust Gaussian regression filter \citep{brinkman_bodschwinna_2003}) to procedures that fundamentally change how similarity features are extracted and compared (e.g., how the cross-correlation is calculated).
-\jz{We bring up these ambiguities not to nitpick or poke holes in the original algorithms, but to highlight how a conceptual description does not contain sufficient information to computationally reproduce an algorithm.
+\jz{We bring up these ambiguities to demonstrate the holes that difficulties we faced when translating the conceptual description of the CMC pipeline into an actual pipeline.
 A reviewer pointed out that many of these choices shouldn't affect the pipeline drastically.
 While this assertion may be true, we believe that any amount of variability that exists solely because of uncertainty in how the method was intended to be implemented is both unnecessary and dangerous in a forensics or legal context.}
 <!-- An actual sensitivity analysis of proposed CMC pipelines has yet to be published. -->
@@ -1421,6 +1426,9 @@ While this assertion may be true, we believe that any amount of variability that
 
 The only solution to such ambiguity is to enumerate, implement, and pare-down the possible choices that could have been made to arrive to published results.
 Unsurprisingly, this process takes a considerable amount of time and resources that would be better spent furthering the state of the field.
+\jz{For us, the process of re-implementing the comparison and decision steps of the pipeline was fairly straightforward.
+Emulating the pre-processing procedures used, on the other hand, took months of trial and error.
+Even after this effort, we still have no assurances that our implementation would match the results of the original implementation if applied to other data sets.}
 In the next section, we describe the process of resolving these ambiguities in the CMC pipeline descriptions.
 In doing so, we abstract a set of principles by which pipelines and results can be rendered both computationally reproducible and more thoroughly understood.
 
