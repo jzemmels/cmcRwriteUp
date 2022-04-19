@@ -115,6 +115,7 @@ Obviously, in many situations, this level of reproducibility is not provided.
 \jz{Many proposed methods do not adhere to the definition of reproducibility in \citet{nas_2019} by providing supplementary open-source code, with some exceptions (e.g., DNA \citep{Tvedebrink2020,osiris}, glass \citep{Curran2000-hp,Park2019}, handwriting \citep{crawford_handwriting_2020}, shoe prints \citep{park_algorithm_2020}, and ballistic evidence \citep{hare_automatic_2016,tai_fully_2018}).}
 
 Instead, we find it useful to consider a more inclusive hierarchy of reproducibility.
+\jz{Algorithms at higher tiers of the algorithm are more easily reproducible in the sense that fewer resources are required to implement the algorithm.}
 
 \begin{definition} Hierarchy of Reproducibility \label{reprod-defn}
 
@@ -126,9 +127,14 @@ Instead, we find it useful to consider a more inclusive hierarchy of reproducibi
 \item[Full reproducibility] The algorithm is described and demonstrated in a scientific publication, and the input data, source code, parameter settings, and numerical results are provided in supplementary material.
 \end{description}
 \end{definition}
-To aid in comprehension of an algorithm, it is useful to supplement conceptual descriptions with pseudocode. However, a conceptual description and pseudocode alone do not contain sufficient detail (e.g., parameter settings) to ensure computational reproducibility.
+
+To aid in comprehension of an algorithm, it is useful to supplement conceptual descriptions with pseudocode. 
+However, a conceptual description and pseudocode alone do not contain sufficient detail (e.g., parameter settings) to ensure computational reproducibility.
+\jz{Implementing algorithms based on conceptual descriptions or pseudocode requires enumerating and testing possible parameter choices which, depending on their complexity, can be a lengthy and expensive process.
+In contrast, implementing fully reproducible algorithms requires only as much time as it takes to emulate the original coding environment.}
 Commonly identified reasons for unreproducible results include (1) ambiguity in how procedures were implemented, (2) missing or incomplete data, and (3) missing or incomplete computer code to replicate all statistical analyses \citep{leek_is_2017}.
-In particular, for statistical algorithms which depend on input data, we find that full reproducibility depends on the provision of both original data and any manual preprocessing applied to said data, as this manual process is not reproducible by itself. In combination with the code, the algorithm description, and the numerical results presented in the paper, it should be possible to fully reproduce the results of a paper.
+In particular, for statistical algorithms which depend on input data, we find that full reproducibility depends on the provision of both original data and any manual preprocessing applied to said data, as this manual process is not reproducible by itself. 
+In combination with the code, the algorithm description, and the numerical results presented in the paper, it should be possible to fully reproduce the results of a paper.
 
 In this paper, we demonstrate the importance of higher levels of reproducibility by examining the Congruent Matching Cells (CMC) algorithm for cartridge case comparisons and developing an open-source, fully reproducible version for general use in the forensics community.
 
@@ -148,29 +154,32 @@ These breech face impressions are considered analogous to a firearm's "fingerpri
 knitr::include_graphics("images/cartridgeCasePair_comparison_with_line.PNG")
 ```
 
-\jz{Starting to get into CMC-specific criticism here XXX I've attempted to add a more "aspirational" tone to this paragraph and address some of R1's comments, but it might feel a bit too much like a discussion/conclusion paragraph. I'm not sure how to phrase the criticism so that it doesn't sound like we're criticizing NIST overall and instead focusing on a set of papers from a small group of researchers.}
 
 The Congruent Matching Cells (CMC) pipeline is a collection of algorithms developed \jz{by a group of researchers} at the National Institute of Standards and Technology (NIST) in 2012 to process and compare cartridge case evidence \citep{song_proposed_2013}. Since then, the pipeline and its numerous extensions \citep{tong_improved_2015,chen_convergence_2017,song_estimating_2018} have shown promise in being able to differentiate between matching and non-matching cartridge cases.
-\jz{The numerous publications since the initial CMC method proposal in \citet{song_proposed_2013} reflect that its creators and collaborators are committed to improving the method.
-Despite these improvements, we recognize that the method is not, and perhaps never will be, a "completed" algorithm.
-This is an ethic that the forensics community at-large should strive to emulate. 
-Especially in such a high-stakes application, it is imperative that we continually seek incremental improvements upon previously-developed work.
-Therefore, open-sourcing code should be considered essential in forensics as it both enables and encourages others to validate, experiment with, and improve upon previous work.
-This accelerates the speed of development which leads to more effective algorithms and more accurate evidentiary conclusions.
-There is already precedence for open-sourcing NIST-developed code as evidenced by the hundreds of public Github repositories accessible at} <https://github.com/usnistgov>.
-
-<!-- \jz{The content of this paragraph hasn't changed from the last re-submission. I'm not quite sure if/how an aspirational tone should be added.} -->
-\jz{XXX The paragraph below is the first time we assert that the CMC methods are not reproducible. We won't re-iterate this point until the discussion/conclusion.}
-
 However, so far the CMC pipelines have only been introduced in the form of conceptual descriptions.
 Further, the cartridge case scans used to validate the pipelines are only available in their raw, unprocessed forms on the NIST Ballistics Research Database \citep{nbtrd}.
-While it is clear that the creators of the CMC pipeline have a working implementation, the wider forensic science community only has access to conceptual descriptions of the pipeline and some summary statistics describing its performance. Here, we describe the process of implementing the CMC pipeline for the comparison of marks on spent cartridge cases, using the descriptions from two published papers, \citet{song_3d_2014} and \citet{tong_improved_2015}.
+While it is clear that the creators of the CMC pipeline have a working implementation, the wider forensic science community only has access to conceptual descriptions of the pipeline and summary statistics describing its performance. 
+
+\jz{We consider the development of the CMC algorithm to be representative of how many forensic algorithms are developed.
+After an algorithm is introduced, researchers build upon the foundation laid by the original algorithm in subsequent papers.
+These changes are often incremental in nature and reflect a growing understanding of the algorithm's behavior.
+While this cycle of scientific progress certainly is not unique to forensic algorithms, given the gravity of the application it is imperative that these incremental improvements not be unnecessarily delayed.
+As such, we believe that the forensic community at-large would benefit greatly by establishing an open-source foundation for their algorithms upon which additional improvements can be developed.
+Using open-source algorithms are cheaper to use than writing one's own code, enables the process of peer review by providing an accessible benchmark, and helps other research groups or companies stay on the leading edge of technology development.}
+
+<!-- \jz{The numerous publications since the initial CMC method proposal in \citet{song_proposed_2013} reflect that its creators and collaborators are committed to improving the method. -->
+<!-- Despite these improvements, we recognize that the method is not, and perhaps never will be, a "completed" algorithm. -->
+<!-- This is an ethic that the forensics community at-large should strive to emulate.  -->
+<!-- Especially in such a high-stakes application, it is imperative that we continually seek incremental improvements upon previously-developed work. -->
+<!-- Therefore, open-sourcing code should be considered essential in forensics as it both enables and encourages others to validate, experiment with, and improve upon previous work. -->
+<!-- This accelerates the speed of development which leads to more effective algorithms and more accurate evidentiary conclusions. -->
+<!-- There is already precedence for open-sourcing NIST-developed code as evidenced by the hundreds of public Github repositories accessible at} <https://github.com/usnistgov>. -->
+
+Here, we describe the process of implementing the CMC pipeline for the comparison of marks on spent cartridge cases, using the descriptions from two published papers, \citet{song_3d_2014} and \citet{tong_improved_2015}.
 Our R package, \CRANpkg{cmcR}, provides an open-source implementation of the CMC pipeline.
 We use \CRANpkg{cmcR} to illustrate how ambiguities in the textual description of an algorithm can lead to highly divergent results.
 In particular, our implementation highlights an extreme sensitivity to processing and parameter decisions that has not been discussed previously.
 Additionally, we argue that our implementation can be used as a template for future implementations of forensic pattern-matching algorithms to not only ensure transparency and auditability, but also to ease experimentation and improvement.
-
-\jz{XXX End CMC-specific criticism}
 
 In the remainder of this paper, we describe a general, reproducible, and open-source CMC pipeline which encompasses those discussed in \citet{song_proposed_2013}, \citet{song_3d_2014}, and \citet{tong_improved_2015}.
 \citet{song_proposed_2013} lays out the conceptual framework for the original CMC pipeline later implemented in \citet{song_3d_2014} and \citet{tong_fired_2014}.
