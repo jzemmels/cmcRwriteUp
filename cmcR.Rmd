@@ -165,7 +165,7 @@ After an algorithm is introduced, researchers build upon the foundation laid by 
 These changes are often incremental in nature and reflect a growing understanding of the algorithm's behavior.
 While this cycle of scientific progress certainly is not unique to forensic algorithms, given the gravity of the application it is imperative that these incremental improvements not be unnecessarily delayed.
 As such, we believe that the forensic community at-large would benefit greatly by establishing an open-source foundation for their algorithms upon which additional improvements can be developed.
-Using open-source algorithms are cheaper to use than writing one's own code, enables the process of peer review by providing an accessible benchmark, and helps other research groups or companies stay on the leading edge of technology development.}
+Using open-source algorithms are cheaper to use than writing one's own code, enables the process of peer review by providing an accessible benchmark, and helps other research groups or companies stay on the leading edge of technology development \citep{linux}.}
 
 <!-- \jz{The numerous publications since the initial CMC method proposal in \citet{song_proposed_2013} reflect that its creators and collaborators are committed to improving the method. -->
 <!-- Despite these improvements, we recognize that the method is not, and perhaps never will be, a "completed" algorithm. -->
