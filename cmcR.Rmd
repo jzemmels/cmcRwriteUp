@@ -189,6 +189,8 @@ The \CRANpkg{cmcR} package contains implementations designed for use with 3D top
 
 # The CMC pipeline {#cmcMethod}
 
+\jz{XXX This preamble needs to be changed once we iron-out the structure of this section.}
+
 In this section, we examine the process of implementing the CMC pipeline for automatic comparisons of 3D cartridge case scans.
 At each step, we will compare the description in the published papers with the implementation in code, discussing the gaps in the pipeline description and how we filled in those gaps during the creation of \CRANpkg{cmcR}.
 We discuss each stage of the CMC pipeline using excerpts from the original papers.
@@ -207,15 +209,11 @@ This allows us to test new variations against the old implementation in a cohere
 \end{figure}
 ```
 
-\jz{XXX CMC-related criticism here}
-
 The primary difference between the two pipelines presented here, using the original and High CMC decision rules, lies in how the decision rules are utilized to separate matches and non-matches.
 Beyond that there are also several small differences in the parameters used in the preprocessing and comparison procedures.
-Despite using the same validation data from \citet{fadul_empirical_2011} across papers, current authors do not provide justification for changing these parameters. 
-At the same time, different parameter choices have been shown to yield very different results; even when applying the same decision rule.
-This sensitivity of various pipelines to different conditions has not previously been discussed in detail.
-
-\jz{XXX End CMC-related criticism}
+<!-- Despite using the same validation data from \citet{fadul_empirical_2011} across papers, current authors do not provide justification for changing these parameters.  -->
+<!-- At the same time, different parameter choices have been shown to yield very different results; even when applying the same decision rule. -->
+<!-- This sensitivity of various pipelines to different conditions has not previously been discussed in detail. -->
 
 ## Initial Data {#initialData}
 
@@ -448,37 +446,83 @@ The goal of this process is to remove the edges and center of the scan which did
 The different iterations of the CMC algorithm describe different variations of these steps.
 A summary of these steps is shown in \autoref{fig:preprocessing-schematic}.
 
+\jz{XXX Discuss from the ground-up what needs to be done to pre-process the scans.
+Include quote about "trimming" the scans and how we preferred to implement this automatically for the sake of repeatability.
+Then, summarize this automatic implementation by trimming down the implementation section.}
+
+\jz{"Trimming" seems to encompass: preProcesscrop, preProcessremoveTrend}
+
+\jz{Removal of outliers: use a lowpass filter?}
+
+\jz{preProcessgaussFilter.}
+
 \begin{figure}
 \includegraphics[width=\linewidth]{images/preprocessing_flow.png}
 \caption{Overview of the set of pre-processing steps used in the CMC algorithms. Where a procedure step is not discussed or explicitly not applied in the paper, the path traverses empty space.}\label{fig:preprocessing-schematic}
 \end{figure}
 
-The implementation in \citet{tong_fired_2014} describes the preprocessing steps (for the 2D images) as:
+<!-- The implementation in \citet{tong_fired_2014} describes the preprocessing steps (for the 2D images) as: -->
 
-> After trimming processing \[sic\] to remove unrelated correlations areas, the final image size is reduced to 700 × 700 pixel with an estimated pixel spacing of 5.0 $\mu$m.
-> A Gaussian smoothing filter (standard deviation $\sigma$ = 1) was implemented first to remove high frequency noise.
+<!-- > After trimming processing \[sic\] to remove unrelated correlations areas, the final image size is reduced to 700 × 700 pixel with an estimated pixel spacing of 5.0 $\mu$m. -->
+<!-- > A Gaussian smoothing filter (standard deviation $\sigma$ = 1) was implemented first to remove high frequency noise. -->
 
 \citet{song_3d_2014} outline the following preprocessing procedure on 3D scans:
 
-> Trim off the inside firing pin surface and other areas outside the breech face mark, so that only breech face impression data remain for correlation.
+```{=tex}
+\begin{table}[ht]
+\centering
+\begin{tabular}{| p{6.5cm}| p{6.5cm} |}
+\hline
+\textbf{Description from} \citet{song_3d_2014} & \textbf{Implementation Considerations} \\
+\hline
+``Trim off the inside firing pin surface and other areas outside the breech face mark, so that only breech face impression data remain for correlation." & \begin{itemize} 
+\setlength{\leftmargin}{-1em}
+\item Removal of firing pin hole and primer exterior
 
-> Identify and remove dropouts or outliers.
+\item Removal of global trend
 
-> Apply a band-pass Gaussian regression filter with 40 $\mu$m short cutoff length and 400 $\mu$m long cutoff length to remove low frequency components, including surface curvature, form error, waviness and high frequency components which mainly arise from the instrument noise.
+\item Removal of primer roll-off
 
-\jz{XXX Start CMC-specific criticism}
+\end{itemize}  \\
+
+\hline
+
+``Identify and remove dropouts or outliers." & 
+\begin{itemize}
+\setlength{\leftmargin}{-1em}
+\item Definition of outliers
+
+\item What "removal" of dropouts or outliers means
+\end{itemize} \\
+\hline
+``Apply a band-pass Gaussian regression filter with 40 $\mu$m short cutoff length and 400 $\mu$m long cutoff length to remove low frequency components, including surface curvature, form error, waviness and high frequency components which mainly arise from the instrument noise." & 
+\begin{itemize}
+\setlength{\leftmargin}{-1em}
+\item Wavelenth cut-off parameters, 
+
+\item Specific implementation of the filter
+\end{itemize}\\
+\hline
+\end{tabular}
+\caption{Description of pre-processing procedures from \citet{song_3d_2014} vs. considerations that need to be made when implementing these procedures. Each of these considerations requires the implementer to decide between potentially many possible choices.}
+\label{tab:preProcessTable}
+\end{table}
+```
+
+
+<!-- \jz{XXX Start CMC-specific criticism} -->
 
 While not explicitly mentioned in \citet{song_3d_2014}, \citet{song_estimating_2018} indicates that the "trimming" of the unwanted regions of the scan is performed manually.
-No further information is given in the paper describing what criteria were used for this process; nor are the trimmed scans provided as intermediate data.
-It is also unclear how the dropouts and outliers are "removed" from the scan or even how outliers are defined; many different methods for outlier detection and removal are used in surface metrology \citep{outlierdetection}.
-We are not aware of an open-source implementation of the multivariate band-pass Gaussian regression filter used in surface metrology \citep{ISO16610-71}.
-Further, there are various parameters requiring specification to implement an outlier imputation procedure or Gaussian regression filter and it is not clear how these parameters were chosen \citep{brinkman_bodschwinna_2003}.
+<!-- No further information is given in the paper describing what criteria were used for this process; nor are the trimmed scans provided as intermediate data. -->
+<!-- It is also unclear how the dropouts and outliers are "removed" from the scan or even how outliers are defined; many different methods for outlier detection and removal are used in surface metrology \citep{outlierdetection}. -->
+<!-- We are not aware of an open-source implementation of the multivariate band-pass Gaussian regression filter used in surface metrology \citep{ISO16610-71}. -->
+<!-- Further, there are various parameters requiring specification to implement an outlier imputation procedure or Gaussian regression filter and it is not clear how these parameters were chosen \citep{brinkman_bodschwinna_2003}. -->
 
-As a result of these ambiguities, during our implementation of the preprocessing algorithm, we had to make several educated guesses in order to match the described procedure (and reported results) as closely as possible.
+<!-- As a result of these ambiguities, during our implementation of the preprocessing algorithm, we had to make several educated guesses in order to match the described procedure (and reported results) as closely as possible. -->
 
-\jz{XXX End CMC-specific criticism}
+<!-- \jz{XXX End CMC-specific criticism} -->
 
-### Implementation of preprocessing procedures
+<!-- ### Implementation of preprocessing procedures -->
 
 The preprocessing procedures are implemented via modularized functions of the form \code{preProcess\_*}.
 Modularizing the steps of the preprocessing procedures makes the overall process easier to understand and allows for experimentation.
@@ -579,14 +623,19 @@ fadul1.1_cropped <- fadul1.1 %>%
   cmcR::preProcess_crop(region = "interior")
 ```
 
-Three major regions of the scan are identified via a labeling algorithm as described in \citet{hesselink_concurrent_2001} and available in the \CRANpkg{imager} package \citep{imager}.
-These regions are the circle capturing the exterior of the cartridge case primer, the breech face impression region, and the circle around the firing pin impression hole in the center of the scan.
-
-The goal is to isolate the breech face impression region by removing (i.e., replacing with \code{NA}) the pixels in the other two regions.
-Upon labeling the different regions of the cartridge case scan, the centers and radii of the cartridge case primer and firing pin impression hole are estimated.
-This estimation procedure may require some user input depending on how much of the exterior/interior the user wants removed.
+A labeling algorithm is used to identify three major regions of the scan: the exterior of the cartridge case primer, the breech face impression region of interest, and the circulate around the firing pin impression whole in the center of the scan \citep{hesselink_concurrent_2001,imager}.
+Observations outside of the breech face impression region are removed (i.e., replaced with \texttt{NA}).
 The resulting breech face scan, like the one shown in step (2) of \autoref{fig:processingPipeline}, is reproducible assuming the same user-specified settings are used.
 The \code{preProcess\_crop} function removes the exterior and firing pin impression region on the interior based on the \code{region} argument.
+
+<!-- Three major regions of the scan are identified via a labeling algorithm as described in \citet{hesselink_concurrent_2001} and available in the \CRANpkg{imager} package \citep{imager}. -->
+<!-- These regions are the circle capturing the exterior of the cartridge case primer, the breech face impression region, and the circle around the firing pin impression hole in the center of the scan. -->
+
+<!-- The goal is to isolate the breech face impression region by removing (i.e., replacing with \code{NA}) the pixels in the other two regions. -->
+<!-- Upon labeling the different regions of the cartridge case scan, the centers and radii of the cartridge case primer and firing pin impression hole are estimated. -->
+<!-- This estimation procedure may require some user input depending on how much of the exterior/interior the user wants removed. -->
+<!-- The resulting breech face scan, like the one shown in step (2) of \autoref{fig:processingPipeline}, is reproducible assuming the same user-specified settings are used. -->
+<!-- The \code{preProcess\_crop} function removes the exterior and firing pin impression region on the interior based on the \code{region} argument. -->
 
 ```{r, echo=TRUE,eval=FALSE}
 # Step (3)
@@ -594,14 +643,15 @@ fadul1.1_deTrended <- fadul1.1_cropped %>%
   preProcess_removeTrend(statistic = "quantile", tau = .5, method = "fn")
 ```
 
-In step (3) any existing large-scale trend in the breech face scan height values are removed.
-In steps (1) and (2) of \autoref{fig:processingPipeline} it is clear that there is a southwest-to-northeast trend in height values.
-Such a trend is observable in many cartridge case scans, yet does not occur consistently across cartridge cases fired from the same firearm.
-This indicates that a trend in height values is likely to be an artifact of the scanning process resulting from cartridge cases not being precisely, horizontally leveled prior to taking the scan.
-Neglecting to remove these trends leads to very different results based on our implementation.
-In an extreme situation, two different-source cartridge cases with similar trends might be incorrectly deemed "congruent." The \code{preProcess\_removeTrend} functions levels the breech face impression regions obtained from step (2).
-The function estimates and subtracts the conditional median via a quantile regression as implemented in the \code{rq} function of the \CRANpkg{quantreg} package \citep{quantreg}.
-Step (3) of \autoref{fig:processingPipeline} shows a median-leveled breech face scan.
+In step (3), the southwest-to-northeast trend observable in steps (1) and (2) of \autoref{fig:processingPipeline} is removed by subtracting the estimated conditional median height value.
+The effect of the \code{preProcess\_removeTrend} function can be seen in step (3) of \autoref{fig:processingPipeline} shows a median-leveled breech face scan.
+<!-- In steps (1) and (2) of \autoref{fig:processingPipeline} it is clear that there is a southwest-to-northeast trend in height values. -->
+<!-- Such a trend is observable in many cartridge case scans, yet does not occur consistently across cartridge cases fired from the same firearm. -->
+<!-- This indicates that a trend in height values is likely to be an artifact of the scanning process resulting from cartridge cases not being precisely, horizontally leveled prior to taking the scan. -->
+<!-- Neglecting to remove these trends leads to very different results based on our implementation. -->
+<!-- In an extreme situation, two different-source cartridge cases with similar trends might be incorrectly deemed "congruent." The \code{preProcess\_removeTrend} functions levels the breech face impression regions obtained from step (2). -->
+<!-- The function estimates and subtracts the conditional median via a quantile regression as implemented in the \code{rq} function of the \CRANpkg{quantreg} package \citep{quantreg}. -->
+<!-- Step (3) of \autoref{fig:processingPipeline} shows a median-leveled breech face scan. -->
 
 ```{r, echo=TRUE,eval=FALSE}
 # Step (4)
@@ -610,15 +660,18 @@ fadul1.1_processed <- fadul1.1_deTrended %>%
   x3ptools::x3p_sample(m = 2)
 ```
 
-In the final preprocessing step, a band-pass filter is applied to the processed breech face scan to reduce the effects of undesired frequencies in the comparison procedure.
-For example, low frequency (large wavelength) global structure may exist in a cartridge case scan due to manufacturing specifications.
-In forensics, this type of structure is referred to as a class or subclass characteristic -- it is shared by many objects of the same make and model.
-Class characteristics are used by forensic practitioners to initially pare down the possible pool of matching cartridge cases \citep{firearm_id_thompson}.
-While this additional global structure may assist with matching cartridge cases, it can also artificially inflate the similarity between truly non-matching scans.
-The goal of comparing breech-face scans is to answer the question of source.
-Same-sourceness can only be determined by matching individual characteristics, so the global structure is removed by using a high-pass Gaussian filter. Similarly, a low-pass filter is used to remove noise and outliers from cartridge case scans due to, for example, imperfections in the scanning process.
-A band-pass Gaussian filter combines the effects of low and high-pass filters; this is the default choice in \CRANpkg{cmcR}.
-The band-pass filtered breech face scan as returned by the \code{preProcess\_gaussFilter} function is shown in the fourth panel of \autoref{fig:processingPipeline}.
+Finally, a band-pass Gaussian filter is applied to the surface values to attenuate noise and unwanted large-scale structure.
+Step (4) of \autoref{fig:processingPipeline} shows the effect of the \code{preProcess\_gaussFilter} function.
+
+<!-- In the final preprocessing step, a band-pass filter is applied to the processed breech face scan to reduce the effects of undesired frequencies in the comparison procedure. -->
+<!-- For example, low frequency (large wavelength) global structure may exist in a cartridge case scan due to manufacturing specifications. -->
+<!-- In forensics, this type of structure is referred to as a class or subclass characteristic -- it is shared by many objects of the same make and model. -->
+<!-- Class characteristics are used by forensic practitioners to initially pare down the possible pool of matching cartridge cases \citep{firearm_id_thompson}. -->
+<!-- While this additional global structure may assist with matching cartridge cases, it can also artificially inflate the similarity between truly non-matching scans. -->
+<!-- The goal of comparing breech-face scans is to answer the question of source. -->
+<!-- Same-sourceness can only be determined by matching individual characteristics, so the global structure is removed by using a high-pass Gaussian filter. Similarly, a low-pass filter is used to remove noise and outliers from cartridge case scans due to, for example, imperfections in the scanning process. -->
+<!-- A band-pass Gaussian filter combines the effects of low and high-pass filters; this is the default choice in \CRANpkg{cmcR}. -->
+<!-- The band-pass filtered breech face scan as returned by the \code{preProcess\_gaussFilter} function is shown in the fourth panel of \autoref{fig:processingPipeline}. -->
 
 There is currently no determination or removal of outliers in the \CRANpkg{cmcR} package's preprocessing procedures.
 Instead, we rely on the low-pass portion of the Gaussian filter to reduce the effects of any high-frequency noise.
@@ -664,12 +717,12 @@ knitr::include_graphics("images/cmc_illustration.PNG")
 
 \autoref{fig:cmc_illustration} illustrates the cell-based comparison procedure between two cartridge case scans.
 The scan on the left serves as the reference; it is divided into a grid of $k \times k$ cells.
-The cell size (and thus, the corresponding number of cells) is optimized experimentally:
+<!-- The cell size (and thus, the corresponding number of cells) is optimized experimentally: -->
 
-> The cell size must be experimentally optimized, not too small and not too large.
-> Either condition may result in low correlation accuracy.
-> For the initial tests of 9 mm caliber cartridge cases, good correlation results for breech face correlations were obtained using the cell sizes ranging from (0.25 × 0.25) to (0.5 × 0.5) $mm^2$.
-> \citep{song_3d_2014}
+<!-- > The cell size must be experimentally optimized, not too small and not too large. -->
+<!-- > Either condition may result in low correlation accuracy. -->
+<!-- > For the initial tests of 9 mm caliber cartridge cases, good correlation results for breech face correlations were obtained using the cell sizes ranging from (0.25 × 0.25) to (0.5 × 0.5) $mm^2$. -->
+<!-- > \citep{song_3d_2014} -->
 
 ```{=tex}
 \begin{figure}
@@ -677,6 +730,7 @@ The cell size (and thus, the corresponding number of cells) is optimized experim
 \caption{Each CMC implementation uses a slightly different procedure to obtain a similarity score between two cartridge cases. Steps which are implemented with additional user-specified parameters are shaded purple; steps which are described but without sufficient detail are shaded grey.}\label{fig:cmc-schematic}
 \end{figure}
 ```
+
 \autoref{fig:cmc-schematic} shows the steps of the correlation cell comparison process in each of the papers as well as the \CRANpkg{cmcR} implementation.
 Each cell is paired with an associated larger region in the other scan.
 The absolute location of each cell and region in their respective surface matrices remain constant.
@@ -695,25 +749,22 @@ This is referred to as the \dfn{Areal Cross-Correlation Function} (ACCF) in some
 A direct calculation of the CCF for breech face scans based on the definition above is inhibitingly slow.
 While computationally feasible alternatives exist, \citet{song_proposed_2013} and other CMC papers do not specify the algorithm used to calculate the CCF.
 
-\citet{song_3d_2014} describe the comparison process:
+<!-- \citet{song_3d_2014} describe the comparison process: -->
 
-> CMC pairs are identified by three types of identification parameters: the correlation value CCF$_{\max}$, registration angle $\theta$ and translation distances $x$, $y$ with thresholds $T_{\text{CCF}}$, $T_\theta$ and $T_x, T_y$, respectively.
-> The correlated cell pairs are considered as CMCs when their correlation value CCF$_{\max}$, $T_{\text{CCF}}$, and their registration angle $\theta$ and $x-y$ registration pattern are within the thresholds $T_\theta$, and $T_x, T_y$.
+<!-- > CMC pairs are identified by three types of identification parameters: the correlation value CCF$_{\max}$, registration angle $\theta$ and translation distances $x$, $y$ with thresholds $T_{\text{CCF}}$, $T_\theta$ and $T_x, T_y$, respectively. -->
+<!-- > The correlated cell pairs are considered as CMCs when their correlation value CCF$_{\max}$, $T_{\text{CCF}}$, and their registration angle $\theta$ and $x-y$ registration pattern are within the thresholds $T_\theta$, and $T_x, T_y$. -->
 
-\jz{XXX Start CMC-specific criticism here}
+<!-- \jz{XXX Start CMC-specific criticism here} -->
 
-Note that rotating an image or breech face scan by an arbitrary angle (other than a multiple of 90 degrees) requires interpolating new pixel locations.
-A variety of interpolation schemes exist \citep{parker_comparison_1983}, but there are no details provided in the papers under consideration indicating which interpolation algorithm was used.
-In \CRANpkg{cmcR}, surfaces matrices are rotated using a "nearest-neighbor" interpolation scheme \citep{imager}.
+<!-- Note that rotating an image or breech face scan by an arbitrary angle (other than a multiple of 90 degrees) requires interpolating new pixel locations. -->
+<!-- A variety of interpolation schemes exist \citep{parker_comparison_1983}, but there are no details provided in the papers under consideration indicating which interpolation algorithm was used. -->
+<!-- In \CRANpkg{cmcR}, surfaces matrices are rotated using a "nearest-neighbor" interpolation scheme \citep{imager}. -->
 
-\jz{XXX End CMC-specific criticism}
+<!-- \jz{XXX End CMC-specific criticism} -->
 
-In the next section, we discuss our implementation of the cell-based comparison procedure.
+<!-- In the next section, we discuss our implementation of the cell-based comparison procedure. -->
 
-### Implementation of the correlation cell comparison procedure
-
-All of the steps dealing with cell-based comparisons are implemented as functions of the form \code{comparison\_*}.
-Similar to the \code{preProcess\_*} functions, the \code{comparison\_*} functions can be chained together through a sequence of pipes.
+<!-- ### Implementation of the correlation cell comparison procedure -->
 
 Published implementations of the CMC algorithm do not describe precisely how the CCF is calculated.
 In image processing, it is common to use an implementation based on the Fast Fourier Transform \citep{Brown92asurvey}.
@@ -738,6 +789,8 @@ While it is unclear how the CCF is implemented in the CMC papers, the \CRANpkg{c
 
 -   Based on the optimal translation determined from the FFT-based CCF, we compute the pairwise complete CCF directly, avoiding any distortion of the CCF computation based on compensation for missing values (using function \code{comparison\_cor}).
 
+All of the steps dealing with cell-based comparisons are implemented as functions of the form \code{comparison\_*}.
+Similar to the \code{preProcess\_*} functions, the \code{comparison\_*} functions can be chained together through a sequence of pipes.
 The code below demonstrates how the \code{comparison\_allTogether} function can be used to perform the entire cell-based comparison procedure in one call.
 The comparison procedure is performed twice: once with Fadul 1-1 considered the "reference" scan divided into cells that are compared to the "target" scan Fadul 1-2 and again with the roles reversed.
 
@@ -764,7 +817,8 @@ The \code{comparison\_allTogether} function consists of the following steps wrap
 -   \code{comparison\_standardizeHeights}: Standardize height values
 -   \code{comparison\_replaceMissing}: Replace missing values
 -   \code{comparison\_fft\_ccf}: Compute CCF and estimated translations using FFT
--   \code{comparison\_cor}: Compute pairwise-complete correlation between a reference cell and a matrix of the same size extracted from the associated target region
+-   \code{comparison\_alignedTargetCell}: Extract a matrix from the target scan corresponding to the region of the target scan to which the reference cell aligns
+-   \code{cor}: Calculate the pairwise-complete correlation between each cell pair
 
 This sequence of functions are applied for a sequence of angles $\theta$ rotating the target scan relative to the reference scan.
 When implementing the High CMC decision rule \citep{tong_improved_2015}, both combinations of reference and target scan are examined (e.g. A-B and B-A).
@@ -829,13 +883,13 @@ A cell-region pair $i$ is declared a match if all of the following conditions ho
 \text{CCF}_{\max,i} &\geq& T_{\text{CCF}}.
 \end{eqnarray}
 ```
+
 The CMC count is then defined as the number of matching cell-region pairs (out of $n$).
 
 \citet{song_3d_2014} indicate that these thresholds need to be determined experimentally.
-There is little consensus on an optimal set of thresholds and no discussion of the sensitivity of proposed pipelines to different threshold choices across CMC papers.
-As such, there is little known about the effectiveness of the any CMC pipeline to "out-of-bag" samples.
-
 \autoref{tab:thresholdTable} summarizes the thresholds used in various CMC papers.
+<!-- There is little consensus on an optimal set of thresholds and no discussion of the sensitivity of proposed pipelines to different threshold choices across CMC papers. -->
+<!-- As such, there is little known about the effectiveness of the any CMC pipeline to "out-of-bag" samples. -->
 
 ```{=tex}
 \begin{table}[ht]
@@ -859,10 +913,11 @@ Paper & Translation $T_x, T_y$ & Rotation $\theta$ & CCF$_{\max}$ \\
 \cellcolor{lightgray}{6} & \cellcolor{lightgray}{.50}\\
 \hline
 \end{tabular}
-\caption{Different thresholds for translation, rotation, and CCF$_{\max}$ are used across different papers. The range in CCF$_{\max}$ is particularly notable. There is currently no principled approach to determining these thresholds. Instead, thresholds seem to be chosen by authors through experimentation and selecting thresholds that provide promising results.}
+\caption{Different thresholds for translation, rotation, and CCF$_{\max}$ are used across different papers. The range in CCF$_{\max}$ is particularly notable.}
 \label{tab:thresholdTable}
 \end{table}
 ```
+
 Unlike the original CMC pipeline, the High CMC decision rule considers multiple rotations for each cell-region pair.
 
 ### The High CMC decision rule {#highCMCMethod}
