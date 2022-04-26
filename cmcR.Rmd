@@ -1264,14 +1264,13 @@ In doing so, we abstract a set of principles by which pipelines and results can 
 <!-- In the next section, we describe the process of resolving these ambiguities in the CMC pipeline descriptions. -->
 <!-- In doing so, we abstract a set of principles by which pipelines and results can be rendered both computationally reproducible and more thoroughly understood. -->
 
-## Investigation of cell-based forensic pattern matching pipelines {#investigation}
+## CMC pattern matching pipeline {#investigation}
 
 As described in the [initial data](#initialData) section, the set of cartridge case scans from \citet{fadul_empirical_2011} is commonly used to compare the performance of various classification methods \citep{song_3d_2014, tong_improved_2015, chen_convergence_2017}.
 This set consists of 40 cartridge cases and 780 total comparisons: 63 known match comparisons and 717 known non-match comparisons.
 Scans of each breech face impression were taken with a Nanofocus Confocal Light Microscope at 10 fold magnification for a nominal lateral resolution of 3.125 microns per pixel and published as part of NBTRD \citep{nbtrd}.
 While the exact procedures by which these scans were processed in the original CMC papers are unavailable, these 3D topographic surface images provide the basis of the comparison between the implementation provided in the \CRANpkg{cmcR} package and published results.
 However, justification for any differences will ultimately involve educated guesses due to the closed-source nature of the original implementations.
-
 
 For any cartridge case pair, the number of CMCs can be determined under the original decision rule and the High CMC decision rule described in the [implementation](#implementation) section.
 We have applied our implementation of these two methods to the 780 cartridge case pairs available in the \citet{fadul_empirical_2011} data set under a variety of processing conditions.
@@ -1289,7 +1288,7 @@ Adherence to these principles yields not only computationally reproducible resul
 
 <!-- \jz{XXX End CMC-related criticism} -->
 
-## Communicating a method's sensitivity to processing conditions
+## Processing Condition Sensitivity
 
 Choosing threshold values $T_x, T_y, T_\theta, T_{\text{CCF}}$ for translation, rotation and maximum cross-correlation is crucial in declaring a particular cell-region pair "congruent".
 Many different combinations of these thresholds yield perfect separation between the matching and non-matching CMC count distributions.
