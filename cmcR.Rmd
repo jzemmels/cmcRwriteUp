@@ -1577,7 +1577,7 @@ data.frame(study = factor(c("Tong et al. (2014)",
                                  ticks.colour = "black"))
 ```
 
-# Conclusion{#discussion}
+# Conclusion{#conclusion}
 
 <!-- \jz{XXX I think shifting the focus from "the CMC method is [xyz]" to "forensic algorithms in-general tend to be [xyz], and the CMC method is no exception" would soften the tone slightly.} -->
 
