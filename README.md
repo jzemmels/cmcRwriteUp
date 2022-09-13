@@ -1,6 +1,8 @@
 # cmcRwriteUp
 Write-up for cmcR package
 
+For the data used in this paper, see: [https://github.com/CSAFE-ISU/cartridgeCaseScans/](https://github.com/CSAFE-ISU/cartridgeCaseScans/)
+
 Below is an explanation of non-standard files/folders included with the submission.
 
 - data folder: contains data to demonstrate the cmcR package and reproduce various results discussed in the paper. A description of each file in this folder follows.
