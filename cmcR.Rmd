@@ -50,9 +50,6 @@ preamble: |
   \newtheorem{definition}{Definition}
 header-includes: |
   \definecolor{lightgray}{HTML}{D3D3D3}
-  \newcommand{\hh}[1]{{\textcolor{orange}{#1}}}
-  \newcommand{\svp}[1]{{\textcolor{blue}{#1}}}
-  \newcommand{\jz}[1]{{\textcolor{olive}{#1}}}
 output: rticles::rjournal_article
 editor_options: 
   markdown: 
@@ -196,7 +193,7 @@ This allows us to test new variations against the old implementation in a cohere
 \end{figure}
 ```
 The primary difference between the two pipelines presented here, using the original and High CMC decision rules, lies in how the decision rules are utilized to separate matches and non-matches.
-\svp{In addition,} there are also several small differences in the parameters used in the preprocessing and comparison procedures.
+In addition, there are also several small differences in the parameters used in the preprocessing and comparison procedures.
 
 ## Initial Data {#initialData}
 
@@ -1159,6 +1156,7 @@ In doing so, we abstract a set of principles by which pipelines and results can 
 As described in the [initial data](#initialData) section, the set of cartridge case scans from \citet{fadul_empirical_2011} is commonly used to compare the performance of various classification methods \citep{song_3d_2014, tong_improved_2015, chen_convergence_2017}.
 This set consists of 40 cartridge cases and 780 total comparisons: 63 known match comparisons and 717 known non-match comparisons.
 Scans of each breech face impression were taken with a Nanofocus Confocal Light Microscope at 10 fold magnification for a nominal lateral resolution of 3.125 microns per pixel and published as part of NBTRD \citep{nbtrd}.
+The processed versions of the scans used in this manuscript are available at \citet{cartridgeCaseDataSet}.
 While the exact procedures by which these scans were processed in the original CMC papers are unavailable, these 3D topographic surface images provide the basis of the comparison between the implementation provided in the \CRANpkg{cmcR} package and published results.
 However, justification for any differences will ultimately involve educated guesses due to the closed-source nature of the original implementations.
 
