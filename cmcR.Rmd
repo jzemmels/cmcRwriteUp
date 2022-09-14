@@ -426,8 +426,7 @@ kmComparisonFeatures_rev <- purrr::map_dfr(seq(-30,30,by = 3),
 
 During the preprocessing stage, a series of sequential steps is used to prepare each cartridge case for analysis.
 The goal of this process is to remove the edges and center of the scan which did not come into contact with the breech face, as well as any artifacts of the scan and microscope staging which do not accurately represent the breech face surface.
-
-The different iterations of the CMC algorithm describe different variations of these steps.
+The various iterations of the CMC algorithm describe different variations of these steps.
 A summary of these steps is shown in \autoref{fig:preprocessing-schematic}.
 
 ```{=tex}
@@ -436,10 +435,12 @@ A summary of these steps is shown in \autoref{fig:preprocessing-schematic}.
 \caption{Overview of the set of preprocessing steps used in the CMC algorithms. Where a procedure step is not discussed or explicitly not applied in the paper, the path traverses empty space.}\label{fig:preprocessing-schematic}
 \end{figure}
 ```
-The implementation in \citet{tong_fired_2014} describes the preprocessing steps (for the 2D images) as:
 
-> After trimming processing [sic] to remove unrelated correlations areas, the final image size is reduced to 700 × 700 pixel with an estimated pixel spacing of 5.0 $\mu$m.
-> A Gaussian smoothing filter (standard deviation $\sigma$ = 1) was implemented first to remove high frequency noise.
+Translating the preprocessing steps in \autoref{fig:preprocessing-schematic} into an implementation requires the implementer to decide between potentially many implicit parameter choices.
+For example, \autoref{tab:preProcessTable} compares the preprocessing procedures as described in \citet{song_3d_2014} to considerations that need to be made when implementing the procedures.
+Depending on one's interpretation of the description, there are many possible implementations that satisfy the described procedure - in contrast, there was only one implementation that lead to the original results.
+While not explicitly mentioned in \citet{song_3d_2014}, \citet{song_estimating_2018} indicates that the "trimming" of the unwanted regions of the scan is performed manually.
+It is difficult to replicate manual steps as part of a reproducible pipeline; the best solution is for the authors to provide intermediate data after the manual steps have been completed.
 
 ```{=tex}
 \begin{table}[ht]
@@ -481,11 +482,6 @@ The implementation in \citet{tong_fired_2014} describes the preprocessing steps 
 \label{tab:preProcessTable}
 \end{table}
 ```
-
-\autoref{tab:preProcessTable} compares the preprocessing procedures as described in \citet{song_3d_2014} to considerations that need to be made when implementing the procedures.
-There are many possible implementations that satisfy the described procedure - in contrast, there was only one implementation that lead to the original results.
-While not explicitly mentioned in \citet{song_3d_2014}, \citet{song_estimating_2018} indicates that the "trimming" of the unwanted regions of the scan is performed manually.
-It is difficult to replicate manual steps as part of a reproducible pipeline; the best solution is for the authors to provide intermediate data after the manual steps have been completed.
 
 The preprocessing procedures are implemented via modularized functions of the form \code{preProcess\_*}.
 Modularizing the steps of the preprocessing procedures makes the overall process easier to understand and allows for experimentation.
