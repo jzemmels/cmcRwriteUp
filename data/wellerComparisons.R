@@ -1,41 +1,64 @@
+################## install/load required packages
+
+# un-comment to install these packages, if necessary
+
+# devtools::install_github("CSAFE-ISU/cmcR")
+# devtools::install_github("heike/x3ptools")
+# install.packages("tidyverse")
+
+# these packages are for parallelization
+# install.packages("future")
+# install.packages("furrr")
+
 library(tidyverse)
 library(cmcR)
 library(x3ptools)
 
-#pre-process the Weller scans and save to wellerProcessedFolder
+################## Preprocess masked scans
 
-walk(list.files("../wellerMasked",pattern = "x3p",full.names = TRUE,recursive = TRUE),
-     function(file){
+# un-comment to parallelize code and speed up computation
 
-       ret <- str_split(file,"/")[[1]]
+# future:::ClusterRegistry("stop")
+#
+# future::plan(future::multisession(workers = future::availableCores() - 5))
 
-       ret <- str_remove(ret[length(ret)],"\\.x3p")
 
-       dat <- x3p_read(file)
+# furrr::future_walk(
+walk(
+  list.files("../wellerMasked",pattern = "x3p",full.names = TRUE,recursive = TRUE),
+  function(file){
 
-       dat$surface.matrix[t(as.matrix(dat$mask)) == "#CD7F32FF"] <- NA
+    ret <- str_split(file,"/")[[1]]
 
-       dat <- dat %>%
-         cmcR::preProcess_removeTrend(statistic = "quantile",
-                                      tau = .5,
-                                      method = "fn") %>%
-         cmcR::preProcess_gaussFilter() %>%
-         cmcR::preProcess_removeTrend(statistic = "quantile",
-                                      tau = .5,
-                                      method = "fn") %>%
-         cmcR::preProcess_gaussFilter() %>%
-         x3p_sample() %>%
-         preProcess_erode(region = "interior",morphRadius = round(50/4)) %>%
-         preProcess_erode(region = "exterior",morphRadius = round(50/4))
+    ret <- str_remove(ret[length(ret)],"\\.x3p")
 
-       processedScan <- dat %>%
-         cmcR:::preProcess_cropWS(croppingProp = .5)
+    dat <- x3p_read(file)
 
-       processedScan$mask <- NULL
+    dat$surface.matrix[t(as.matrix(dat$mask)) == "#CD7F32FF"] <- NA
 
-       x3ptools::x3p_write(processedScan,file = paste0("../wellerProcessed/",ret,".x3p"))
+    dat <- dat %>%
+      cmcR::preProcess_removeTrend(statistic = "quantile",
+                                   tau = .5,
+                                   method = "fn") %>%
+      cmcR::preProcess_gaussFilter() %>%
+      cmcR::preProcess_removeTrend(statistic = "quantile",
+                                   tau = .5,
+                                   method = "fn") %>%
+      cmcR::preProcess_gaussFilter() %>%
+      x3p_sample() %>%
+      preProcess_erode(region = "interior",morphRadius = round(50/4)) %>%
+      preProcess_erode(region = "exterior",morphRadius = round(50/4))
 
-     })
+    processedScan <- dat %>%
+      cmcR:::preProcess_cropWS(croppingProp = .5)
+
+    processedScan$mask <- NULL
+
+    x3ptools::x3p_write(processedScan,file = paste0("../wellerProcessed/",ret,".x3p"))
+
+  })
+
+################## read processed scans into environment
 
 scanNames <- list.files("../wellerProcessed/") %>%
   str_remove("\\.x3p")
@@ -43,18 +66,18 @@ scanNames <- list.files("../wellerProcessed/") %>%
 wellerProcessed <- map(list.files("../wellerProcessed/",full.names = TRUE),
                        x3p_read)
 
-#perform the cell-based comparison procedure for every pairwise comparison in
-#the Weller data set
+################## perform all pairwise comparisons
 
 if(!dir.exists("wellerComparisons")){
   dir.create("wellerComparisons")
 }
 
-future:::ClusterRegistry("stop")
-
-future::plan(future::multisession(workers = future::availableCores() - 6))
-
-furrr::future_walk(
+# future:::ClusterRegistry("stop")
+#
+# future::plan(future::multisession(workers = future::availableCores() - 6))
+#
+# furrr::future_walk(
+walk(
   1:length(wellerProcessed),
   function(refInd){
     purrr::walk(refInd:length(wellerProcessed),
@@ -152,24 +175,25 @@ furrr::future_walk(
                 })
   })
 
-# calculate the CMCs for various combinations of parameters for the Weller data
-# set
+################## calculate the Congruent Matching Cells across a variety of
+################## processing conditions
 
 if(!dir.exists("wellerCMCs")){
   dir.create("wellerCMCs")
 }
 
+source("supplementaryFunctions.R")
+
 cmcCalced <- list.files("wellerCMCs/")
 
 cmcNeedCalc <- list.files("wellerComparisons/")
 
-future:::ClusterRegistry("stop")
+# future:::ClusterRegistry("stop")
+#
+# future::plan(future::multisession(workers = future::availableCores() - 6))
 
-future::plan(future::multisession(workers = future::availableCores() - 6))
-
-source("supplementaryFunctions.R")
-
-furrr::future_walk(
+# furrr::future_walk(
+walk(
   cmcNeedCalc[!(cmcNeedCalc %in% cmcCalced)],
   function(fileName){
 
@@ -185,8 +209,7 @@ furrr::future_walk(
 
   })
 
-# finally, combine the CMC results for the two comparison direction for each
-# cartridge case pair
+################## calculate the CMC count similarity scores
 
 if(!dir.exists("wellerCombinedCMCs")){
   dir.create("wellerCombinedCMCs")
@@ -196,7 +219,12 @@ cmcCalced <- list.files("wellerCombinedCMCs/")
 
 cmcNeedCalc <- list.files("wellerCMCs/")
 
-furrr::future_walk(
+# future:::ClusterRegistry("stop")
+#
+# future::plan(future::multisession(workers = future::availableCores() - 6))
+
+# furrr::future_walk(
+walk(
   paste0("wellerCMCs/",cmcNeedCalc[!(cmcNeedCalc %in% cmcCalced)]),
   ~ {
 
