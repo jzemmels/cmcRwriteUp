@@ -1,0 +1,13 @@
+Initial check results: 
+SUCCESS: Submission has consistently named tex, bib, and R files
+SUCCESS: No problematic file found
+SUCCESS: Possible motivation letter found
+SUCCESS: The article title is properly formatted in title case.
+SUCCESS: All sections are properly formatted in sentence case
+SUCCESS: Abstract comes before the introduction section
+NOTE: A potential list of spelling to check: reproducibility, algorithsm, probative, evidentiary, pseudocode, unreproducible, htbp, et, al, auditability, modularizing, modularized, th, downsampled, interpretability, fft, ccf, purrr, dfr, fadul, asize, congruency, de, asized, modularization, interoperable, knitr, rticles, tidyverse, pre, imager, brigham, brinkman, bodschwinna, asurvey, chen, chu, crawford, goodman, osiris, hesselink, ptools, nas, ott, peng, pcast, stodden, tai, linux, thompson, weller, ois, nbtrd
+SUCCESS: CRAN activities have been detected for package cmcR
+SUCCESS: All CRAN & Bioconductor packages mentioned are available
+NOTE: 1 package(s) used in the text without CRANpkg or BIOpkg commands: cartridges3D
+
+ SUCCESSES: 8 | ERRORS: 0 | NOTES: 2 
