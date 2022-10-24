@@ -1,5 +1,5 @@
 ---
-title: "A Study in Reproducibility: The Congruent Matching Cells Algorithm and cmcR package"
+title: "A Study in Reproducibility: The Congruent Matching Cells Algorithm and cmcR Package"
 author:
   - name: Joseph Zemmels
     affiliation: Center for Statistics and Applications in Forensic Evidence
@@ -50,7 +50,8 @@ preamble: |
   \newtheorem{definition}{Definition}
 header-includes: |
   \definecolor{lightgray}{HTML}{D3D3D3}
-output: rticles::rjournal_article
+output: rjtools::rjournal_web_article
+bibliography: zemmels-vanderplas-hofmann.bib
 editor_options: 
   markdown: 
     wrap: sentence
