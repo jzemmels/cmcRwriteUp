@@ -17,6 +17,7 @@ author:
     address:
     - Department of Statistics
     - 340 Hardin Hall North Wing
+    - 3310 Holdrege St.
     - Lincoln, NE 68583
     email: susan.vanderplas@unl.edu
   - name: Heike Hofmann
